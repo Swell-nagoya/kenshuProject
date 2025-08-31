@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>RayD開発研修サイト</title>
+<meta name="viewport" content="width=device-width">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript" src="js/mui.js"></script>
+<script type="text/javascript" src="js/my.js"></script>
+<script type="text/javascript" src="js/jquery.smoothscroll.js"></script>
+<script type="text/javascript" src="js/jquery.scrollshow.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<script>
+$(function($){
+	$('html').smoothscroll({easing : 'swing', speed : 1000, margintop : 10});
+	$('.totop').scrollshow({position : 500});
+	});
+</script>
+</head>
+<body onload="createMenu();">
+<div id="contents">
+	<div id="sub">
+		<header>
+			<h1><a href="../index.html">RayD</a></h1>
+			<p class="summary">
+			開発研修サイト
+			</p>
+		</header>
+		<nav id="navigation">
+		</nav>
+	</div>
+      <div id="main">
+	    <h2>
+	        Excel問題
+	    </h2>
+	    <h4>
+	    	■Excel基本用語<br>
+	    </h4>
+	    ・セル<br>
+	    　文字や数値を入力するためのマス目を「セル」といいます。<br>
+	    ・列、行<br>
+	    　エクセルの画面上にはセルが沢山並んでいますが、並ぶ方向によって「行」と「列」と呼んでいます。<br>
+		　垂直方向を「行」、水平方向を「列」とします。<br>
+		・ブック<br>
+		　エクセルにおける作業単位の一つで、複数のワークシートなどを併せて一つのブックとします。<br>
+		・関数<br>
+		　計算式や演算(命令)を入力することによって複雑な操作や計算などを<br>
+		　簡単に行えるようにするための命令です。<br>
+		　例えば3つのセル「A1」「B2」「C5」に入力された数値の平均を出す関数なら下記のようになります。<br>
+		　　＝AVERAGE(A1,B2,C5)<br>
+		・マクロ<br>
+		　一定の手順を記憶させておいて、自動的に同じ手順を実行させる機能をいいます。<br>
+		・書式<br>
+		　セル一つ一つについて、「どのような文字の大きさ」「どんなフォント」<br>
+		　「どのような罫線」「文字のスタイル」などを設定することができます。<br><br>
+	    
+	    <h3>
+	        問題1　単純な計算、オートフィル
+		</h3>
+        <br />
+        <p>・<a target="_blank" href="src2/excel1_1.xls">Excel問題1</a></p>
+		<br>
+		<h3>
+	        問題2　SUM関数
+		</h3>
+        <br />
+        <p>・<a target="_blank" href="src2/excel2_1.xls">Excel問題2</a></p>
+		<br>
+		<h3>
+	        問題3　オートサム
+		</h3>
+        <br />
+        <p>・<a target="_blank" href="src2/excel3_1.xls">Excel問題3</a></p>
+		<br>
+		<h3>
+	        問題4　ROUND関数
+		</h3>
+        <br />
+        <p>・<a target="_blank" href="src2/excel4_1.xls">Excel問題4</a></p>
+        <br>
+		<h3>
+	        問題5　IF/SUMIF/RANK関数
+		</h3>
+        <br />
+        <p>・<a target="_blank" href="src2/excel5_1.xls">Excel問題5</a></p>
+		<br>
+		<h3>
+	        問題6　COUNT/COUNTA/COUNTBLANK/ROWS/COUNTIF関数
+		</h3>
+        <br />
+        <p>・<a target="_blank" href="src2/excel6.xls">Excel問題6</a></p>
+		<br>
+		<h3>
+	        問題7　VLOOKUP/DATEDIF/DSUM/DAVERAGE関数
+		</h3>
+        <br />
+        <p>・<a target="_blank" href="src2/excel7.xls">Excel問題7</a></p>
+		<br>
+		<h3>
+	        問題8　オートフィルタ―
+		</h3>
+	    <br />
+	    <p>・<a target="_blank" href="src2/excel8.xls">Excel問題8</a></p>
+		<br>
+		<h3>
+	        問題9　文字列連結、文字列抽出
+		</h3>
+		<br />
+        <p>・<a target="_blank" href="src2/excel9.xls">Excel問題9</a></p>
+        <br>
+        <h3>
+	        復習問題
+		</h3>
+        問題1～9までの復習問題<br />
+        <p>・<a target="_blank" href="src2/復習.xls">復習問題</a></p>
+        <br>
+      </div><!-- /#main -->
+      <script>
+	      menuDisplay();
+      </script>
+   </div><!-- /#contents -->
+   <footer>
+	<div class="footmenu">
+		<ul>
+			<li><a href="index.html">HOME</a></li>
+		</ul>
+	</div><!-- /.footmenu -->
+	<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
+</footer>
+<div class="totop"><a href="#"><img src="images/totop.png" alt="ページのトップへ戻る"></a></div><!-- /.totop -->
+</div><!-- /#top -->
+</body>
+</html>

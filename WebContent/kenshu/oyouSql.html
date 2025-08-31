@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>RayD開発研修サイト</title>
+<meta name="viewport" content="width=device-width">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript" src="js/mui.js"></script>
+<script type="text/javascript" src="js/my.js"></script>
+<script type="text/javascript" src="js/jquery.smoothscroll.js"></script>
+<script type="text/javascript" src="js/jquery.scrollshow.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<script>
+$(function($){
+	$('html').smoothscroll({easing : 'swing', speed : 1000, margintop : 10});
+	$('.totop').scrollshow({position : 500});
+	});
+</script>
+</head>
+<body onload="createMenu();">
+<div id="contents">
+	<div id="sub">
+		<header>
+			<h1><a href="../index.html">RayD</a></h1>
+			<p class="summary">
+			開発研修サイト
+			</p>
+		</header>
+		<nav id="navigation">
+		</nav>
+	</div>
+      <div id="main">
+         <h2>応用SQL 15問</h2>
+         
+         
+<h3>事前準備</h3>
+以下の手順を実行して自分で新しいデータベースを作成する<br>
+その後、作成したデータベースを使用して課題を進めていくこと<br><br>
+
+①データベース名の一覧を表示する<br>
+SHOW DATABASES;<br>
+
+②上記と重複しないデータベース名を「db_name」の部分に入れる。<br>
+CREATE DATABASE IF NOT EXISTS db_name;<br><br>
+
+例.CREATE DATABASE IF NOT EXISTS RayDstudy;<br><br>
+
+
+<h3>設問　１</h3>
+<p>データベースに新しいテーブルを作成する。(create table)<br>
+作成するテーブルの条件は以下の通りである。<br>
+</p>
+
+テーブル名 user<br>
+id int NOT NULL<br>
+name varchar(10)<br>
+position_id int<br>
+salary int<br>
+<br>
+テーブル名 user_detail<br>
+id int NOT NULL<br>
+height int<br>
+weight int<br>
+hobby varchar(10)<br>
+<br>
+テーブル名 position<br>
+id int NOT NULL<br>
+name varchar(10)<br>
+※エラーが出るためテーブル名を「`position`」、カラム名を「`id`」「`name`」としてください。<br>
+<br>
+テーブル名 user_private<br>
+id int NOT NULL<br>
+private_data varchar(10)<br>
+<br>
+・下記のSQL文を使用して各テーブルカラムの主キー設定をしてください<br>
+  使用するSQL文：ALTER TABLE ADD<br>
+<br>
+主キー設定するカラム<br>
+    userテーブル：id<br>
+    positionテーブル：id<br>
+<br>
+・下記のSQL文を使用して各テーブルカラムの外部キー設定をしてください<br>
+  使用するSQL文：ALTER TABLE ADD<br>
+    ・user_detailテーブルのidがuserテーブルのidと連動<br>
+    ・userテーブルのposition_idがpositionテーブルのidと連動<br>
+
+<br>
+<br>
+<h3>設問　２</h3>
+<p>データベース上のuser_privateテーブルを削除する。(drop table)<br>
+</p>
+<br>
+<br>
+<h3>設問　３</h3>
+☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★<br>
+(準備 以下のsqlを実行し、テーブル内にデータを追加する。)<br>
+INSERT INTO position (id, name) VALUES <br>
+(1, '社長'),<br>
+(2, '課長'),<br>
+(3, '社員'),<br>
+(4, 'パート');<br>
+<br>
+INSERT INTO user(id, name, position_id, salary) VALUES <br>
+(1, '太郎', 1, 530000),<br>
+(2, '松子', 2, 310000),<br>
+(3, '次郎', 2, 250000),<br>
+(4, '竹子', 3, 190000),<br>
+(5, '三郎', 3, 180000),<br>
+(6, '梅子', 4, 150000);<br>
+<br>
+INSERT INTO user_detail (id, height, weight, hobby) VALUES <br>
+(1, 170, 70, '食べる'),<br>
+(2, 157, 53, '寝る'),<br>
+(3, 169, 86, '遊ぶ'),<br>
+(4, 163, 55, '食べる'),<br>
+(5, 189, 79, '寝る'),<br>
+(6, 156, 64, '遊ぶ');<br>
+<br>
+☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★<br>
+<br>
+<p>user_detailテーブルに以下のカラムを追加する。<br>
+テーブルを削除してから新規作成ではなく、テーブルにカラムを追加するコマンドを使用すること。<br>
+<br>
+追加カラム：birthday datetime<br>
+</p>
+<br>
+<br>
+<h3>設問　４</h3>
+<p>user_detailテーブル内のデータを全て消去する。(truncate)<br>
+テーブルを削除してから新規作成ではなく、テーブル内のデータを全て消去するコマンドを使用すること。<br>
+</p>
+<br>
+<br>
+<h3>設問　５</h3>
+☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★<br>
+(準備 以下のsqlを実行し、テーブル内にデータを追加する。)<br>
+INSERT INTO user_detail (id, height, weight, hobby, birthday) VALUES<br> 
+(1, 170, 70, '食べる', '1980-1-1'),<br>
+(2, 157, 53, '寝る', '1984-3-3'),<br>
+(3, 169, 86, '遊ぶ', '1989-5-5'),<br>
+(4, 163, 55, '食べる', '1991-7-7'),<br>
+(5, 189, 79, '寝る', '1996-10-31'),<br>
+(6, 156, 64, '遊ぶ', '2000-12-31');<br>
+<br>
+(準備 下記のSQL文を実行してオートコミットモードをオフにしてください。)<br>
+SET autocommit = 0;<br>
+☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★<br>
+<p>user_detailを変更する任意のupdate文を複数回実行後にcommitを行い、変更できたことを確認する。<br>
+(実行前のuser_detailとupdate実行直後のuser_detail、commitの結果をスクリーンショットを撮って提出する)<br>
+</p>
+<br>
+<br>
+<h3>設問　６</h3>
+<p>user_detailを変更する任意のupdate文を複数回実行後にrollbackを行い、変更が取り消されたことを確認する。<br>
+(実行前のuser_detailとupdate実行直後のuser_detail、rollback後のuser_detailの結果をスクリーンショットを撮って提出する)<br>
+</p>
+<br>
+<br>
+<h3>設問　7</h3>
+☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★<br>
+(準備 設問６にてuser_detail内のデータを全て削除後に以下のsqlを実行し、テーブル内のデータを元の状態に戻す。)<br>
+INSERT INTO user_detail (id, height, weight, hobby,birthday) VALUES <br>
+(1, 170, 70, '食べる', '1980-1-1'),<br>
+(2, 157, 53, '寝る', '1984-3-3'),<br>
+(3, 169, 86, '遊ぶ', '1989-5-5'),<br>
+(4, 164, 55, '食べる', '1991-7-7'),<br>
+(5, 189, 79, '寝る', '1996-10-31'),<br>
+(6, 156, 64, '遊ぶ', '2000-12-31');<br>
+☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★<br>
+<br>
+<p>userテーブルからnameに'郎'が入っているデータを表示する。<br>
+</p>
+<img src="images/oyouSql/Q7.png" width="400">
+<br>
+<br>
+<h3>設問　8</h3>
+<p>userとuser_detail、positionをJOIN(内部結合)を利用して結合させ、結果を表示する。<br>
+結合条件は以下の通りである。<br>
+<br>
+userテーブルのidとuser_detailテーブルのid<br>
+userテーブルのposition_idとpositionテーブルのid<br>
+</p>
+<img src="images/oyouSql/Q8.png" width="650">
+<br>
+<br>
+<h3>設問　9</h3>
+<p>userとuser_detail、positionをJOIN(外部結合)を利用して結合させ、結果を表示する。<br>
+結合条件は以下の通りである。<br>
+<br>
+userテーブルのidとuser_detailテーブルのid<br>
+userテーブルのposition_idとpositionテーブルのid<br>
+</p>
+<img src="images/oyouSql/Q9.png" width="650">
+<br><br>
+<h3>設問　10</h3>
+<p>userとuser_detail、positionをJOINを使わない結合(where句で指定)を利用して結合させ、結果を表示する。<br>
+結合条件は以下の通りである。<br>
+<br>
+userテーブルのidとuser_detailテーブルのid<br>
+userテーブルのposition_idとpositionテーブルのid<br>
+</p>
+<img src="images/oyouSql/Q10.png" width="650">
+
+<br><br>
+<h3>設問　１1</h3>
+<p>サブクエリ(select_where句=_(select...))<br>
+「役職が『課長か社員』である人の中で、趣味が『寝る』である人」を表示するSQL文を指定された文法で作成する。<br>
+</p>
+<img src="images/oyouSql/Q11.png" width="650">
+
+<br>
+<br>
+<h3>設問　１2</h3>
+☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★<br>
+(準備 以下のsqlを実行し、新規テーブルおよびテーブル内にデータを追加する。)<br>
+<br>
+CREATE TABLE people (<br>
+  id int NOT NULL,<br>
+  name nvarchar(10),<br>
+  position_id int,<br>
+  salary int,<br>
+  birthday date<br>
+);<br>
+<br>
+ALTER TABLE people<br>
+ADD<br>
+PRIMARY KEY (id);<br>
+<br>
+INSERT INTO people(id, name, position_id, salary,birthday) VALUES <br>
+(7, '四郎', 3, 160000, '2003-7-20'),<br>
+(8, '花子', 4, 150000, '2003-11-3');<br>
+☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★<br>
+<br>
+<p>サブクエリ(insert_into_(select...))<br>
+「peopleテーブルのデータをuserテーブルに追加する」sql文を指定された文法で作成する。<br>
+</p>
+<br>
+<h3>設問　１3</h3>
+☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★<br>
+(準備 以下のsqlを実行し、テーブル内にデータを追加する。)<br>
+<br>
+INSERT INTO user_detail (id, height, weight, hobby,birthday) VALUES <br>
+(7, 218, 120, '食べる', '2003-7-20'),<br>
+(8, 141, 49, '寝る', '2003-11-3');<br>
+☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★<br>
+<br>
+<p>サブクエリ(select_where句in_(select...))<br>
+「身長が『160以上』かつ体重が『60以上』であり、その中でパートでない人」を表示するSQL文を指定された文法で作成する。<br>
+</p>
+<img src="images/oyouSql/Q13.png" width="400">
+
+<br>
+<br>
+<h3>設問　１4</h3>
+<p>サブクエリ(select_from句_(select...))<br>
+「年齢が『22歳以上』であり、その中で趣味が『食べる』である人」を表示するSQL文を指定された文法で作成する。<br>
+</p>
+<img src="images/oyouSql/Q14.png" width="650">
+
+<br><br>
+<h3>設問　１5</h3>
+<p>サブクエリ(select_where句in_(select...) order by)<br>
+「身長が『200以下』であり、趣味が『食べるか寝る』である人を役職idの大きい順に表示する」を表示するSQL文を指定された文法で作成する。<br>
+</p>
+<img src="images/oyouSql/Q15.png" width="400">
+<br><br>
+<h3>設問　１6</h3>
+<p>case文<br>
+「役職が『社長でない』人の人数、趣味が『寝るか遊ぶ』である人の人数」を表示するSQL文を指定された文法で作成する。<br>
+</p>
+<img src="images/oyouSql/Q16.png" width="650">
+<br><br>
+<h3>事後処理</h3>
+事前準備の際に自分で作成したテーブルを削除<br>
+DROP DATABASE db_name;<br><br>
+db_nameには自分で作成したテーブル名を記入すること。
+<br><br>
+         <p>
+         </p>
+      </div><!-- /#main -->
+      <script>
+	      menuDisplay();
+      </script>
+   </div><!-- /#contents -->
+   <footer>
+	<div class="footmenu">
+		<ul>
+			<li><a href="index.html">HOME</a></li>
+		</ul>
+	</div><!-- /.footmenu -->
+	<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
+</footer>
+<div class="totop"><a href="#"><img src="images/totop.png" alt="ページのトップへ戻る"></a></div><!-- /.totop -->
+</body>
+</html>

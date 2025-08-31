@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>RayD開発研修サイト</title>
+<meta name="viewport" content="width=device-width">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript" src="js/mui.js"></script>
+<script type="text/javascript" src="js/my.js"></script>
+<script type="text/javascript" src="js/jquery.smoothscroll.js"></script>
+<script type="text/javascript" src="js/jquery.scrollshow.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<script>
+$(function($){
+	$('html').smoothscroll({easing : 'swing', speed : 1000, margintop : 10});
+	$('.totop').scrollshow({position : 500});
+	});
+</script>
+</head>
+<body onload="createMenu();">
+<div id="contents">
+	<div id="sub">
+		<header>
+			<h1><a href="../index.html">RayD</a></h1>
+			<p class="summary">
+			開発研修サイト
+			</p>
+		</header>
+		<nav id="navigation">
+		</nav>
+	</div>
+      <div id="main">
+	    <h2>
+	        ExcelVBA
+	    </h2>
+	    <h4>
+	    	■Excel VBAとは
+	    </h4>
+	    VBAとは『 Visual Basic for Applications 』を省略したもので、<br>
+	    簡単に言えばプログラミング言語の１つです。<br>
+	    Excel内でさまざまな操作を実行するための機能で、<br>
+	    複雑な操作を簡単に行えるようになるため、業務の効率化などに非常に役立ちます。<br><br>
+	    
+	    それでは早速、VBA問題ブックを開いて解いていきましょう。<br>
+	    ※問1～9までは、Excelのシート上に実行ボタンを設置し、<br>
+	    それを押すと問題文の処理が行われるようにすること。<br>	
+	    
+	    <a href="src2/VBA問題.xlsm">VBA問題ブック</a><br><br>
+	    
+	    <h3>
+	        問1
+		</h3>
+        <p>A1セルに「HelloWorld」を入力する。<br /><br />
+        <img src="images/VBA15mon/vba1.png" width="400"/></p>
+		<br>
+		<h3>
+	        問2
+		</h3>
+        A1セルに入力された数字が偶数か奇数か判定し、結果をB1セルに表示する。<br /><br />
+        <img src="images/VBA15mon/vba2.png" width="400"/></p>
+		<br>
+		<h3>
+	        問3
+		</h3>
+        C5セルに整数を入力し、その数分C6セルにアスタリスクを表示する。<br /><br />
+        <img src="images/VBA15mon/vba3.png" width="400"/></p>
+		<br>
+		<h3>
+	        問4
+		</h3>
+        表の中の「OK」という文字を太文字にする。<br /><br />
+        <img src="images/VBA15mon/vba4.png" width="400"/></p>
+        <br>
+		<h3>
+	        問5
+		</h3>
+        B2セルに整数nを入力し、100/nの結果をB3セルに表示する。<br /><br />
+        <img src="images/VBA15mon/vba5.png" width="400"/></p>
+		<br>
+		<h3>
+	        問6
+		</h3>
+        A1～A7セルに1～7を入力し、対応する曜日をB1～B7セルに表示する。<br /><br />
+        <img src="images/VBA15mon/vba6.png" width="400"/></p>
+        1：日曜日、2：月曜日・・・7：土曜日<br />
+		<br>
+		<h3>
+	        問7
+		</h3>
+        A1セルに整数を入力し、1～入力した整数までを10倍した数値をB1セルから下に表示する。<br /><br />
+        <img src="images/VBA15mon/vba7.png" width="400"/></p>
+		<br>
+		<h3>
+	        問8
+		</h3>
+	    C1セルとD1セルに入力された文字が同じ文字か判別する。<br /><br />
+	    <img src="images/VBA15mon/vba8.png" width="400"/></p>
+	    その結果をE1セルに表示する。<br />
+		<br>
+		<h3>
+	        問9
+		</h3>
+        A1～A10セルに入力された数値を昇順に並べ替える。<br /><br />
+        <img src="images/VBA15mon/vba9-1.png" width="400"/></p>
+        <img src="images/VBA15mon/vba9-2.png" width="400"/></p>
+        <br>
+        <h3>
+	        問10
+		</h3>
+        ユーザーフォームを使い、新規ワークブックを開くボタンを作成する。<br /><br />
+        <img src="images/VBA15mon/vba10.png" width="400"/></p>
+        <br>
+        <h3>
+	        問11
+		</h3>
+        ユーザーフォームを使い、シート内の文字列を検索できるようにする。<br />
+        検索した文字列があったら、セルを赤くする。<br /><br />
+        <img src="images/VBA15mon/vba11.png" width="400"/></p>
+
+        <br>
+        <h3>
+	        問12
+		</h3>
+        ユーザーフォームを使い、入力した数字が5以上なら、メッセージボックスで5以上ですと表示する。<br />
+        5未満なら、メッセージボックスで5未満ですと表示する。<br />
+        <img src="images/VBA15mon/vba12.png" width="400"/></p>
+
+        <br>
+        <h3>
+	        問13
+		</h3>
+        ユーザーフォームを使い、A1～A10セルに入力されたデータを、リストボックスに表示する。<br /><br />
+        <img src="images/VBA15mon/vba13.png" width="400"/></p>
+        <br>
+        <h3>
+	        問14
+		</h3>
+        ユーザーフォームを使い、血液型を選択するオプションボタンを設置し、<br />
+        選択されたものをメッセージボックスで表示する。<br />
+        <img src="images/VBA15mon/vba14.png" width="400"/></p>
+        <br>
+        <h3>
+	        問15
+		</h3>
+        ユーザーフォームを使い、入力された数値1と数値2の和を求める。<br /><br />
+        <img src="images/VBA15mon/vba15.png" width="400"/></p>
+        <br>
+        <h3>
+	        応用問題
+		</h3>
+        名簿管理ツールを作成してください。<br />
+        名簿シートにユーザーフォームから、検索・編集・追加・削除ができるようにしてください。        
+        <br /><br />
+        <a href="src2/VBA検定_2.xlsm">VBA応用問題ブック</a><br>
+        <br>
+        <img src="images/VBAoyo/vbaoyo1.png" width="500"/></p><br>
+        <img src="images/VBAoyo/vbaoyo2.png" width="300"/><br><br>
+        <img src="images/VBAoyo/vbaoyo3.png" width="300"/><img src="images/VBAoyo/vbaoyo4.png" width="300"/><br><br>
+        ※検索画面では、検索結果のセルが選択されるようにしてください。<br>
+        <img src="images/VBAoyo/vbaoyo5.png" width="300"/><img src="images/VBAoyo/vbaoyo7.png" width="300"/><br><br>
+        <img src="images/VBAoyo/vbaoyo6.png" width="300"/><br><br>
+        
+        
+      </div><!-- /#main -->
+      <script>
+	      menuDisplay();
+      </script>
+   </div><!-- /#contents -->
+   <footer>
+	<div class="footmenu">
+		<ul>
+			<li><a href="index.html">HOME</a></li>
+		</ul>
+	</div><!-- /.footmenu -->
+	<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
+</footer>
+<div class="totop"><a href="#"><img src="images/totop.png" alt="ページのトップへ戻る"></a></div><!-- /.totop -->
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>RayD開発研修サイト</title>
+<meta name="viewport" content="width=device-width">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript" src="js/mui.js"></script>
+<script type="text/javascript" src="js/my.js"></script>
+<script type="text/javascript" src="js/jquery.smoothscroll.js"></script>
+<script type="text/javascript" src="js/jquery.scrollshow.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<script>
+$(function($){
+	$('html').smoothscroll({easing : 'swing', speed : 1000, margintop : 10});
+	$('.totop').scrollshow({position : 500});
+	});
+</script>
+</head>
+<body onload="createMenu();">
+<div id="contents">
+	<div id="sub">
+		<header>
+			<h1><a href="../index.html">RayD</a></h1>
+			<p class="summary">
+			開発研修サイト
+			</p>
+		</header>
+		<nav id="navigation">
+		</nav>
+	</div>
+      <div id="main">
+	    <h2>
+	        HTML基礎
+	    </h2>
+	    
+	    
+	    <h3>
+	        問1
+		</h3>
+        ページを作成しタイトルを設定する。<br />
+		<br>
+		<h3>
+	        問2
+		</h3>
+        divタグを用いて「Hello World!」と表示する。<br />
+		<br>
+		<h3>
+	        問3
+		</h3>
+        h1、h2、h3、h4、h5タグを用いて「Hello World!」という文字を縦に並べる。<br />
+		<br>
+		<h3>
+	        問4
+		</h3>
+        pタグを用いて「こんにちは、私は○○です」と表示する。なお○○には自分の名前を表示すること。<br />
+        その後「、」のあとに改行が入った状態で表示する。<br />
+        <br>
+		<h3>
+	        問5
+		</h3>
+        tableタグを用いてheader部に「名前」「生年月日」「趣味」という項目を作り、内容に自分の「名前」「生年月日」「趣味」を表示する。<br />
+		<br>
+		<h3>
+	        問6
+		</h3>
+        画面にリンクを表示する。<br />
+        なおリンクの遷移先は「http://www.google.co.jp」とする。<br />
+		<br>
+		<h3>
+	        問7
+		</h3>
+        問6で作成したリンクにタイトルを設定する。<br />
+        リンクにフォーカスがあたったときに、「Googleへのリンク」というリンクタイトルを表示する。<br />
+		<br>
+		<h3>
+	        問8
+		</h3>
+	        作成したページにキーワードを設定する。<br />
+	        なおページは問7のものを利用し、キーワードには「Google,リンク」と設定すること。<br />
+		<br>
+		<h3>
+	        問9
+		</h3>
+        入力フォームを作成する。作成するものは以下の通りとする。<br />
+        <table>
+            <tr>
+                <th>テキスト入力</th>
+                <td>文字を入力できるようにする</td>
+            </tr>
+            <tr>
+                <th>ラジオボタン</th>
+                <td>「男性」「女性」の選択をできるようにする</td>
+            </tr>
+            <tr>
+                <th>セレクトボックス</th>
+                <td>「北海道・東北」「関東」「中部」「近畿」「中国・四国」「九州」の選択をできるようにする</td>
+            </tr>
+            <tr>
+                <th>チェックボックス</th>
+                <td>「国語」「英語」「数学」の選択をできるようにする</td>
+            </tr>
+            <tr>
+                <th>改行可能なテキスト入力</th>
+                <td>文字を入力できるようにし、改行もできるようにする</td>
+            </tr>
+            <tr>
+                <th>ボタン</th>
+                <td>「送信」ボタン</td>
+            </tr>
+        </table>
+      </div><!-- /#main -->
+      <script>
+	      menuDisplay();
+      </script>
+   </div><!-- /#contents -->
+   <footer>
+	<div class="footmenu">
+		<ul>
+			<li><a href="index.html">HOME</a></li>
+		</ul>
+	</div><!-- /.footmenu -->
+	<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
+</footer>
+<div class="totop"><a href="#"><img src="images/totop.png" alt="ページのトップへ戻る"></a></div><!-- /.totop -->
+</body>
+</html>

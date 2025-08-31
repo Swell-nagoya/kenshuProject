@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>RayD開発研修サイト</title>
+<meta name="viewport" content="width=device-width">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript" src="js/mui.js"></script>
+<script type="text/javascript" src="js/my.js"></script>
+<script type="text/javascript" src="js/jquery.smoothscroll.js"></script>
+<script type="text/javascript" src="js/jquery.scrollshow.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<script>
+$(function($){
+	$('html').smoothscroll({easing : 'swing', speed : 1000, margintop : 10});
+	$('.totop').scrollshow({position : 500});
+	});
+</script>
+</head>
+<body onload="createMenu();">
+<div id="contents">
+	<div id="sub">
+		<header>
+			<h1><a href="../index.html">RayD</a></h1>
+			<p class="summary">
+			開発研修サイト
+			</p>
+		</header>
+		<nav id="navigation">
+		</nav>
+	</div>
+      <div id="main">
+         <h2>応用JDBC課題</h2>
+         <h3>■課題概要</h3>
+         <p>当課題はこのJDBCを使用して、塾サイトの画面を作成してもらいます。<br>
+         	作成する機能は下記の５つです。<br>
+         	・初期表示<br>
+         	・検索機能<br>
+         	・新規登録機能<br>
+         	・修正機能<br>
+         	・削除機能<br>
+		<br>
+		<br>画面作成にあたり、下記のファイルをダウンロードして下さい。
+		<br>
+		JDBC応用課題用ファイル<br><br>
+
+		<a href="jdbcOyou\JDBC応用.zip">■JDBC応用.zipをダウンロード</a><br />
+		<br>
+		<br>
+		
+		動的WEBプロジェクトで作業する方はこちら<br><br>
+		<a href="jdbcOyou\JDBC応用_動的.zip">■JDBC応用_動的.zipをダウンロード</a><br />
+
+		<br>
+		<br>ダウンロードファイル内にある設計書・jspファイルを使用して課題を進めてください。
+        </p>
+      </div><!-- /#main -->
+      <script>
+	      menuDisplay();
+      </script>
+   </div><!-- /#contents -->
+   <footer>
+	<div class="footmenu">
+		<ul>
+			<li><a href="index.html">HOME</a></li>
+		</ul>
+	</div><!-- /.footmenu -->
+	<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
+</footer>
+<div class="totop"><a href="#"><img src="images/totop.png" alt="ページのトップへ戻る"></a></div><!-- /.totop -->
+</body>
+</html>

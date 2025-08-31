@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>RayD開発研修サイト</title>
+<meta name="viewport" content="width=device-width">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript" src="js/mui.js"></script>
+<script type="text/javascript" src="js/my.js"></script>
+<script type="text/javascript" src="js/jquery.smoothscroll.js"></script>
+<script type="text/javascript" src="js/jquery.scrollshow.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<script>
+$(function($){
+	$('html').smoothscroll({easing : 'swing', speed : 1000, margintop : 10});
+	$('.totop').scrollshow({position : 500});
+	});
+</script>
+</head>
+<body onload="createMenu();">
+<div id="contents">
+	<div id="sub">
+		<header>
+			<h1><a href="../index.html">RayD</a></h1>
+			<p class="summary">
+			開発研修サイト
+			</p>
+		</header>
+		<nav id="navigation">
+		</nav>
+	</div>
+      <div id="main">
+         <h2>バッチ課題</h2>
+         <h3>■課題概要</h3>
+         <p>当課題はこのJDBCを使用して、有給付与バッチを作成してもらいます。<br>
+		<br>
+		<br>作成にあたり、下記のファイルをダウンロードして下さい。
+		<br>
+		バッチ課題用基本設計<br><br>
+		<a href="batch\機能仕様書.xls">■機能仕様書.xlsをダウンロード</a><br />
+
+		バッチ課題用詳細設計<br><br>
+		<a href="batch\詳細設計書.xls">■詳細設計書.xlsをダウンロード</a><br />
+
+		バッチ課題用詳プロジェクト<br><br>
+		<a href="batch\YUKYU_HUYO.zip">■YUKYU_HUYO.zipをダウンロード</a><br />
+
+		<br>
+		<br>ダウンロードファイル内にある仕様書、設計書を参照して課題を進めてください。
+        </p>
+      </div><!-- /#main -->
+   </div><!-- /#contents -->
+   <footer>
+	<div class="footmenu">
+		<ul>
+			<li><a href="index.html">HOME</a></li>
+		</ul>
+	</div><!-- /.footmenu -->
+	<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
+</footer>
+<div class="totop"><a href="#"><img src="images/totop.png" alt="ページのトップへ戻る"></a></div><!-- /.totop -->
+</body>
+</html>

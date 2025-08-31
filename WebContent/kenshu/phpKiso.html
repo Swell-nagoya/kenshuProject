@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>RayD開発研修サイト</title>
+<meta name="viewport" content="width=device-width">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript" src="js/mui.js"></script>
+<script type="text/javascript" src="js/my.js"></script>
+<script type="text/javascript" src="js/jquery.smoothscroll.js"></script>
+<script type="text/javascript" src="js/jquery.scrollshow.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<script>
+$(function($){
+	$('html').smoothscroll({easing : 'swing', speed : 1000, margintop : 10});
+	$('.totop').scrollshow({position : 500});
+	});
+</script>
+</head>
+<body onload="createMenu();">
+<div id="contents">
+	<div id="sub">
+		<header>
+			<h1><a href="../index.html">RayD</a></h1>
+			<p class="summary">
+			開発研修サイト
+			</p>
+		</header>
+		<nav id="navigation">
+		</nav>
+	</div>
+      <div id="main">
+	    <h2>
+	        PHP基礎
+	    </h2>
+	    <p>この課題の動作確認は全てWebブラウザ上で行うものとする。</p>
+
+		<h3>
+	        問1
+		</h3>
+        Web画面に「Hello World!」と表示する。<br />
+        PHPのecho関数を使用すること。<br />
+		<br>
+		<h3>
+	        問2
+		</h3>
+        Web画面にフォームを設置し、入力した文字を次画面に表示する。<br />
+		<br>
+		<h3>
+	        問3
+		</h3>
+	        Web画面にフォームを設置し、入力した数字が2で割り切れるかを表示する。<br />
+		<br>
+		<h3>
+	        問4
+		</h3>
+        Web画面にフォームを設置し、入力した数字の回数「Hello World!」を表示する。<br />
+		<br>
+		<h3>
+	        問5
+		</h3>
+        tableタグを利用し、掛け算の九九の表をWeb画面に表示する。<br />
+		<br>
+		<h3>
+	        問6
+		</h3>
+        Web画面にフォームを設置し、textareaに入力された内容を表示する。<br />
+        なお、textareaに改行が使われた場合は表示するときも改行すること。<br />
+		<br>
+		<h3>
+	        問7
+		</h3>
+        Web画面にフォームを設置し、セレクトボックスで選択された内容を表示する。<br />
+        <br>
+		<h3>
+	        問8
+		</h3>
+        Web画面にフォームを設置し、ラジオボタンで選択された内容を表示する。<br />
+        なお、選択されなかった場合は「未選択」と表示すること。<br />
+		<br>
+		<h3>
+	        問9
+		</h3>
+        Web画面にフォームを設置し、チェックボックスで選択された内容を表示する。<br />
+        なお、選択されなかった場合は「未選択」と表示すること。<br />
+        <br>
+        <h3>
+	        問10
+		</h3>
+        Web画面にフォームを設置し、入力された文字が数値なら「数値が入力されました」と、文字列なら「文字列が入力されました」と表示する。<br />
+        なお、入力されなかった場合は「未入力」と表示すること。<br />
+		<br>
+        <h3>
+	        問11
+		</h3>
+        Web画面にフォームを設置し、5つの整数を入力してそれらを昇順に並び替えた結果と最大値、最小値を表示する。<br />
+        なお、5つの整数を入力されるまで入力を繰り返すこと。<br />
+        また並び替え、最大値、最小値を計算するのに以下のクラスを使用すること。<br />
+		<br>
+<pre>
+class Calcurator {
+
+    public function getMaxNumber($numbers) {
+    }
+	
+    public function getMinNumber($numbers) {
+    }
+
+    public function getSortNumbers($numbers) {
+    }
+
+}
+</pre>
+		<br>
+		<h3>
+	        問12
+		</h3>
+        Web画面にフォームを設置し、入力された整数分だけ次画面で入力フォームを作成し整数を入力させ、問11で作成したCalcuratorクラスを呼び出して、並び替え、最大値、最小値を表示する。<br />
+		<br>
+		<h3>
+	        問13
+		</h3>
+		以下のクラスを使用して、Web画面から入力された名前を表示する。<br />
+        ただし、Profileクラスは変更不可とする。<br />
+<pre>
+class Profile {
+
+	protected $name = '';
+
+	public function setName($name) {
+	    $this->name = $name;
+	}
+
+	public function getResult() {
+	    return 'あなたの名前は「' . $this->name . '」です。';
+	}
+
+}
+</pre>
+		<br>
+        またProfileクラスを継承したMyProfileクラスを作成し、Web画面から名前と住所を入力させ、表示する。<br />
+        ただし、表示の際にはgetResultメソッドをオーバーライドして表示文を取得すること。<br />
+
+		<br>
+		<h3>
+	        問14
+		</h3>
+        Web画面にフォームを設置し、&lt;b&gt;太字&lt;/b&gt;と入力し、次画面で&lt;b&gt;太字&lt;/b&gt;と表示させる。<br />
+        また他のhtmlタグを入力しても入力文字と同様の文字が表示されること。<br />
+
+		<br>
+		<h3>
+	        問15
+		</h3>
+        Web画面にフォームを設置し、入力された内容を次画面で表示し、次画面へのリンクをaタグで作成する。<br />
+        aタグリンクからの遷移後の画面で最初に入力した文字を再表示する。<br />
+
+      </div><!-- /#main -->
+      <script>
+	      menuDisplay();
+      </script>
+   </div><!-- /#contents -->
+   <footer>
+	<div class="footmenu">
+		<ul>
+			<li><a href="index.html">HOME</a></li>
+		</ul>
+	</div><!-- /.footmenu -->
+	<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
+</footer>
+<div class="totop"><a href="#"><img src="images/totop.png" alt="ページのトップへ戻る"></a></div><!-- /.totop -->
+</body>
+</html>

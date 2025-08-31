@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>RayD開発研修サイト</title>
+<meta name="viewport" content="width=device-width">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript" src="js/mui.js"></script>
+<script type="text/javascript" src="js/my.js"></script>
+<script type="text/javascript" src="js/jquery.smoothscroll.js"></script>
+<script type="text/javascript" src="js/jquery.scrollshow.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<script>
+$(function($){
+	$('html').smoothscroll({easing : 'swing', speed : 1000, margintop : 10});
+	$('.totop').scrollshow({position : 500});
+	});
+</script>
+</head>
+<body onload="createMenu();">
+<div id="contents">
+	<div id="sub">
+		<header>
+			<h1><a href="../index.html">RayD</a></h1>
+			<p class="summary">
+			開発研修サイト
+			</p>
+		</header>
+		<nav id="navigation">
+		</nav>
+	</div>
+      <div id="main">
+	    <h2>
+	        CSS基礎
+	    </h2>
+		<p style = "color:red">この研修ではhtmlとは別にcssファイルを用意してそれを呼び出すこと</p>
+		<h3>
+	        問1
+		</h3>
+			スタイルシートを利用してdivタグ内の文字を青色の太字にする。<br>
+		<br>
+		<h3>
+	        問2
+		</h3>
+			スタイルシートを利用してdivタグ内の背景を青色にして文字サイズを30ピクセルにする。<br>
+		<br>
+		<h3>
+	        問3
+		</h3>
+			スタイルシートを利用してaタグのリンク文字の下線を消し、文字の色を水色に変更する。<br>
+			なお、リンククリック後も文字の色は変化しないようにする。<br>
+		<br>
+		<h3>
+	        問4
+		</h3>
+			スタイルシートを利用してdivタグとdivタグの間のスペースが10ピクセルになるように指定する。<br>
+			なお指定したdivタグが確認できるように全てのdivタグに違う背景色を指定すること。<br>
+		<br>
+		<h3>
+	        問5
+		</h3>
+			スタイルシートを利用してdivタグとdivタグの内容を横並びに表示する。<br>
+			なお指定したdivタグが確認できるように全てのdivタグに違う背景色を指定すること。<br>
+		<br>
+		<h3>
+	        問6
+		</h3>
+			スタイルシートを利用してliタグのリストを横並びに表示する。<br>
+		<br>
+		<h3>
+	        問7
+		</h3>
+			スタイルシートを利用してフォームのテキストの横幅を25ピクセルに固定して表示する。<br>
+		<br>
+		<h3>
+	        問8
+		</h3>
+			問3で作成したリンクにフォーカスがあたったときに、リンク文字が赤色になるように変更する。<br>
+		<br>
+		<h3>
+	        問9
+		</h3>
+			スタイルシートを利用してページ全体に背景画像を表示する。<br>
+			また画像よりもWeb画面が大きくなるようなら繰り返して表示すること。<br>
+			なお使用する背景画像はフリー素材を探して取得すること。<br>
+		<br>
+		<h3>
+	        問10
+		</h3>
+			スタイルシートを利用してdivタグを横幅500ピクセル、縦幅100ピクセルに固定して表示する。<br>
+			その下に横幅200ピクセルと横幅300ピクセル、縦幅300ピクセルのdivタグを横並びに表示し、さらにその下に横幅500ピクセル、縦幅80ピクセルのdivタグを表示する。<br>
+			なお指定したdivタグが確認できるように全てのdivタグに違う背景色を指定すること。<br>
+      </div><!-- /#main -->
+      <script>
+	      menuDisplay();
+      </script>
+   </div><!-- /#contents -->
+   <footer>
+	<div class="footmenu">
+		<ul>
+			<li><a href="index.html">HOME</a></li>
+		</ul>
+	</div><!-- /.footmenu -->
+	<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
+</footer>
+<div class="totop"><a href="#"><img src="images/totop.png" alt="ページのトップへ戻る"></a></div><!-- /.totop -->
+</body>
+</html>

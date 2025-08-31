@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>RayD開発研修サイト</title>
+<meta name="viewport" content="width=device-width">
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript" src="js/mui.js"></script>
+<script type="text/javascript" src="js/my.js"></script>
+<script type="text/javascript" src="js/jquery.smoothscroll.js"></script>
+<script type="text/javascript" src="js/jquery.scrollshow.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<script>
+$(function($){
+	$('html').smoothscroll({easing : 'swing', speed : 1000, margintop : 10});
+	$('.totop').scrollshow({position : 500});
+	});
+</script>
+</head>
+<body onload="createMenu();">
+<div id="contents">
+	<div id="sub">
+		<header>
+			<h1><a href="../index.html">RayD</a></h1>
+			<p class="summary">
+			開発研修サイト
+			</p>
+		</header>
+		<nav id="navigation">
+		</nav>
+	</div>
+      <div id="main">
+         <h2>SQL基礎問題</h2>
+         <h3>課題概要</h3>
+         <p>
+         SQL基礎課題です。<br />
+         データベースからの操作は様々な場面で使われますので<br>
+         しっかりと覚えましょう。<br>
+         <br>
+         
+         まずは<font color="RED">SQL、データベース</font>について自分で調べてみてください。<br>
+         <br>
+         本課題では、MySQLを使用します。<br>
+         ※検索時にも、SQLではなくMySQLと入力すると答えが見つけやすいかもしれません。<br>
+         <br>
+         データベースには、複数のテーブル（表）が存在し、テーブルの中に様々な情報が入っています。<br>
+         本課題では、<b>TEST_GAME_USER</b>と<b>TEST_RANK_MST</b>という2つのテーブルへの操作を行うので、<br>
+         テーブルやカラム、レコードについて理解しておきましょう。<br>
+         <br>
+         テーブルについては下図を参考にしてください。<br>
+         <img src="images/SQL/SQLテーブル説明.png" width="550" height="300"/><br>
+         
+         
+         <br />
+         <h2>SQL基礎</h2>
+         
+    <h3>MySQL接続準備</h3>
+	■mysqlテストサーバへの接続方法<br>
+	Teratermを立ち上げ、ホストに<b>192.168.20.248</b>、ポートに<b>22</b>を入力する。<br>
+	サービスは<b>ＳＳＨ</b>を選択してＯＫを押下。<br>
+	<br>
+	ユーザ名：ginga<br>
+	パスワード：gingastudy<br>
+	を入力し、ＯＫを押下。<br>
+    <br>
+    ■mysql接続方法<br>
+	無事サーバ接続が出来たら、コンソールに<b>mysql -uroot -prootpassword</b>と入力。<br>
+	これでmysqlの接続が完了です。<br>
+	■スキーマ作成<br>
+	<a target="_blank" href="sql/SQL手順.xls">SQL手順.xls</a>
+	<br>
+	問題を進める前に、作成したスキーマを使用する設定を行います。以下を入力してください。<br>
+	USE test_○○;		※鈴木さんの場合、USE test_suzuki になります。
+	Database changed と表示されたら完了です。<br>
+	<br>
+	
+	
+	これで準備が整いました。<br>
+	下記の問題を行ってください。<br>
+	※以下をエビデンス(証跡)として残すこと<br>
+    ・実行文<br>
+    ・実行結果（ハードコピー[ctr + alt + print screen] → EXCELへ貼り付け[ctr + v] → 保存[ctr + s]）<br>
+    <br>
+    <br>
+    <h3>設問　1</h3>
+	<p> テーブル　TEST_GAME_USER より、次の条件を満たす user_id と user_name と password を表示してください。
+	<br>【条件】 user_name が '田中さん'<br>
+	<img src="images/SQL/Q1.png" width="400" height="300"/></p>
+    <br>
+    <br>
+  	<h3>設問　2</h3>
+	<p> テーブル TEST_GAME_USER に、次の値を持つレコードを追加して結果を表示してください。
+	<br>【追加する行の値】 user_id が '1111', user_name が 'テストさん', password が 'yakiniku1010'<br>
+	<img src="images/SQL/Q2.png" width="400" /></p>	
+    <br>
+    <br>
+  	<h3>設問　3</h3>
+	<p> 問題２で追加したレコードに対し、次の値で更新して結果を表示してください。
+	<br>【更新する値】 password を 'sukiyaki117' へ<br>
+	<img src="images/SQL/Q3.png" width="400" height="300"/></p>
+    <br>
+    <br>
+  	<h3>設問　4</h3>
+	<p> 問題２で追加したレコードに対し、さらに次で更新して結果を表示してください。<br>
+		【更新する値】 login_date を '1992-05-04' へ<br>
+	<br>
+	<img src="images/SQL/Q4.png" width="400" height="300"/></p>
+    <br>
+    <br>
+  	<h3>設問　5</h3>
+	<p> テーブル TEST_GAME_USER、TEST_RANK_MST より、次の条件を満たす user_name と rank_name をすべて表示してください。
+	<br>【条件】 min_score が 50000 以上<br>
+
+	<img src="images/SQL/Q5.png" width="400" height="300"/></p>
+    <br>
+    <br>
+  	<h3>設問　6</h3>
+	<p> 問題2で追加した行を削除せよ <br>
+	削除した結果が確認できればなおよい<br>
+	<img src="images/SQL/Q6.png" width="400" height="300"/></p>
+    <br>
+    <br>
+  	<h3>設問　7</h3>
+	<p> テーブル TEST_GAME_USER、TEST_RANK_MST より、 次の条件を満たす user_name と rank_name をすべて表示してください。
+	<br>【条件】 rank_name が '新参者' または  '旅人' または '勇者'<br>
+	<img src="images/SQL/Q7.png" width="400" height="300"/></p>
+    <br>
+    <br>
+  	<h3>設問　8</h3>
+	<p> テーブル TEST_GAME_USER、TEST_RANK_MST より、次の条件を満たす レコード の合計を表示してください。
+	<br>【条件】 rank_name が '選ばれし者'<br>
+	<img src="images/SQL/Q8.png" width="400" height="300"/></p>
+    <br>
+    <br>
+  	<h3>設問　9</h3>
+	<p> テーブル TEST_GAME_USER、TEST_RANK_MST より、次の条件を満たす rank_name と score の合計 を rank_name 別に表示してください。
+	<br>【条件】 play_count が 100 より大きい<br>
+	<!--<br>＜条件＞loc = 'NEW YORK'<br>-->
+	<img src="images/SQL/Q9.png" width="400" height="300"/></p>
+    <br>
+    <br>
+  	<h3>設問　10</h3>
+	<p> テーブル TEST_GAME_USER より、rank_no を重複なしの「降順」で表示してください。
+	<br>ただし、値がヌル値の時は 0 を表示してください。<br>
+	<img src="images/SQL/Q10.png" width="400" height="300"/></p>
+	
+    </div><!-- /#main -->
+      <script>
+	      menuDisplay();
+      </script>
+   </div><!-- /#contents -->
+   <footer>
+	<div class="footmenu">
+		<ul>
+			<li><a href="index.html">HOME</a></li>
+		</ul>
+	</div><!-- /.footmenu -->
+	<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
+</footer>
+<div class="totop"><a href="#"><img src="images/totop.png" alt="ページのトップへ戻る"></a></div><!-- /.totop -->
+</body>
+</html>
