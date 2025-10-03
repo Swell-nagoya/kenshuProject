@@ -1,5 +1,5 @@
 Watermark plugin for jQuery
-Copyright © 2009-2012 Todd Northrop
+Copyright ï¿½ 2009-2012 Todd Northrop
 http://www.speednet.biz/
 
 Last updated December 3, 2010
@@ -18,9 +18,9 @@ http://jquery-watermark.googlecode.com/
 Please see the project page for all usage instructions and notes.
 
 About the Author
-	Todd Northrop is the owner and developer of Lottery Post, the
-	world's largest community of lottery players and home to the
-	#1 lottery results service worldwide. (www.lotterypost.com)
-	He founded his company, Speednet Group, in 2000.
+    Todd Northrop is the owner and developer of Lottery Post, the
+    world's largest community of lottery players and home to the
+    #1 lottery results service worldwide. (www.lotterypost.com)
+    He founded his company, Speednet Group, in 2000.
 
 __

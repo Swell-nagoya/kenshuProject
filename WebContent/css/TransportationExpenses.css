@@ -1,119 +1,119 @@
 .container {
-	width: 95%;
+    width: 95%;
 }
 
 table#detail_table,#main_table_up,#main_table_down {
-	margin: 0 auto;
-	margin-left: auto;
-	margin-right: auto;
-	width: 100%;
+    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
 }
 
 table#detail_table td,#main_table_up td,#main_table_down td {
-	border: 1px #C7C4C9 solid;
-	border-collapse: collapse;
+    border: 1px #C7C4C9 solid;
+    border-collapse: collapse;
 }
 
 .error_message {
-	color: red;
-	font-weight: bold;
+    color: red;
+    font-weight: bold;
 }
 
 .money {
-	text-align: right;
+    text-align: right;
 }
 
 .sun td,.holiday td {
-	background-color: #FBDADE;
+    background-color: #FBDADE;
 }
 
 .sat td {
-	background-color: #D9F7F9;
+    background-color: #D9F7F9;
 }
 
 .caution {
-	background-color: #f7f799;
+    background-color: #f7f799;
 }
 
 .another_approver td.app {
-	color: #0000FF;
+    color: #0000FF;
 }
-/* â°Ç…ÉfÅ[É^Ç™ì¸ÇÈÇ∆Ç´ÇÃÉâÉxÉã */
+/* ÔøΩÔøΩÔøΩ…ÉfÔøΩ[ÔøΩ^ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ∆ÇÔøΩÔøΩÃÉÔøΩÔøΩxÔøΩÔøΩ */
 .hollabel {
-	width: 300px;
+    width: 300px;
 }
 
 .list_comment {
-	overflow: hidden;
-	width: 150px;
-	white-space: nowrap;
-	max-width: 150px;
-	text-overflow: ellipsis;
-	text-align: left
+    overflow: hidden;
+    width: 150px;
+    white-space: nowrap;
+    max-width: 150px;
+    text-overflow: ellipsis;
+    text-align: left
 }
 
 textarea[name="comment"] {
-	width: 100%;
+    width: 100%;
 }
 
 .button_sort {
-	margin: 0 auto;
-	margin-left: 0;
-	margin-right: auto;
-	width: 100%;
+    margin: 0 auto;
+    margin-left: 0;
+    margin-right: auto;
+    width: 100%;
 }
 
 .messages {
-	margin: 0 auto;
-	margin-left: 0;
-	margin-right: auto;
-	width: 100%;
+    margin: 0 auto;
+    margin-left: 0;
+    margin-right: auto;
+    width: 100%;
 }
 
 .errors {
-	margin: 0 auto;
-	margin-left: 0;
-	margin-right: auto;
-	width: 100%;
+    margin: 0 auto;
+    margin-left: 0;
+    margin-right: auto;
+    width: 100%;
 }
 
 .comment_table {
-	margin: 0 auto;
-	margin-left: 0;
-	margin-right: auto;
-	width: 100%;
+    margin: 0 auto;
+    margin-left: 0;
+    margin-right: auto;
+    width: 100%;
 }
 
 input[name="time_limit"],input[name="display_period"] {
-	text-align: right;
+    text-align: right;
 }
 
 input[name="menu_botton"] {
-	width: 150px;
-	height: 40px;
-	border-radius: 70px;
-	-moz-border-radius: 70px;
-	-webkit-border-radius: 70px;
-	margin: 20px 10px 20px 20px
+    width: 150px;
+    height: 40px;
+    border-radius: 70px;
+    -moz-border-radius: 70px;
+    -webkit-border-radius: 70px;
+    margin: 20px 10px 20px 20px
 }
 
 .now_expenses td {
-	color: red;
-	font-weight: bold;
+    color: red;
+    font-weight: bold;
 }
 
 .overlap_botton {
-	background: #DB3D36 !important;
-	font-weight: bold !important;
-	color: #ffffff !important;
+    background: #DB3D36 !important;
+    font-weight: bold !important;
+    color: #ffffff !important;
 }
 
 .sun_name,.hol_name {
-	color: #ff0000;
-	font-weight: bold;
+    color: #ff0000;
+    font-weight: bold;
 }
 
 .sat_name {
-	color: #0000ff;
-	font-weight: bold;
+    color: #0000ff;
+    font-weight: bold;
 }

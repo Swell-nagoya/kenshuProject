@@ -1,144 +1,159 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-<meta charset="utf-8">
-<title>RayD開発研修サイト</title>
-<meta name="viewport" content="width=device-width">
-<meta name="keywords" content="">
-<meta name="description" content="">
-<link rel="stylesheet" type="text/css" href="css/style.css">
-<script type="text/javascript" src="js/jquery.js"></script>
-<script type="text/javascript" src="js/script.js"></script>
-<script type="text/javascript" src="js/jquery.smoothscroll.js"></script>
-<script type="text/javascript" src="js/jquery.scrollshow.js"></script>
-<script type="text/javascript" src="js/jquery.rollover.js"></script>
-<script type="text/javascript" src="js/menu.js"></script>
-<script>
-$(function($){
-	$('html').smoothscroll({easing : 'swing', speed : 1000, margintop : 10});
-	$('.totop').scrollshow({position : 500});
-	$('.slide').slideshow({
-		touch		: true,
-		touchDistance : '80',
-		bgImage	  : false,
-		autoSlide	: true,
-		effect	   : 'slide',
-		repeat	   : true,
-		easing	   : 'swing',
-		interval	 : 3000,
-		duration	 : 500,
-		imgHoverStop : true,
-		navHoverStop : true,
-		navImg	   : false,
-		navImgCustom : false,
-		navImgSuffix : ''
-	});
-	$('.slidePrev img').rollover();
-	$('.slideNext img').rollover();
-	});
 
-</script>
-<!--[if lt IE 9]>
-	<script src="js/html5shiv.js"></script>
-	<script src="js/css3-mediaqueries.js"></script>
+<head>
+	<meta charset="utf-8">
+	<title>RayD開発研修サイト</title>
+	<meta name="viewport" content="width=device-width">
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/script.js"></script>
+	<script type="text/javascript" src="js/jquery.smoothscroll.js"></script>
+	<script type="text/javascript" src="js/jquery.scrollshow.js"></script>
+	<script type="text/javascript" src="js/jquery.rollover.js"></script>
+	<script type="text/javascript" src="js/menu.js"></script>
+	<script>
+		$(function ($) {
+			$('html').smoothscroll({easing: 'swing', speed: 1000, margintop: 10});
+			$('.totop').scrollshow({position: 500});
+			$('.slide').slideshow({
+				touch: true,
+				touchDistance: '80',
+				bgImage: false,
+				autoSlide: true,
+				effect: 'slide',
+				repeat: true,
+				easing: 'swing',
+				interval: 3000,
+				duration: 500,
+				imgHoverStop: true,
+				navHoverStop: true,
+				navImg: false,
+				navImgCustom: false,
+				navImgSuffix: ''
+			});
+			$('.slidePrev img').rollover();
+			$('.slideNext img').rollover();
+		});
+	</script>
+	<style>
+		#content {
+			width: 100%;
+		}
+
+		h1 {
+			background-color: slategray;
+			color: aliceblue;
+			text-align: center;
+			margin: 0;
+		}
+
+		#main {
+			border: 1px solid black;
+			border-radius: 5px;
+			width: 500px;
+			height: 500px;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+
+		.main__text {
+			text-align: center;
+			margin: 0;
+		}
+
+		.main__form {
+			border: 1px solid black;
+			border-radius: 10px;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 400px;
+		}
+
+		.ime_disabled {
+			width: 350px;
+			height: 50px;
+			margin-top: 10px;
+		}
+
+		.main__form--name,
+		.main__form--password,
+		.main__form--btn,
+		.main__form--link {
+			text-align: center;
+		}
+
+		.main__form--btn {
+			margin-top: 10px;
+		}
+
+		.main__form--link {
+			margin-top: 30px;
+		}
+
+		#reissue {
+			text-decoration: none;
+		}
+
+		.submit-btn {
+			width: 200px;
+			height: 40px;
+			font-size: 18px;
+			background-color: slategray;
+			color: aliceblue;
+			border: none;
+			border-radius: 5px;
+		}
+
+		.copyright {
+			width: 100%;
+			background-color: slategray;
+			text-align: center;
+			color: aliceblue;
+			position: absolute;
+			bottom: 0%;
+		}
+	</style>
+	<!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/css3-mediaqueries.js"></script>
 <![endif]-->
 </head>
+
 <body onload="createMenu();">
-<div id="contents">
-	<div id="sub">
-		<header>
-			<h1><a href="../index.html">RayD</a></h1>
-			<p class="summary">
-			開発研修サイト
-			</p>
-		</header>
-		<nav id="navigation">
-		</nav>
-	</div>
-	<div id="main">
-		<h2>ホーム</h2>
-		<dl class="info">
-		   <dd>
-ようこそ開発研修サイトへ。<br>
-このサイトはRayDの研修生のために作成したサイトです。<br>
-左記メニューより課題を選択して進めてください。<br>
-進め方で何かわからないことがあれば、担当者に質問するようにしましょう。
-         <br>
-         また、コントロールパネルから以下の設定を行っておいて下さい。<br />
-         <span style="color:red;">・フォルダの拡張子を表示する設定</span><br />
-         <span style="color:red;">・隠しファイルを表示する設定</span><br /><br />
-         
-		<h3>調べ方について</h3>
-		<blockquote>
-		IT業界で働いていくには、<br>
-		分からないことがあったらまず自分で調べてみるという事がとても重要になってきます。<br>
-		しかし、はじめのうちはその調べるということもやり方が分からないと思います。<br>
-		そこで、検索のポイントを簡単にまとめました。
-		<br><br>
-		<dl>
-		<dt><strong>●ある程度調べて分からない時は分かりそうな人に聞く</strong></dt>
-		<dd>
-		ITで仕事をしていくうえでまず自分で調べるのは大事です。<br>
-		しかし、あまりにも自分で調べようとしても自分で解決できない場合もあります。<br>
-		以上より次のルールを徹底してください。<br>
-		<strong>"20分調べてわからない場合は聞きに行くこと!!"</strong><br>
-		自ら質問することも勉強です。<br>
-		必ず時間を意識して、悩んでいる場合は質問しましょう!!
-		</dd>
+	<div id="contents">
+		<div id="main">
+			<h1>LOGIN</h1>
+			<div class="main__text">
+				<p>usernameとpasswordを入力してください</p>
+			</div>
+			<form id="main_form" method="post" action="UserLogin.do" class="main__form">
+				<input type="hidden" name="form_name" value="UserLogin" />
+				<input type="hidden" name="action_cmd" value="login" />
 
-		<dt><strong>●とにかくググる</strong></dt>
-		<dd>
-		これはgoogleで検索するという事です。<br>
-		とにかく分からないことがあったらまずググりましょう!
-		</dd>
-
-		<dt><strong>●とは検索</strong></dt>
-		<dd>
-		調べたいキーワードに「とは」をつけて検索しましょう。<br>
-		この検索方法はざっくりとどんなものか概要を知りたい時に便利です。<br>
-		例）Javaとは、フレームワークとは
-		</dd>
-
-		<dt><strong>●入門検索</strong></dt>
-		<dd>
-		調べたいキーワードに「入門」をつけて検索しましょう。<br>
-		とは検索と似ていますが、入門検索はどちらかというと技術の事を調べるときに便利です。<br>
-		この検索方法もざっくり概要を調べたり、初心用の分かりやすいサイトを知りたい時に便利です。<br>
-		例）Spring Boot入門、SQL入門
-		</dd>
-
-		<dt><strong>●検索のコツ</strong></dt>
-		<dd>
-		キーワードを2～3個程度、スペースで区切って検索しましょう。<br>
-		長いキーワード1個で検索するよりも、有益な情報がヒットしやすいです。<br>
-		例）×社会人がやる気を出す方法<br>
-		　　○社会人　やる気　アップ
-		</dd>
-
-		<dt><strong>●PCの短縮操作を覚える</strong></dt>
-		<dd>
-		ctrlキーを使用することによって、<br>
-		わざわざ左上にあるファイル→コピーの手間を省くことができます。<br>
-		ctrlキーの操作を覚えておきましょう。<br>
-		例）・「コピーをする」（ctrlキー+Cキー）<br>
-		　　・「上書き保存」（ctrlキー+Sキー）
-		</dd>
-		</dl>
-         
-         <div style="text-align:center">
-<img src="images/shigoto_white_man_suit.png" alt="">
-</Div>
-	</div><!-- /#main -->
-</div><!-- /#contents -->
-<footer>
-	<div class="footmenu">
-		<ul>
-			<li><a href="index.html">HOME</a></li>
-		</ul>
-	</div><!-- /.footmenu -->
-	<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
-</footer>
-
-<div class="totop"><a href="#"><img src="images/totop.png" alt="ページのトップへ戻る"></a></div><!-- /.totop -->
+				<div class="main__form--name">
+					<input type="text" id="ac" name="ac" class="ime_disabled" value="" placeholder="Username" size="25"
+						maxlength="255" />
+				</div>
+				<div class="main__form--password">
+					<input type="password" id="ko" name="ko" class="ime_disabled" value="" placeholder="Password"
+						size="25" maxlength="60" />
+				</div>
+				<div class="main__form--btn">
+					<input type="submit" id="bt" name="login-btn" class="submit-btn" value="ログイン" />
+				</div>
+				<div class="main__form--link">
+					<a href="#" id="reissue" onclick="go_retry()">パスワードを忘れた方はこちら</a>
+				</div>
+			</form>
+			<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
+		</div><!-- /#main -->
+	</div><!-- /#contents -->
 </body>
+
 </html>

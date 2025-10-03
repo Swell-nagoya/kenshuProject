@@ -32,31 +32,31 @@ public class UserInfoState
     static
     {
         UserInfoState = new ArrayList<UserInfoState>();
-    	UserInfoState cls = new UserInfoState();
-    	cls.state = InterimRegistration;
-    	cls.stateClass = "InterimRegistration";
-    	cls.stateName = "仮登録";
-    	UserInfoState.add(cls);
+        UserInfoState cls = new UserInfoState();
+        cls.state = InterimRegistration;
+        cls.stateClass = "InterimRegistration";
+        cls.stateName = "仮登録";
+        UserInfoState.add(cls);
         cls = new UserInfoState();
-    	cls.state = Registration ;
-    	cls.stateClass = "Registration";
-    	cls.stateName = "登録";
-    	UserInfoState.add(cls);
+        cls.state = Registration ;
+        cls.stateClass = "Registration";
+        cls.stateName = "登録";
+        UserInfoState.add(cls);
         cls = new UserInfoState();
-    	cls.state = LimitRegistration ;
-    	cls.stateClass = "LimitRegistration";
-    	cls.stateName = "制限中";
-    	UserInfoState.add(cls);
+        cls.state = LimitRegistration ;
+        cls.stateClass = "LimitRegistration";
+        cls.stateName = "制限中";
+        UserInfoState.add(cls);
         cls = new UserInfoState();
-    	cls.state = UnderSuspension;
-    	cls.stateClass = "UnderSuspension";
-    	cls.stateName = "停止";
-    	UserInfoState.add(cls);
+        cls.state = UnderSuspension;
+        cls.stateClass = "UnderSuspension";
+        cls.stateName = "停止";
+        UserInfoState.add(cls);
         cls = new UserInfoState();
-    	cls.state = Delete ;
-    	cls.stateClass = "Delete";
-    	cls.stateName = "削除";
-    	UserInfoState.add(cls);
+        cls.state = Delete ;
+        cls.stateClass = "Delete";
+        cls.stateName = "削除";
+        UserInfoState.add(cls);
     }
 
     /**
@@ -67,14 +67,14 @@ public class UserInfoState
      */
     public String getStateName(String pStateFlg)
     {
-    	for(int i=0;i<UserInfoState.size();i++)
-    	{
-    		if(pStateFlg.equals(UserInfoState.get(i).state))
-    		{
-    			return UserInfoState.get(i).stateName;
-    		}
-    	}
-    	return "";
+        for(int i=0;i<UserInfoState.size();i++)
+        {
+            if(pStateFlg.equals(UserInfoState.get(i).state))
+            {
+                return UserInfoState.get(i).stateName;
+            }
+        }
+        return "";
     }
 
     /**
@@ -85,7 +85,7 @@ public class UserInfoState
      */
     public ArrayList<UserInfoState> getList()
     {
-    	return UserInfoState;
+        return UserInfoState;
     }
 
     /**
@@ -99,42 +99,42 @@ public class UserInfoState
         ArrayList<Object> array = new ArrayList<Object>();
         for(int i=0;i<UserInfoState.size();i++)
         {
-        	array.add(UserInfoState.get(i));
+            array.add(UserInfoState.get(i));
         }
         return array;
     }
 
-	/**
-	 * userEmploymentKindId  契約雇用形態IDを取得します。
-	 * @return userEmploymentKindId  契約雇用形態ID
-	 */
-	public String getState() {
-	    return state;
-	}
+    /**
+     * userEmploymentKindId  契約雇用形態IDを取得します。
+     * @return userEmploymentKindId  契約雇用形態ID
+     */
+    public String getState() {
+        return state;
+    }
 
-	/**
-	 * kindName  契約雇用形態名を取得します。
-	 * @return kindName  契約雇用形態名
-	 */
-	public String getStateName() {
-	    return stateName;
-	}
+    /**
+     * kindName  契約雇用形態名を取得します。
+     * @return kindName  契約雇用形態名
+     */
+    public String getStateName() {
+        return stateName;
+    }
 
-	/**
-	 * 0:仮登録 1:通常 2:制限利用 8:停止 9:削除を取得する
-	 *
-	 * @return stateFlg 0:通常 1:停止 9:削除
-	 */
-	public String getStateClass(String pStateFlg)
-	{
-    	for(int i=0;i<UserInfoState.size();i++)
-    	{
-    		if(pStateFlg.equals(UserInfoState.get(i).state))
-    		{
-    			return UserInfoState.get(i).stateClass;
-    		}
-    	}
-		return "unknown";
-	}
+    /**
+     * 0:仮登録 1:通常 2:制限利用 8:停止 9:削除を取得する
+     *
+     * @return stateFlg 0:通常 1:停止 9:削除
+     */
+    public String getStateClass(String pStateFlg)
+    {
+        for(int i=0;i<UserInfoState.size();i++)
+        {
+            if(pStateFlg.equals(UserInfoState.get(i).state))
+            {
+                return UserInfoState.get(i).stateClass;
+            }
+        }
+        return "unknown";
+    }
 
 }

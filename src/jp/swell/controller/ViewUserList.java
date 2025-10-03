@@ -37,7 +37,23 @@ import jp.swell.dao.UserInfoDao;
  */
 public class ViewUserList extends ControllerBase
 {
-
+    /**
+     * jp.patasys.alumni.controller.HttpServlet のメソッドをオーバライドする。
+     * オーバライドしない場合は、デフォルトが設定される。.
+     * この処理にはログインが必要かどうか デフォルト true.
+     * この処理はhttpでなければならないか デフォルト false.
+     * この処理はhttps でなければならないか デフォルト false.
+     * この処理はクライアントのキャッシュを認めるか デフォルト false. 等を設定する。
+     * doActionの前に呼ばれる。
+     */
+    @Override
+    public void doInit()
+    {
+        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setHttpNeeds(false); // この処理はhttpでなければならないか
+        setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
+        setUsecache(false); // この処理はクライアントのキャッシュを認めるか
+    }
     /**
      * jp.patasys.cloudbiz.common.ControllerBase のメソッドをオーバライドする。
      * ここで、コントローラの処理を記述する.
@@ -78,6 +94,11 @@ public class ViewUserList extends ControllerBase
             {
                 formClear();
                 searchList();
+            }
+            else if ("return".equals(bean.value("action_cmd")))
+            {
+                redirect("MenuAdmin.do");
+                return;
             }
             else
             {
@@ -121,6 +142,7 @@ public class ViewUserList extends ControllerBase
         WebBean bean = getWebBean();
         bean.setValue("list_search_full_name", "");
         bean.setValue("list_search_full_name_kana", "");
+        bean.setValue("lineCount", "");
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
     }
@@ -167,8 +189,7 @@ public class ViewUserList extends ControllerBase
         }
         LinkedHashMap<String, String> sortKey = sortKey();
         UserInfoDao dao = new UserInfoDao();
-        dao.setSearchFullName(bean.value("list_search_full_name"));
-        dao.setSearchFullNameKana(bean.value("list_search_full_name_kana"));
+        dao.setSearchName(bean.value("list_search_full_name"));
 
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount")))

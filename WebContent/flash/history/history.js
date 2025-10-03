@@ -116,14 +116,14 @@ BrowserHistory = (function() {
     function getPlayer(id) {
         var i;
 
-		if (id && document.getElementById(id)) {
-			var r = document.getElementById(id);
-			if (typeof r.SetVariable != "undefined") {
-				return r;
-			}
-			else {
-				var o = r.getElementsByTagName("object");
-				var e = r.getElementsByTagName("embed");
+        if (id && document.getElementById(id)) {
+            var r = document.getElementById(id);
+            if (typeof r.SetVariable != "undefined") {
+                return r;
+            }
+            else {
+                var o = r.getElementsByTagName("object");
+                var e = r.getElementsByTagName("embed");
                 for (i = 0; i < o.length; i++) {
                     if (typeof o[i].browserURLChange != "undefined")
                         return o[i];
@@ -132,11 +132,11 @@ BrowserHistory = (function() {
                     if (typeof e[i].browserURLChange != "undefined")
                         return e[i];
                 }
-			}
-		}
-		else {
-			var o = document.getElementsByTagName("object");
-			var e = document.getElementsByTagName("embed");
+            }
+        }
+        else {
+            var o = document.getElementsByTagName("object");
+            var e = document.getElementsByTagName("embed");
             for (i = 0; i < e.length; i++) {
                 if (typeof e[i].browserURLChange != "undefined")
                 {
@@ -149,9 +149,9 @@ BrowserHistory = (function() {
                     return o[i];
                 }
             }
-		}
-		return undefined;
-	}
+        }
+        return undefined;
+    }
 
     function getPlayers() {
         var i;
@@ -175,17 +175,17 @@ BrowserHistory = (function() {
         return players;
     }
 
-	function getIframeHash() {
-		var doc = getHistoryFrame().contentWindow.document;
-		var hash = String(doc.location.search);
-		if (hash.length == 1 && hash.charAt(0) == "?") {
-			hash = "";
-		}
-		else if (hash.length >= 2 && hash.charAt(0) == "?") {
-			hash = hash.substring(1);
-		}
-		return hash;
-	}
+    function getIframeHash() {
+        var doc = getHistoryFrame().contentWindow.document;
+        var hash = String(doc.location.search);
+        if (hash.length == 1 && hash.charAt(0) == "?") {
+            hash = "";
+        }
+        else if (hash.length >= 2 && hash.charAt(0) == "?") {
+            hash = hash.substring(1);
+        }
+        return hash;
+    }
 
     /* Get the current location hash excluding the '#' symbol. */
     function getHash() {
@@ -320,12 +320,12 @@ BrowserHistory = (function() {
                     currentHref = document.location.href;
                     document.location.reload();
                 } else {
-					if (getHash() != getIframeHash()) {
-						// this.iframe.src = this.blankURL + hash;
-						var sourceToSet = historyFrameSourcePrefix + getHash();
-						getHistoryFrame().src = sourceToSet;
+                    if (getHash() != getIframeHash()) {
+                        // this.iframe.src = this.blankURL + hash;
+                        var sourceToSet = historyFrameSourcePrefix + getHash();
+                        getHistoryFrame().src = sourceToSet;
                         currentHref = document.location.href;
-					}
+                    }
                 }
             }
         }
