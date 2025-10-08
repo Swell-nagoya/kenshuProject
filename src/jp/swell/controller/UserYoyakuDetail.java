@@ -376,7 +376,6 @@ public class UserYoyakuDetail extends ControllerBase {
     reserveDao.setUserNames(userNames);
     userInfoDao.dbSelect(userInfoIds[0].trim());
     reserveDao.setUserName(userInfoDao.getLastName() + " " + userInfoDao.getMiddleName() + " " + userInfoDao.getFirstName());
-    reserveDao.setAdmin(userInfoDao.getAdmin());
     userInfoDao.dbSelect(bean.value("update_user_id"));
     reserveDao.setUpdateUserName(userInfoDao.getLastName() + " " + userInfoDao.getMiddleName() + " " + userInfoDao.getFirstName());
     RoomDao roomDao = new RoomDao();

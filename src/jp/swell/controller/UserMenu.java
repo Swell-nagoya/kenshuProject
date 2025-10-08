@@ -193,7 +193,6 @@ public class UserMenu extends ControllerBase
         bean.setValue("sort_order", "asc");
         UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
         bean.setValue("user_info_id", userLoginInfo.getLoginId());
-        bean.setValue("admin", userLoginInfo.getAdmin());
         bean.setValue("login_user_name", userLoginInfo.getFullName());
         bean.setValue("lineCount", SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "ViewUserList", "lineCount", "100"));
     }

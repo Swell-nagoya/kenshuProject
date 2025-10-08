@@ -32,37 +32,7 @@ public class MenuAdmin extends ControllerBase {
     public void doActionProcess() throws AtareSysException {
         WebBean bean = getWebBean();
         UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
-        if (!"1".equals(loginInfo.getAdmin())) {
             redirect("UserMenuHome.do");
             return;
-        }
-
-        // フォーム名が 'admin' であるか確認
-        if ("admin".equals(bean.value("form_name"))) {
-            if ("home".equals(bean.value("action_cmd"))) {
-                redirect("UserMenu.do");
-            } else if ("user".equals(bean.value("action_cmd"))) {
-                redirect("ViewUserList.do");
-            } else if ("room".equals(bean.value("action_cmd"))) {
-                redirect("RoomList.do");
-            } else if ("reserve".equals(bean.value("action_cmd"))) {
-                redirect("ReserveList.do");
-            } else if ("file".equals(bean.value("action_cmd"))) {
-                redirect("FileList.do");
-            } else if ("schedule".equals(bean.value("action_cmd"))) {
-                redirect("Schedule.do");
-            } else if ("calendar".equals(bean.value("action_cmd"))) {
-                redirect("Calendar.do");
-            } else if ("Shift".equals(bean.value("action_cmd"))) {
-                redirect("Shift.do");
-            } else if ("Contact".equals(bean.value("action_cmd"))) {
-                redirect("ContactList.do");
-            } else {
-                // アクションコマンドが一致しない場合、メインメニューに遷移
-                forward("MenuAdmin.jsp");
-            }
-        } else {
-            forward("MenuAdmin.jsp");
-        }
     }
 }

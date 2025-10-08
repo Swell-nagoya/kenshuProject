@@ -597,27 +597,6 @@ public class UserInfoDao implements Serializable {
     }
 
     /**
-     * adminFlag　管理者権限
-     */
-    private String admin = "";
-
-    /**
-     * 管理者権限を取得する。
-     * @return　adminFlag　管理者権限
-     */
-    public String getAdmin() {
-        return admin;
-    }
-
-    /**
-     * 管理者権限をセットする。.
-     * @param adminFlag　管理者権限
-     */
-    public void setAdmin(String admin) {
-        this.admin = admin;
-    }
-
-    /**
      * passwordModifyDate  パスワード変更日時
      */
     private String passwordModifyDate = "";
@@ -905,7 +884,6 @@ public class UserInfoDao implements Serializable {
         dao.setMiddleNameKana(DbI.chara(map.get("middle_name_kana")));
         dao.setFirstNameKana(DbI.chara(map.get("first_name_kana")));
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
-        dao.setAdmin(DbI.chara(map.get("admin")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));
     }
 
@@ -928,7 +906,6 @@ public class UserInfoDao implements Serializable {
         dao.setMaidenNameKana(DbI.chara(map.getOrDefault("user_info___maiden_name_kana", "")));
         dao.setInsertUserId(DbI.chara(map.getOrDefault("user_info___insert_user_id", "")));
         dao.setMemail(DbI.chara(map.getOrDefault("user_info___memail", "")));
-        dao.setAdmin(DbI.chara(map.getOrDefault("user_info___admin", "")));
         dao.setLeaveDate(DbI.chara(map.getOrDefault("user_info___leave_date", "")));
     }
 
@@ -978,7 +955,6 @@ public class UserInfoDao implements Serializable {
                 + DbO.chara(getInsertUserId())
                 + "," + DbO.chara(getUpdateUserId())
                 + "," + DbO.chara(getMemail())
-                + "," + DbO.chara(getAdmin())
                 + "," + DbO.chara(getLeaveDate())
                 + " )";
 
@@ -1005,7 +981,6 @@ public class UserInfoDao implements Serializable {
                 + "," + " middle_name_kana = " + DbO.chara(getMiddleNameKana())
                 + "," + " first_name_kana = " + DbO.chara(getFirstNameKana())
                 + "," + " maiden_name_kana = " + DbO.chara(getMaidenNameKana())
-                + "," + " admin = " + DbO.chara(getAdmin())
                 + "," + " update_date = NOW()"
                 + "," + " update_user_id = " + DbO.chara(getUpdateUserId())
                 + "," + " memail = " + DbO.chara(getMemail())
@@ -1450,7 +1425,6 @@ public class UserInfoDao implements Serializable {
             user.setUpdateDate(map.get("update_date"));
             user.setUpdateUserId(map.get("update_user_id"));
             user.setMemail(map.get("memail"));
-            user.setAdmin(map.get("admin"));
             users.add(user);
         }
 
