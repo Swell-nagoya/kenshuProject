@@ -246,11 +246,28 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
             if (!flg) {
                 return false;
             }
+            
+            // ★ 管理者権限を取得
+            String sql = "SELECT admin FROM user_info WHERE user_info_id = " + 
+                         jp.patasys.common.db.DbS.chara(pAccount);
+            java.util.List<java.util.HashMap<String, String>> rs = jp.patasys.common.db.DbBase.dbSelect(sql);
+            if (!rs.isEmpty()) {
+                userInfoDao.setAdmin(Integer.parseInt(rs.get(0).getOrDefault("admin", "0")));
+            }
+
             return true;
         } catch (AtareSysException e) {
             userInfoDao = null;
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * 管理者フラグ取得
+     * @return 1: 管理者 / 0: 一般
+     */
+    public int getAdminFlag() {
+        return userInfoDao != null ? userInfoDao.getAdmin() : 0;
     }
 }

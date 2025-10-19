@@ -681,7 +681,7 @@ public class UserInfoDao implements Serializable {
      * searchFullName 検索用氏名を設定します。
      *
      * @param searchFullName
-     *        searchFullName 検索用氏名
+     * searchFullName 検索用氏名
      */
     public void setSearchFullName(String searchFullName) {
         this.searchFullName = searchFullName;
@@ -700,7 +700,7 @@ public class UserInfoDao implements Serializable {
      * searchFullName 検索用氏名かなを設定します。
      *
      * @param searchFullNameKana
-     *        searchFullName 検索用氏名かな
+     * searchFullName 検索用氏名かな
      */
     public void setSearchFullNameKana(String searchFullNameKana) {
         this.searchFullNameKana = searchFullNameKana;
@@ -740,11 +740,42 @@ public class UserInfoDao implements Serializable {
     }
 
     /**
-     *  データアクセス権限のあるユーザリストを取得する。.
+     * データアクセス権限のあるユーザリストを取得する。.
      */
     public ArrayList<String> getAuthorityUserList() {
         return authorityUserList;
     }
+    
+    // ★ ここから管理者権限フラグの追加
+    /**
+     * admin  管理者権限フラグ (DBのintまたはboolean列を想定)
+     */
+    private int admin;
+
+    /**
+     * 管理者権限フラグを取得する。.
+     * @return  admin 管理者権限フラグ (0:一般, 1:管理者 を想定)
+     */
+    public int getAdmin() {
+        return admin;
+    }
+
+    /**
+     * 管理者権限フラグをセットする。.
+     * @param admin 管理者権限フラグ
+     */
+    public void setAdmin(int admin) {
+        this.admin = admin;
+    }
+
+    /**
+     * 管理者権限の有無を判定するヘルパーメソッド。
+     * @return true: 管理者, false: 一般ユーザー
+     */
+    public boolean isAdmin() {
+        return this.admin == 1; // 1を管理者権限ありとする
+    }
+    // ★ ここまで管理者権限フラグの追加
 
     /**
      * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
@@ -885,6 +916,8 @@ public class UserInfoDao implements Serializable {
         dao.setFirstNameKana(DbI.chara(map.get("first_name_kana")));
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));
+        // ★ 管理者権限フラグを追加
+        dao.setAdmin(Integer.parseInt(map.getOrDefault("admin", "0")));
     }
 
     /**
@@ -907,12 +940,12 @@ public class UserInfoDao implements Serializable {
         dao.setInsertUserId(DbI.chara(map.getOrDefault("user_info___insert_user_id", "")));
         dao.setMemail(DbI.chara(map.getOrDefault("user_info___memail", "")));
         dao.setLeaveDate(DbI.chara(map.getOrDefault("user_info___leave_date", "")));
+        // ★ 管理者権限フラグを追加
+        dao.setAdmin(Integer.parseInt(map.getOrDefault("user_info___admin", "0")));
     }
 
-    /** 
-     * user_info ユーザ情報テーブルにデータを挿入する 
-     * 
-     * @return true:成功 false:失敗 
+    /** * user_info ユーザ情報テーブルにデータを挿入する 
+     * * @return true:成功 false:失敗 
      * @throws AtareSysException エラー 
      */
     public boolean dbInsert() throws AtareSysException {
@@ -955,6 +988,7 @@ public class UserInfoDao implements Serializable {
                 + DbO.chara(getInsertUserId())
                 + "," + DbO.chara(getUpdateUserId())
                 + "," + DbO.chara(getMemail())
+                + "," + DbO.chara(String.valueOf(getAdmin())) // ★ 管理者権限フラグの値を追加
                 + "," + DbO.chara(getLeaveDate())
                 + " )";
 
@@ -1153,7 +1187,7 @@ public class UserInfoDao implements Serializable {
      * @param myclass        検索条件をUserInfoDaoのインスタンスに入れて渡す
      * @param sortKey     ソート順を配列で渡す　キー値は項目名　値はソート順 "ASC" "DESC"
      * @param daoPageInfo   取得したいページの番やライン数を入れる。結果がここに帰ってくる
-     *                       ライン数に-1を入れると全件取得になる
+     * ライン数に-1を入れると全件取得になる
      * @return 取得したUserInfoDaoの配列
      * @throws AtareSysException エラー
      */
@@ -1353,7 +1387,7 @@ public class UserInfoDao implements Serializable {
      * @param pPassword パスワード
      * @return 0::失敗 1:成功 2:管理者ログイン
      * @throws AtareSysException
-     *         エラー
+     * エラー
      */
     public boolean login(String pAccount, String pPassword) throws AtareSysException {
         String sql = "";
@@ -1366,7 +1400,7 @@ public class UserInfoDao implements Serializable {
         if (1 != rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDao(map, this);
+        setUserInfoDao(map, this); // ★ setUserInfoDaoでadmin情報もセットされるようになった
         String password = Digest.hex(Digest.SHA512, pPassword);
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
@@ -1425,6 +1459,7 @@ public class UserInfoDao implements Serializable {
             user.setUpdateDate(map.get("update_date"));
             user.setUpdateUserId(map.get("update_user_id"));
             user.setMemail(map.get("memail"));
+            // ※ admin 情報の取得・設定が不足しているため、必要に応じて追加してください。
             users.add(user);
         }
 
