@@ -52,6 +52,13 @@ public class UserLogin extends ControllerBase {
 
                 UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
 
+                // ★ 管理者権限を判定して遷移
+                if (userLoginInfo.getAdminFlag() == 1) {
+                    redirect("MenuAdmin.do");
+                } else {
+                    redirect("UserMenu.do");
+                }
+
                 return;
             } else if ("repassword".equals(bean.value("action_cmd"))) {
                 redirect("SendPassMail.do");
