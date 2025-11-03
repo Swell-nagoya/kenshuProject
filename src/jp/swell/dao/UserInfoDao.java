@@ -746,12 +746,12 @@ public class UserInfoDao implements Serializable {
         return authorityUserList;
     }
     
-    // ★ ここから管理者権限フラグの追加
+    // ★ 管理者権限フラグの追加
     /**
      * admin  管理者権限フラグ (DBのintまたはboolean列を想定)
      */
-    private int admin;
-
+    private int admin = 0;	 // 管理者フラグ 0:一般 1:管理者
+    
     /**
      * 管理者権限フラグを取得する。.
      * @return  admin 管理者権限フラグ (0:一般, 1:管理者 を想定)
@@ -775,7 +775,6 @@ public class UserInfoDao implements Serializable {
     public boolean isAdmin() {
         return this.admin == 1; // 1を管理者権限ありとする
     }
-    // ★ ここまで管理者権限フラグの追加
 
     /**
      * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
@@ -884,7 +883,7 @@ public class UserInfoDao implements Serializable {
                 + ",user_info.middle_name_kana as user_info___middle_name_kana"
                 + ",user_info.first_name_kana as user_info___first_name_kana"
                 + ",user_info.maiden_name_kana as user_info___maiden_name_kana"
-                + ",user_info.admin as user_info___admin"
+                + ",user_info.admin as user_info___admin" // ★ adminカラムを追加
                 + ",user_info.leave_date as user_info___leave_date"
                 + " from user_info ";
         sql += ""
@@ -969,7 +968,7 @@ public class UserInfoDao implements Serializable {
                 + ",insert_user_id"
                 + ",update_user_id"
                 + ",memail"
-                + ",admin"
+                + ",admin" // ★ adminカラムを追加
                 + ",leave_date"
                 + " ) values ( "
                 + DbO.chara(getUserInfoId())
@@ -1227,7 +1226,7 @@ public class UserInfoDao implements Serializable {
                 + ",user_info.first_name_kana as user_info___first_name_kana"
                 + ",user_info.maiden_name_kana as user_info___maiden_name_kana"
                 + ",user_info.memail as user_info___memail"
-                + ",user_info.admin as user_info___admin"
+                + ",user_info.admin as user_info___admin" // ★ adminカラムを追加
                 + ",user_info.state_flg as user_info___state_flg"
                 + ",user_info.leave_date as user_info___leave_date"
                 + " from user_info ";
@@ -1391,7 +1390,8 @@ public class UserInfoDao implements Serializable {
      */
     public boolean login(String pAccount, String pPassword) throws AtareSysException {
         String sql = "";
-        sql = " SELECT user_info.*"
+        // ★ adminカラムをSELECTに追加
+        sql = " SELECT user_info.*, user_info.admin AS admin " 
                 + " FROM user_info "
                 + " WHERE "
                 + " ( user_info_id  = " + DbS.chara(pAccount)
@@ -1400,7 +1400,8 @@ public class UserInfoDao implements Serializable {
         if (1 != rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDao(map, this); // ★ setUserInfoDaoでadmin情報もセットされるようになった
+        // ★ setUserInfoDaoでadmin情報もセットされる
+        setUserInfoDao(map, this); 
         String password = Digest.hex(Digest.SHA512, pPassword);
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
@@ -1459,7 +1460,8 @@ public class UserInfoDao implements Serializable {
             user.setUpdateDate(map.get("update_date"));
             user.setUpdateUserId(map.get("update_user_id"));
             user.setMemail(map.get("memail"));
-            // ※ admin 情報の取得・設定が不足しているため、必要に応じて追加してください。
+            // ★ admin 情報の取得・設定を追加
+            user.setAdmin(Integer.parseInt(map.getOrDefault("admin", "0"))); 
             users.add(user);
         }
 
@@ -1475,9 +1477,9 @@ public class UserInfoDao implements Serializable {
      */
     public String getUserInfoIdByEmail(String email) throws AtareSysException {
         String sql = "SELECT user_info_id FROM user_info WHERE memail = ?";
-        try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
+        try (PreparedStatement pstmt = DbBase.getDbConnection().prepareStatement(sql)) { // getDbConnection()を正しく使用
             pstmt.setString(1, email);
-            try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
+            try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getString("user_info_id");
                 } else {
@@ -1500,11 +1502,11 @@ public class UserInfoDao implements Serializable {
         String userId = null;
         String getUserIdSql = "SELECT user_info_id FROM user_info WHERE memail = ?";
 
-        try (PreparedStatement pstmtGetUserId = (PreparedStatement) DbBase.getDbConnection()
+        try (PreparedStatement pstmtGetUserId = DbBase.getDbConnection()
                 .prepareStatement(getUserIdSql)) {
 
             pstmtGetUserId.setString(1, email);
-            try (ResultSet rs = (ResultSet) pstmtGetUserId.executeQuery()) {
+            try (ResultSet rs = pstmtGetUserId.executeQuery()) {
                 if (rs.next()) {
                     userId = rs.getString("user_info_id");
                 } else {
@@ -1515,7 +1517,7 @@ public class UserInfoDao implements Serializable {
             String insertSql = "INSERT INTO repassword (user_info_id, memail, token, expires_at) " +
                     "VALUES (?, ?, ?, ?)";
 
-            try (PreparedStatement pstmtInsert = (PreparedStatement) DbBase.getDbConnection()
+            try (PreparedStatement pstmtInsert = DbBase.getDbConnection()
                     .prepareStatement(insertSql)) {
                 pstmtInsert.setString(1, userId); // 取得した user_info_id を設定
                 pstmtInsert.setString(2, email); // メールアドレス
@@ -1539,11 +1541,11 @@ public class UserInfoDao implements Serializable {
         //トークンと対応する有効期限を取得するクエリ
         String sql = "SELECT expires_at FROM repassword WHERE token = ?";
 
-        try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
+        try (PreparedStatement pstmt = DbBase.getDbConnection().prepareStatement(sql)) {
 
             pstmt.setString(1, token);
 
-            try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
+            try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     //有効期限が現在時刻を超えていないか確認
                     Timestamp expiresAt = rs.getTimestamp("expires_at");
@@ -1562,9 +1564,9 @@ public class UserInfoDao implements Serializable {
                 "JOIN repassword ON user_info.user_info_id = repassword.user_info_id " +
                 "WHERE repassword.token = ?";
 
-        try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
+        try (PreparedStatement pstmt = DbBase.getDbConnection().prepareStatement(sql)) {
             pstmt.setString(1, token);
-            try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
+            try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getString("user_info_id");
                 } else {
@@ -1599,8 +1601,7 @@ public class UserInfoDao implements Serializable {
                 "SET user_info.password = ?, repassword.expires_at = ? " +
                 "WHERE repassword.token = ?";
 
-        try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection()
-                .prepareStatement(updatePasswordSql)) {
+        try (PreparedStatement pstmt = DbBase.getDbConnection().prepareStatement(updatePasswordSql)) {
             pstmt.setString(1, hashedPassword); // 新しいパスワード
             pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis() - 1000)); // トークンを無効化するために過去の日付
             pstmt.setString(3, token); // トークン

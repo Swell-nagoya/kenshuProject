@@ -230,7 +230,12 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
 
     @Override
     public boolean isSystemManager() {
-        return true;
+    	// 【修正前】
+        // return true;
+
+        // 【修正後】
+        // userInfoDaoがnullでなく、かつDAOのisAdmin()メソッド（管理者フラグ=1）がtrueを返すかチェックする
+    	return userInfoDao != null && userInfoDao.isAdmin();
     }
 
     @Override
