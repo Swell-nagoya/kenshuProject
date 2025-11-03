@@ -57,7 +57,7 @@ public class UserMenu extends ControllerBase
                 ReserveDao reserveDao = new ReserveDao();
                 ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
                 bean.setValue("reserves", reserves);
-                forward("UserMenuHome.jsp");
+                forward("UserMenu.jsp");
             }
 
             else if ("home".equals(bean.value("action_cmd")))
@@ -100,7 +100,7 @@ public class UserMenu extends ControllerBase
               ReserveDao reserveDao = new ReserveDao();
               ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
               bean.setValue("reserves", reserves);
-              forward("UserMenuHome.jsp");
+              forward("UserMenu.jsp");
             }
             // 部屋の情報を新規登録する条件を追加
             else if ("insertRoom".equals(bean.value("form_name")))
@@ -134,7 +134,7 @@ public class UserMenu extends ControllerBase
                 ReserveDao reserveDao = new ReserveDao();
                 ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
                 bean.setValue("reserves", reserves);
-                forward("UserMenuHome.jsp");
+                forward("UserMenu.jsp");
             }
             else if ("file".equals(bean.value("action_cmd")))
             {
@@ -151,7 +151,7 @@ public class UserMenu extends ControllerBase
                 ReserveDao reserveDao = new ReserveDao();
                 ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
                 bean.setValue("reserves", reserves);
-                forward("UserMenuHome.jsp");
+                forward("UserMenu.jsp");
             }
         }   
         else if ("UserInfoDetail_1".equals(bean.value("form_name")) || "UserInfoDetail_2".equals(bean.value("form_name")) || "UserInfoDetail_3".equals(bean.value("form_name")))
@@ -162,7 +162,7 @@ public class UserMenu extends ControllerBase
             ReserveDao reserveDao = new ReserveDao();
             ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
             bean.setValue("reserves", reserves);
-            forward("UserMenuHome.jsp");
+            forward("UserMenu.jsp");
         }
         else
         {
@@ -175,7 +175,7 @@ public class UserMenu extends ControllerBase
             RoomDao roomDao = new RoomDao();
             ArrayList<RoomDao> rooms = roomDao.getAllRooms();
             bean.setValue("rooms", rooms);
-            forward("UserMenuHome.jsp");
+            forward("UserMenu.jsp");
         }
     }
 
