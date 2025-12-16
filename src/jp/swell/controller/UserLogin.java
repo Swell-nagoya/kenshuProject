@@ -49,15 +49,7 @@ public class UserLogin extends ControllerBase {
                     this.forward("/UserLogin.jsp");
                     return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
                 }
-
-                UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
-
-                //管理者権限の有無を確認し遷移先を判断
-                if ("1".equals(userLoginInfo.getAdmin())) {
-                    redirect("MenuAdmin.do");//管理者メニュー
-                } else {
-                    redirect("Calendar.do");
-                }
+                    redirect("UserMenu.do");
                 return;
             } else if ("repassword".equals(bean.value("action_cmd"))) {
                 redirect("SendPassMail.do");
