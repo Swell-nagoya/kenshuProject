@@ -332,6 +332,7 @@ public class UserInfoDetail extends ControllerBase
         bean.setValue("memail", dao.getMemail());
         bean.setValue("password_user", dao.getPasswordUser());
         bean.setValue("password", dao.getPassword());
+        bean.setValue("admin", dao.getAdmin());
         bean.setValue("leave_date", dao.getLeaveDate());
 
         bean.setValue("select_info", Sup.serialize(dao)); // 編集前に読み込んだデータを格納しておく
@@ -642,6 +643,7 @@ public class UserInfoDetail extends ControllerBase
       dao.setInsertUserId(bean.value("insert_user_id"));
       dao.setMemail(bean.value("memail"));
       dao.setPasswordUser(bean.value("password_user"));
+      dao.setAdmin(bean.value("admin"));
       dao.setPassword(bean.value("password"));
       dao.setLeaveDate(bean.value("leave_date"));
       
@@ -737,6 +739,7 @@ public class UserInfoDetail extends ControllerBase
         bean.setValue("memail", dao.getMemail());
         bean.setValue("password_user", dao.getPasswordUser());
         bean.setValue("password", dao.getPassword());
+        bean.setValue("admin", dao.getAdmin());
         bean.setValue("leave_date", dao.getLeaveDate());
     }
     
@@ -757,6 +760,7 @@ public class UserInfoDetail extends ControllerBase
         bean.setValue("memail", dao.getMemail());
         bean.setValue("password_user", dao.getPasswordUser());
         bean.setValue("password", dao.getPassword());
+        bean.setValue("admin", dao.getAdmin());
     }
     
     /**

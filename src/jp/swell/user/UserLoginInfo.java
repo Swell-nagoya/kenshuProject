@@ -170,6 +170,10 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
         return userInfoDao.getTel();
     }
 
+    public String getAdmin() {
+        return userInfoDao.getAdmin();
+    }
+
     /**
      * ユーザー名の取得
      *
@@ -217,6 +221,11 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
     public UserInfoDao getUserInfoDao() {
         return this.userInfoDao;
     }
+
+    public boolean isAdmin() {
+        return userInfoDao != null && "1".equals(userInfoDao.getAdmin());
+    }
+
 
     @Override
     public boolean isNoticeArrive() {
