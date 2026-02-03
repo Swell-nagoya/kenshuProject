@@ -139,13 +139,8 @@ window.onload = function() {
 				// ユーザー情報を取るためのループ処理
 				for (Object item : webBean.arrayList("list")) {
 					UserInfoDao user = (UserInfoDao) item;
-					
-					String lastName = WebUtil.htmlEscape(user.getLastName());
-					String middleName = WebUtil.htmlEscape(user.getMiddleName());
-					String firstName = WebUtil.htmlEscape(user.getFirstName());
 
-
-					String fullName = WebUtil.htmlEscape(user.getLastName())+
+					String fullName = WebUtil.htmlEscape(user.getLastName()) +
 					" " +
 					WebUtil.htmlEscape(user.getMiddleName()) +
 					" " +
