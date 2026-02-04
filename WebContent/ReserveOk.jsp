@@ -91,6 +91,19 @@ td {
 </head>
 <body>
 	<form id="main_form" method="post" action="">
+		<%
+		String InfoId = webBean.txt("user_info_id");//選択したユーザーの文字列user_info_idを取得する
+
+		UserInfoDao dao = new UserInfoDao();
+		List<UserInfoDao> userList = dao.getAllUsers();//getAllUsers()メソッドの呼び出し
+		UserInfoDao SelectUser = null; //初期化する
+		for (UserInfoDao userItem : userList) { //for文を使用し、user_info_idを参照してデータを取得する
+			if (userItem.getUserInfoId().equals(InfoId)) {
+				SelectUser = userItem;
+				break;
+			}
+		}
+		%>
 		<div class="container">
 			<h1>予約が完了しました</h1>
 			<input type="hidden" name="form_name" id="form_name"
@@ -99,11 +112,8 @@ td {
 			<table>
 				<tr>
 					<th>予約者</th>
-					<%
-					String userName = reserveDao.getUserName();
-					System.out.println("DEBUG: 取得されたユーザー名: " + userName); // サーバーログに出力
-					%>
-					<td><%=reserveDao.getUserName()%> 様</td>
+					<td><%=SelectUser.getLastName()%> <%=SelectUser.getMiddleName()%>
+						<%=SelectUser.getFirstName()%>様</td>
 				</tr>
 				<tr>
 					<th>会議室</th>

@@ -203,7 +203,7 @@ public class ReserveList extends ControllerBase {
 
         bean.setValue("users", users);
         bean.setValue("rooms", rooms);
-        bean.setValue("list", listData);//listData→users
+        bean.setValue("list", listData);
         bean.setValue("reserve", reserve);
         bean.setValue("search_info", search_info);
     }

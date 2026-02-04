@@ -367,7 +367,6 @@ public class UserYoyakuDetail extends ControllerBase {
     // 複数のuser_info_idがある場合、最初の1つを使用する
     String[] userInfoIds = bean.value("user_info_id").split(",");
     reserveDao.setUserInfoIds(userInfoIds);
-    
     reserveDao.setUserInfoId(userInfoIds[0].trim());
     reserveDao.setRoomId(bean.value("room_id"));
     reserveDao.setReservationDate(formattedReservationDate);

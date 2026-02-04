@@ -107,6 +107,18 @@ public class ReserveDao implements Serializable {
      */
     private String userName = "";
     /**
+     * roomName ユーザー名
+     */
+    private String LastName  = "";
+    /**
+     * roomName ユーザー名
+     */
+    private String MiddleName  = "";
+    /**
+     * roomName ユーザー名
+     */
+    private String FirstName = "";
+    /**
      * adminFlag 管理者権限
      */
     private String admin = "";
@@ -366,23 +378,50 @@ public class ReserveDao implements Serializable {
     public void setRoomName(String roomName) {
         this.roomName = roomName;
     }
-
-    /**
-     * ユーザー名情報を取得する。
-     * @return userName ユーザー名
-     */
-    public String getUserName() {
-        return userName;
-    }
-
     /**
      * ユーザー名情報をセットする。
-     * @param userName ユーザー名
+     * @param LastName ユーザー名
      */
-    public void setUserName(String userName) {
-        this.userName = userName;
+     public String getUserName() {
+        return userName;
     }
-
+    
+    public void setUserName(String UserName) {
+        this.userName = UserName;
+    }
+    /**
+     * ユーザー名情報をセットする。
+     * @param LastName ユーザー名
+     */
+     public String getLastName() {
+        return LastName;
+    }
+    
+    public void setLastName(String LastName) {
+        this.LastName = LastName;
+    }
+    
+    /**
+     * ユーザー名情報をセットする。
+     * @param MiddleName ユーザー名
+     */
+    public String getMiddleName() {
+        return MiddleName;
+    }
+    
+    public void setMiddleName(String MiddleName) {
+        this.MiddleName = MiddleName;
+    }  
+    /**
+     * ユーザー名情報をセットする。
+     * @param FirstName ユーザー名
+     */
+    public String getFirstName() {
+        return FirstName;
+    }
+    public void setFirstName(String FirstName) {
+        this.FirstName = FirstName;
+    }
     /**
      * 管理者権限を取得する。
      * @return adminFlag 管理者権限
@@ -623,6 +662,7 @@ public class ReserveDao implements Serializable {
         dao.setUpdateDate(DbI.chara(map.get("update_date")));
         dao.setUpdateUserId(DbI.chara(map.get("update_user_id")));
         dao.setUserReserveId(DbI.chara(map.get("user_reserve_id")));
+      
     }
 
     /**
@@ -646,6 +686,7 @@ public class ReserveDao implements Serializable {
         dao.setUpdateDate(DbI.chara(map.get("update_date")));
         dao.setUpdateUserId(DbI.chara(map.get("update_user_id")));
         dao.setUserReserveId(DbI.chara(map.get("user_reserve_id")));
+    
     }
 
     /**
@@ -867,6 +908,7 @@ public class ReserveDao implements Serializable {
         reserve.setCheckoutTime(map.get("checkout_time"));
         reserve.setColor(map.get("rgb_color"));
         reserve.setRoomName(map.get("room_name"));
+        reserve.setUserName(map.get("last_name")+ map.get("middle_name") +map.get("first_name"));
 
         // 最新の予約を返す
         return reserve;
