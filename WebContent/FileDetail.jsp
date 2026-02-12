@@ -344,5 +344,5 @@ function receiveSelectedUsers(users, type) {
 				</div>
 		</form>
 	</div>
-</body>h
+</body>
 </html>

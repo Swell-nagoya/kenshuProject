@@ -104,7 +104,7 @@ function go_submit(action_cmd, request_cmd) {
     document.getElementById('main_form').submit();
 }
 function go_list(action_cmd) {
-    document.getElementById('main_form').action = '';
+    document.getElementById('main_form').action = 'FileList.do';
     document.getElementById('action_cmd').value = action_cmd;
     document.getElementById('main_form').submit();
 }
