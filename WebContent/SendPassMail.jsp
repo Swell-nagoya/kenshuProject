@@ -147,7 +147,7 @@ function go_submit(action_cmd){
 <body>
  <div class="container">
     <div class="new-btn">
-      <input type="button" onclick="go_submit('return')" value="　戻る　" />
+      <input type="button" onclick="history.back()" value="　戻る　" />
     </div>
 <header>
     <h1>パスワード再発行ページ</h1>

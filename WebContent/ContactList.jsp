@@ -227,7 +227,7 @@ footer {
 		<div class="new-btn">
 			<input type="button" value="新規登録"
 				onclick="go_detail('go_next','ins')" /> <input type="button"
-				value="　戻る　" onclick="go_submit('return')" />
+				value="　戻る　" onclick="history.back()"/ > <%--/onclick="go_submit('return')すると管理者画面に飛ぶため変更--%>
 		</div>
 		<header>
 		<h1>

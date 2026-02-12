@@ -663,7 +663,7 @@ function submitSelection(actionCmd, main_key) {
             <tr class="list_tr">
               <td class="list_text">
                 <div>
-                  <input type="checkbox" name="selected_user_ids" value="<%=WebUtil.htmlEscape(user.getUserInfoId())%>" data-user-name="<%=WebUtil.htmlEscape(user.getFullName())%>" onclick="togglePrioritySelect(this)"> 
+                  <input type="checkbox" name="selected_user_id" value="<%=WebUtil.htmlEscape(user.getUserInfoId())%>" data-user-name="<%=WebUtil.htmlEscape(user.getFullName())%>" onclick="togglePrioritySelect(this)"> 
                     <%=WebUtil.htmlEscape(user.getFullName())%>
                 </div>
                 <div class="priority-select" style="display:none;">

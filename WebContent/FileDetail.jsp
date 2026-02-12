@@ -276,7 +276,7 @@ function receiveSelectedUsers(users, type) {
 <body>
 	<div class="container">
 		<div class="new-btn">
-			<input type="button" value="　戻る　" onclick="go_submit('return')" />
+			<input type="button" value="　戻る　" onclick="history.back()" />
 		</div>
 		<header>
 		<h1>ファイル登録ページ</h1>
@@ -344,5 +344,5 @@ function receiveSelectedUsers(users, type) {
 				</div>
 		</form>
 	</div>
-</body>
+</body>h
 </html>

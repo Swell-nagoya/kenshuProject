@@ -8,6 +8,9 @@
 <%@ page import="jp.patasys.common.http.WebBean"%>
 <%@ page import="jp.swell.constant.UserInfoState"%>
 <%@ page import="java.util.ArrayList"%>
+<%@ page import="java.util.List"%>
+<%@ page import="java.text.SimpleDateFormat"%>
+
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean"
 	scope="request" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -278,7 +281,7 @@ th {
 		<div class="new-btn">
 			<input type="button" value="新規登録"
 				onclick="go_detail('go_next','ins')" /> <input type="button"
-				value="　戻る　" onclick="go_submit('return')">
+				value="　戻る　" onclick="history.back()" />
 		</div>
 		<header>
 		<h1>
@@ -376,29 +379,59 @@ th {
 						<th>送信先ユーザー</th>
 						<th>アップロードユーザー</th>
 						<th>ダウンロード</th>
+
+
 						<%
-						for (Object item : webBean.arrayList("list")) {
-						    FileDao dao = (FileDao) item;
+						FileDao dao = new FileDao();
+						List<FileDao> userList = dao.getAllFiles();
+						List<FileDao> sendList = dao.getSendFiles();
+
+						for (FileDao fileInfo : userList) {
+							FileDao send = null;
+							// fileInfoから送信先のユーザーidを取得
+							String send_id = fileInfo.getUploadUserId();
+							for (FileDao sendInfo : sendList) {
+								// IDが一致するかチェック
+								if (sendInfo.getUserInfoId() != null && sendInfo.getUserInfoId().trim().equals(send_id.trim())) {
+									send = sendInfo;
+									break;
+								}
+							}
+						%>
+						<%
+						// 表示形式を指定（例：2023/10/25 15:30）
+						String Date = fileInfo.getUploadDate();
+						String formatDate = (Date != null && !Date.isEmpty()) ? Date : "データを取得していない";
+						%>
+						<%
+
 						%>
 						<tr
-							<tr style="background-color:<%="received".equals(dao.getFileType() != null ? dao.getFileType() : "") ? "#1565c0" : "white"%>">
-							<td><%=WebUtil.htmlEscape(dao.getFileName())%></td>
-							<td><%=WebUtil.htmlEscape(dao.getUploadDate())%></td>
-							<td><%=WebUtil.htmlEscape(dao.getSendUserName())%></td>
-							<td><%=WebUtil.htmlEscape(dao.getUploadUserName())%></td>
+							style="background-color:<%="received".equals(fileInfo.getFileType()) ? "#1565c0" : "white"%>">
+							<td><%=WebUtil.htmlEscape(fileInfo.getFileName())%></td>
+							<td><%=WebUtil.htmlEscape(formatDate)%></td>
+							<td><%= (send != null) ? WebUtil.htmlEscape(send.getsendUserName()) : "未設定" %></td>
+							<td><%=WebUtil.htmlEscape(fileInfo.getUploadUserName())%></td>
 							<td><input type="button" value="ダウンロード"
-								onclick="go_download('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
+								onclick="go_download('go_next','download','<%=WebUtil.txtEscape(fileInfo.getFileId())%>','<%=WebUtil.txtEscape(fileInfo.getFileName())%>');" />
 								<input type="button" value="削除"
-								onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
-							</td></tr>
+								onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(fileInfo.getFileId())%>','<%=WebUtil.txtEscape(fileInfo.getFileName())%>');" />
+							</td>
+						</tr>
+						<%
+						}
+						%>
+						<%
+						} else {
+						%>
 
-						<%}%>
-						<%} else {%><tr>
-						<td colspan="4">ファイルがありません</td>
-					</tr>
-					<%}%>
-				
-				
+						<tr>
+							<td colspan="5">ファイルがありません</td>
+						</tr>
+						<%
+						}
+						%>
+					
 				</table>
 			</div>
 		</form>

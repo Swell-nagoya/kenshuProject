@@ -457,7 +457,7 @@ label.error {
       <input type="button" value="　戻る　" onclick="go_list('return')" />
     </div>
 <header>
-    <h1> ユーザー情報<%=webBean.txt("request_name")%>ページ </h1>
+    <h1> ユーザー情報<%=webBean.txt("request_name")%>ページ</h1>
 </header>
         <div class="required-note">※は必須項目</div>
          

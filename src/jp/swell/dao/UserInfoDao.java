@@ -795,6 +795,7 @@ public class UserInfoDao implements Serializable {
                 user.setUserInfoId(rs.getString("user_info_id"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
+                user.setMiddleName(rs.getString("middle_name")); 
                 userList.add(user);
             }
         }
@@ -1236,8 +1237,26 @@ public class UserInfoDao implements Serializable {
 
         for (int i = 0; i < cnt; i++) {
             map = rs.get(i);
+           //デバック用 System.out.println("DEBUG: Current Map Content -> " + map.toString());
             UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
+            //hashmapから適切にデータを取得できていないため変更↓↓↓↓
+            dao.setUserInfoId(map.get("user_info_id"));
+            dao.setLastName(map.get("last_name"));
+            dao.setMiddleName(map.get("middle_name"));
+            dao.setFirstName(map.get("first_name"));
+            dao.setMaidenName(map.get("maiden_name"));
+            dao.setLastNameKana(map.get("last_name_kana"));
+            dao.setMiddleNameKana(map.get("middle_name_kana"));
+            dao.setFirstNameKana(map.get("first_name_kana"));
+            dao.setMaidenNameKana(map.get("maiden_name_kana"));
+            dao.setMemail(map.get("memail"));
+            dao.setAdmin(map.get("admin"));
+            int stateFlgInt = Integer.parseInt(map.get("state_flg"));
+            dao.setStateFlg(stateFlgInt);//int型をStringに変更
+            dao.setLeaveDate(map.get("leave_date"));
+            
+            //↑↑↑↑↑↑↑↑↑↑↑↑↑
+            //dao.setUserInfoDaoForJoin(map, dao);
             array.add(dao);
         }
         return array;
