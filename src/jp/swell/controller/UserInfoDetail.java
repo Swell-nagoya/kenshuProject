@@ -67,6 +67,10 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doActionProcess() throws AtareSysException {
       WebBean bean = getWebBean();
+      
+      System.out.println("DEBUG: form_name = [" + bean.value("form_name") + "]");
+      System.out.println("DEBUG: action_cmd = [" + bean.value("action_cmd") + "]");
+      System.out.println("DEBUG: request_cmd = [" + bean.value("request_cmd") + "]");
 
       try {
           if ("ViewUserList".equals(bean.value("form_name"))) 
@@ -156,7 +160,7 @@ public class UserInfoDetail extends ControllerBase
                       {
                           bean.setMessage("この内容で登録します。よろしいですか？");
                           bean.setValue("request_name", "登録");
-                          forward("UserInfoDetail_3.jsp"); 
+                          forward("UserInfoDetail_Confirm.jsp");//新しいファイルに変更
                       }
                       else 
                       {
@@ -174,9 +178,9 @@ public class UserInfoDetail extends ControllerBase
                         
                           bean.setMessage("この内容で修正します。よろしいですか？");
                           bean.setValue("request_name", "修正");
-                          forward("UserInfoDetail_3.jsp"); 
+                          forward("UserInfoDetail_Confirm.jsp");//新しいファイルに変更
                       }
-                      else 
+                      else
                       {
                         bean.setError("入力内容に誤りがあります");
                         forward("UserInfoDetail_1.jsp");
@@ -201,8 +205,8 @@ public class UserInfoDetail extends ControllerBase
                       if (inputCheck(dao)) 
                       {
                           bean.setMessage("退職予定日を確定します。よろしいですか？");
-                          bean.setValue("request_name", "確定");
-                          forward("UserInfoDetail_3.jsp");  
+                          bean.setValue("request_name", "削除");
+                          forward("UserInfoDetail_Confirm.jsp");  
                       }
                       else 
                       {
@@ -217,13 +221,12 @@ public class UserInfoDetail extends ControllerBase
               }
           }
           
-          else if ("UserInfoDetail_3".equals(bean.value("form_name"))) 
+          else if ("UserInfoDetail_Confirm".equals(bean.value("form_name")))
           {
               if ("go_next".equals(bean.value("action_cmd"))) 
               {
                   if ("ins".equals(bean.value("request_cmd"))) 
                   {
-                      setInputInfo2Dao2Web();
                       signUp();
                       scheduleInsert();
                       redirect("ViewUserList.do");
@@ -653,17 +656,49 @@ public class UserInfoDetail extends ControllerBase
 
     
     private boolean signUp() throws AtareSysException {
-      UserInfoDao dao = setWeb2Dao2InputInfo();
+        WebBean bean = getWebBean();
+        
+       // WebBeanを使わず、直接値を取りに行きます
+        String lastName = bean.value("last_name");
+        String firstName = bean.value("first_name");
 
-      try {
-        // 入力内容をデータベースに保存
-        dao.dbInsert();
-        
-        return true;
-        
-      } catch (Exception e) {
-        return false;
-      }
+        // コンソールに「これから登録する名前」を表示
+        System.out.println("★DEBUG_SIGNUP: 名前=[" + lastName + " " + firstName + "]");
+
+        // DAOを手動で作成）
+        UserInfoDao dao = new UserInfoDao();
+
+        // 1つずつ手動でセット
+        dao.setUserInfoId(bean.value("user_info_id"));
+        dao.setPassword(bean.value("password"));
+        dao.setLastName(lastName);
+        dao.setFirstName(firstName);
+        dao.setLastNameKana(bean.value("last_name_kana"));
+        dao.setFirstNameKana(bean.value("first_name_kana"));
+        dao.setMiddleName(bean.value("middle_name"));
+        dao.setMiddleNameKana(bean.value("middle_name_kana"));
+        dao.setMaidenName(bean.value("maiden_name"));
+        dao.setMaidenNameKana(bean.value("maiden_name_kana"));
+        dao.setInsertUserId(bean.value("insert_user_id"));
+        dao.setMemail(bean.value("memail"));
+        dao.setAdmin(bean.value("admin"));
+        dao.setLeaveDate(bean.value("leave_date"));
+
+        try {
+        	//書き込み開始
+            DbBase.dbBeginTran();
+            
+            // データベースに保存
+            dao.dbInsert();
+            
+            //コミットする 
+            DbBase.dbCommitTran();
+            return true;
+        } catch (Exception e) {
+            System.out.println("★DEBUG_ERROR: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
     
     /**
