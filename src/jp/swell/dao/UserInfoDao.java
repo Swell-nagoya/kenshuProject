@@ -932,15 +932,16 @@ public class UserInfoDao implements Serializable {
         dao.setLeaveDate(DbI.chara(map.getOrDefault("user_info___leave_date", "")));
     }
 
-    /** 
-     * user_info ユーザ情報テーブルにデータを挿入する 
-     * 
-     * @return true:成功 false:失敗 
+    /** * user_info ユーザ情報テーブルにデータを挿入する 
+     * * @return true:成功 false:失敗 
      * @throws AtareSysException エラー 
      */
     public boolean dbInsert() throws AtareSysException {
         // パスワードをSHA-512でハッシュ化
-        String hashedPassword = Digest.hex(Digest.SHA512, getPassword());
+        String hashedPassword = Digest.hex(Digest.SHA512, this.password); // getPassword()ではなくthis.passwordを使う
+
+        // ★デバッグ用ログ：ここに名前が入っていなければアウト！
+        System.out.println("★DAO_DEBUG: Insertする名前=[" + this.lastName + " " + this.firstName + "]");
 
         String sql = "insert into user_info ("
                 + " user_info_id"
@@ -962,24 +963,24 @@ public class UserInfoDao implements Serializable {
                 + ",admin"
                 + ",leave_date"
                 + " ) values ( "
-                + DbO.chara(getUserInfoId())
+                + DbO.chara(this.userInfoId)
                 + ",1"
-                + "," + DbO.chara(getPasswordUser())
-                + "," + DbO.chara(hashedPassword) // ハッシュ化したパスワードを挿入
-                + "," + DbO.chara(getLastName())
-                + "," + DbO.chara(getMiddleName())
-                + "," + DbO.chara(getFirstName())
-                + "," + DbO.chara(getMaidenName())
-                + "," + DbO.chara(getLastNameKana())
-                + "," + DbO.chara(getMiddleNameKana())
-                + "," + DbO.chara(getFirstNameKana())
-                + "," + DbO.chara(getMaidenNameKana())
+                + "," + DbO.chara(this.passwordUser)
+                + "," + DbO.chara(hashedPassword) 
+                + "," + DbO.chara(this.lastName)   // ★ここをthis.変数名に変更
+                + "," + DbO.chara(this.middleName)
+                + "," + DbO.chara(this.firstName)
+                + "," + DbO.chara(this.maidenName)
+                + "," + DbO.chara(this.lastNameKana)
+                + "," + DbO.chara(this.middleNameKana)
+                + "," + DbO.chara(this.firstNameKana)
+                + "," + DbO.chara(this.maidenNameKana)
                 + "," + "NOW(),"
-                + DbO.chara(getInsertUserId())
-                + "," + DbO.chara(getUpdateUserId())
-                + "," + DbO.chara(getMemail())
-                + "," + DbO.chara(getAdmin())
-                + "," + DbO.chara(getLeaveDate())
+                + DbO.chara(this.insertUserId)
+                + "," + DbO.chara(this.updateUserId)
+                + "," + DbO.chara(this.memail)
+                + "," + DbO.chara(this.admin)
+                + "," + DbO.chara(this.leaveDate)
                 + " )";
 
         int ret = DbBase.dbExec(sql);
@@ -1182,62 +1183,55 @@ public class UserInfoDao implements Serializable {
      * @return 取得したUserInfoDaoの配列
      * @throws AtareSysException エラー
      */
+    /**
+     * user_info ユーザ情報テーブルを検索し指定されたレコードのリストを返す
+     * ★シンプル修正版★
+     */
     static public ArrayList<UserInfoDao> dbSelectList(UserInfoDao myclass, LinkedHashMap<String, String> sortKey,
             DaoPageInfo daoPageInfo) throws AtareSysException {
         ArrayList<UserInfoDao> array = new ArrayList<UserInfoDao>();
 
-        // レコードの総件数を求める*/
-        String sql = "select count(*) as count"
-                + " from user_info "
-                + myclass.dbWhere();
-        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        if (0 == rs.size())
-            return array;
-        HashMap<String, String> map = rs.get(0);
-        int len = Integer.parseInt(map.get("count"));
+        // 1. レコード件数の取得
+        String sqlCount = "select count(*) as count from user_info " + myclass.dbWhere();
+        List<HashMap<String, String>> rsCount = DbBase.dbSelect(sqlCount);
+        if (0 == rsCount.size()) return array;
+        
+        int len = Integer.parseInt(rsCount.get(0).get("count"));
         daoPageInfo.setRecordCount(len);
-        if (len == 0)
-            return array;
-        if (-1 == daoPageInfo.getLineCount())
-            daoPageInfo.setLineCount(len);
-        daoPageInfo.setMaxPageNo((int) Math.ceil((double) len / (double) (daoPageInfo.getLineCount())));
-        if (daoPageInfo.getPageNo() < 1)
-            daoPageInfo.setPageNo(1);
-        if (daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo())
-            daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
-        int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
-        sql = "select "
-                + "user_info.user_info_id as user_info___user_info_id"
-                + ",user_info.password as user_info___password"
-                + ",user_info.last_name as user_info___last_name"
-                + ",user_info.middle_name as user_info___middle_name"
-                + ",user_info.first_name as user_info___first_name"
-                + ",user_info.maiden_name as user_info___maiden_name"
-                + ",user_info.last_name_kana as user_info___last_name_kana"
-                + ",user_info.middle_name_kana as user_info___middle_name_kana"
-                + ",user_info.first_name_kana as user_info___first_name_kana"
-                + ",user_info.maiden_name_kana as user_info___maiden_name_kana"
-                + ",user_info.memail as user_info___memail"
-                + ",user_info.admin as user_info___admin"
-                + ",user_info.state_flg as user_info___state_flg"
-                + ",user_info.leave_date as user_info___leave_date"
-                + " from user_info ";
+        if (len == 0) return array;
 
+        // ページ計算
+        if (-1 == daoPageInfo.getLineCount()) daoPageInfo.setLineCount(len);
+        daoPageInfo.setMaxPageNo((int) Math.ceil((double) len / (double) (daoPageInfo.getLineCount())));
+        if (daoPageInfo.getPageNo() < 1) daoPageInfo.setPageNo(1);
+        if (daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo()) daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
+        int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
+
+        // 2. データ取得
+        String sql = "select * from user_info ";
+        
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);
         sql += where;
         sql += order;
-        sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
+        sql += " limit " + daoPageInfo.getLineCount() + " offset " + start;
 
-        rs = DbBase.dbSelect(sql);
+        //デバッグ：どんなSQLを投げているか確認
+        System.out.println("★DAO_SELECT_SQL: " + sql);
+
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         int cnt = rs.size();
-        if (cnt < 1)
-            return array;
+        if (cnt < 1) return array;
 
         for (int i = 0; i < cnt; i++) {
-            map = rs.get(i);
+            HashMap<String, String> map = rs.get(i);
             UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
+            
+            // ★ここが重要！
+            // 複雑な `setUserInfoDaoForJoin` ではなく、
+            // 単純な `setUserInfoDao` を使う（こっちは `last_name` そのままで探すので動くはず）
+            dao.setUserInfoDao(map, dao);
+            
             array.add(dao);
         }
         return array;
