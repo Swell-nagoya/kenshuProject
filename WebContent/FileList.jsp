@@ -12,7 +12,6 @@
 <%@ page import="java.time.LocalTime"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="java.text.SimpleDateFormat"%>
-
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean"
 	scope="request" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -417,7 +416,7 @@ th {
 								}
 							}
 						%>
-						<%
+<%
 						// 表示形式を指定（例：2023/10/25 15:30）
 						String Date = fileInfo.getUploadDate();
 						String formatDate = (Date != null && !Date.isEmpty()) ? Date : "データを取得していない";
@@ -446,14 +445,12 @@ th {
 					<%
 						} else {
 						%>
-
 					<tr>
 						<td colspan="5">ファイルがありません</td>
 					</tr>
 					<%
 						}
 						%>
-
 				</table>
 			</div>
 		</form>

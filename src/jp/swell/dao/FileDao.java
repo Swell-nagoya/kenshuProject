@@ -658,7 +658,7 @@ public class FileDao implements Serializable {
 		return true;
 	}
 
-	/**
+/**
 	 * room ルームテーブルからデータを削除する
 	 *
 	 * @param pRoomId   ユーザ情報ID
@@ -669,13 +669,11 @@ public class FileDao implements Serializable {
 		// filesテーブルからレコードを削除
 		String sqlDeleteFiles = "DELETE FROM files WHERE file_id = " + DbS.chara(pFileId);
 		int retFiles = DbBase.dbExec(sqlDeleteFiles);
-
-		if (retFiles != 1)
+if (retFiles != 1)
 			throw new AtareSysException("dbDelete number or record exception");
 		return true;
 	}
-
-	/**
+/**
 	 * データベースからルーム名を取得するメソッド
 	 * @return UserMenuに返す
 	 * @throws AtareSysException
@@ -714,8 +712,7 @@ public class FileDao implements Serializable {
 			dao.setUploaderFirstName(map.get("first_name"));
 			files.add(dao);
 		}
-
-		return files; // 取得したルームリストを返す
+return files; // 取得したルームリストを返す
 	}
 	//FileList.jspで送信された人物名を取得するメソッド
 	public ArrayList<FileDao> getSendFiles() throws AtareSysException {
@@ -737,18 +734,14 @@ public class FileDao implements Serializable {
 			dao.setsendFirstName(map.get("first_name"));
 			files.add(dao);
 		}
-
 		return files; // 取得したルームリストを返す
 	}
-
 	public static ArrayList<FileDao> dbSelectList(FileDao myclass, LinkedHashMap<String, String> sortKey,
 			DaoPageInfo daoPageInfo) throws AtareSysException {
 		ArrayList<FileDao> resultList = new ArrayList<>();
-
 		// WHERE句
 		String where = myclass.dbWhere();
 		String order = myclass.dbOrder(sortKey);
-
 		int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
 		int limit = daoPageInfo.getLineCount();
 
@@ -772,9 +765,7 @@ public class FileDao implements Serializable {
 				+ "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
 				+ where + order
 				+ " LIMIT " + limit + " OFFSET " + offset;
-
 		List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-
 		for (HashMap<String, String> map : rs) {
 			FileDao dao = new FileDao();
 			dao.setFileDaoForJoin(map, dao);
@@ -797,13 +788,14 @@ public class FileDao implements Serializable {
 		if (userIds != null && userIds.length > 0) {
 			where.append(where.length() > 0 ? " OR " : "");
 			where.append("files.user_info_id IN (");
-
 			for (int i = 0; i < userIds.length; i++) {
 				where.append(DbS.chara(userIds[i]));
 				if (i < userIds.length - 1) {
 					where.append(", ");
 				}
 			}
+
+
 
 			where.append(") ");
 		}
@@ -812,12 +804,10 @@ public class FileDao implements Serializable {
 			where.append(where.length() > 0 ? " AND " : "");
 			where.append("files.file_id = " + DbS.chara(getFileId()));
 		}
-
 		if (getUserInfoId().length() > 0) {
 			where.append(where.length() > 0 ? " AND " : "");
 			where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
 		}
-
 		if (getUploadUserId().length() > 0) {
 			where.append(where.length() > 0 ? " AND " : "");
 			where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
@@ -886,6 +876,9 @@ public class FileDao implements Serializable {
 		str = "".equals(str) ? "" : (" order by " + str);
 		return str;
 	}
+
+
+
 }
 
 
