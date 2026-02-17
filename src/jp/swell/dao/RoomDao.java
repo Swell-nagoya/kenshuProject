@@ -327,7 +327,7 @@ public class RoomDao implements Serializable
      * @throws AtareSysException フレームワーク共通例外
      */
     public boolean dbSelect(String pRoomId) throws AtareSysException {
-        // ★修正：エイリアスを使わずシンプルに取得
+        //エイリアスを使わずシンプルに取得
         String sql = "SELECT * FROM room WHERE room_id = ?";
 
         try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
@@ -339,7 +339,7 @@ public class RoomDao implements Serializable
                 }
 
                 HashMap<String, String> map = new HashMap<>();
-                // ★修正：シンプルなキー名でMapを作る
+                //シンプルなキー名でMapを作る
                 map.put("room_id", rs.getString("room_id"));
                 map.put("room_name", rs.getString("room_name"));
                 map.put("insert_date", rs.getString("insert_date"));
@@ -347,7 +347,7 @@ public class RoomDao implements Serializable
                 map.put("update_date", rs.getString("update_date"));
                 map.put("update_user_id", rs.getString("update_user_id"));
 
-                // ★修正：シンプルなsetRoomDaoを使用
+                //setRoomDao
                 setRoomDao(map, this);
                 return true;
             } catch (SQLException e) {
@@ -367,7 +367,6 @@ public class RoomDao implements Serializable
      */
     public boolean dbSelect(String pRoomId,String roomName) throws AtareSysException
     {
-        // ★修正：シンプルに取得
         String sql =  "select * from room ";
         sql += ""
         + " where room_id = " + DbS.chara(pRoomId)
@@ -376,7 +375,7 @@ public class RoomDao implements Serializable
         if(0==rs.size())   return false;
         HashMap<String, String> map = rs.get(0);
         
-        // ★修正：シンプルなsetRoomDaoを使用
+        //setRoomDao
         setRoomDao(map,this);
         return true;
     }
@@ -507,7 +506,7 @@ public class RoomDao implements Serializable
       return rooms; // 取得したルームリストを返す
     }
     
-    // ★ここが一覧表示用のメソッド（修正済み）
+    //一覧表示用のメソッド
     static public ArrayList<RoomDao> dbSelectList(RoomDao myclass,LinkedHashMap<String,String> sortKey,DaoPageInfo daoPageInfo) throws AtareSysException
     {
         ArrayList<RoomDao> array = new ArrayList<RoomDao>();
@@ -528,7 +527,7 @@ public class RoomDao implements Serializable
         if(daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo()) daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
         int start  =   (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         
-        // ★修正：エイリアスを使わずシンプルに SELECT * で取得
+        //エイリアスを使わずシンプルに SELECT * で取得
         sql =  "select * from room ";
         
         String where = myclass.dbWhere();
@@ -537,7 +536,7 @@ public class RoomDao implements Serializable
         sql += order;
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         
-        // ★DEBUG: 発行SQLを確認
+        //DEBUG: 発行SQLを確認
         System.out.println("DAO_SELECT_SQL: " + sql);
         
         rs  =  DbBase.dbSelect(sql);
@@ -547,7 +546,7 @@ public class RoomDao implements Serializable
         {
             RoomDao dao  = new RoomDao();
             map = rs.get(i);
-            // ★修正：シンプルなsetRoomDaoを使う
+            //setRoomDao
             dao.setRoomDao(map,dao);
             array.add(dao);
         }
