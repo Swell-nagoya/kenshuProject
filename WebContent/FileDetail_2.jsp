@@ -279,7 +279,8 @@ th {
 							// 表示形式を指定（例：2023/10/25 15:30）
 							String Date = fileInfo.getUploadDate();
 							String formatDate = (Date != null && !Date.isEmpty()) ? Date : "データを取得していない";
-
+							
+							//ダウンロード期限の表示
 							String limDate = fileInfo.getExpirationDate();
 							String limitDate = (limDate != null && !limDate.isEmpty()) ? limDate : "データを取得していない";
 					%>

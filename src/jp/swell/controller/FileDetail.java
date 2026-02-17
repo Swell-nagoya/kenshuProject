@@ -115,6 +115,7 @@ public class FileDetail extends ControllerBase {
 						bean.setValue("file_name", fileName);
 						forward("FileDetail_2.jsp");
 					}
+					//期限超過のレコードを一括削除する
 				} else if ("deleteall".equals(requestCmd)) {
 					bean.setValue("request_name", "一括削除する");
 					bean.setValue("request_cmd", "deleteall");
@@ -144,10 +145,11 @@ public class FileDetail extends ControllerBase {
 					FileDao dio = new FileDao();
 					FileDao info = null;
 					List<FileDao> userList = dio.getAllFiles();
+					//フォーマットの変更
 					String now = java.time.LocalDateTime.now()
 							.format(java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
-					int count = 0;
-					//isExpired()メソッドで期限超え判別
+					int count = 0;//削除数のカウント
+					//期限超えのレコードの判別
 					for (FileDao fileInfo : userList) {
 						if (fileInfo.getExpirationDate() != null && fileInfo.getExpirationDate().compareTo(now) < 0) {
 							info = fileInfo;
