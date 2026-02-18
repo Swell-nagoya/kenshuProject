@@ -202,6 +202,7 @@ public class UserInfoDetail extends ControllerBase
                       {
                           bean.setMessage("退職予定日を確定します。よろしいですか？");
                           bean.setValue("request_name", "確定");
+                          
                           forward("UserInfoDetail_3.jsp");  
                       }
                       else 

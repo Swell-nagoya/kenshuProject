@@ -830,29 +830,29 @@ public class UserInfoDao implements Serializable {
      */
     public boolean dbSelect(String pUserInfoId) throws AtareSysException {
         String sql = "SELECT "
-                + "user_info.user_info_id as user_info___user_info_id, "
-                + "user_info.state_flg as user_info___state_flg, "
-                + "user_info.last_name as user_info___last_name, "
-                + "user_info.middle_name as user_info___middle_name, "
-                + "user_info.first_name as user_info___first_name, "
-                + "user_info.maiden_name as user_info___maiden_name, "
-                + "user_info.last_name_kana as user_info___last_name_kana, "
-                + "user_info.middle_name_kana as user_info___middle_name_kana, "
-                + "user_info.first_name_kana as user_info___first_name_kana, "
-                + "user_info.maiden_name_kana as user_info___maiden_name_kana, "
-                + "user_info.insert_user_id as user_info___insert_user_id, "
-                + "user_info.memail as user_info___memail, "
-                + "user_info.password_user as user_info___password_user, "
-                + "user_info.password as user_info___password, "
-                + "user_info.admin as user_info___admin, "
-                + "user_info.leave_date as user_info___leave_date "
+                + "user_info_id, "
+                + "state_flg, "
+                + "last_name, "
+                + "middle_name , "
+                + "ufirst_name, "
+                + "maiden_name , "
+                + "last_name_kana , "
+                + "middle_name_kana , "
+                + "first_name_kana, "
+                + "maiden_name_kana, "
+                + "nsert_user_id, "
+                + "uemail , "
+                + "password_user , "
+                + "password d, "
+                + "admin , "
+                + "leave_date "
                 + "FROM user_info "
                 + "WHERE user_info_id = " + DbS.chara(pUserInfoId);
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         if (0 == rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDaoForJoin(map, this);
+        setUserInfoDao(map, this);
         return true;
     }
 
@@ -865,18 +865,18 @@ public class UserInfoDao implements Serializable {
      */
     public boolean dbSelect(String pUserInfoId, String pas) throws AtareSysException {
         String sql = "select "
-                + " user_info.user_info_id as user_info___user_info_id"
-                + ",user_info.password as user_info___password"
-                + ",user_info.last_name as user_info___last_name"
-                + ",user_info.middle_name as user_info___middle_name"
-                + ",user_info.first_name as user_info___first_name"
-                + ",user_info.maiden_name as user_info___maiden_name"
-                + ",user_info.last_name_kana as user_info___last_name_kana"
-                + ",user_info.middle_name_kana as user_info___middle_name_kana"
-                + ",user_info.first_name_kana as user_info___first_name_kana"
-                + ",user_info.maiden_name_kana as user_info___maiden_name_kana"
-                + ",user_info.admin as user_info___admin"
-                + ",user_info.leave_date as user_info___leave_date"
+                + " user_info.user_info_id"
+                + ",user_info.password "
+                + ",user_info.last_name "
+                + ",user_info.middle_name "
+                + ",user_info.first_name "
+                + ",user_info.maiden_name "
+                + ",user_info.last_name_kana "
+                + ",user_info.middle_name_kana "
+                + ",user_info.first_name_kana"
+                + ",user_info.maiden_name_kana"
+                + ",user_info.admin "
+                + ",user_info.leave_date "
                 + " from user_info ";
         sql += ""
                 + " where user_info_id = " + DbS.chara(pUserInfoId)
@@ -885,7 +885,7 @@ public class UserInfoDao implements Serializable {
         if (0 == rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDaoForJoin(map, this);
+        setUserInfoDao(map, this);
         return true;
     }
 
@@ -908,6 +908,9 @@ public class UserInfoDao implements Serializable {
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
         dao.setAdmin(DbI.chara(map.get("admin")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));
+        dao.setMemail(DbI.chara(map.get("memail")));
+        dao.setInsertUserId(DbI.chara(map.get("insert_user_id")));
+        dao.setPasswordUser(DbI.chara(map.get("password_user")));
     }
 
     /**
@@ -1073,7 +1076,7 @@ public class UserInfoDao implements Serializable {
         }
 
         // カウントが1以上なら重複しているとみなす
-        return Integer.parseInt(rs.get(0).get("COUNT(*)")) > 0;
+        return Integer.parseInt(rs.get(0).get("COUNT(*)")) > 1;//0->1
     }
 
     /**
@@ -1208,20 +1211,20 @@ public class UserInfoDao implements Serializable {
             daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
         int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql = "select "
-                + "user_info.user_info_id as user_info___user_info_id"
-                + ",user_info.password as user_info___password"
-                + ",user_info.last_name as user_info___last_name"
-                + ",user_info.middle_name as user_info___middle_name"
-                + ",user_info.first_name as user_info___first_name"
-                + ",user_info.maiden_name as user_info___maiden_name"
-                + ",user_info.last_name_kana as user_info___last_name_kana"
-                + ",user_info.middle_name_kana as user_info___middle_name_kana"
-                + ",user_info.first_name_kana as user_info___first_name_kana"
-                + ",user_info.maiden_name_kana as user_info___maiden_name_kana"
-                + ",user_info.memail as user_info___memail"
-                + ",user_info.admin as user_info___admin"
-                + ",user_info.state_flg as user_info___state_flg"
-                + ",user_info.leave_date as user_info___leave_date"
+                + "user_info.user_info_id"
+                + ",user_info.password "
+                + ",user_info.last_name "
+                + ",user_info.middle_name"
+                + ",user_info.first_name "
+                + ",user_info.maiden_name "
+                + ",user_info.last_name_kana "
+                + ",user_info.middle_name_kana "
+                + ",user_info.first_name_kana "
+                + ",user_info.maiden_name_kana "
+                + ",user_info.memail "
+                + ",user_info.admin "
+                + ",user_info.state_flg "
+                + ",user_info.leave_date "
                 + " from user_info ";
 
         String where = myclass.dbWhere();

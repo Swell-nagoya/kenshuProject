@@ -5,7 +5,8 @@
 <%@ page import="jp.patasys.common.http.HtmlParts"%>
 <%@ page import="jp.swell.dao.UserInfoDao"%>
 <%@ page import="jp.patasys.common.http.WebBean"%>
-<%@ page import="java.util.List" %> <%-- 追加 --%>
+<%@ page import="java.util.List"%>
+<%-- 追加 --%>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean"
 	scope="request" />
 
@@ -220,57 +221,32 @@ td, th {
 				value="<%=webBean.txt("select_info")%>" />
 
 			<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
-			<%
-			String InfoId = webBean.txt("main_key");//選択したユーザーの文字列user_info_idを取得する
 
-			UserInfoDao dao = new UserInfoDao();
-			List<UserInfoDao> userList = dao.getAllUsers();//getAllUsers()メソッドの呼び出し
-			UserInfoDao SelectUser = null; //初期化する
-			for (UserInfoDao userItem : userList) { //for文を使用し、user_info_idを参照してデータを取得する
-				if (userItem.getUserInfoId().equals(InfoId)) {
-					SelectUser = userItem;
-					break;
-				}
-			}
-			%>
 			<div class="left">
+				<%
+				//ユーザーの新規登録をしたとき
+				if (("登録").equals(val)){
+				%>
 				<table class="input-table">
 					<tr>
 						<td class="style_head3 style_head_size" style="width: 30%">
 							ユーザーID</td>
-						<td class="input-text" style="width: 70%"><%=SelectUser.getUserInfoId()%>
+						<td class="input-text" style="width: 70%"><%=webBean.txt("user_info_id")%>
 
 						</td>
 					</tr>
 					<tr>
 						<td class="style_head3 style_head_size" style="width: 30%">氏名</td>
-						<td class="input-text" style="width: 70%"><%=SelectUser.getLastName()%>
-							<%=SelectUser.getMiddleName()%> <%=SelectUser.getFirstName()%></td>
+						<td class="input-text" style="width: 70%"><%=webBean.txt("last_name")%>
+							<%=webBean.txt("middle_name")%><%=webBean.txt("first_name")%></td>
 					</tr>
 					<tr>
 						<td class="style_head3 style_head_size" style="width: 30%">
 							氏名よみ</td>
-						<td class="input-text" style="width: 70%"><%=SelectUser.getLastNameKana()%>
-							<%=SelectUser.getMiddleNameKana()%> <%=SelectUser.getFirstNameKana()%>
+						<td class="input-text" style="width: 70%"><%=webBean.txt("last_name_kana")%>
+							<%=webBean.txt("middle_name_kana")%><%=webBean.txt("first_name_kana")%>
 						</td>
 					</tr>
-					<%
-					if (!maidenName.isEmpty()) {
-					%>
-					<tr>
-						<td class="style_head3 style_head_size" style="width: 30%">旧姓</td>
-						<td class="input-text" style="width: 70%"><%=SelectUser.getMaidenName()%>
-						</td>
-					</tr>
-					<tr>
-						<td class="style_head3 style_head_size" style="width: 30%">
-							旧姓よみ</td>
-						<td class="input-text" style="width: 70%"><%=SelectUser.getMaidenNameKana()%>
-						</td>
-					</tr>
-					<%
-					}
-					%>
 					<%
 					if (!insertUserId.isEmpty()) {
 					%>
@@ -286,31 +262,25 @@ td, th {
 					<tr>
 						<td class="style_head3 style_head_size" style="width: 30%">
 							メールアドレス</td>
-						<td class="input-text" style="width: 70%"><%=SelectUser.getMemail()%>
+						<td class="input-text" style="width: 70%"><%=webBean.txt("memail")%>
 						</td>
 					</tr>
 					<tr>
 						<td class="style_head3 style_head_size" style="width: 30%">
 							ユーザー区分</td>
-						<td class="input-text" style="width: 70%"><%=SelectUser.getAdmin().equals("admin") ? "管理者" : "一般"%>
-						</td>
+						<td class="input-text" style="width: 70%"><%=webBean.txt("admin").equals("admin")
+							? "管理者" : "一般"%></td>
 					</tr>
-					<%
-					// actionTypeが"ins"の場合のみ表示
-					if ("ins".equals(actionType)) {
-					%>
 					<tr>
 						<td class="style_head3 style_head_size" style="width: 30%">
 							パスワード</td>
-						<td class="input-text" style="width: 70%"><%=SelectUser.getPassword()%>
+						<td class="input-text" style="width: 70%"><%=webBean.txt("password")%>
 						</td>
 					</tr>
-					<%
-					}
-					%>
-					<%
+				</table>
+				<%
 					// actionTypeが"delete"の場合のみ表示
-					if ("delete".equals(actionType)) {
+				}else if ("delete".equals(actionType)) {
 						// 退職予定日のフォーマット変換用変数を初期化
 						String formatLeaveDate = "";
 						String leaveDate = webBean.txt("leave_date");
@@ -322,18 +292,19 @@ td, th {
 							formatLeaveDate = "";
 						}
 					%>
+				<table>
 					<tr>
 						<td class="style_head3 style_head_size">退職予定日</td>
 						<td class="input-text"><%=formatLeaveDate%></td>
 					</tr>
-					<%
+				</table>
+				<%
 					}
 					%>
-				</table>
 			</div>
 			<div class="button">
 				<input type="button" id="submitButton" value="<%=val%>"
-					onclick="<%=actionBtn%>('go_next','<%=actionType%>','<%=SelectUser.getUserInfoId()%>')" />
+					onclick="<%=actionBtn%>('go_next','<%=actionType%>','<%=webBean.txt("user_info_id")%>')" />
 			</div>
 		</form>
 	</div>
