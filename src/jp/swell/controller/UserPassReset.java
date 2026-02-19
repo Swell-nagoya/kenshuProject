@@ -60,8 +60,16 @@ public class UserPassReset extends ControllerBase
                         String hashedPassword = dao.hashPassword(newPass);
                         if (dao.updatePassword(token, hashedPassword)) {
                             String userId = dao.getUserIdByToken(token);
+                            String admin = dao.getAdmin();
                             if (!loginInputCheck(userId, newPass)) {
-                                forward("UserMenuHome.jsp");
+                            	
+                            	//adminで遷移先の決定をする
+                            	if (admin == null || !"1".equals(admin)) { 
+                                redirect("UserMenuHome.jsp");
+                            	}else {
+                            		redirect("MenuAdmin.jsp");
+                            	}
+                                return;
                             } else {
                                 bean.setValue("result", "ログイン中にエラーが発生しました");
                             }

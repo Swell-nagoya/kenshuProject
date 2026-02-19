@@ -71,7 +71,7 @@ public class SendMailCommon {
             InternetAddress fromAddress = new InternetAddress(mailFromAddress);
             mimeMessage.setFrom(fromAddress);
             mimeMessage.setSubject("title", "ISO-2022-JP");
-            mimeMessage.setText(RECOVERY_URL + token, "ISO-2022-JP");
+            mimeMessage.setText(RECOVERY_URL, "ISO-2022-JP");
 
             // メールを送信
             Transport.send(mimeMessage);

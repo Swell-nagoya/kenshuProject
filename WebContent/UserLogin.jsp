@@ -124,7 +124,7 @@ h1 {
 		document.getElementById("action_cmd").value = action_cmd;
 		document.getElementById("main_form").submit();
 	}
-	//
+
 </script>
 </head>
 <body onload="document.getElementById('ac').focus()">
@@ -137,8 +137,10 @@ h1 {
 				</div>
 				<form method="post" id="main_form" action="" class="main__form">
 					<input type="hidden" name="form_name" id="form_name"
-						value="UserLogin" /> <input type="hidden" name="action_cmd"
-						id="action_cmd" value="" /> <input type="hidden"
+						value="UserLogin" /> 
+						<!-- action_cmd="login"とする -->
+						<input type="hidden" name="action_cmd"
+						id="action_cmd" value="login" /> <input type="hidden"
 						name="before_doc" id="before_doc"
 						value="<%=webBean.txt("before_doc")%>" />
 					<div class="main__form--name">
