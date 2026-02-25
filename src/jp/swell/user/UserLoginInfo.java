@@ -256,7 +256,7 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
                 return false;
             }
             return true;
-        } catch (AtareSysException e) {
+        } catch (Exception e) {
             userInfoDao = null;
             e.printStackTrace();
             return false;

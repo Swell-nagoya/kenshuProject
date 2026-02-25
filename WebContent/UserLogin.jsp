@@ -154,7 +154,7 @@ h1 {
 					</div>
 					<div class="main__form--btn">
 						<input type="submit" id="bt" name="login-btn"
-							onclick="go_submit('')" class="submit-btn" value="ログイン" />
+							onclick="go_submit('login')" class="submit-btn" value="ログイン" />
 					</div>
 					<div class="main__form--link">
 						<a href="#" id="reissue" onclick="go_submit_1('')"

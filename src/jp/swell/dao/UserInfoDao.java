@@ -834,14 +834,14 @@ public class UserInfoDao implements Serializable {
                 + "state_flg, "
                 + "last_name, "
                 + "middle_name , "
-                + "ufirst_name, "
+                + "first_name, "
                 + "maiden_name , "
                 + "last_name_kana , "
                 + "middle_name_kana , "
                 + "first_name_kana, "
                 + "maiden_name_kana, "
-                + "nsert_user_id, "
-                + "uemail , "
+                + "insert_user_id, "
+                + "memail , "
                 + "password_user , "
                 + "password d, "
                 + "admin , "
@@ -1076,7 +1076,7 @@ public class UserInfoDao implements Serializable {
         }
 
         // カウントが1以上なら重複しているとみなす
-        return Integer.parseInt(rs.get(0).get("COUNT(*)")) > 1;//0->1
+        return Integer.parseInt(rs.get(0).get("COUNT(*)")) > 0;
     }
 
     /**
@@ -1399,10 +1399,9 @@ public class UserInfoDao implements Serializable {
      * @param pAccount アカウントまたはメールアドレス
      * @param pPassword パスワード
      * @return 0::失敗 1:成功 2:管理者ログイン
-     * @throws AtareSysException
-     *         エラー
+     * @throws Exception 
      */
-    public boolean login(String pAccount, String pPassword) throws AtareSysException {
+    public boolean login(String pAccount, String pPassword) throws Exception {
         String sql = "";
         sql = " SELECT user_info.*"
                 + " FROM user_info "
@@ -1414,7 +1413,8 @@ public class UserInfoDao implements Serializable {
             return false;
         HashMap<String, String> map = rs.get(0);
         setUserInfoDao(map, this);
-        String password = Digest.hex(Digest.SHA512, pPassword);
+        String password = null;
+        password = Digest.hex(Digest.SHA512, pPassword);//パスワード初期設定時と同じ方法でハッシュ化
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
         }
@@ -1423,8 +1423,7 @@ public class UserInfoDao implements Serializable {
 
     /**
      * データベースからユーザー名を取得するメソッド
-     * @return UserMenuに返す
-     * @throws AtareSysException
+     * @return UserMenuに返す     * @throws AtareSysException
      */
     public ArrayList<UserInfoDao> getAllUsers() throws AtareSysException {
         String sql = "SELECT * FROM user_info";
@@ -1599,9 +1598,9 @@ public class UserInfoDao implements Serializable {
      */
     public boolean updatePassword(String token, String newPassword) throws AtareSysException {
         // パスワードのハッシュ化
-        String hashedPassword;
+        String hashedPassword = null;
         try {
-            hashedPassword = hashPassword(newPassword);
+        	hashedPassword =Digest.hex(Digest.SHA512, newPassword);//パスワード初期設定時と同じ方法でハッシュ化処理をする
         } catch (Exception e) {
             throw new AtareSysException(e);
         }

@@ -70,8 +70,8 @@ public class SendMailCommon {
             mimeMessage.setRecipient(Message.RecipientType.TO, toAddress);
             InternetAddress fromAddress = new InternetAddress(mailFromAddress);
             mimeMessage.setFrom(fromAddress);
-            mimeMessage.setSubject("title", "ISO-2022-JP");
-            mimeMessage.setText(RECOVERY_URL, "ISO-2022-JP");
+            mimeMessage.setSubject("パスワードの再設定", "ISO-2022-JP");
+            mimeMessage.setText("パスワード再設定のURLを送りました"+System.lineSeparator()+RECOVERY_URL, "ISO-2022-JP");
 
             // メールを送信
             Transport.send(mimeMessage);

@@ -13,179 +13,177 @@ import jp.swell.common.ControllerBase;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.user.UserLoginInfo;
 
-public class UserPassReset extends ControllerBase
-{
+public class UserPassReset extends ControllerBase {
 
-    /**
-     * jp.patasys.alumni.controller.HttpServlet のメソッドをオーバライドする。
-     * オーバライドしない場合は、デフォルトが設定される。.
-     * この処理にはログインが必要かどうか デフォルト true.
-     * この処理はhttpでなければならないか デフォルト false.
-     * この処理はhttps でなければならないか デフォルト false.
-     * この処理はクライアントのキャッシュを認めるか デフォルト false. 等を設定する。
-     * doActionの前に呼ばれる。
-     */
-    @Override
-    public void doInit()
-    {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
-        setHttpNeeds(false); // この処理はhttpでなければならないか
-        setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
-        setUsecache(false); // この処理はクライアントのキャッシュを認めるか
-    }
-    /**
-     * jp.swell.cloudbiz.common.ControllerBase のメソッドをオーバライドする。 ここで、コントローラの処理を記述する.
-     * ここで、コントローラの処理を記述する.
-     * @throws Exception エラー
-     */
-    @Override
-    public void doActionProcess() throws AtareSysException
-    {
-        WebBean bean = getWebBean();
-        HttpServletRequest request = getRequest();
-        
-        String newPass = bean.value("new_password");
-        String checkPass = bean.value("check_password");
-        String token = request.getParameter("key");
+	/**
+	 * jp.patasys.alumni.controller.HttpServlet のメソッドをオーバライドする。
+	 * オーバライドしない場合は、デフォルトが設定される。.
+	 * この処理にはログインが必要かどうか デフォルト true.
+	 * この処理はhttpでなければならないか デフォルト false.
+	 * この処理はhttps でなければならないか デフォルト false.
+	 * この処理はクライアントのキャッシュを認めるか デフォルト false. 等を設定する。
+	 * doActionの前に呼ばれる。
+	 */
+	@Override
+	public void doInit() {
+		setLoginNeeds(false); // この処理にはログインが必要かどうか
+		setHttpNeeds(false); // この処理はhttpでなければならないか
+		setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
+		setUsecache(false); // この処理はクライアントのキャッシュを認めるか
+	}
 
-        if ("UserPassReset".equals(bean.value("form_name"))) {
-            if (newPass == null || newPass.isEmpty() || checkPass == null || checkPass.isEmpty()) {
-                bean.setValue("result", "パスワードを入力してください");
-            } else if (!newPass.equals(checkPass)) {
-                bean.setValue("result", "パスワードが一致しません");
-            } else {
-                UserInfoDao dao = new UserInfoDao();
-                if (dao.isValidToken(token)) {
-                    try {
-                        String hashedPassword = dao.hashPassword(newPass);
-                        if (dao.updatePassword(token, hashedPassword)) {
-                            String userId = dao.getUserIdByToken(token);
-                            String admin = dao.getAdmin();
-                            if (!loginInputCheck(userId, newPass)) {
-                            	
-                            	//adminで遷移先の決定をする
-                            	if (admin == null || !"1".equals(admin)) { 
-                                redirect("UserMenuHome.jsp");
-                            	}else {
-                            		redirect("MenuAdmin.jsp");
-                            	}
-                                return;
-                            } else {
-                                bean.setValue("result", "ログイン中にエラーが発生しました");
-                            }
-                        } else {
-                            bean.setValue("result", "パスワード変更中にエラーが発生しました");
-                        }
-                    } catch (Exception e) {
-                        bean.setValue("result", "パスワードのハッシュ化中にエラーが発生しました");
-                    }
-                } else {
-                    bean.setValue("result", "無効なトークンまたはトークンの有効期限が切れています");
-                }
-            }
-        }
-        forward("UserPassReset.jsp");
-    }
-    
-    /**
-     * 修正の場合
-     * @throws AtareSysException
-     */
-    public void dbEdit() throws AtareSysException
-    {
-        WebBean bean = getWebBean();
-        bean.rtrimAllItem();
-        UserInfoDao dao = setWeb2Dao2InputInfo();
-        String mainKey = bean.value("main_key");
-        if (inputCheck(dao))
-        {
-            try {
-                DbBase.dbBeginTran();
-                dao.dbUpdate(mainKey);
-                DbBase.dbCommitTran();
-            } catch (Exception e) {
-                DbBase.dbRollbackTran();
-            }
-        }
-        else
-        {
-            bean.setError("入力内容に誤りがあります");
-        }
-    }
-    /**
-     * 画面の項目をDAOクラスに格納しそれをシリアライズして、input_infoフィールドに格納する
-     *
-     * @return なし
-     * @throws AtareSysException エラー
-     */
-    private UserInfoDao setWeb2Dao2InputInfo() throws AtareSysException
-    {
-        WebBean bean = getWebBean();
-        UserInfoDao dao = new UserInfoDao();
-        dao.setPasswordUser(bean.value("new_password"));
+	/**
+	 * jp.swell.cloudbiz.common.ControllerBase のメソッドをオーバライドする。 ここで、コントローラの処理を記述する.
+	 * ここで、コントローラの処理を記述する.
+	 * @throws Exception エラー
+	 */
+	@Override
+	public void doActionProcess() throws AtareSysException {
+		WebBean bean = getWebBean();
+		HttpServletRequest request = getRequest();
 
-        bean.setValue("input_info", Sup.serialize(dao));
-        return dao;
-    }
-    
-    
-    /**
-     * 入力チェックを行う。.
-     *
-     * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
-     * @throws AtareSysException
-     */
-    private boolean inputCheck(UserInfoDao dao) throws AtareSysException
-    {
-        WebBean bean = getWebBean();
-        HashMap<String, String> errors = bean.getItemErrors();
-        if (bean.value("new_password").length() == 0)
-        {
-            errors.put("new_password", "新しいパスワードを入力してください。");
-        } 
-                
-        if (errors.size() > 0)
-        {
-            return false;
-        }
-        return true;
-    }
-   
-    /**
-     * 情報の確認とログイン処理
-     * @param userId
-     * @param newPass
-     * @return
-     * @throws AtareSysException
-     */
-    private boolean loginInputCheck(String userId, String newPass) throws AtareSysException {
-        UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
-        if (userLoginInfo == null) {
-            userLoginInfo = new UserLoginInfo();
-        }
-        if (!userLoginInfo.login(userId, newPass)) {
-            return false;
-        }
-        setLoginInfo(userLoginInfo);
-        return true;
-    }
-    /**
-     *  ランダム英数字生成用のメソッド
-     * @param length
-     * @return
-     */
-    public String generateRandomPassword(int length) {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        SecureRandom random = new SecureRandom();
-        StringBuilder password = new StringBuilder(length);
+		String newPass = bean.value("new_password");
+		String checkPass = bean.value("check_password");
+		String token = request.getParameter("key");
 
-        for (int i = 0; i < length; i++) {
-            int index = random.nextInt(chars.length());
-            password.append(chars.charAt(index));
-        }
+		
+		if ("UserPassReset".equals(bean.value("form_name"))) {
+			if (newPass == null || newPass.isEmpty() || checkPass == null || checkPass.isEmpty()) {
+				bean.setValue("result", "パスワードを入力してください");
+			} else if (!newPass.equals(checkPass)) {
+				bean.setValue("result", "パスワードが一致しません");
+			} else {
+				UserInfoDao dao = new UserInfoDao();
+				if (dao.isValidToken(token)) {
+					try {
+						if (dao.updatePassword(token, newPass)) {
+							String userId = dao.getUserIdByToken(token);
+							dao.dbSelect(userId);
+							UserLoginInfo userLoginInfo = new UserLoginInfo();
+						    userLoginInfo.setUserInfo(dao); 
+						    setLoginInfo(userLoginInfo);//ログイン情報の取得
+						    bean.setValue("login_user_name", userId);
+						    setLoginNeeds(false);//パスワード再設定後ログイン情報の入力をせず、直接ログインする処理
+							if (!loginInputCheck(userId, newPass)) {
+								//adminで遷移先の決定をする
+								
+								if (dao.getAdmin() == null || !"1".equals(dao.getAdmin())) {
+									
+									redirect("UserMenu.do");
+								} else {
+							
+									redirect("MenuAdmin.do");
+								}
+								return;//ここで処理を終了する
+							} else {
+								bean.setValue("result", "ログイン中にエラーが発生しました");
+							}
+						} else {
+							bean.setValue("result", "パスワード変更中にエラーが発生しました");
+						}
+					} catch (Exception e) {
+						bean.setValue("result", "パスワードのハッシュ化中にエラーが発生しました");
+					}
+				} else {
+					bean.setValue("result", "無効なトークンまたはトークンの有効期限が切れています");
+				}
+			}
+		}
 
-        return password.toString();
-    }
+		forward("UserPassReset.jsp");
+	}
 
-    
+	/**
+	 * 修正の場合
+	 * @throws AtareSysException
+	 */
+	public void dbEdit() throws AtareSysException {
+		WebBean bean = getWebBean();
+		bean.rtrimAllItem();
+		UserInfoDao dao = setWeb2Dao2InputInfo();
+		String mainKey = bean.value("main_key");
+		if (inputCheck(dao)) {
+			try {
+				DbBase.dbBeginTran();
+				dao.dbUpdate(mainKey);
+				DbBase.dbCommitTran();
+			} catch (Exception e) {
+				DbBase.dbRollbackTran();
+			}
+		} else {
+			bean.setError("入力内容に誤りがあります");
+		}
+	}
+
+	/**
+	 * 画面の項目をDAOクラスに格納しそれをシリアライズして、input_infoフィールドに格納する
+	 *
+	 * @return なし
+	 * @throws AtareSysException エラー
+	 */
+	private UserInfoDao setWeb2Dao2InputInfo() throws AtareSysException {
+		WebBean bean = getWebBean();
+		UserInfoDao dao = new UserInfoDao();
+		dao.setPasswordUser(bean.value("new_password"));
+
+		bean.setValue("input_info", Sup.serialize(dao));
+		return dao;
+	}
+
+	/**
+	 * 入力チェックを行う。.
+	 *
+	 * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
+	 * @throws AtareSysException
+	 */
+	private boolean inputCheck(UserInfoDao dao) throws AtareSysException {
+		WebBean bean = getWebBean();
+		HashMap<String, String> errors = bean.getItemErrors();
+		if (bean.value("new_password").length() == 0) {
+			errors.put("new_password", "新しいパスワードを入力してください。");
+		}
+
+		if (errors.size() > 0) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 情報の確認とログイン処理
+	 * @param userId
+	 * @param newPass
+	 * @return
+	 * @throws AtareSysException
+	 */
+	private boolean loginInputCheck(String userId, String newPass) throws AtareSysException {
+		UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+		if (userLoginInfo == null) {
+			userLoginInfo = new UserLoginInfo();
+		}
+		if (!userLoginInfo.login(userId, newPass)) {
+			return false;
+		}
+		setLoginInfo(userLoginInfo);
+		return true;
+	}
+
+	/**
+	 *  ランダム英数字生成用のメソッド
+	 * @param length
+	 * @return
+	 */
+	public String generateRandomPassword(int length) {
+		String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		SecureRandom random = new SecureRandom();
+		StringBuilder password = new StringBuilder(length);
+
+		for (int i = 0; i < length; i++) {
+			int index = random.nextInt(chars.length());
+			password.append(chars.charAt(index));
+		}
+
+		return password.toString();
+	}
+
 }

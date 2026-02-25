@@ -327,109 +327,109 @@ div.today {
 	margin: 5px;
 }
 
-#roomEGRN00001, .roomEGRN00001{
+#roomEGRN00001, .roomEGRN00001 {
 	color: black;
 	background-color: darkorange;
 	margin: 5px;
 }
 
-#roomEGRN00002, .roomEGRN00002{
+#roomEGRN00002, .roomEGRN00002 {
 	color: black;
 	background-color: darkorchid;
 	margin: 5px;
 }
 
-#roomEGRN00003, .roomEGRN00003{
+#roomEGRN00003, .roomEGRN00003 {
 	color: black;
 	background-color: darkturquoise;
 	margin: 5px;
 }
 
-#roomEGRN00004, .roomEGRN00004{
+#roomEGRN00004, .roomEGRN00004 {
 	color: black;
 	background-color: forestgreen;
 	margin: 5px;
 }
 
-#roomEGRN00005, .roomEGRN00005{
+#roomEGRN00005, .roomEGRN00005 {
 	color: black;
 	background-color: gainsboro;
 	margin: 5px;
 }
 
-#roomEGRN00006, .roomEGRN00006{
+#roomEGRN00006, .roomEGRN00006 {
 	color: black;
 	background-color: greenyellow;
 	margin: 5px;
 }
 
-#roomEGRN00007, .roomEGRN00007{
+#roomEGRN00007, .roomEGRN00007 {
 	color: black;
 	background-color: honeydew;
 	margin: 5px;
 }
 
-#roomEGRN00008, .roomEGRN00008{
+#roomEGRN00008, .roomEGRN00008 {
 	color: black;
 	background-color: indigo;
 	margin: 5px;
 }
 
-#roomEGRN00009, .roomEGRN00009{
+#roomEGRN00009, .roomEGRN00009 {
 	color: black;
 	background-color: lightseagreen;
 	margin: 5px;
 }
 
-#roomEGRN00010, .roomEGRN00010{
+#roomEGRN00010, .roomEGRN00010 {
 	color: black;
 	background-color: mediumturquoise;
 	margin: 5px;
 }
 
-#roomEGRN00011, .roomEGRN00011{
+#roomEGRN00011, .roomEGRN00011 {
 	color: black;
 	background-color: olive;
 	margin: 5px;
 }
 
-#roomEGRN00012, .roomEGRN00012{
+#roomEGRN00012, .roomEGRN00012 {
 	color: black;
 	background-color: orangered;
 	margin: 5px;
 }
 
-#roomEGRN00013, .roomEGRN00013{
+#roomEGRN00013, .roomEGRN00013 {
 	color: black;
 	background-color: navy;
 	margin: 5px;
 }
 
-#roomEGRN00014, .roomEGRN00014{
+#roomEGRN00014, .roomEGRN00014 {
 	color: black;
 	background-color: rosybrown;
 	margin: 5px;
 }
 
-#roomEGRN00015, .roomEGRN00015{
+#roomEGRN00015, .roomEGRN00015 {
 	color: black;
 	background-color: slateblue;
 	margin: 5px;
 }
 
-#roomEGRN00016, .roomEGRN00016{
+#roomEGRN00016, .roomEGRN00016 {
 	color: black;
 	background-color: slategrey;
 	margin: 5px;
 }
 
-#roomEGVK00001, .roomEGVK00001{
+#roomEGVK00001, .roomEGVK00001 {
 	color: black;
 	background-color: tan;
 	margin: 5px;
 }
 
-#roomEGVV00001, .roomEGVV00001{
+#roomEGVV00001, .roomEGVV00001 {
 	color: black;
 	background-color: purple;
 	margin: 5px;
@@ -502,7 +502,6 @@ th.dateOfWeek {
 .myreserveWeek {
 	background-color: skyblue;
 }
-
 
 .hiddenTime {
 	border-bottom: hidden;
@@ -1174,12 +1173,12 @@ String actionCmd = (String) request.getParameter("action_cmd");
 					<%--"go_submit('home')"→ "go_detail('admin1', '');"管理者メニューに遷移するように変更--%>
 				</ul>
 			</div>
-			<!-- /.footmenu -->
+			<!-- /.footmenu -
 			<div class="copyright">Copyright &#169; 2017 RayD Developer All
 				Rights Reserved.</div>
-			<!-- /.copyright -->
+			<!-- /.copyright --
 		</footer>
 	</form>
 </body>
-</html>
-
+</html> 
+-->
