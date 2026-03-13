@@ -27,7 +27,6 @@ import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.ContactDao;
-import jp.swell.dao.UserInfoDao;
 
 public class ContactList extends ControllerBase {
 
@@ -146,7 +145,6 @@ public class ContactList extends ControllerBase {
     /** 一覧データを検索して WebBean に格納 */
     private void searchList() throws AtareSysException {
         WebBean bean = getWebBean();
-      
 
         // 入力チェック
         HashMap<String, String> errors = inputCheck();

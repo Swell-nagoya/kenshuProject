@@ -549,6 +549,13 @@ footer {
         document.getElementById('main_key').value = main_key;
         document.getElementById('main_form').submit();
     }
+    function go_news(action_cmd,main_key,sort_key) {
+        document.getElementById('main_form').action = 'AnnouncementList.do';
+        document.getElementById('action_cmd').value = action_cmd;
+        document.getElementById('main_key').value = main_key;
+        document.getElementById('sort_key').value = sort_key;
+        document.getElementById('main_form').submit();
+    }
     function go_file(action_cmd) {
         document.getElementById('main_form').action = 'FileList.do';
         document.getElementById('action_cmd').value = action_cmd;
@@ -1073,7 +1080,7 @@ String actionCmd = (String) request.getParameter("action_cmd");
 				id="main_key" value="" /> <input type="hidden" name="main_cmd"
 				id="main_cmd" value="" /> <input type="hidden" name="sort_key_old"
 				id="sort_key_old" value="<%=webBean.txt(" sort_key_old ")%>" /> <input
-				type="hidden" name="sort_key" id="sort_key" value="" /> <input
+				type="hidden" name="sort_key" id="sort_key" value="1" /> <input
 				type="hidden" name="sort_order" id="sort_order"
 				value="<%=webBean.txt(" sort_order ")%>" /> <input type="hidden"
 				name="search_info" id="search_info"
@@ -1122,8 +1129,9 @@ String actionCmd = (String) request.getParameter("action_cmd");
 							<li><i class="material-icons">arrow_drop_down_circle</i>
 								MENU
 								<ul class="menuSub">
+									<li onclick="go_news('news','<%=webBean.txt(" user_info_id ")%>','')">おしらせ</li>
 									<li onclick="go_detail('reserve', '')">新規予約</li>
-									<li onclick="go_file('file')">ファイル一覧</li>
+									<li onclick="go_file('file')">ファイル一覧</li>	
 									<li onclick="go_logout('logout')">ログアウト</li>
 								</ul></li>
 							<%

@@ -68,6 +68,7 @@ public class FileDetail extends ControllerBase {
 		String mainKey = bean.value("main_key");
 		String fileName = bean.value("file_name");
 		FileDao dao = setWeb2Dao2InputInfo();
+		int count = 0;
 
 		if ("FileDetail".equals(form)) {
 			// ① upload ボタン押下 → 確認画面へ
@@ -141,42 +142,47 @@ public class FileDetail extends ControllerBase {
 					dbDeletef();
 
 				} else if ("deleteEnterAll".equals(requestCmd)) {
-					//fileリストを取得
-					FileDao dio = new FileDao();
-					FileDao info = null;
-					List<FileDao> userList = dio.getAllFiles();
-					//フォーマットの変更
-					String now = java.time.LocalDateTime.now()
-							.format(java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
-					int count = 0;//削除数のカウント
-					//期限超えのレコードの判別
-					for (FileDao fileInfo : userList) {
-						if (fileInfo.getExpirationDate() != null && fileInfo.getExpirationDate().compareTo(now) < 0) {
-							info = fileInfo;
-							dbDelete(info.getFileId());
-							count ++;
-						} else {
-						  }
-					}
-					bean.setError(count +"件削除しました。");
+					count = count();
+
+					bean.setError(count + "件削除しました。");
 					forward("FileDetail_3.jsp");
-
-				} else if ("return".equals(actionCmd)) {
-					if ("ins".equals(requestCmd)) {
-						forward("FileDetail.jsp");
-					} else if ("delete".equals(requestCmd)) {
-						searchList();
-						redirect("FileList.do");
-					}
 				}
-
-			} else if ("FileDetail_3".equals(form)) {
-				if ("return".equals(actionCmd)) {
+			} else if ("return".equals(actionCmd)) {
+				if ("ins".equals(requestCmd)) {
+					forward("FileDetail.jsp");
+				} else if ("delete".equals(requestCmd)) {
 					searchList();
 					redirect("FileList.do");
 				}
 			}
+
+		} else if ("FileDetail_3".equals(form)) {
+			if ("return".equals(actionCmd)) {
+				searchList();
+				redirect("FileList.do");
+			}
 		}
+	}
+
+	public int count() throws AtareSysException {
+		//fileリストを取得
+		int count = 0;
+		FileDao dio = new FileDao();
+		FileDao info = null;
+		List<FileDao> userList = dio.getAllFiles();
+		//フォーマットの変更
+		String now = java.time.LocalDateTime.now()
+				.format(java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+		//期限超えのレコードの判別
+		for (FileDao fileInfo : userList) {
+			if (fileInfo.getExpirationDate() != null && fileInfo.getExpirationDate().compareTo(now) < 0) {
+				info = fileInfo;
+				dbDelete(info.getFileId());
+				count++;
+			} else {
+			}
+		}
+		return count;
 	}
 
 	/**
