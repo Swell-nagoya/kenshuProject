@@ -96,7 +96,7 @@ public class ContactListDetail extends ControllerBase {
                     }
 
                 } else if ("menu".equals(bean.value("action_cmd"))) {
-                    redirect("MenuAdmin.do");
+                    redirect("MenuAdmin.do");/*そのうち編集予定*/
                     return;
 
                 } else {

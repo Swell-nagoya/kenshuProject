@@ -40,15 +40,23 @@ public class UserLogin extends ControllerBase {
     public void doActionProcess() throws AtareSysException {
         WebBean bean = getWebBean();
         bean.trimAllItem();
+        UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
 
         if ("UserLogin".equals(bean.value("form_name"))) {
             // ログインボタンが押されたときの処理
             if ("login".equals(bean.value("action_cmd"))) {
                 this.setLoginInfo(null);
-                if (!inputCheck()) {
+                	
+                 if (!inputCheck()) {
                     this.forward("/UserLogin.jsp");
                     return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
                 }
+                 if (userLoginInfo.getAdmin().equals("admin") || userLoginInfo.getAdmin().equals("1")){
+                 	redirect("MenuAdmin.do");
+                 	return;
+                 } else {
+                 	redirect("UserMenu.do");
+                 }
                     redirect("UserMenu.do");
                 return;
             } else if ("repassword".equals(bean.value("action_cmd"))) {

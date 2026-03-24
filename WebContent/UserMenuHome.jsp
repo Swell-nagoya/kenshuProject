@@ -1039,6 +1039,7 @@ String actionCmd = (String) request.getParameter("action_cmd");
                     <div id="month_button">
                         <button id="prev" type="button">＜</button><button id="next" type="button">＞</button><div id="current_month"></div>
                     </div>
+                    <div><%=webBean.txt("admin")%></div>
                     <div id="user_menu">
                         <ul class="menu">
                             <li><i class="material-icons">today</i> カレンダー
@@ -1056,7 +1057,7 @@ String actionCmd = (String) request.getParameter("action_cmd");
                                 </ul>
                             </li>
                             <%
-                                if (webBean.txt("admin").equals("admin")){
+                                if (webBean.txt("admin").equals("admin") || webBean.txt("admin").equals("1")){
                             %>
                             <li><i class="material-icons">settings</i> <span class="control">管理画面</span>
                                 <ul class="menuSub">
