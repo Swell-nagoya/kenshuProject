@@ -338,10 +338,10 @@ public class ReserveList extends ControllerBase {
         reserveDao.setReserveId(reserveId); // reserve_idの設定
 
         UserReserveDao userReserveDao = new UserReserveDao(); // UserReserveDaoのインスタンスを作成
-        userReserveDao.setReserveId(bean.value("reserveId"));
+        userReserveDao.setReserveId(bean.value("reserve_id"));
 
         ReserveFileDao reserveFileDao = new ReserveFileDao();
-        reserveFileDao.setReserveId(bean.value("reserveId"));
+        reserveFileDao.setReserveId(bean.value("reserve_id"));
 
         // ファイル情報を取得
         if (reserveFileDao.dbSelect(reserveId)) { // データが存在するかをチェック

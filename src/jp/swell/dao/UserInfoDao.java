@@ -1,16 +1,16 @@
 /*
-* (c)2010 2023 PATAPATA Corp. Corp. All Rights Reserved
-*
-* 機能名　　　　：DAOクラス
-* ファイル名　　：UserInfoDao.java
-* クラス名　　　：UserInfoDao
-* 概要　　　　　：user_info ユーザ情報テーブルのDAOを提供する。
-* バージョン　　：
-*
-* 改版履歴　　　：
-* 2018/09/21 <新規>    新規作成
-*
-*/
+ * (c)2010 2023 PATAPATA Corp. Corp. All Rights Reserved
+ *
+ * 機能名　　　　：DAOクラス
+ * ファイル名　　：UserInfoDao.java
+ * クラス名　　　：UserInfoDao
+ * 概要　　　　　：user_info ユーザ情報テーブルのDAOを提供する。
+ * バージョン　　：
+ *
+ * 改版履歴　　　：
+ * 2018/09/21 <新規>    新規作成
+ *
+ */
 package jp.swell.dao;
 
 import java.io.Serializable;
@@ -52,16 +52,11 @@ import jp.patasys.common.util.Digest;
 public class UserInfoDao implements Serializable {
     /** Derializable No. */
     private static final long serialVersionUID = 1L;
-    /**
-     * データアクセス権限のあるユーザリスト
-     */
+
+    // データアクセス権限のあるユーザリスト
     private ArrayList<String> authorityUserList = null;
 
-    /**
-     * 姓名取得する
-     *
-     * @return fulltName 姓名
-     */
+    // 姓名取得する
     public String getFullName() {
         String str = "";
         if (lastName.length() != 0)
@@ -73,11 +68,7 @@ public class UserInfoDao implements Serializable {
         return str;
     }
 
-    /**
-     * 姓名かなを取得する
-     *
-     * @return fulltName 姓名
-     */
+    // 姓名かなを取得する
     public String getFullNameKana() {
         String str = "";
         if (lastNameKana.length() != 0)
@@ -89,702 +80,374 @@ public class UserInfoDao implements Serializable {
         return str;
     }
 
-    /**
-     * user_info ユーザ情報テーブルで使用するメンバー変数。
-     */
-    /**
-     * userInfoId  ユーザ情報ID
-     */
+    // user_info ユーザ情報テーブルで使用するメンバー変数
+
+    // userInfoId  ユーザ情報ID
     private String userInfoId = "";
 
-    /**
-     * ユーザ情報IDを取得する。.
-     * @return  userInfoId ユーザ情報ID
-     */
     public String getUserInfoId() {
         return userInfoId;
     }
 
-    /**
-     * ユーザ情報IDをセットする。.
-     * @param userInfoId ユーザ情報ID
-     */
     public void setUserInfoId(String userInfoId) {
         this.userInfoId = userInfoId;
     }
 
-    /**
-     * stateFlg  状態フラグ
-     */
+    // stateFlg  状態フラグ
     private int stateFlg;
 
-    /**
-     * フラグを取得する。
-     * @return  stateFlg 状態フラグ
-     */
     public int getStateFlg() {
         return stateFlg;
     }
 
-    /**
-     * フラグをセットする。.
-     * @param stateFlg 状態フラグ
-     */
     public void setStateFlg(int stateFlg) {
         this.stateFlg = stateFlg;
     }
 
-    /**
-     * passwordUser  ユーザーパスワード
-     */
+    // passwordUser  ユーザーパスワード
     private String passwordUser = "";
 
-    /**
-     * ユーザーパスワードを取得する。.
-     * @return  passwordUser ユーザーパスワード
-     */
     public String getPasswordUser() {
         return passwordUser;
     }
 
-    /**
-     * ユーザーパスワードをセットする。.
-     * @param passwordUser ユーザーパスワード
-     */
     public void setPasswordUser(String passwordUser) {
         this.passwordUser = passwordUser;
     }
 
-    /**
-     * password  パスワード
-     */
+    // password  パスワード
     private String password = "";
 
-    /**
-     * パスワードを取得する。.
-     * @return  password パスワード
-     */
     public String getPassword() {
         return password;
     }
 
-    /**
-     * パスワードをセットする。.
-     * @param password パスワード
-     */
     public void setPassword(String password) {
         this.password = password;
     }
 
-    /**
-     * lastName  姓
-     */
+    // lastName  姓
     private String lastName = "";
 
-    /**
-     * 姓を取得する。.
-     * @return  lastName 姓
-     */
     public String getLastName() {
         return lastName;
     }
 
-    /**
-     * 姓をセットする。.
-     * @param lastName 姓
-     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    /**
-     * middleName  ミドルネーム
-     */
+    // middleName  ミドルネーム
     private String middleName = "";
 
-    /**
-     * ミドルネームを取得する。.
-     * @return  middleName ミドルネーム
-     */
     public String getMiddleName() {
         return middleName;
     }
 
-    /**
-     * ミドルネームをセットする。.
-     * @param middleName ミドルネーム
-     */
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
     }
 
-    /**
-     * firstName  名
-     */
+    // firstName  名
     private String firstName = "";
 
-    /**
-     * 名を取得する。.
-     * @return  firstName 名
-     */
     public String getFirstName() {
         return firstName;
     }
 
-    /**
-     * 名をセットする。.
-     * @param firstName 名
-     */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    /**
-     * maidenName  旧姓
-     */
+    // maidenName  旧姓
     private String maidenName = "";
 
-    /**
-     * 旧姓を取得する。.
-     * @return  maidenName 旧姓
-     */
     public String getMaidenName() {
         return maidenName;
     }
 
-    /**
-     * 旧姓をセットする。.
-     * @param maidenName 旧姓
-     */
     public void setMaidenName(String maidenName) {
         this.maidenName = maidenName;
     }
 
-    /**
-     * lastNameKana  姓よみ
-     */
+    // lastNameKana  姓よみ
     private String lastNameKana = "";
 
-    /**
-     * 姓よみを取得する。.
-     * @return  lastNameKana 姓よみ
-     */
     public String getLastNameKana() {
         return lastNameKana;
     }
 
-    /**
-     * 姓よみをセットする。.
-     * @param lastNameKana 姓よみ
-     */
     public void setLastNameKana(String lastNameKana) {
         this.lastNameKana = lastNameKana;
     }
 
-    /**
-     * middleNameKana  ミドルネームよみ
-     */
+    // middleNameKana  ミドルネームよみ
     private String middleNameKana = "";
 
-    /**
-     * ミドルネームよみを取得する。.
-     * @return  middleNameKana ミドルネームよみ
-     */
     public String getMiddleNameKana() {
         return middleNameKana;
     }
 
-    /**
-     * ミドルネームよみをセットする。.
-     * @param middleNameKana ミドルネームよみ
-     */
     public void setMiddleNameKana(String middleNameKana) {
         this.middleNameKana = middleNameKana;
     }
 
-    /**
-     * firstNameKana  名よみ
-     */
+    // firstNameKana  名よみ
     private String firstNameKana = "";
 
-    /**
-     * 名よみを取得する。.
-     * @return  firstNameKana 名よみ
-     */
     public String getFirstNameKana() {
         return firstNameKana;
     }
 
-    /**
-     * 名よみをセットする。.
-     * @param firstNameKana 名よみ
-     */
     public void setFirstNameKana(String firstNameKana) {
         this.firstNameKana = firstNameKana;
     }
 
-    /**
-     * maidenNameKana  旧姓よみ
-     */
+    // maidenNameKana  旧姓よみ
     private String maidenNameKana = "";
 
-    /**
-     * 旧姓よみを取得する。.
-     * @return  maidenNameKana 旧姓よみ
-     */
     public String getMaidenNameKana() {
         return maidenNameKana;
     }
 
-    /**
-     * 旧姓よみをセットする。.
-     * @param maidenNameKana 旧姓よみ
-     */
     public void setMaidenNameKana(String maidenNameKana) {
         this.maidenNameKana = maidenNameKana;
     }
 
-    /**
-     * insertDate  入力日時
-     */
+    // insertDate  入力日時
     private String insertDate = "";
 
-    /**
-     * 入力日時を取得する。.
-     * @return  insertDate 入力日時
-     */
     public String getInsertDate() {
         return insertDate;
     }
 
-    /**
-     * 入力日時をセットする。.
-     * @param insertDate 入力日時
-     */
     public void setInsertDate(String insertDate) {
         this.insertDate = insertDate;
     }
 
-    /**
-     * insertUserId  入力ユーザーＩＤ
-     */
+    // insertUserId  入力ユーザーＩＤ
     private String insertUserId = "";
 
-    /**
-     * 入力ユーザーＩＤを取得する。.
-     * @return  insertUserId 入力ユーザーＩＤ
-     */
     public String getInsertUserId() {
         return insertUserId;
     }
 
-    /**
-     * 入力ユーザーＩＤをセットする。
-     * @param insertUserId 入力ユーザーＩＤ
-     */
     public void setInsertUserId(String insertUserId) {
         this.insertUserId = insertUserId;
     }
 
-    /**
-     * updateDate  アップデート日時
-     */
+    // updateDate  アップデート日時
     private String updateDate = "";
 
-    /**
-     * アップデート日時を取得する。.
-     * @return  updateDate アップデート日時
-     */
     public String getUpdateDate() {
         return updateDate;
     }
 
-    /**
-     * アップデート日時をセットする。
-     * @param updateDate アップデート日時
-     */
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
 
-    /**
-     * updateUserId  アップデートユーザーＩＤ
-     */
+    // updateUserId  アップデートユーザーＩＤ
     private String updateUserId = "";
 
-    /**
-     * アップデートユーザーＩＤを取得する。.
-     * @return  updateUserId アップデートユーザーＩＤ
-     */
     public String getUpdateUserId() {
         return updateUserId;
     }
 
-    /**
-     * アップデートユーザーＩＤをセットする。
-     * @param updateUserId アップデートユーザーＩＤ
-     */
     public void setUpdateUserId(String updateUserId) {
         this.updateUserId = updateUserId;
     }
 
-    /**
-     * leaveDate  退職予定日
-     */
+    // leaveDate  退職予定日
     private String leaveDate = "";
 
-    /**
-     * 退職予定日を取得する。.
-     * @return  leaveDate 退職予定日
-     */
     public String getLeaveDate() {
         return leaveDate;
     }
 
-    /**
-     * 退職予定日をセットする。
-     * @param leaveDate 退職予定日
-     */
     public void setLeaveDate(String leaveDate) {
         this.leaveDate = leaveDate;
     }
 
-    /**
-     * zipcode  郵便番号
-     */
+    // zipcode  郵便番号
     private String zipcode = "";
 
-    /**
-     * 郵便番号を取得する。.
-     * @return  zipcode 郵便番号
-     */
     public String getZipcode() {
         return zipcode;
     }
 
-    /**
-     * 郵便番号をセットする。.
-     * @param zipcode 郵便番号
-     */
     public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
     }
 
-    /**
-     * address  住所
-     */
+    // address  住所
     private String address = "";
 
-    /**
-     * 住所を取得する。.
-     * @return  address 住所
-     */
     public String getAddress() {
         return address;
     }
 
-    /**
-     * 住所をセットする。.
-     * @param address 住所
-     */
     public void setAddress(String address) {
         this.address = address;
     }
 
-    /**
-     * station  最寄りの駅
-     */
+    // station  最寄りの駅
     private String station = "";
 
-    /**
-     * 最寄りの駅を取得する。.
-     * @return  station 最寄りの駅
-     */
     public String getStation() {
         return station;
     }
 
-    /**
-     * 最寄りの駅をセットする。.
-     * @param station 最寄りの駅
-     */
     public void setStation(String station) {
         this.station = station;
     }
 
-    /**
-     * tel  電話番号
-     */
+    // tel  電話番号
     private String tel = "";
 
-    /**
-     * 電話番号を取得する。.
-     * @return  tel 電話番号
-     */
     public String getTel() {
         return tel;
     }
 
-    /**
-     * 電話番号をセットする。.
-     * @param tel 電話番号
-     */
     public void setTel(String tel) {
         this.tel = tel;
     }
 
-    /**
-     * fax  ＦＡＸ
-     */
+    // fax  ＦＡＸ
     private String fax = "";
 
-    /**
-     * ＦＡＸを取得する。.
-     * @return  fax ＦＡＸ
-     */
     public String getFax() {
         return fax;
     }
 
-    /**
-     * ＦＡＸをセットする。.
-     * @param fax ＦＡＸ
-     */
     public void setFax(String fax) {
         this.fax = fax;
     }
 
-    /**
-     * mtel  携帯電話番号
-     */
+    // mtel  携帯電話番号
     private String mtel = "";
 
-    /**
-     * 携帯電話番号を取得する。.
-     * @return  mtel 携帯電話番号
-     */
     public String getMtel() {
         return mtel;
     }
 
-    /**
-     * 携帯電話番号をセットする。.
-     * @param mtel 携帯電話番号
-     */
     public void setMtel(String mtel) {
         this.mtel = mtel;
     }
 
-    /**
-     * memail  携帯Eメール
-     */
+    // memail  携帯Eメール
     private String memail = "";
 
-    /**
-     * 携帯Eメールを取得する。.
-     * @return  memail 携帯Eメール
-     */
     public String getMemail() {
         return memail;
     }
 
-    /**
-     * 携帯Eメールをセットする。.
-     * @param memail 携帯Eメール
-     */
     public void setMemail(String memail) {
         this.memail = memail;
     }
 
-    /**
-     * adminFlag　管理者権限
-     */
+    // adminFlag　管理者権限
     private String admin = "";
 
-    /**
-     * 管理者権限を取得する。
-     * @return　adminFlag　管理者権限
-     */
     public String getAdmin() {
         return admin;
     }
 
-    /**
-     * 管理者権限をセットする。.
-     * @param adminFlag　管理者権限
-     */
     public void setAdmin(String admin) {
         this.admin = admin;
     }
 
-    /**
-     * passwordModifyDate  パスワード変更日時
-     */
+    // passwordModifyDate  パスワード変更日時
     private String passwordModifyDate = "";
 
-    /**
-     * パスワード変更日時を取得する。.
-     * @return  passwordModifyDate パスワード変更日時
-     */
     public String getPasswordModifyDate() {
         return passwordModifyDate;
     }
 
-    /**
-     * パスワード変更日時をセットする。.
-     * @param passwordModifyDate パスワード変更日時
-     */
     public void setPasswordModifyDate(String passwordModifyDate) {
         this.passwordModifyDate = passwordModifyDate;
     }
 
-    /**
-     * loginEnableFrom  ログイン可能期間FROM
-     */
+    // loginEnableFrom  ログイン可能期間FROM
     private String loginEnableFrom = "";
 
-    /**
-     * ログイン可能期間FROMを取得する。.
-     * @return  loginEnableFrom ログイン可能期間FROM
-     */
     public String getLoginEnableFrom() {
         return loginEnableFrom;
     }
 
-    /**
-     * ログイン可能期間FROMをセットする。.
-     * @param loginEnableFrom ログイン可能期間FROM
-     */
     public void setLoginEnableFrom(String loginEnableFrom) {
         this.loginEnableFrom = loginEnableFrom;
     }
 
-    /**
-     * loginEnableTo  ログイン可能期間TO
-     */
+    // loginEnableTo  ログイン可能期間TO
     private String loginEnableTo = "";
 
-    /**
-     * ログイン可能期間TOを取得する。.
-     * @return  loginEnableTo ログイン可能期間TO
-     */
     public String getLoginEnableTo() {
         return loginEnableTo;
     }
 
-    /**
-     * ログイン可能期間TOをセットする。.
-     * @param loginEnableTo ログイン可能期間TO
-     */
     public void setLoginEnableTo(String loginEnableTo) {
         this.loginEnableTo = loginEnableTo;
     }
 
-    /**
-     * searchFullName 検索用氏名
-     */
+    // searchFullName 検索用氏名
     private String searchFullName = "";
-    /**
-     * searchFullName 検索用氏名かな
-     */
+    // searchFullName 検索用氏名かな
     private String searchFullNameKana = "";
 
-    /**
-     * searchFullName 検索用氏名を取得します。
-     *
-     * @return searchFullName 検索用氏名
-     */
     public String getSearchFullName() {
         return searchFullName;
     }
 
-    /**
-     * searchFullName 検索用氏名を設定します。
-     *
-     * @param searchFullName
-     *        searchFullName 検索用氏名
-     */
     public void setSearchFullName(String searchFullName) {
         this.searchFullName = searchFullName;
     }
 
-    /**
-     * searchFullName 検索用氏名かなを取得します。
-     *
-     * @return searchFullName 検索用氏名かな
-     */
     public String getSearchFullNameKana() {
         return searchFullNameKana;
     }
 
-    /**
-     * searchFullName 検索用氏名かなを設定します。
-     *
-     * @param searchFullNameKana
-     *        searchFullName 検索用氏名かな
-     */
     public void setSearchFullNameKana(String searchFullNameKana) {
         this.searchFullNameKana = searchFullNameKana;
     }
 
     private String[] userIds;
 
-    // userIdsをセットするメソッド
     public void setUserIds(String[] userIds) {
         this.userIds = userIds;
     }
 
-    // userIdsを取得するメソッド
     public String[] getUserIds() {
         return this.userIds;
     }
 
-    /**
-     * searchName  検索名
-     */
+    // searchName  検索名
     private String searchName = "";
 
-    /**
-     * 検索名を取得する。.
-     * @return  searchName　検索名
-     */
     public String getSearchName() {
         return searchName;
     }
 
-    /**
-     * 検索名をセットする。.
-     * @param searchName 検索名
-     */
     public void setSearchName(String searchName) {
         this.searchName = searchName;
     }
 
-    /**
-     *  データアクセス権限のあるユーザリストを取得する。.
-     */
+    // データアクセス権限のあるユーザリストを取得する
     public ArrayList<String> getAuthorityUserList() {
         return authorityUserList;
     }
 
-    /**
-     * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
-     */
+    // ソートフィールドのチェック時に使う。SQLインジェクション対策用
     private HashMap<String, String> fieldsArray = new HashMap<String, String>();
 
-    /**
-     * ユーザー情報を全件取得する。
-     *
-     * @return List<UserInfoDao> ユーザー情報リスト
-     * @throws Exception DB接続やクエリ失敗時
-     */
+    // ユーザー情報を全件取得する
     public List<UserInfoDao> getAllUsers1() throws Exception {
         List<UserInfoDao> userList = new ArrayList<>();
 
         // JDBCドライバ読み込み（初回のみ必要）
         Class.forName("com.mysql.jdbc.Driver");
 
-        // DBに接続（JDBC URL・ユーザー・パスワードは適宜変更）
+        // DBに接続
         try (Connection conn = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/your_database", "db_user", "db_password");
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user_info");
@@ -802,9 +465,7 @@ public class UserInfoDao implements Serializable {
         return userList;
     }
 
-    /**
-     * コンストラクタ。.
-     */
+    // コンストラクタ
     public UserInfoDao() {
         fieldsArray.put("user_info_id", "user_info.user_info_id");
         fieldsArray.put("password", "user_info.password");
@@ -820,80 +481,41 @@ public class UserInfoDao implements Serializable {
         fieldsArray.put("admin", "user_info.admin");
     }
 
-    /**
-     * user_info ユーザ情報テーブルを検索しuser_info ユーザ情報テーブルの１行を取得します。.
-     *
-     * @param pUserInfoId   ユーザ情報ID
-     * @return true:読み込み成功 false:存在しない
-     * @throws AtareSysException フレームワーク共通例外
-     */
+    // ユーザ情報テーブルを検索し1行を取得します（修正版）
     public boolean dbSelect(String pUserInfoId) throws AtareSysException {
-        String sql = "SELECT "
-                + "user_info.user_info_id as user_info___user_info_id, "
-                + "user_info.state_flg as user_info___state_flg, "
-                + "user_info.last_name as user_info___last_name, "
-                + "user_info.middle_name as user_info___middle_name, "
-                + "user_info.first_name as user_info___first_name, "
-                + "user_info.maiden_name as user_info___maiden_name, "
-                + "user_info.last_name_kana as user_info___last_name_kana, "
-                + "user_info.middle_name_kana as user_info___middle_name_kana, "
-                + "user_info.first_name_kana as user_info___first_name_kana, "
-                + "user_info.maiden_name_kana as user_info___maiden_name_kana, "
-                + "user_info.insert_user_id as user_info___insert_user_id, "
-                + "user_info.memail as user_info___memail, "
-                + "user_info.password_user as user_info___password_user, "
-                + "user_info.password as user_info___password, "
-                + "user_info.admin as user_info___admin, "
-                + "user_info.leave_date as user_info___leave_date "
-                + "FROM user_info "
+        // エイリアス（user_info___...）を使わず、素直に全部取るSQLにする
+        String sql = "SELECT * FROM user_info "
                 + "WHERE user_info_id = " + DbS.chara(pUserInfoId);
+
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         if (0 == rs.size())
             return false;
+
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDaoForJoin(map, this);
+        
+        // 単純な setUserInfoDao を使う
+        setUserInfoDao(map, this);
+        
         return true;
     }
 
-    /**
-     * user_info ユーザ情報テーブルを検索しuser_info ユーザ情報テーブルの１行を取得します。.
-     *
-     * @param pUserInfoId   ユーザ情報ID
-     * @return true:読み込み成功 false:存在しない
-     * @throws AtareSysException フレームワーク共通例外
-     */
+    // ユーザ情報テーブルを検索し1行を取得します（パスワードチェック付き）
     public boolean dbSelect(String pUserInfoId, String pas) throws AtareSysException {
-        String sql = "select "
-                + " user_info.user_info_id as user_info___user_info_id"
-                + ",user_info.password as user_info___password"
-                + ",user_info.last_name as user_info___last_name"
-                + ",user_info.middle_name as user_info___middle_name"
-                + ",user_info.first_name as user_info___first_name"
-                + ",user_info.maiden_name as user_info___maiden_name"
-                + ",user_info.last_name_kana as user_info___last_name_kana"
-                + ",user_info.middle_name_kana as user_info___middle_name_kana"
-                + ",user_info.first_name_kana as user_info___first_name_kana"
-                + ",user_info.maiden_name_kana as user_info___maiden_name_kana"
-                + ",user_info.admin as user_info___admin"
-                + ",user_info.leave_date as user_info___leave_date"
-                + " from user_info ";
-        sql += ""
-                + " where user_info_id = " + DbS.chara(pUserInfoId)
-                + " and password = " + DbS.chara(pas);
+        // ここもシンプルに修正
+        String sql = "SELECT * FROM user_info "
+                + "WHERE user_info_id = " + DbS.chara(pUserInfoId)
+                + " AND password = " + DbS.chara(pas);
+
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         if (0 == rs.size())
             return false;
+
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDaoForJoin(map, this);
+        setUserInfoDao(map, this);
         return true;
     }
 
-    /**
-     * UserInfoDao にuser_info ユーザ情報テーブルから読み込んだデータを設定する。.
-     *
-     * @param map  読み込んだテーブルの１レコードが入っているHashMap
-     * @param dao  UserInfoDaoこのテーブルのインスタンス
-     */
+    // 読み込んだデータを設定する（シンプル版）
     public void setUserInfoDao(HashMap<String, String> map, UserInfoDao dao) throws AtareSysException {
         dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
         dao.setPassword(DbI.chara(map.get("password")));
@@ -907,14 +529,12 @@ public class UserInfoDao implements Serializable {
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
         dao.setAdmin(DbI.chara(map.get("admin")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));
+        dao.setMemail(DbI.chara(map.get("memail")));
+        dao.setInsertUserId(DbI.chara(map.get("insert_user_id")));
+        dao.setPasswordUser(DbI.chara(map.get("password_user")));
     }
 
-    /**
-     * UserInfoDao にuser_info ユーザ情報テーブルから読み込んだデータを設定する。.
-     *
-     * @param map  読み込んだテーブルの１レコードが入っているHashMap
-     * @param dao  UserInfoDaoこのテーブルのインスタンス
-     */
+    // 読み込んだデータを設定する（結合用・今回は使わないが残しておく）
     public void setUserInfoDaoForJoin(HashMap<String, String> map, UserInfoDao dao) throws AtareSysException {
         dao.setUserInfoId(DbI.chara(map.getOrDefault("user_info___user_info_id", "")));
         dao.setPassword(DbI.chara(map.getOrDefault("user_info___password", "")));
@@ -932,15 +552,13 @@ public class UserInfoDao implements Serializable {
         dao.setLeaveDate(DbI.chara(map.getOrDefault("user_info___leave_date", "")));
     }
 
-    /** 
-     * user_info ユーザ情報テーブルにデータを挿入する 
-     * 
-     * @return true:成功 false:失敗 
-     * @throws AtareSysException エラー 
-     */
+    // データを挿入する
     public boolean dbInsert() throws AtareSysException {
         // パスワードをSHA-512でハッシュ化
-        String hashedPassword = Digest.hex(Digest.SHA512, getPassword());
+        String hashedPassword = Digest.hex(Digest.SHA512, this.password);
+
+        // デバッグログ
+        System.out.println("DAO_DEBUG: Insertする名前=[" + this.lastName + " " + this.firstName + "]");
 
         String sql = "insert into user_info ("
                 + " user_info_id"
@@ -962,24 +580,24 @@ public class UserInfoDao implements Serializable {
                 + ",admin"
                 + ",leave_date"
                 + " ) values ( "
-                + DbO.chara(getUserInfoId())
+                + DbO.chara(this.userInfoId)
                 + ",1"
-                + "," + DbO.chara(getPasswordUser())
-                + "," + DbO.chara(hashedPassword) // ハッシュ化したパスワードを挿入
-                + "," + DbO.chara(getLastName())
-                + "," + DbO.chara(getMiddleName())
-                + "," + DbO.chara(getFirstName())
-                + "," + DbO.chara(getMaidenName())
-                + "," + DbO.chara(getLastNameKana())
-                + "," + DbO.chara(getMiddleNameKana())
-                + "," + DbO.chara(getFirstNameKana())
-                + "," + DbO.chara(getMaidenNameKana())
+                + "," + DbO.chara(this.passwordUser)
+                + "," + DbO.chara(hashedPassword) 
+                + "," + DbO.chara(this.lastName)
+                + "," + DbO.chara(this.middleName)
+                + "," + DbO.chara(this.firstName)
+                + "," + DbO.chara(this.maidenName)
+                + "," + DbO.chara(this.lastNameKana)
+                + "," + DbO.chara(this.middleNameKana)
+                + "," + DbO.chara(this.firstNameKana)
+                + "," + DbO.chara(this.maidenNameKana)
                 + "," + "NOW(),"
-                + DbO.chara(getInsertUserId())
-                + "," + DbO.chara(getUpdateUserId())
-                + "," + DbO.chara(getMemail())
-                + "," + DbO.chara(getAdmin())
-                + "," + DbO.chara(getLeaveDate())
+                + DbO.chara(this.insertUserId)
+                + "," + DbO.chara(this.updateUserId)
+                + "," + DbO.chara(this.memail)
+                + "," + DbO.chara(this.admin)
+                + "," + DbO.chara(this.leaveDate)
                 + " )";
 
         int ret = DbBase.dbExec(sql);
@@ -989,12 +607,7 @@ public class UserInfoDao implements Serializable {
         return true;
     }
 
-    /**
-     * user_info ユーザ情報テーブルのデータを更新する。.
-     *
-     * @return true:成功 false:失敗
-     * @throws AtareSysException フレームワーク共通例外
-     */
+    // データを更新する
     public boolean dbUpdate(String userInfoId) throws AtareSysException {
         String sql = "update user_info set "
                 + " last_name = " + DbO.chara(getLastName())
@@ -1018,13 +631,7 @@ public class UserInfoDao implements Serializable {
         return true;
     }
 
-    /**
-     * user_info ユーザ情報テーブルからデータを削除する
-     *
-     * @param pUserInfoId   ユーザ情報ID
-     * @return true:成功 false:失敗
-     * @throws AtareSysException エラー
-     */
+    // データを論理削除する（フラグを9にする）
     public boolean dbDelete(String userInfoId) throws AtareSysException {
         String sql = "update user_info set "
                 + " state_flg = 9 "
@@ -1035,13 +642,7 @@ public class UserInfoDao implements Serializable {
         return true;
     }
 
-    /**
-     * user_info ユーザ情報テーブルからデータの削除をキャンセルする
-     *
-     * @param pUserInfoId   ユーザ情報ID
-     * @return true:成功 false:失敗
-     * @throws AtareSysException エラー
-     */
+    // 削除をキャンセルする（フラグを1に戻す）
     public boolean dbCancelDelete(String userInfoId) throws AtareSysException {
         String sql = "update user_info set "
                 + " state_flg = 1 "
@@ -1052,114 +653,58 @@ public class UserInfoDao implements Serializable {
         return true;
     }
 
-    /**
-     * メールアドレスの重複確認を行うメソッド(新規登録時)
-     * @param email 確認するメールアドレス
-     * @return メールアドレスが重複していれば true、そうでなければ false
-     * @throws AtareSysException
-     */
+    // メールアドレスの重複確認（新規）
     public boolean isEmailExists(String email) throws AtareSysException {
-        // メールアドレスが存在するかのカウントを行う
         String sql = "SELECT COUNT(*) FROM user_info "
                 + "WHERE memail = " + DbS.chara(email);
-
-        // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-
-        // 結果が空でなければメールアドレスが存在するか確認
         if (rs.isEmpty()) {
             return false;
         }
-
-        // カウントが1以上なら重複しているとみなす
         return Integer.parseInt(rs.get(0).get("COUNT(*)")) > 0;
     }
 
-    /**
-     * メールアドレスの重複確認を行うメソッド(ユーザー情報編集時)
-     * @param email 確認するメールアドレス
-     * @return メールアドレスが重複していれば true、そうでなければ false
-     * @throws AtareSysException
-     */
+    // メールアドレスの重複確認（編集）
     public boolean isEmailExists(String email, String pUserInfoId) throws AtareSysException {
-        // メールアドレスが存在するかのカウントを行う
         String sql = "SELECT COUNT(*) FROM user_info "
                 + "WHERE memail = " + DbS.chara(email)
                 + "and user_info_id NOT IN (" + DbS.chara(pUserInfoId) + ")";
-
-        // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-
-        // 結果が空でなければメールアドレスが存在するか確認
         if (rs.isEmpty()) {
             return false;
         }
-
-        // カウントが1以上なら重複しているとみなす
         return Integer.parseInt(rs.get(0).get("COUNT(*)")) > 0;
     }
 
-    /**
-     * ＩＤの重複確認を行うメソッド(新規登録時)
-     * @param id 確認するＩＤ
-     * @return ＩＤが重複していれば true、そうでなければ false
-     * @throws AtareSysException
-     */
+    // ＩＤの重複確認（新規）
     public boolean isIdExists(String id) throws AtareSysException {
-        // ＩＤが存在するかのカウントを行う
         String sql = "SELECT COUNT(*) FROM user_info "
                 + "WHERE insert_user_id = " + DbS.chara(id);
-
-        // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-
-        // 結果が空でなければＩＤが存在するか確認
         if (rs.isEmpty()) {
             return false;
         }
-
-        // カウントが1以上なら重複しているとみなす
         return Integer.parseInt(rs.get(0).get("COUNT(*)")) > 0;
     }
 
-    /**
-     * ＩＤの重複確認を行うメソッド(ユーザー情報編集時)
-     * @param id 確認するＩＤ
-     * @return ＩＤが重複していれば true、そうでなければ false
-     * @throws AtareSysException
-     */
+    // ＩＤの重複確認（編集）
     public boolean isIdExists(String id, String pUserInfoId) throws AtareSysException {
-        // ＩＤが存在するかのカウントを行う
         String sql = "SELECT COUNT(*) FROM user_info "
                 + "WHERE insert_user_id = " + DbS.chara(id)
                 + "and user_info_id NOT IN (" + DbS.chara(pUserInfoId) + ")";
-
-        // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-
-        // 結果が空でなければＩＤが存在するか確認
         if (rs.isEmpty()) {
             return false;
         }
-
-        // カウントが1以上なら重複しているとみなす
         return Integer.parseInt(rs.get(0).get("COUNT(*)")) > 0;
     }
 
-    /**
-     * user_info ユーザ情報テーブルを検索し指定されたレコードのリストを返す
-     * @param myclass        検索条件をUserInfoDaoのインスタンスに入れて渡す
-     * @param sortKey     ソート順を配列で渡す　キー値は項目名　値はソート順 "ASC" "DESC"
-     * @return 取得したUserInfoDaoの配列
-     * @throws AtareSysException エラー
-     */
+    // 全件取得（未使用？）
     static public ArrayList<UserInfoDao> dbSelectListAll() throws AtareSysException {
         ArrayList<UserInfoDao> array = new ArrayList<UserInfoDao>();
-
         List<HashMap<String, String>> rs;
         HashMap<String, String> map;
-        String sql = "select * "
-                + " from user_info ";
+        String sql = "select * from user_info ";
         rs = DbBase.dbSelect(sql);
         int cnt = rs.size();
         if (cnt < 1)
@@ -1173,86 +718,57 @@ public class UserInfoDao implements Serializable {
         return array;
     }
 
-    /**
-     * user_info ユーザ情報テーブルを検索し指定されたレコードのリストを返す
-     * @param myclass        検索条件をUserInfoDaoのインスタンスに入れて渡す
-     * @param sortKey     ソート順を配列で渡す　キー値は項目名　値はソート順 "ASC" "DESC"
-     * @param daoPageInfo   取得したいページの番やライン数を入れる。結果がここに帰ってくる
-     *                       ライン数に-1を入れると全件取得になる
-     * @return 取得したUserInfoDaoの配列
-     * @throws AtareSysException エラー
-     */
+    // 指定された条件でレコードのリストを返す（一覧表示用）
     static public ArrayList<UserInfoDao> dbSelectList(UserInfoDao myclass, LinkedHashMap<String, String> sortKey,
             DaoPageInfo daoPageInfo) throws AtareSysException {
         ArrayList<UserInfoDao> array = new ArrayList<UserInfoDao>();
 
-        // レコードの総件数を求める*/
-        String sql = "select count(*) as count"
-                + " from user_info "
-                + myclass.dbWhere();
-        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        if (0 == rs.size())
-            return array;
-        HashMap<String, String> map = rs.get(0);
-        int len = Integer.parseInt(map.get("count"));
+        // 1. レコード件数の取得
+        String sqlCount = "select count(*) as count from user_info " + myclass.dbWhere();
+        List<HashMap<String, String>> rsCount = DbBase.dbSelect(sqlCount);
+        if (0 == rsCount.size()) return array;
+        
+        int len = Integer.parseInt(rsCount.get(0).get("count"));
         daoPageInfo.setRecordCount(len);
-        if (len == 0)
-            return array;
-        if (-1 == daoPageInfo.getLineCount())
-            daoPageInfo.setLineCount(len);
-        daoPageInfo.setMaxPageNo((int) Math.ceil((double) len / (double) (daoPageInfo.getLineCount())));
-        if (daoPageInfo.getPageNo() < 1)
-            daoPageInfo.setPageNo(1);
-        if (daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo())
-            daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
-        int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
-        sql = "select "
-                + "user_info.user_info_id as user_info___user_info_id"
-                + ",user_info.password as user_info___password"
-                + ",user_info.last_name as user_info___last_name"
-                + ",user_info.middle_name as user_info___middle_name"
-                + ",user_info.first_name as user_info___first_name"
-                + ",user_info.maiden_name as user_info___maiden_name"
-                + ",user_info.last_name_kana as user_info___last_name_kana"
-                + ",user_info.middle_name_kana as user_info___middle_name_kana"
-                + ",user_info.first_name_kana as user_info___first_name_kana"
-                + ",user_info.maiden_name_kana as user_info___maiden_name_kana"
-                + ",user_info.memail as user_info___memail"
-                + ",user_info.admin as user_info___admin"
-                + ",user_info.state_flg as user_info___state_flg"
-                + ",user_info.leave_date as user_info___leave_date"
-                + " from user_info ";
+        if (len == 0) return array;
 
+        // ページ計算
+        if (-1 == daoPageInfo.getLineCount()) daoPageInfo.setLineCount(len);
+        daoPageInfo.setMaxPageNo((int) Math.ceil((double) len / (double) (daoPageInfo.getLineCount())));
+        if (daoPageInfo.getPageNo() < 1) daoPageInfo.setPageNo(1);
+        if (daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo()) daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
+        int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
+
+        // 2. データ取得（シンプル版）
+        String sql = "select * from user_info ";
+        
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);
         sql += where;
         sql += order;
-        sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
+        sql += " limit " + daoPageInfo.getLineCount() + " offset " + start;
 
-        rs = DbBase.dbSelect(sql);
+        // デバッグ出力
+        System.out.println("DAO_SELECT_SQL: " + sql);
+
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         int cnt = rs.size();
-        if (cnt < 1)
-            return array;
+        if (cnt < 1) return array;
 
         for (int i = 0; i < cnt; i++) {
-            map = rs.get(i);
+            HashMap<String, String> map = rs.get(i);
             UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
+            // 単純な setUserInfoDao を使う
+            dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
         return array;
     }
 
-    /**
-     * user_info ユーザ情報テーブルの検索条件を設定する。.
-     *
-     * @return String where句の文字列
-     * @throws AtareSysException フレームワーク共通例外
-     */
+    // 検索条件を設定する
     String dbWhere() throws AtareSysException {
         StringBuffer where = new StringBuffer(1024);
 
-        // 本日の日付を取得
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date today = new Date();
         String todayStr = dateFormat.format(today);
@@ -1281,6 +797,7 @@ public class UserInfoDao implements Serializable {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("user_info.maiden_name = " + DbS.chara(getMaidenName()));
         }
+
         if (getSearchFullName().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
@@ -1307,6 +824,7 @@ public class UserInfoDao implements Serializable {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("user_info.maiden_name_kana = " + DbS.chara(getMaidenNameKana()));
         }
+
         if (getSearchFullNameKana().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
             where.append(
@@ -1314,6 +832,7 @@ public class UserInfoDao implements Serializable {
                             + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')"
                             + ") LIKE " + DbS.chara("%" + getSearchFullNameKana() + "%"));
         }
+
         if (getSearchName().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
@@ -1322,11 +841,10 @@ public class UserInfoDao implements Serializable {
                     + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')" + ") LIKE "
                     + DbS.chara("%" + getSearchName() + "%"));
         }
+
         if (userIds != null && userIds.length > 0) {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("user_info.user_info_id IN (");
-
-            // userIdsArrayに含まれる各IDをSQLのIN句に追加する
             for (int i = 0; i < userIds.length; i++) {
                 where.append(DbS.chara(userIds[i]));
                 if (i < userIds.length - 1) {
@@ -1335,6 +853,7 @@ public class UserInfoDao implements Serializable {
             }
             where.append(")");
         }
+
         where.append(where.length() > 0 ? " AND " : "");
         where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
 
@@ -1344,12 +863,7 @@ public class UserInfoDao implements Serializable {
         return "";
     }
 
-    /**
-     * user_info ユーザ情報テーブルの並べ替え順序を設定する。.
-     *
-     * @param sortKey
-     * @return Stringソート句の文字列
-     */
+    // 並べ替え順序を設定する
     String dbOrder(LinkedHashMap<String, String> sortKey) {
         String str = "";
         if (sortKey == null)
@@ -1371,15 +885,7 @@ public class UserInfoDao implements Serializable {
         return str;
     }
 
-    /**
-     * ログイン処理のチェックを行う。
-     *
-     * @param pAccount アカウントまたはメールアドレス
-     * @param pPassword パスワード
-     * @return 0::失敗 1:成功 2:管理者ログイン
-     * @throws AtareSysException
-     *         エラー
-     */
+    // ログイン処理のチェック
     public boolean login(String pAccount, String pPassword) throws AtareSysException {
         String sql = "";
         sql = " SELECT user_info.*"
@@ -1399,16 +905,11 @@ public class UserInfoDao implements Serializable {
         return true;
     }
 
-    /**
-     * データベースからユーザー名を取得するメソッド
-     * @return UserMenuに返す
-     * @throws AtareSysException
-     */
+    // 全ユーザーを取得する
     public ArrayList<UserInfoDao> getAllUsers() throws AtareSysException {
         String sql = "SELECT * FROM user_info";
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         ArrayList<UserInfoDao> users = new ArrayList<>();
-        // 本日の日付を取得
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date today = new Date();
         for (HashMap<String, String> map : rs) {
@@ -1416,7 +917,6 @@ public class UserInfoDao implements Serializable {
             String stateFlg = map.get("state_flg");
             String leaveDateStr = map.get("leave_date");
 
-            // `state_flg` が "9" かつ `leave_date` が本日より前の場合は表示しない
             boolean isStateFlgNine = "9".equals(stateFlg);
             boolean isLeaveDateBeforeToday = false;
 
@@ -1425,14 +925,12 @@ public class UserInfoDao implements Serializable {
                     Date leaveDate = dateFormat.parse(leaveDateStr);
                     isLeaveDateBeforeToday = !leaveDate.after(today);
                 } catch (ParseException e) {
-                    // `leave_date` の解析に失敗した場合は無視する
                     e.printStackTrace();
                 }
             }
             if (isStateFlgNine && isLeaveDateBeforeToday) {
                 continue;
             }
-            // ユーザーDAOのインスタンスにデータを設定
             user.setUserInfoId(map.get("user_info_id"));
             user.setStateFlg(Integer.parseInt(stateFlg));
             user.setPasswordUser(map.get("password_user"));
@@ -1454,16 +952,10 @@ public class UserInfoDao implements Serializable {
             users.add(user);
         }
 
-        return users; // 取得したユーザーリストを返す
+        return users;
     }
 
-    /**
-     * メールアドレスからユーザーIDを取得します。
-     *
-     * @param email メールアドレス
-     * @return ユーザーID。存在しない場合はnullを返します。
-     * @throws AtareSysException データベースエラー
-     */
+    // メールアドレスからユーザーIDを取得
     public String getUserInfoIdByEmail(String email) throws AtareSysException {
         String sql = "SELECT user_info_id FROM user_info WHERE memail = ?";
         try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
@@ -1480,13 +972,7 @@ public class UserInfoDao implements Serializable {
         }
     }
 
-    /**
-     * トークンをDBへ保存するメソッド
-     * @param email
-     * @param token
-     * @param expirationTime
-     * @throws AtareSysException
-     */
+    // トークンをDBへ保存する
     public void saveToken(String email, String token, long expirationTime) throws AtareSysException {
         String userId = null;
         String getUserIdSql = "SELECT user_info_id FROM user_info WHERE memail = ?";
@@ -1508,10 +994,10 @@ public class UserInfoDao implements Serializable {
 
             try (PreparedStatement pstmtInsert = (PreparedStatement) DbBase.getDbConnection()
                     .prepareStatement(insertSql)) {
-                pstmtInsert.setString(1, userId); // 取得した user_info_id を設定
-                pstmtInsert.setString(2, email); // メールアドレス
-                pstmtInsert.setString(3, token); // トークン
-                pstmtInsert.setTimestamp(4, new Timestamp(expirationTime)); // expires_at カラムに保存
+                pstmtInsert.setString(1, userId);
+                pstmtInsert.setString(2, email);
+                pstmtInsert.setString(3, token);
+                pstmtInsert.setTimestamp(4, new Timestamp(expirationTime));
                 pstmtInsert.executeUpdate();
             }
 
@@ -1520,34 +1006,25 @@ public class UserInfoDao implements Serializable {
         }
     }
 
-    /**
-     * トークンが有効化検証する
-     * @param token
-     * @return トークンが有効であれば true、無効であれば false
-     * @throws AtareSysException
-     */
+    // トークンが有効か検証する
     public boolean isValidToken(String token) throws AtareSysException {
-        //トークンと対応する有効期限を取得するクエリ
         String sql = "SELECT expires_at FROM repassword WHERE token = ?";
 
         try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
-
             pstmt.setString(1, token);
-
             try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
                 if (rs.next()) {
-                    //有効期限が現在時刻を超えていないか確認
                     Timestamp expiresAt = rs.getTimestamp("expires_at");
                     return expiresAt != null && System.currentTimeMillis() <= expiresAt.getTime();
                 }
                 return false;
             }
-
         } catch (SQLException e) {
             throw new AtareSysException("Failed to validate token", e);
         }
     }
 
+    // トークンからユーザーIDを取得
     public String getUserIdByToken(String token) throws AtareSysException {
         String sql = "SELECT user_info.user_info_id FROM user_info " +
                 "JOIN repassword ON user_info.user_info_id = repassword.user_info_id " +
@@ -1567,16 +1044,8 @@ public class UserInfoDao implements Serializable {
         }
     }
 
-    /**
-     * トークンを使用してユーザーのパスワードを更新するメソッド。
-     * 更新後にトークンを無効にする。
-     * @param token
-     * @param newPassword
-     * @return パスワードの更新に成功した場合は true、失敗した場合は false
-     * @throws AtareSysException
-     */
+    // トークンを使用してパスワードを更新する
     public boolean updatePassword(String token, String newPassword) throws AtareSysException {
-        // パスワードのハッシュ化
         String hashedPassword;
         try {
             hashedPassword = hashPassword(newPassword);
@@ -1584,59 +1053,46 @@ public class UserInfoDao implements Serializable {
             throw new AtareSysException(e);
         }
 
-        // ユーザーのパスワードを更新し、トークンを無効にするSQLクエリ
         String updatePasswordSql = "UPDATE user_info JOIN repassword ON user_info.user_info_id = repassword.user_info_id "
-                +
-                "SET user_info.password = ?, repassword.expires_at = ? " +
+                + "SET user_info.password = ?, repassword.expires_at = ? " +
                 "WHERE repassword.token = ?";
 
         try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection()
                 .prepareStatement(updatePasswordSql)) {
-            pstmt.setString(1, hashedPassword); // 新しいパスワード
-            pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis() - 1000)); // トークンを無効化するために過去の日付
-            pstmt.setString(3, token); // トークン
-
+            pstmt.setString(1, hashedPassword);
+            pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis() - 1000));
+            pstmt.setString(3, token);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new AtareSysException("Failed to update password", e);
         }
     }
 
+    // パスワードをハッシュ化する
     public String hashPassword(String password) throws Exception {
-        // ソルトを生成
         byte[] salt = new byte[16];
         SecureRandom random = new SecureRandom();
         random.nextBytes(salt);
 
-        // ソルトとパスワードを組み合わせてハッシュ化
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(salt);
         byte[] hashedPassword = md.digest(password.getBytes("UTF-8"));
 
-        // ソルトとハッシュ化されたパスワードを結合
         byte[] combined = new byte[salt.length + hashedPassword.length];
         System.arraycopy(salt, 0, combined, 0, salt.length);
         System.arraycopy(hashedPassword, 0, combined, salt.length, hashedPassword.length);
 
-        // Base64でエンコードして返す
         return java.util.Base64.getEncoder().encodeToString(combined);
     }
 
-    private static final long EXPIRATION_TIME_MINUTES = 30; // 30分
+    private static final long EXPIRATION_TIME_MINUTES = 30;
 
-    /**
-     * 新しいトークンを生成するメソッド。
-     * @return 生成したトークン
-     */
+    // 新しいトークンを生成
     public static String generateToken() {
-        return UUID.randomUUID().toString(); // UUID でトークンを生成
+        return UUID.randomUUID().toString();
     }
 
-    /**
-     * トークンの有効期限をチェックするメソッド。
-     * @param tokenGenerationTime トークンが生成された時刻
-     * @return トークンが期限切れであれば true、そうでなければ false
-     */
+    // トークンの有効期限をチェック
     public static boolean isTokenExpired(Instant tokenGenerationTime) {
         return Instant.now().isAfter(tokenGenerationTime.plus(EXPIRATION_TIME_MINUTES, ChronoUnit.MINUTES));
     }

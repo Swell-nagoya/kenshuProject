@@ -1,8 +1,23 @@
+/*
+ * (c)2010 2023 PATAPATA Corp. Corp. All Rights Reserved
+ *
+ * 機能名　　　　：DAOクラス
+ * ファイル名　　：UserInfoDao.java
+ * クラス名　　　：UserInfoDao
+ * 概要　　　　　：user_info ユーザ情報テーブルのDAOを提供する。
+ * バージョン　　：
+ *
+ * 改版履歴　　　：
+ * 2018/09/21 <新規>    新規作成
+ *
+ */
 package jp.swell.dao;
 
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,9 +49,10 @@ import jp.patasys.common.util.Digest;
  * @author 2023 PATAPATA Corp. Corp.
  * @version 1.0
  */
-public class ShiftDAO implements Serializable {
+public class UserInfoDao implements Serializable {
     /** Derializable No. */
     private static final long serialVersionUID = 1L;
+
     /**
      * データアクセス権限のあるユーザリスト
      */
@@ -74,822 +90,551 @@ public class ShiftDAO implements Serializable {
         return str;
     }
 
-    /**
-     * user_info ユーザ情報テーブルで使用するメンバー変数。
-     */
-    /**
-     * userInfoId  ユーザ情報ID
-     */
+    // user_info ユーザ情報テーブルで使用するメンバー変数
+
+    // userInfoId  ユーザ情報ID
     private String userInfoId = "";
 
-    /**
-     * ユーザ情報IDを取得する。.
-     * @return  userInfoId ユーザ情報ID
-     */
     public String getUserInfoId() {
         return userInfoId;
     }
 
-    /**
-     * ユーザ情報IDをセットする。.
-     * @param userInfoId ユーザ情報ID
-     */
     public void setUserInfoId(String userInfoId) {
         this.userInfoId = userInfoId;
     }
 
-    /**
-     * stateFlg  状態フラグ
-     */
+    // stateFlg  状態フラグ
     private int stateFlg;
 
-    /**
-     * フラグを取得する。
-     * @return  stateFlg 状態フラグ
-     */
     public int getStateFlg() {
         return stateFlg;
     }
 
-    /**
-     * フラグをセットする。.
-     * @param stateFlg 状態フラグ
-     */
     public void setStateFlg(int stateFlg) {
         this.stateFlg = stateFlg;
     }
 
-    /**
-     * passwordUser  ユーザーパスワード
-     */
+    // passwordUser  ユーザーパスワード
     private String passwordUser = "";
 
-    /**
-     * ユーザーパスワードを取得する。.
-     * @return  passwordUser ユーザーパスワード
-     */
     public String getPasswordUser() {
         return passwordUser;
     }
 
-    /**
-     * ユーザーパスワードをセットする。.
-     * @param passwordUser ユーザーパスワード
-     */
     public void setPasswordUser(String passwordUser) {
         this.passwordUser = passwordUser;
     }
 
-    /**
-     * password  パスワード
-     */
+    // password  パスワード
     private String password = "";
 
-    /**
-     * パスワードを取得する。.
-     * @return  password パスワード
-     */
     public String getPassword() {
         return password;
     }
 
-    /**
-     * パスワードをセットする。.
-     * @param password パスワード
-     */
     public void setPassword(String password) {
         this.password = password;
     }
 
-    /**
-     * lastName  姓
-     */
+    // lastName  姓
     private String lastName = "";
 
-    /**
-     * 姓を取得する。.
-     * @return  lastName 姓
-     */
     public String getLastName() {
         return lastName;
     }
 
-    /**
-     * 姓をセットする。.
-     * @param lastName 姓
-     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    /**
-     * middleName  ミドルネーム
-     */
+    // middleName  ミドルネーム
     private String middleName = "";
 
-    /**
-     * ミドルネームを取得する。.
-     * @return  middleName ミドルネーム
-     */
     public String getMiddleName() {
         return middleName;
     }
 
-    /**
-     * ミドルネームをセットする。.
-     * @param middleName ミドルネーム
-     */
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
     }
 
-    /**
-     * firstName  名
-     */
+    // firstName  名
     private String firstName = "";
 
-    /**
-     * 名を取得する。.
-     * @return  firstName 名
-     */
     public String getFirstName() {
         return firstName;
     }
 
-    /**
-     * 名をセットする。.
-     * @param firstName 名
-     */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    /**
-     * maidenName  旧姓
-     */
+    // maidenName  旧姓
     private String maidenName = "";
 
-    /**
-     * 旧姓を取得する。.
-     * @return  maidenName 旧姓
-     */
     public String getMaidenName() {
         return maidenName;
     }
 
-    /**
-     * 旧姓をセットする。.
-     * @param maidenName 旧姓
-     */
     public void setMaidenName(String maidenName) {
         this.maidenName = maidenName;
     }
 
-    /**
-     * lastNameKana  姓よみ
-     */
+    // lastNameKana  姓よみ
     private String lastNameKana = "";
 
-    /**
-     * 姓よみを取得する。.
-     * @return  lastNameKana 姓よみ
-     */
     public String getLastNameKana() {
         return lastNameKana;
     }
 
-    /**
-     * 姓よみをセットする。.
-     * @param lastNameKana 姓よみ
-     */
     public void setLastNameKana(String lastNameKana) {
         this.lastNameKana = lastNameKana;
     }
 
-    /**
-     * middleNameKana  ミドルネームよみ
-     */
+    // middleNameKana  ミドルネームよみ
     private String middleNameKana = "";
 
-    /**
-     * ミドルネームよみを取得する。.
-     * @return  middleNameKana ミドルネームよみ
-     */
     public String getMiddleNameKana() {
         return middleNameKana;
     }
 
-    /**
-     * ミドルネームよみをセットする。.
-     * @param middleNameKana ミドルネームよみ
-     */
     public void setMiddleNameKana(String middleNameKana) {
         this.middleNameKana = middleNameKana;
     }
 
-    /**
-     * firstNameKana  名よみ
-     */
+    // firstNameKana  名よみ
     private String firstNameKana = "";
 
-    /**
-     * 名よみを取得する。.
-     * @return  firstNameKana 名よみ
-     */
     public String getFirstNameKana() {
         return firstNameKana;
     }
 
-    /**
-     * 名よみをセットする。.
-     * @param firstNameKana 名よみ
-     */
     public void setFirstNameKana(String firstNameKana) {
         this.firstNameKana = firstNameKana;
     }
 
-    /**
-     * maidenNameKana  旧姓よみ
-     */
+    // maidenNameKana  旧姓よみ
     private String maidenNameKana = "";
 
-    /**
-     * 旧姓よみを取得する。.
-     * @return  maidenNameKana 旧姓よみ
-     */
     public String getMaidenNameKana() {
         return maidenNameKana;
     }
 
-    /**
-     * 旧姓よみをセットする。.
-     * @param maidenNameKana 旧姓よみ
-     */
     public void setMaidenNameKana(String maidenNameKana) {
         this.maidenNameKana = maidenNameKana;
     }
 
-    /**
-     * insertDate  入力日時
-     */
+    // insertDate  入力日時
     private String insertDate = "";
 
-    /**
-     * 入力日時を取得する。.
-     * @return  insertDate 入力日時
-     */
     public String getInsertDate() {
         return insertDate;
     }
 
-    /**
-     * 入力日時をセットする。.
-     * @param insertDate 入力日時
-     */
     public void setInsertDate(String insertDate) {
         this.insertDate = insertDate;
     }
 
-    /**
-     * insertUserId  入力ユーザーＩＤ
-     */
+    // insertUserId  入力ユーザーＩＤ
     private String insertUserId = "";
 
-    /**
-     * 入力ユーザーＩＤを取得する。.
-     * @return  insertUserId 入力ユーザーＩＤ
-     */
     public String getInsertUserId() {
         return insertUserId;
     }
 
-    /**
-     * 入力ユーザーＩＤをセットする。
-     * @param insertUserId 入力ユーザーＩＤ
-     */
     public void setInsertUserId(String insertUserId) {
         this.insertUserId = insertUserId;
     }
 
-    /**
-     * updateDate  アップデート日時
-     */
+    // updateDate  アップデート日時
     private String updateDate = "";
 
-    /**
-     * アップデート日時を取得する。.
-     * @return  updateDate アップデート日時
-     */
     public String getUpdateDate() {
         return updateDate;
     }
 
-    /**
-     * アップデート日時をセットする。
-     * @param updateDate アップデート日時
-     */
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
 
-    /**
-     * updateUserId  アップデートユーザーＩＤ
-     */
+    // updateUserId  アップデートユーザーＩＤ
     private String updateUserId = "";
 
-    /**
-     * アップデートユーザーＩＤを取得する。.
-     * @return  updateUserId アップデートユーザーＩＤ
-     */
     public String getUpdateUserId() {
         return updateUserId;
     }
 
-    /**
-     * アップデートユーザーＩＤをセットする。
-     * @param updateUserId アップデートユーザーＩＤ
-     */
     public void setUpdateUserId(String updateUserId) {
         this.updateUserId = updateUserId;
     }
 
-    /**
-     * leaveDate  退職予定日
-     */
+    // leaveDate  退職予定日
     private String leaveDate = "";
 
-    /**
-     * 退職予定日を取得する。.
-     * @return  leaveDate 退職予定日
-     */
     public String getLeaveDate() {
         return leaveDate;
     }
 
-    /**
-     * 退職予定日をセットする。
-     * @param leaveDate 退職予定日
-     */
     public void setLeaveDate(String leaveDate) {
         this.leaveDate = leaveDate;
     }
 
-    /**
-     * zipcode  郵便番号
-     */
+    // zipcode  郵便番号
     private String zipcode = "";
 
-    /**
-     * 郵便番号を取得する。.
-     * @return  zipcode 郵便番号
-     */
     public String getZipcode() {
         return zipcode;
     }
 
-    /**
-     * 郵便番号をセットする。.
-     * @param zipcode 郵便番号
-     */
     public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
     }
 
-    /**
-     * address  住所
-     */
+    // address  住所
     private String address = "";
 
-    /**
-     * 住所を取得する。.
-     * @return  address 住所
-     */
     public String getAddress() {
         return address;
     }
 
-    /**
-     * 住所をセットする。.
-     * @param address 住所
-     */
     public void setAddress(String address) {
         this.address = address;
     }
 
-    /**
-     * station  最寄りの駅
-     */
+    // station  最寄りの駅
     private String station = "";
 
-    /**
-     * 最寄りの駅を取得する。.
-     * @return  station 最寄りの駅
-     */
     public String getStation() {
         return station;
     }
 
-    /**
-     * 最寄りの駅をセットする。.
-     * @param station 最寄りの駅
-     */
     public void setStation(String station) {
         this.station = station;
     }
 
-    /**
-     * tel  電話番号
-     */
+    // tel  電話番号
     private String tel = "";
 
-    /**
-     * 電話番号を取得する。.
-     * @return  tel 電話番号
-     */
     public String getTel() {
         return tel;
     }
 
-    /**
-     * 電話番号をセットする。.
-     * @param tel 電話番号
-     */
     public void setTel(String tel) {
         this.tel = tel;
     }
 
-    /**
-     * fax  ＦＡＸ
-     */
+    // fax  ＦＡＸ
     private String fax = "";
 
-    /**
-     * ＦＡＸを取得する。.
-     * @return  fax ＦＡＸ
-     */
     public String getFax() {
         return fax;
     }
 
-    /**
-     * ＦＡＸをセットする。.
-     * @param fax ＦＡＸ
-     */
     public void setFax(String fax) {
         this.fax = fax;
     }
 
-    /**
-     * mtel  携帯電話番号
-     */
+    // mtel  携帯電話番号
     private String mtel = "";
 
-    /**
-     * 携帯電話番号を取得する。.
-     * @return  mtel 携帯電話番号
-     */
     public String getMtel() {
         return mtel;
     }
 
-    /**
-     * 携帯電話番号をセットする。.
-     * @param mtel 携帯電話番号
-     */
     public void setMtel(String mtel) {
         this.mtel = mtel;
     }
 
-    /**
-     * memail  携帯Eメール
-     */
+    // memail  携帯Eメール
     private String memail = "";
 
-    /**
-     * 携帯Eメールを取得する。.
-     * @return  memail 携帯Eメール
-     */
     public String getMemail() {
         return memail;
     }
 
-    /**
-     * 携帯Eメールをセットする。.
-     * @param memail 携帯Eメール
-     */
     public void setMemail(String memail) {
         this.memail = memail;
     }
 
-    /**
-     * adminFlag　管理者権限
-     */
+    // adminFlag　管理者権限
     private String admin = "";
 
-    /**
-     * 管理者権限を取得する。
-     * @return　adminFlag　管理者権限
-     */
     public String getAdmin() {
         return admin;
     }
 
-    /**
-     * 管理者権限をセットする。.
-     * @param adminFlag　管理者権限
-     */
     public void setAdmin(String admin) {
         this.admin = admin;
     }
 
-    /**
-     * passwordModifyDate  パスワード変更日時
-     */
+    // passwordModifyDate  パスワード変更日時
     private String passwordModifyDate = "";
 
-    /**
-     * パスワード変更日時を取得する。.
-     * @return  passwordModifyDate パスワード変更日時
-     */
     public String getPasswordModifyDate() {
         return passwordModifyDate;
     }
 
-    /**
-     * パスワード変更日時をセットする。.
-     * @param passwordModifyDate パスワード変更日時
-     */
     public void setPasswordModifyDate(String passwordModifyDate) {
         this.passwordModifyDate = passwordModifyDate;
     }
 
-    /**
-     * loginEnableFrom  ログイン可能期間FROM
-     */
+    // loginEnableFrom  ログイン可能期間FROM
     private String loginEnableFrom = "";
 
-    /**
-     * ログイン可能期間FROMを取得する。.
-     * @return  loginEnableFrom ログイン可能期間FROM
-     */
     public String getLoginEnableFrom() {
         return loginEnableFrom;
     }
 
-    /**
-     * ログイン可能期間FROMをセットする。.
-     * @param loginEnableFrom ログイン可能期間FROM
-     */
     public void setLoginEnableFrom(String loginEnableFrom) {
         this.loginEnableFrom = loginEnableFrom;
     }
 
-    /**
-     * loginEnableTo  ログイン可能期間TO
-     */
+    // loginEnableTo  ログイン可能期間TO
     private String loginEnableTo = "";
 
-    /**
-     * ログイン可能期間TOを取得する。.
-     * @return  loginEnableTo ログイン可能期間TO
-     */
     public String getLoginEnableTo() {
         return loginEnableTo;
     }
 
-    /**
-     * ログイン可能期間TOをセットする。.
-     * @param loginEnableTo ログイン可能期間TO
-     */
     public void setLoginEnableTo(String loginEnableTo) {
         this.loginEnableTo = loginEnableTo;
     }
 
-    /**
-     * searchFullName 検索用氏名
-     */
+    // searchFullName 検索用氏名
     private String searchFullName = "";
-    /**
-     * searchFullName 検索用氏名かな
-     */
+    // searchFullName 検索用氏名かな
     private String searchFullNameKana = "";
 
-    /**
-     * searchFullName 検索用氏名を取得します。
-     *
-     * @return searchFullName 検索用氏名
-     */
     public String getSearchFullName() {
         return searchFullName;
     }
 
-    /**
-     * searchFullName 検索用氏名を設定します。
-     *
-     * @param searchFullName
-     *        searchFullName 検索用氏名
-     */
     public void setSearchFullName(String searchFullName) {
         this.searchFullName = searchFullName;
     }
 
-    /**
-     * searchFullName 検索用氏名かなを取得します。
-     *
-     * @return searchFullName 検索用氏名かな
-     */
     public String getSearchFullNameKana() {
         return searchFullNameKana;
     }
 
-    /**
-     * searchFullName 検索用氏名かなを設定します。
-     *
-     * @param searchFullNameKana
-     *        searchFullName 検索用氏名かな
-     */
     public void setSearchFullNameKana(String searchFullNameKana) {
         this.searchFullNameKana = searchFullNameKana;
     }
 
     private String[] userIds;
 
-    // userIdsをセットするメソッド
     public void setUserIds(String[] userIds) {
         this.userIds = userIds;
     }
 
-    // userIdsを取得するメソッド
     public String[] getUserIds() {
         return this.userIds;
     }
 
-    /**
-     * searchName  検索名
-     */
+    // searchName  検索名
     private String searchName = "";
 
-    /**
-     * 検索名を取得する。.
-     * @return  searchName　検索名
-     */
     public String getSearchName() {
         return searchName;
     }
 
-    /**
-     * 検索名をセットする。.
-     * @param searchName 検索名
-     */
     public void setSearchName(String searchName) {
         this.searchName = searchName;
     }
 
-    /**
-     *  データアクセス権限のあるユーザリストを取得する。.
-     */
+    // データアクセス権限のあるユーザリストを取得する
     public ArrayList<String> getAuthorityUserList() {
         return authorityUserList;
     }
 
-    /**
-     * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
-     */
+    // ソートフィールドのチェック時に使う。SQLインジェクション対策用
     private HashMap<String, String> fieldsArray = new HashMap<String, String>();
 
-    /**
-     * コンストラクタ。.
-     */
-    private String id;
-    private String name;
-    private String email;
-    private String startTime;
-    private String endTime;
-    private String workPlace;
+    // ユーザー情報を全件取得する
+    public List<UserInfoDao> getAllUsers1() throws Exception {
+        List<UserInfoDao> userList = new ArrayList<>();
 
-    public String getId() {
-        return id;
+        // JDBCドライバ読み込み（初回のみ必要）
+        Class.forName("com.mysql.jdbc.Driver");
+
+        // DBに接続
+        try (Connection conn = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/your_database", "db_user", "db_password");
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user_info");
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                UserInfoDao user = new UserInfoDao();
+                user.setUserInfoId(rs.getString("user_info_id"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                userList.add(user);
+            }
+        }
+
+        return userList;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getStartTime() {
-        return startTime.substring(0, 5);
-    }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
-    public String getEndTime() {
-        return endTime.substring(0, 5);
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getWorkPlace() {
-        return workPlace;
-    }
-
-    public void setWorkPlace(String workPlace) {
-        this.workPlace = workPlace;
-    }
-
-    public ShiftDAO() {
-        fieldsArray.put("id", "employee_shifts.id");
-        fieldsArray.put("name", "employee_shifts.name");
-        fieldsArray.put("email", "employee_shifts.email");
-        fieldsArray.put("start_time", "employee_shifts.start_time");
-        fieldsArray.put("end_time", "employee_shifts.end_time");
-        fieldsArray.put("work_place", "employee_shifts.work_place");
+    // コンストラクタ
+    public UserInfoDao() {
+        fieldsArray.put("user_info_id", "user_info.user_info_id");
+        fieldsArray.put("password", "user_info.password");
+        fieldsArray.put("last_name", "user_info.last_name");
+        fieldsArray.put("middle_name", "user_info.middle_name");
+        fieldsArray.put("first_name", "user_info.first_name");
+        fieldsArray.put("maiden_name", "user_info.maiden_name");
+        fieldsArray.put("last_name_kana", "user_info.last_name_kana");
+        fieldsArray.put("middle_name_kana", "user_info.middle_name_kana");
+        fieldsArray.put("first_name_kana", "user_info.first_name_kana");
+        fieldsArray.put("maiden_name_kana", "user_info.maiden_name_kana");
+        fieldsArray.put("insert_user_id", "user_info.insert_user_id");
+        fieldsArray.put("admin", "user_info.admin");
     }
 
     /**
-     * employee_shifts ユーザ情報テーブルを検索しemployee_shifts ユーザ情報テーブルの１行を取得します。
+     * user_info ユーザ情報テーブルを検索しuser_info ユーザ情報テーブルの１行を取得します。.
      *
-     * @param pId   ユーザ情報ID
+     * @param pUserInfoId   ユーザ情報ID
      * @return true:読み込み成功 false:存在しない
      * @throws AtareSysException フレームワーク共通例外
      */
-    public boolean dbSelect(String pId) throws AtareSysException {
-        String sql = "SELECT "
-                + "employee_shifts.id AS employee_shifts___id, "
-                + "employee_shifts.name AS employee_shifts___name, "
-                + "employee_shifts.email AS employee_shifts___email, "
-                + "CONVERT(start_time, CHAR)  AS employee_shifts___start_time, "
-                + "CONVERT(end_time, CHAR)  AS employee_shifts___end_time, "
-                + "employee_shifts.work_place AS employee_shifts___work_place "
-                + "FROM testdb.employee_shifts "
-                + "WHERE id = " + DbS.chara(pId);
+    public boolean dbSelect(String pUserInfoId) throws AtareSysException {
+        // エイリアス（user_info___...）を使わず、素直に全部取るSQLにする
+        String sql = "SELECT * FROM user_info "
+                + "WHERE user_info_id = " + DbS.chara(pUserInfoId);
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        if (rs.size() == 0)
+        if (0 == rs.size())
             return false;
 
         HashMap<String, String> map = rs.get(0);
-        setEmployeeShift(map, this);
+        
+        // 単純な setUserInfoDao を使う
+        setUserInfoDao(map, this);
+        
         return true;
     }
 
     /**
-    
-    /**
-    * UserInfoDao にuser_info ユーザ情報テーブルから読み込んだデータを設定する。.
-    *
-    * @param map  読み込んだテーブルの１レコードが入っているHashMap
-    * @param dao  UserInfoDaoこのテーブルのインスタンス
-    */
-    public void setEmployeeShift(HashMap<String, String> map, ShiftDAO dao) throws AtareSysException {
-    	dao.setId(DbI.chara(map.get("id")));          // "employee_shifts___id" → "id" に変更
-    	dao.setName(DbI.chara(map.get("name")));      // "employee_shifts___name" → "name" に変更
-    	dao.setEmail(DbI.chara(map.get("email")));    // "employee_shifts___email" → "email" に変更
-        dao.setStartTime(DbI.chara(map.get("employee_shifts___start_time")));
-        dao.setEndTime(DbI.chara(map.get("employee_shifts___end_time")));
-        dao.setWorkPlace(DbI.chara(map.get("work_place"))); // "employee_shifts___work_place" → "work_place" に変更
+     * user_info ユーザ情報テーブルを検索しuser_info ユーザ情報テーブルの１行を取得します。.
+     *
+     * @param pUserInfoId   ユーザ情報ID
+     * @return true:読み込み成功 false:存在しない
+     * @throws AtareSysException フレームワーク共通例外
+     */
+    public boolean dbSelect(String pUserInfoId, String pas) throws AtareSysException {
+        // ここもシンプルに修正
+        String sql = "SELECT * FROM user_info "
+                + "WHERE user_info_id = " + DbS.chara(pUserInfoId)
+                + " AND password = " + DbS.chara(pas);
+
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        if (0 == rs.size())
+            return false;
+
+        HashMap<String, String> map = rs.get(0);
+        setUserInfoDao(map, this);
+        return true;
     }
 
-    /** 
-     * user_info ユーザ情報テーブルにデータを挿入する 
-     * 
-     * @return true:成功 false:失敗 
-     * @throws AtareSysException エラー 
+    /**
+     * UserInfoDao にuser_info ユーザ情報テーブルから読み込んだデータを設定する。.
+     *
+     * @param map  読み込んだテーブルの１レコードが入っているHashMap
+     * @param dao  UserInfoDaoこのテーブルのインスタンス
+     */
+    public void setUserInfoDao(HashMap<String, String> map, UserInfoDao dao) throws AtareSysException {
+        dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
+        dao.setPassword(DbI.chara(map.get("password")));
+        dao.setLastName(DbI.chara(map.get("last_name")));
+        dao.setMiddleName(DbI.chara(map.get("middle_name")));
+        dao.setFirstName(DbI.chara(map.get("first_name")));
+        dao.setMaidenName(DbI.chara(map.get("maiden_name")));
+        dao.setLastNameKana(DbI.chara(map.get("last_name_kana")));
+        dao.setMiddleNameKana(DbI.chara(map.get("middle_name_kana")));
+        dao.setFirstNameKana(DbI.chara(map.get("first_name_kana")));
+        dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
+        dao.setAdmin(DbI.chara(map.get("admin")));
+        dao.setLeaveDate(DbI.chara(map.get("leave_date")));
+        dao.setMemail(DbI.chara(map.get("memail")));
+        dao.setInsertUserId(DbI.chara(map.get("insert_user_id")));
+        dao.setPasswordUser(DbI.chara(map.get("password_user")));
+    }
+
+    /**
+     * UserInfoDao にuser_info ユーザ情報テーブルから読み込んだデータを設定する。.
+     *
+     * @param map  読み込んだテーブルの１レコードが入っているHashMap
+     * @param dao  UserInfoDaoこのテーブルのインスタンス
+     */
+    public void setUserInfoDaoForJoin(HashMap<String, String> map, UserInfoDao dao) throws AtareSysException {
+        dao.setUserInfoId(DbI.chara(map.getOrDefault("user_info___user_info_id", "")));
+        dao.setPassword(DbI.chara(map.getOrDefault("user_info___password", "")));
+        dao.setLastName(DbI.chara(map.getOrDefault("user_info___last_name", "")));
+        dao.setMiddleName(DbI.chara(map.getOrDefault("user_info___middle_name", "")));
+        dao.setFirstName(DbI.chara(map.getOrDefault("user_info___first_name", "")));
+        dao.setMaidenName(DbI.chara(map.getOrDefault("user_info___maiden_name", "")));
+        dao.setLastNameKana(DbI.chara(map.getOrDefault("user_info___last_name_kana", "")));
+        dao.setMiddleNameKana(DbI.chara(map.getOrDefault("user_info___middle_name_kana", "")));
+        dao.setFirstNameKana(DbI.chara(map.getOrDefault("user_info___first_name_kana", "")));
+        dao.setMaidenNameKana(DbI.chara(map.getOrDefault("user_info___maiden_name_kana", "")));
+        dao.setInsertUserId(DbI.chara(map.getOrDefault("user_info___insert_user_id", "")));
+        dao.setMemail(DbI.chara(map.getOrDefault("user_info___memail", "")));
+        dao.setAdmin(DbI.chara(map.getOrDefault("user_info___admin", "")));
+        dao.setLeaveDate(DbI.chara(map.getOrDefault("user_info___leave_date", "")));
+    }
+
+    /**
+     * user_info ユーザ情報テーブルにデータを挿入する
+     *
+     * @return true:成功 false:失敗
+     * @throws AtareSysException エラー
      */
     public boolean dbInsert() throws AtareSysException {
+        // パスワードをSHA-512でハッシュ化
+        String hashedPassword = Digest.hex(Digest.SHA512, this.password);
 
-        String sql = "insert into employee_shifts ("
-                + " id"
-                + ",name"
-                + ",email"
-                + ",start_time"
-                + ",end_time"
-                + ",work_place"
+        // デバッグログ
+        System.out.println("DAO_DEBUG: Insertする名前=[" + this.lastName + " " + this.firstName + "]");
+
+        String sql = "insert into user_info ("
+                + " user_info_id"
+                + ",state_flg"
+                + ",password_user"
+                + ",password"
+                + ",last_name"
+                + ",middle_name"
+                + ",first_name"
+                + ",maiden_name"
+                + ",last_name_kana"
+                + ",middle_name_kana"
+                + ",first_name_kana"
+                + ",maiden_name_kana"
+                + ",insert_date"
+                + ",insert_user_id"
+                + ",update_user_id"
+                + ",memail"
+                + ",admin"
+                + ",leave_date"
                 + " ) values ( "
-                + DbO.chara(getId())
-                + "," + DbO.chara(getName())
-                + "," + DbO.chara(getEmail())
-                + "," + DbO.chara(getStartTime())
-                + "," + DbO.chara(getEndTime())
-                + "," + DbO.chara(getWorkPlace())
+                + DbO.chara(this.userInfoId)
+                + ",1"
+                + "," + DbO.chara(this.passwordUser)
+                + "," + DbO.chara(hashedPassword) // ハッシュ化したパスワードを挿入
+                + "," + DbO.chara(this.lastName)
+                + "," + DbO.chara(this.middleName)
+                + "," + DbO.chara(this.firstName)
+                + "," + DbO.chara(this.maidenName)
+                + "," + DbO.chara(this.lastNameKana)
+                + "," + DbO.chara(this.middleNameKana)
+                + "," + DbO.chara(this.firstNameKana)
+                + "," + DbO.chara(this.maidenNameKana)
+                + "," + "NOW(),"
+                + DbO.chara(this.insertUserId)
+                + "," + DbO.chara(this.updateUserId)
+                + "," + DbO.chara(this.memail)
+                + "," + DbO.chara(this.admin)
+                + "," + DbO.chara(this.leaveDate)
                 + " )";
 
         int ret = DbBase.dbExec(sql);
@@ -905,16 +650,23 @@ public class ShiftDAO implements Serializable {
      * @return true:成功 false:失敗
      * @throws AtareSysException フレームワーク共通例外
      */
-    public boolean dbUpdate(String id) throws AtareSysException {
-        String sql = "update employee_shifts set "
-                + "name = " + DbO.chara(getName())
-                + "," + " email = " + DbO.chara(getEmail())
-                + "," + " start_time = " + DbO.chara(getStartTime())
-                + "," + " end_time = " + DbO.chara(getEndTime())
-                + "," + " work_place = " + DbO.chara(getWorkPlace())
-                + " where id = " + DbS.chara(id)
+    public boolean dbUpdate(String userInfoId) throws AtareSysException {
+        String sql = "update user_info set "
+                + " last_name = " + DbO.chara(getLastName())
+                + "," + " middle_name = " + DbO.chara(getMiddleName())
+                + "," + " first_name = " + DbO.chara(getFirstName())
+                + "," + " maiden_name = " + DbO.chara(getMaidenName())
+                + "," + " last_name_kana = " + DbO.chara(getLastNameKana())
+                + "," + " middle_name_kana = " + DbO.chara(getMiddleNameKana())
+                + "," + " first_name_kana = " + DbO.chara(getFirstNameKana())
+                + "," + " maiden_name_kana = " + DbO.chara(getMaidenNameKana())
+                + "," + " admin = " + DbO.chara(getAdmin())
+                + "," + " update_date = NOW()"
+                + "," + " update_user_id = " + DbO.chara(getUpdateUserId())
+                + "," + " memail = " + DbO.chara(getMemail())
+                + "," + " leave_date = " + DbO.chara(getLeaveDate())
+                + " where user_info_id = " + DbS.chara(userInfoId)
                 + "";
-
         int ret = DbBase.dbExec(sql);
         if (ret != 1)
             throw new AtareSysException("dbUpdate number or record exception.");
@@ -928,9 +680,10 @@ public class ShiftDAO implements Serializable {
      * @return true:成功 false:失敗
      * @throws AtareSysException エラー
      */
-    public boolean dbDelete(String id) throws AtareSysException {
-        String sql = "DELETE FROM employee_shifts "
-                + " where id = " + DbS.chara(id);
+    public boolean dbDelete(String userInfoId) throws AtareSysException {
+        String sql = "update user_info set "
+                + " state_flg = 9 "
+                + " where user_info_id = " + DbS.chara(userInfoId);
         int ret = DbBase.dbExec(sql);
         if (ret != 1)
             throw new AtareSysException("dbDelete number or record exception.");
@@ -962,8 +715,8 @@ public class ShiftDAO implements Serializable {
      */
     public boolean isEmailExists(String email) throws AtareSysException {
         // メールアドレスが存在するかのカウントを行う
-        String sql = "SELECT COUNT(*) FROM employee_shifts "
-                + "WHERE email = " + DbS.chara(email);
+        String sql = "SELECT COUNT(*) FROM user_info "
+                + "WHERE memail = " + DbS.chara(email);
 
         // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
@@ -983,11 +736,11 @@ public class ShiftDAO implements Serializable {
      * @return メールアドレスが重複していれば true、そうでなければ false
      * @throws AtareSysException
      */
-    public boolean isEmailExists(String email, String ShiftId) throws AtareSysException {
+    public boolean isEmailExists(String email, String pUserInfoId) throws AtareSysException {
         // メールアドレスが存在するかのカウントを行う
-        String sql = "SELECT COUNT(*) FROM employee_shifts "
-                + "WHERE email = " + DbS.chara(email)
-                + "and id NOT IN (" + DbS.chara(ShiftId) + ")";
+        String sql = "SELECT COUNT(*) FROM user_info "
+                + "WHERE memail = " + DbS.chara(email)
+                + "and user_info_id NOT IN (" + DbS.chara(pUserInfoId) + ")";
 
         // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
@@ -1009,8 +762,8 @@ public class ShiftDAO implements Serializable {
      */
     public boolean isIdExists(String id) throws AtareSysException {
         // ＩＤが存在するかのカウントを行う
-        String sql = "SELECT COUNT(*) FROM employee_shifts "
-                + "WHERE id = " + DbS.chara(id);
+        String sql = "SELECT COUNT(*) FROM user_info "
+                + "WHERE insert_user_id = " + DbS.chara(id);
 
         // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
@@ -1030,11 +783,11 @@ public class ShiftDAO implements Serializable {
      * @return ＩＤが重複していれば true、そうでなければ false
      * @throws AtareSysException
      */
-    public boolean isIdExists(String id, String ShiftId) throws AtareSysException {
+    public boolean isIdExists(String id, String pUserInfoId) throws AtareSysException {
         // ＩＤが存在するかのカウントを行う
-        String sql = "SELECT COUNT(*) FROM employee_shifts "
-                + "WHERE id = " + DbS.chara(id)
-                + "and id NOT IN (" + DbS.chara(ShiftId) + ")";
+        String sql = "SELECT COUNT(*) FROM user_info "
+                + "WHERE insert_user_id = " + DbS.chara(id)
+                + "and user_info_id NOT IN (" + DbS.chara(pUserInfoId) + ")";
 
         // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
@@ -1055,21 +808,19 @@ public class ShiftDAO implements Serializable {
      * @return 取得したUserInfoDaoの配列
      * @throws AtareSysException エラー
      */
-    static public ArrayList<ShiftDAO> dbSelectListAll() throws AtareSysException {
-        ArrayList<ShiftDAO> array = new ArrayList<ShiftDAO>();
-
+    static public ArrayList<UserInfoDao> dbSelectListAll() throws AtareSysException {
+        ArrayList<UserInfoDao> array = new ArrayList<UserInfoDao>();
         List<HashMap<String, String>> rs;
         HashMap<String, String> map;
-        String sql = "select * "
-                + " FROM employee_shifts ";
+        String sql = "select * from user_info ";
         rs = DbBase.dbSelect(sql);
         int cnt = rs.size();
         if (cnt < 1)
             return array;
         for (int i = 0; i < cnt; i++) {
-            ShiftDAO dao = new ShiftDAO();
+            UserInfoDao dao = new UserInfoDao();
             map = rs.get(i);
-            dao.setEmployeeShift(map, dao);
+            dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
         return array;
@@ -1084,54 +835,47 @@ public class ShiftDAO implements Serializable {
      * @return 取得したUserInfoDaoの配列
      * @throws AtareSysException エラー
      */
-    static public ArrayList<ShiftDAO> dbSelectList(ShiftDAO myclass, LinkedHashMap<String, String> sortKey,
+    static public ArrayList<UserInfoDao> dbSelectList(UserInfoDao myclass, LinkedHashMap<String, String> sortKey,
             DaoPageInfo daoPageInfo) throws AtareSysException {
-        ArrayList<ShiftDAO> array = new ArrayList<ShiftDAO>();
+        ArrayList<UserInfoDao> array = new ArrayList<UserInfoDao>();
 
-        // レコードの総件数を求める*/
-        String sql = "select count(*) as count"
-                + " from employee_shifts "
-                + myclass.dbWhere();
-        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        if (0 == rs.size())
-            return array;
-        HashMap<String, String> map = rs.get(0);
-        int len = Integer.parseInt(map.get("count"));
+        // レコードの総件数を求める
+        String sqlCount = "select count(*) as count from user_info " + myclass.dbWhere();
+        List<HashMap<String, String>> rsCount = DbBase.dbSelect(sqlCount);
+        if (0 == rsCount.size()) return array;
+        
+        int len = Integer.parseInt(rsCount.get(0).get("count"));
         daoPageInfo.setRecordCount(len);
-        if (len == 0)
-            return array;
-        if (-1 == daoPageInfo.getLineCount())
-            daoPageInfo.setLineCount(len);
-        daoPageInfo.setMaxPageNo((int) Math.ceil((double) len / (double) (daoPageInfo.getLineCount())));
-        if (daoPageInfo.getPageNo() < 1)
-            daoPageInfo.setPageNo(1);
-        if (daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo())
-            daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
-        int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
-        sql = "select "
-                + "id as employee_shifts___id"
-                + ",name as employee_shifts___name"
-                + ",email as employee_shifts___email"
-                + ",CONVERT(start_time, CHAR) as employee_shifts___start_time"
-                + ",CONVERT(end_time, CHAR) as employee_shifts___end_time"
-                + ",work_place as employee_shifts___work_place"
-                + " from employee_shifts";
+        if (len == 0) return array;
 
+        // ページ計算
+        if (-1 == daoPageInfo.getLineCount()) daoPageInfo.setLineCount(len);
+        daoPageInfo.setMaxPageNo((int) Math.ceil((double) len / (double) (daoPageInfo.getLineCount())));
+        if (daoPageInfo.getPageNo() < 1) daoPageInfo.setPageNo(1);
+        if (daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo()) daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
+        int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
+
+        // 2. データ取得（シンプル版）
+        String sql = "select * from user_info ";
+        
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);
         sql += where;
         sql += order;
-        sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
+        sql += " limit " + daoPageInfo.getLineCount() + " offset " + start;
 
-        rs = DbBase.dbSelect(sql);
+        // デバッグ出力
+        System.out.println("DAO_SELECT_SQL: " + sql);
+
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         int cnt = rs.size();
-        if (cnt < 1)
-            return array;
+        if (cnt < 1) return array;
 
         for (int i = 0; i < cnt; i++) {
-            map = rs.get(i);
-            ShiftDAO dao = new ShiftDAO();
-            dao.setEmployeeShift(map, dao);
+            HashMap<String, String> map = rs.get(i);
+            UserInfoDao dao = new UserInfoDao();
+            // 単純な setUserInfoDao を使う
+            dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
         return array;
@@ -1143,25 +887,101 @@ public class ShiftDAO implements Serializable {
      * @return String where句の文字列
      * @throws AtareSysException フレームワーク共通例外
      */
-    private String dbWhere() throws AtareSysException {
-        StringBuilder where = new StringBuilder();
+    String dbWhere() throws AtareSysException {
+        StringBuffer where = new StringBuffer(1024);
 
-        if (getName() != null && !getName().isEmpty()) {
-            where.append("name LIKE " + DbS.chara("%" + getName() + "%"));
-        }
-        if (getSearchName() != null && !getSearchName().isEmpty()) {
-            where.append("name LIKE " + DbS.chara("%" + getSearchName() + "%"));
+        // 本日の日付を取得
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        Date today = new Date();
+        String todayStr = dateFormat.format(today);
+
+        if (getUserInfoId().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.user_info_id = " + DbS.chara(getUserInfoId()));
         }
 
-        if (getWorkPlace() != null && !getWorkPlace().isEmpty()) {
-            if (where.length() > 0) where.append(" AND ");
-            where.append("work_place LIKE " + DbS.chara("%" + getWorkPlace() + "%"));
+        if (getLastName().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.last_name = " + DbS.chara(getLastName()));
         }
+
+        if (getMiddleName().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.middle_name = " + DbS.chara(getMiddleName()));
+        }
+
+        if (getFirstName().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.first_name = " + DbS.chara(getFirstName()));
+        }
+
+        if (getMaidenName().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.maiden_name = " + DbS.chara(getMaidenName()));
+        }
+
+        if (getSearchFullName().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
+                    + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, '')" + ") LIKE "
+                    + DbS.chara("%" + getSearchFullName() + "%"));
+        }
+
+        if (getLastNameKana().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.last_name_kana = " + DbS.chara(getLastNameKana()));
+        }
+
+        if (getMiddleNameKana().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.middle_name_kana = " + DbS.chara(getMiddleNameKana()));
+        }
+
+        if (getFirstNameKana().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.first_name_kana = " + DbS.chara(getFirstNameKana()));
+        }
+
+        if (getMaidenNameKana().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.maiden_name_kana = " + DbS.chara(getMaidenNameKana()));
+        }
+
+        if (getSearchFullNameKana().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append(
+                    "CONCAT(" + "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
+                            + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')"
+                            + ") LIKE " + DbS.chara("%" + getSearchFullNameKana() + "%"));
+        }
+
+        if (getSearchName().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
+                    + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, ''), " +
+                    "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
+                    + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')" + ") LIKE "
+                    + DbS.chara("%" + getSearchName() + "%"));
+        }
+
+        if (userIds != null && userIds.length > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.user_info_id IN (");
+            for (int i = 0; i < userIds.length; i++) {
+                where.append(DbS.chara(userIds[i]));
+                if (i < userIds.length - 1) {
+                    where.append(", ");
+                }
+            }
+            where.append(")");
+        }
+
+        where.append(where.length() > 0 ? " AND " : "");
+        where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
 
         if (where.length() > 0) {
-            return " WHERE " + where.toString();
+            return "where " + where.toString();
         }
-
         return "";
     }
 
@@ -1171,7 +991,7 @@ public class ShiftDAO implements Serializable {
      * @param sortKey
      * @return Stringソート句の文字列
      */
-    private String dbOrder(LinkedHashMap<String, String> sortKey) {
+    String dbOrder(LinkedHashMap<String, String> sortKey) {
         String str = "";
         if (sortKey == null)
             return "";
@@ -1212,7 +1032,7 @@ public class ShiftDAO implements Serializable {
         if (1 != rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setEmployeeShift(map, this);
+        setUserInfoDao(map, this);
         String password = Digest.hex(Digest.SHA512, pPassword);
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
@@ -1225,15 +1045,15 @@ public class ShiftDAO implements Serializable {
      * @return UserMenuに返す
      * @throws AtareSysException
      */
-    public ArrayList<ShiftDAO> getAllUsers() throws AtareSysException {
+    public ArrayList<UserInfoDao> getAllUsers() throws AtareSysException {
         String sql = "SELECT * FROM user_info";
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        ArrayList<ShiftDAO> users = new ArrayList<>();
+        ArrayList<UserInfoDao> users = new ArrayList<>();
         // 本日の日付を取得
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date today = new Date();
         for (HashMap<String, String> map : rs) {
-            ShiftDAO user = new ShiftDAO();
+            UserInfoDao user = new UserInfoDao();
             String stateFlg = map.get("state_flg");
             String leaveDateStr = map.get("leave_date");
 
@@ -1352,9 +1172,7 @@ public class ShiftDAO implements Serializable {
         String sql = "SELECT expires_at FROM repassword WHERE token = ?";
 
         try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
-
             pstmt.setString(1, token);
-
             try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
                 if (rs.next()) {
                     //有効期限が現在時刻を超えていないか確認
@@ -1363,12 +1181,17 @@ public class ShiftDAO implements Serializable {
                 }
                 return false;
             }
-
         } catch (SQLException e) {
             throw new AtareSysException("Failed to validate token", e);
         }
     }
 
+    /**
+     * トークンからユーザーIDを取得するメソッド
+     * @param token
+     * @return ユーザーID。存在しない場合はnullを返す
+     * @throws AtareSysException
+     */
     public String getUserIdByToken(String token) throws AtareSysException {
         String sql = "SELECT user_info.user_info_id FROM user_info " +
                 "JOIN repassword ON user_info.user_info_id = repassword.user_info_id " +
@@ -1407,8 +1230,7 @@ public class ShiftDAO implements Serializable {
 
         // ユーザーのパスワードを更新し、トークンを無効にするSQLクエリ
         String updatePasswordSql = "UPDATE user_info JOIN repassword ON user_info.user_info_id = repassword.user_info_id "
-                +
-                "SET user_info.password = ?, repassword.expires_at = ? " +
+                + "SET user_info.password = ?, repassword.expires_at = ? " +
                 "WHERE repassword.token = ?";
 
         try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection()
@@ -1416,7 +1238,6 @@ public class ShiftDAO implements Serializable {
             pstmt.setString(1, hashedPassword); // 新しいパスワード
             pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis() - 1000)); // トークンを無効化するために過去の日付
             pstmt.setString(3, token); // トークン
-
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new AtareSysException("Failed to update password", e);
@@ -1460,6 +1281,11 @@ public class ShiftDAO implements Serializable {
      */
     public static boolean isTokenExpired(Instant tokenGenerationTime) {
         return Instant.now().isAfter(tokenGenerationTime.plus(EXPIRATION_TIME_MINUTES, ChronoUnit.MINUTES));
+    }
+
+    public List<UserInfoDao> selectListWithPaging(int offset, int i) {
+        // TODO 自動生成されたメソッド・スタブ
+        return null;
     }
 
 }
