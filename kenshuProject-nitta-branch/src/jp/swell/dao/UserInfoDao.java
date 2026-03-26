@@ -90,333 +90,640 @@ public class UserInfoDao implements Serializable {
         return str;
     }
 
-    // user_info ユーザ情報テーブルで使用するメンバー変数
-
-    // userInfoId  ユーザ情報ID
+    /**
+     * user_info ユーザ情報テーブルで使用するメンバー変数。
+     */
+    /**
+     * userInfoId  ユーザ情報ID
+     */
     private String userInfoId = "";
 
+    /**
+     * ユーザ情報IDを取得する。.
+     * @return  userInfoId ユーザ情報ID
+     */
     public String getUserInfoId() {
         return userInfoId;
     }
 
+    /**
+     * ユーザ情報IDをセットする。.
+     * @param userInfoId ユーザ情報ID
+     */
     public void setUserInfoId(String userInfoId) {
         this.userInfoId = userInfoId;
     }
 
-    // stateFlg  状態フラグ
+    /**
+     * stateFlg  状態フラグ
+     */
     private int stateFlg;
 
+    /**
+     * フラグを取得する。
+     * @return  stateFlg 状態フラグ
+     */
     public int getStateFlg() {
         return stateFlg;
     }
 
+    /**
+     * フラグをセットする。.
+     * @param stateFlg 状態フラグ
+     */
     public void setStateFlg(int stateFlg) {
         this.stateFlg = stateFlg;
     }
 
-    // passwordUser  ユーザーパスワード
+    /**
+     * passwordUser  ユーザーパスワード
+     */
     private String passwordUser = "";
 
+    /**
+     * ユーザーパスワードを取得する。.
+     * @return  passwordUser ユーザーパスワード
+     */
     public String getPasswordUser() {
         return passwordUser;
     }
 
+    /**
+     * ユーザーパスワードをセットする。.
+     * @param passwordUser ユーザーパスワード
+     */
     public void setPasswordUser(String passwordUser) {
         this.passwordUser = passwordUser;
     }
 
-    // password  パスワード
+    /**
+     * password  パスワード
+     */
     private String password = "";
 
+    /**
+     * パスワードを取得する。.
+     * @return  password パスワード
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * パスワードをセットする。.
+     * @param password パスワード
+     */
     public void setPassword(String password) {
         this.password = password;
     }
 
-    // lastName  姓
+    /**
+     * lastName  姓
+     */
     private String lastName = "";
 
+    /**
+     * 姓を取得する。.
+     * @return  lastName 姓
+     */
     public String getLastName() {
         return lastName;
     }
 
+    /**
+     * 姓をセットする。.
+     * @param lastName 姓
+     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    // middleName  ミドルネーム
+    /**
+     * middleName  ミドルネーム
+     */
     private String middleName = "";
 
+    /**
+     * ミドルネームを取得する。.
+     * @return  middleName ミドルネーム
+     */
     public String getMiddleName() {
         return middleName;
     }
 
+    /**
+     * ミドルネームをセットする。.
+     * @param middleName ミドルネーム
+     */
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
     }
 
-    // firstName  名
+    /**
+     * firstName  名
+     */
     private String firstName = "";
 
+    /**
+     * 名を取得する。.
+     * @return  firstName 名
+     */
     public String getFirstName() {
         return firstName;
     }
 
+    /**
+     * 名をセットする。.
+     * @param firstName 名
+     */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    // maidenName  旧姓
+    /**
+     * maidenName  旧姓
+     */
     private String maidenName = "";
 
+    /**
+     * 旧姓を取得する。.
+     * @return  maidenName 旧姓
+     */
     public String getMaidenName() {
         return maidenName;
     }
 
+    /**
+     * 旧姓をセットする。.
+     * @param maidenName 旧姓
+     */
     public void setMaidenName(String maidenName) {
         this.maidenName = maidenName;
     }
 
-    // lastNameKana  姓よみ
+    /**
+     * lastNameKana  姓よみ
+     */
     private String lastNameKana = "";
 
+    /**
+     * 姓よみを取得する。.
+     * @return  lastNameKana 姓よみ
+     */
     public String getLastNameKana() {
         return lastNameKana;
     }
 
+    /**
+     * 姓よみをセットする。.
+     * @param lastNameKana 姓よみ
+     */
     public void setLastNameKana(String lastNameKana) {
         this.lastNameKana = lastNameKana;
     }
 
-    // middleNameKana  ミドルネームよみ
+    /**
+     * middleNameKana  ミドルネームよみ
+     */
     private String middleNameKana = "";
 
+    /**
+     * ミドルネームよみを取得する。.
+     * @return  middleNameKana ミドルネームよみ
+     */
     public String getMiddleNameKana() {
         return middleNameKana;
     }
 
+    /**
+     * ミドルネームよみをセットする。.
+     * @param middleNameKana ミドルネームよみ
+     */
     public void setMiddleNameKana(String middleNameKana) {
         this.middleNameKana = middleNameKana;
     }
 
-    // firstNameKana  名よみ
+    /**
+     * firstNameKana  名よみ
+     */
     private String firstNameKana = "";
 
+    /**
+     * 名よみを取得する。.
+     * @return  firstNameKana 名よみ
+     */
     public String getFirstNameKana() {
         return firstNameKana;
     }
 
+    /**
+     * 名よみをセットする。.
+     * @param firstNameKana 名よみ
+     */
     public void setFirstNameKana(String firstNameKana) {
         this.firstNameKana = firstNameKana;
     }
 
-    // maidenNameKana  旧姓よみ
+    /**
+     * maidenNameKana  旧姓よみ
+     */
     private String maidenNameKana = "";
 
+    /**
+     * 旧姓よみを取得する。.
+     * @return  maidenNameKana 旧姓よみ
+     */
     public String getMaidenNameKana() {
         return maidenNameKana;
     }
 
+    /**
+     * 旧姓よみをセットする。.
+     * @param maidenNameKana 旧姓よみ
+     */
     public void setMaidenNameKana(String maidenNameKana) {
         this.maidenNameKana = maidenNameKana;
     }
 
-    // insertDate  入力日時
+    /**
+     * insertDate  入力日時
+     */
     private String insertDate = "";
 
+    /**
+     * 入力日時を取得する。.
+     * @return  insertDate 入力日時
+     */
     public String getInsertDate() {
         return insertDate;
     }
 
+    /**
+     * 入力日時をセットする。.
+     * @param insertDate 入力日時
+     */
     public void setInsertDate(String insertDate) {
         this.insertDate = insertDate;
     }
 
-    // insertUserId  入力ユーザーＩＤ
+    /**
+     * insertUserId  入力ユーザーＩＤ
+     */
     private String insertUserId = "";
 
+    /**
+     * 入力ユーザーＩＤを取得する。.
+     * @return  insertUserId 入力ユーザーＩＤ
+     */
     public String getInsertUserId() {
         return insertUserId;
     }
 
+    /**
+     * 入力ユーザーＩＤをセットする。.
+     * @param insertUserId 入力ユーザーＩＤ
+     */
     public void setInsertUserId(String insertUserId) {
         this.insertUserId = insertUserId;
     }
 
-    // updateDate  アップデート日時
+    /**
+     * updateDate  アップデート日時
+     */
     private String updateDate = "";
 
+    /**
+     * アップデート日時を取得する。.
+     * @return  updateDate アップデート日時
+     */
     public String getUpdateDate() {
         return updateDate;
     }
 
+    /**
+     * アップデート日時をセットする。.
+     * @param updateDate アップデート日時
+     */
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
 
-    // updateUserId  アップデートユーザーＩＤ
+    /**
+     * updateUserId  アップデートユーザーＩＤ
+     */
     private String updateUserId = "";
 
+    /**
+     * アップデートユーザーＩＤを取得する。.
+     * @return  updateUserId アップデートユーザーＩＤ
+     */
     public String getUpdateUserId() {
         return updateUserId;
     }
 
+    /**
+     * アップデートユーザーＩＤをセットする。.
+     * @param updateUserId アップデートユーザーＩＤ
+     */
     public void setUpdateUserId(String updateUserId) {
         this.updateUserId = updateUserId;
     }
 
-    // leaveDate  退職予定日
+    /**
+     * leaveDate  退職予定日
+     */
     private String leaveDate = "";
 
+    /**
+     * 退職予定日を取得する。.
+     * @return  leaveDate 退職予定日
+     */
     public String getLeaveDate() {
         return leaveDate;
     }
 
+    /**
+     * 退職予定日をセットする。.
+     * @param leaveDate 退職予定日
+     */
     public void setLeaveDate(String leaveDate) {
         this.leaveDate = leaveDate;
     }
 
-    // zipcode  郵便番号
+    /**
+     * zipcode  郵便番号
+     */
     private String zipcode = "";
 
+    /**
+     * 郵便番号を取得する。.
+     * @return  zipcode 郵便番号
+     */
     public String getZipcode() {
         return zipcode;
     }
 
+    /**
+     * 郵便番号をセットする。.
+     * @param zipcode 郵便番号
+     */
     public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
     }
 
-    // address  住所
+    /**
+     * address  住所
+     */
     private String address = "";
 
+    /**
+     * 住所を取得する。.
+     * @return  address 住所
+     */
     public String getAddress() {
         return address;
     }
 
+    /**
+     * 住所をセットする。.
+     * @param address 住所
+     */
     public void setAddress(String address) {
         this.address = address;
     }
 
-    // station  最寄りの駅
+    /**
+     * station  最寄りの駅
+     */
     private String station = "";
 
+    /**
+     * 最寄りの駅を取得する。.
+     * @return  station 最寄りの駅
+     */
     public String getStation() {
         return station;
     }
 
+    /**
+     * 最寄りの駅をセットする。.
+     * @param station 最寄りの駅
+     */
     public void setStation(String station) {
         this.station = station;
     }
 
-    // tel  電話番号
+    /**
+     * tel  電話番号
+     */
     private String tel = "";
 
+    /**
+     * 電話番号を取得する。.
+     * @return  tel 電話番号
+     */
     public String getTel() {
         return tel;
     }
 
+    /**
+     * 電話番号をセットする。.
+     * @param tel 電話番号
+     */
     public void setTel(String tel) {
         this.tel = tel;
     }
 
-    // fax  ＦＡＸ
+    /**
+     * fax  ＦＡＸ
+     */
     private String fax = "";
 
+    /**
+     * ＦＡＸを取得する。.
+     * @return  fax ＦＡＸ
+     */
     public String getFax() {
         return fax;
     }
 
+    /**
+     * ＦＡＸをセットする。.
+     * @param fax ＦＡＸ
+     */
     public void setFax(String fax) {
         this.fax = fax;
     }
 
-    // mtel  携帯電話番号
+    /**
+     * mtel  携帯電話番号
+     */
     private String mtel = "";
 
+    /**
+     * 携帯電話番号を取得する。.
+     * @return  mtel 携帯電話番号
+     */
     public String getMtel() {
         return mtel;
     }
 
+    /**
+     * 携帯電話番号をセットする。.
+     * @param mtel 携帯電話番号
+     */
     public void setMtel(String mtel) {
         this.mtel = mtel;
     }
 
-    // memail  携帯Eメール
+    /**
+     * memail  携帯Eメール
+     */
     private String memail = "";
 
+    /**
+     * 携帯Eメールを取得する。.
+     * @return  memail 携帯Eメール
+     */
     public String getMemail() {
         return memail;
     }
 
+    /**
+     * 携帯Eメールをセットする。.
+     * @param memail 携帯Eメール
+     */
     public void setMemail(String memail) {
         this.memail = memail;
     }
 
-    // adminFlag　管理者権限
+    /**
+     * adminFlag　管理者権限
+     */
     private String admin = "";
 
+    /**
+     * 管理者権限を取得する。
+     * @return　adminFlag　管理者権限
+     */
     public String getAdmin() {
         return admin;
     }
 
+    /**
+     * 管理者権限をセットする。.
+     * @param adminFlag　管理者権限
+     */
     public void setAdmin(String admin) {
         this.admin = admin;
     }
 
-    // passwordModifyDate  パスワード変更日時
+    /**
+     * passwordModifyDate  パスワード変更日時
+     */
     private String passwordModifyDate = "";
 
+    /**
+     * パスワード変更日時を取得する。.
+     * @return  passwordModifyDate パスワード変更日時
+     */
     public String getPasswordModifyDate() {
         return passwordModifyDate;
     }
 
+    /**
+     * パスワード変更日時をセットする。.
+     * @param passwordModifyDate パスワード変更日時
+     */
     public void setPasswordModifyDate(String passwordModifyDate) {
         this.passwordModifyDate = passwordModifyDate;
     }
 
-    // loginEnableFrom  ログイン可能期間FROM
+    /**
+     * loginEnableFrom  ログイン可能期間FROM
+     */
     private String loginEnableFrom = "";
 
+    /**
+     * ログイン可能期間FROMを取得する。.
+     * @return  loginEnableFrom ログイン可能期間FROM
+     */
     public String getLoginEnableFrom() {
         return loginEnableFrom;
     }
 
+    /**
+     * ログイン可能期間FROMをセットする。.
+     * @param loginEnableFrom ログイン可能期間FROM
+     */
     public void setLoginEnableFrom(String loginEnableFrom) {
         this.loginEnableFrom = loginEnableFrom;
     }
 
-    // loginEnableTo  ログイン可能期間TO
+    /**
+     * loginEnableTo  ログイン可能期間TO
+     */
     private String loginEnableTo = "";
 
+    /**
+     * ログイン可能期間TOを取得する。.
+     * @return  loginEnableTo ログイン可能期間TO
+     */
     public String getLoginEnableTo() {
         return loginEnableTo;
     }
 
+    /**
+     * ログイン可能期間TOをセットする。.
+     * @param loginEnableTo ログイン可能期間TO
+     */
     public void setLoginEnableTo(String loginEnableTo) {
         this.loginEnableTo = loginEnableTo;
     }
 
-    // searchFullName 検索用氏名
+    /**
+     * searchFullName 検索用氏名
+     */
     private String searchFullName = "";
-    // searchFullName 検索用氏名かな
+    /**
+     * searchFullName 検索用氏名かな
+     */
     private String searchFullNameKana = "";
 
+    /**
+     * searchFullName 検索用氏名を取得します。
+     *
+     * @return searchFullName 検索用氏名
+     */
     public String getSearchFullName() {
         return searchFullName;
     }
 
+    /**
+     * searchFullName 検索用氏名を設定します。
+     *
+     * @param searchFullName
+     *        searchFullName 検索用氏名
+     */
     public void setSearchFullName(String searchFullName) {
         this.searchFullName = searchFullName;
     }
 
+    /**
+     * searchFullName 検索用氏名かなを取得します。
+     *
+     * @return searchFullName 検索用氏名かな
+     */
     public String getSearchFullNameKana() {
         return searchFullNameKana;
     }
 
+    /**
+     * searchFullName 検索用氏名かなを設定します。
+     *
+     * @param searchFullNameKana
+     *        searchFullName 検索用氏名かな
+     */
     public void setSearchFullNameKana(String searchFullNameKana) {
         this.searchFullNameKana = searchFullNameKana;
     }
@@ -431,26 +738,42 @@ public class UserInfoDao implements Serializable {
         return this.userIds;
     }
 
-    // searchName  検索名
+    /**
+     * searchName  検索名
+     */
     private String searchName = "";
 
+    /**
+     * 検索名を取得する。.
+     * @return  searchName　検索名
+     */
     public String getSearchName() {
         return searchName;
     }
 
+    /**
+     * 検索名をセットする。.
+     * @param searchName 検索名
+     */
     public void setSearchName(String searchName) {
         this.searchName = searchName;
     }
 
-    // データアクセス権限のあるユーザリストを取得する
+    /**
+     *  データアクセス権限のあるユーザリストを取得する。.
+     */
     public ArrayList<String> getAuthorityUserList() {
         return authorityUserList;
     }
 
-    // ソートフィールドのチェック時に使う。SQLインジェクション対策用
+    /**
+     * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
+     */
     private HashMap<String, String> fieldsArray = new HashMap<String, String>();
 
-    // ユーザー情報を全件取得する
+    /**
+     * ユーザー情報を全件取得する。.
+     */
     public List<UserInfoDao> getAllUsers1() throws Exception {
         List<UserInfoDao> userList = new ArrayList<>();
 
@@ -475,7 +798,9 @@ public class UserInfoDao implements Serializable {
         return userList;
     }
 
-    // コンストラクタ
+    /**
+     * コンストラクタ。.
+     */
     public UserInfoDao() {
         fieldsArray.put("user_info_id", "user_info.user_info_id");
         fieldsArray.put("password", "user_info.password");
