@@ -305,9 +305,7 @@ public class UserReserveDao implements Serializable {
       String sql="delete from user_reserve "
       + " where reserve_id = " + DbS.chara(pReserveId);
       int ret = DbBase.dbExec(sql);
-      
-      //0件でもOKにする（SQL構文エラーなどの -1 の時だけエラーにする）
-      if(ret < 0) throw new AtareSysException("dbDelete number or record exception.");
+      if(ret<1) throw new AtareSysException("dbDelete number or record exception.") ;
       return true;
   }
 

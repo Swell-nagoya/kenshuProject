@@ -482,19 +482,9 @@ public class Shift extends ControllerBase {
     }
     private boolean insUserid() throws AtareSysException
     {
-    	WebBean bean = getWebBean();
-    	
-    	String longIdStr = GetNumber.getNumber("shift_id"); 
-        
-        String shortIdStr = longIdStr;
-        
-        // 13桁以上の長い数字だったら、5文字目以降（021900007）だけを切り出す
-        if (longIdStr != null && longIdStr.length() >= 13) {
-            shortIdStr = longIdStr.substring(4); 
-        }
-        
-        //短くしたIDをセット
-        bean.setValue("id", shortIdStr);
+        WebBean bean = getWebBean();
+        String SHIFTid = GetNumber.getNumberChar("shift_id"); // ユーザーIDを新規作成
+        bean.setValue("id", SHIFTid);
         
         return true;
     }
@@ -631,24 +621,12 @@ public class Shift extends ControllerBase {
 
    private boolean signUp() throws AtareSysException {
        ShiftDAO dao = setWeb2Dao2InputInfoid2();
-       
-       System.out.println("登録データ確認ログ：名前=" + dao.getName() + ", ID=" + dao.getId());
-       
        try {
-    	   DbBase.dbBeginTran();
       // 入力内容をデータベースに保存
            dao.dbInsert();
-           
-           DbBase.dbCommitTran();
-           
            return true;
            
        } catch (Exception e) {
-    	   
-    	   e.printStackTrace();
-    	   
-    	   DbBase.dbRollbackTran();
-    	   
       return false;
     }
   }

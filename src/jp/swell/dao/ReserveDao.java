@@ -632,20 +632,20 @@ public class ReserveDao implements Serializable {
      * @param dao ReserveDaoこのテーブルのインスタンス
      */
     public void setReserveDaoForJoin(HashMap<String, String> map, ReserveDao dao) throws AtareSysException {
-    	dao.setReserveId(DbI.chara(map.get("reserve_id")));
-    	dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
-    	dao.setRoomId(DbI.chara(map.get("room_id")));
-    	dao.setReservationDate(DbI.chara(map.get("reservation_date")));
-    	dao.setCheckinTime(DbI.chara(map.get("checkin_time")));
-    	dao.setCheckoutTime(DbI.chara(map.get("checkout_time")));
-    	dao.setInputText(DbI.chara(map.get("input_text")));
-    	dao.setColor(DbI.chara(map.get("rgb_color"))); //ここは reserve___rgb_color から rgb_color 
-    	dao.setInputRemark(DbI.chara(map.get("input_remark")));
-    	dao.setInsertDate(DbI.chara(map.get("insert_date")));
-    	dao.setInsertUserId(DbI.chara(map.get("insert_user_id")));
-    	dao.setUpdateDate(DbI.chara(map.get("update_date")));
-    	dao.setUpdateUserId(DbI.chara(map.get("update_user_id")));
-    	dao.setUserReserveId(DbI.chara(map.get("user_reserve_id")));
+        dao.setReserveId(DbI.chara(map.get("reserve___reserve_id")));
+        dao.setUserInfoId(DbI.chara(map.get("reserve___user_info_id")));
+        dao.setRoomId(DbI.chara(map.get("reserve___room_id")));
+        dao.setReservationDate(DbI.chara(map.get("reserve___reservation_date")));
+        dao.setCheckinTime(DbI.chara(map.get("reserve___checkin_time")));
+        dao.setCheckoutTime(DbI.chara(map.get("reserve___checkout_time")));
+        dao.setInputText(DbI.chara(map.get("reserve___input_text")));
+        dao.setColor(DbI.chara(map.get("reserve___rgb_color")));
+        dao.setInputRemark(DbI.chara(map.get("reserve___input_remark")));
+        dao.setInsertDate(DbI.chara(map.get("reserve___insert_date")));
+        dao.setInsertUserId(DbI.chara(map.get("reserve___insert_user_id")));
+        dao.setUpdateDate(DbI.chara(map.get("reserve___update_date")));
+        dao.setUpdateUserId(DbI.chara(map.get("reserve___update_user_id")));
+        dao.setUserReserveId(DbI.chara(map.get("reserve___user_reserve_id")));
     }
 
     /**

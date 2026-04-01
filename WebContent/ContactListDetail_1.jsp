@@ -235,7 +235,6 @@ label.error {
 				value="<%=webBean.txt("input_info")%>" />
 			<input type="hidden" name="select_info"
 				value="<%=webBean.txt("select_info")%>" />
-			<input type="hidden" name="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
 
 			<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
 			<div class="errors"><%=webBean.dispErrorMessages()%></div>

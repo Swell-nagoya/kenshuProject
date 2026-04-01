@@ -331,17 +331,15 @@ public class ReserveList extends ControllerBase {
         WebBean bean = getWebBean();
         // main_keyの値を取得
         String reserveId = bean.value("main_key");
-        //コンソール画面に表示
-        System.out.println("削除対象のID = [" + reserveId + "]");
 
         ReserveDao reserveDao = setWebDaoInputInfo();
         reserveDao.setReserveId(reserveId); // reserve_idの設定
 
         UserReserveDao userReserveDao = new UserReserveDao(); // UserReserveDaoのインスタンスを作成
-        userReserveDao.setReserveId(bean.value("reserveId"));
+        userReserveDao.setReserveId(bean.value("reserve_id"));
 
         ReserveFileDao reserveFileDao = new ReserveFileDao();
-        reserveFileDao.setReserveId(bean.value("reserveId"));
+        reserveFileDao.setReserveId(bean.value("reserve_id"));
 
         // ファイル情報を取得
         if (reserveFileDao.dbSelect(reserveId)) { // データが存在するかをチェック
