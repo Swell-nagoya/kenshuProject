@@ -132,13 +132,6 @@ padding: 0.5em 1em;
       <input type="hidden" name="input_info" id="input_info" value="<%= webBean.txt("input_info") %>" />
       <input type="hidden" name="main_key" id="main_key" value="<%= webBean.txt("main_key") %>" />
       <input type="hidden" name="select_info" id="select_info" value="<%= webBean.txt("select_info") %>" />
-      
-      <%-- hidenタグ追加 --%>
-      <input type="hidden" name="name" value="<%= WebUtil.htmlEscape(webBean.txt("name")) %>" />
-      <input type="hidden" name="email" value="<%= WebUtil.htmlEscape(webBean.txt("email")) %>" />
-      <input type="hidden" name="start_time" value="<%= WebUtil.htmlEscape(webBean.txt("start_time")) %>" />
-      <input type="hidden" name="end_time" value="<%= WebUtil.htmlEscape(webBean.txt("end_time")) %>" />
-      <input type="hidden" name="work_place" value="<%= WebUtil.htmlEscape(webBean.txt("work_place")) %>" />
 
       <table class="confirm-table">
         <tr><th>氏名</th><td><%= WebUtil.htmlEscape(webBean.txt("name")) %></td></tr>

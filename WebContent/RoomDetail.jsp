@@ -31,7 +31,7 @@
 <script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/flatpickr.min.js"></script>
-<title>部屋登録・編集画面</title>
+<title>部屋登録画面</title>
 <style>
 body {
   font-family: 'Arial', sans-serif;
@@ -135,46 +135,6 @@ input[type="button"]:hover {
   border-radius: 4px;
 }
 
-table
-{
-  width : 100%;
-  margin : 0px;
-  padding : 0px;
-  border-collapse : collapse;
-  border-spacing: 0px;
-}
-td
-{
-  height:1.8em;
-  border-collapse: collapse;
-  border: 1px #a0a0a0 solid;
-  padding : 2px;
-}
-.table-header
-{
-  background: #00bcd4;
-  color: #fff;
-  text-align: center;
-}
-.table-date
-{
-  text-align: center;
-  background: #fff;
-}
-
-.errors, .messages {
-  margin-bottom: 20px;
-  font-size: 16px
-}
-
-.style_head3 {
-  padding-left: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
-  color:#0000ff;
-}
-
 </style>
 <script type="text/javascript">
 function go_submit(action_cmd, request_cmd) {
@@ -193,24 +153,9 @@ function go_list(action_cmd) {
 </head>
 <body>
   <%
-      // 表示制御用のロジック
-      String roomName = webBean.txt("room_name");
       String val = webBean.txt("request_name");
-      String mode = webBean.txt("mode"); // 確認画面モード判定用
-      boolean isConfirm = "confirm".equals(mode);
-
-      String actionType = "";
-      String header = "";
-
-      if (isConfirm) {
-          // 確認画面用のアクション設定
-          actionType =  val.equals("削除する") ? "deleteEnter" : val.equals("修正する") ? "updateEnter" : val.equals("登録する") ? "insEnter" : "unknown";
-          header =  val.equals("削除する") ? "部屋削除確認" : val.equals("修正する") ? "部屋名修正確認" : val.equals("登録する") ? "新規部屋登録確認" : "unknown";
-      } else {
-          // 入力画面用のアクション設定
-          actionType = val.equals("修正する") ? "update" : "ins";
-          header = val.equals("修正する") ? "部屋名修正" : "新規部屋登録";
-      }
+      String actionType = val.equals("修正する") ? "update" : "ins";
+      String header = val.equals("修正する") ? "部屋名修正" : "新規部屋登録";
   %>
   <div class="container">
     <div class="new-btn">
@@ -222,94 +167,41 @@ function go_list(action_cmd) {
 
             <form method="post" id="main_form" action="" >
             
-            <%-- 確認モードかどうかでform_nameを切り替える --%>
-            <% if (isConfirm) { %>
-                <input type="hidden" name="form_name" id="form_name" value="RoomDetail_2" />
-            <% } else { %>
-                <input type="hidden" name="form_name" id="form_name" value="RoomDetail" />
-            <% } %>
-
+            <input type="hidden" name="form_name" id="form_name" value="RoomDetail" />
             <input type="hidden" name="action_cmd" id="action_cmd" value="" />
             <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>"/>
             <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
             <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
-            <%-- ID引き継ぎ用に追加 --%>
-            <input type="hidden" name="room_id" id="room_id" value="<%=webBean.txt("room_id")%>" />
             <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
-            <input type="hidden" name="mode" id="mode" value="<%=mode%>" />
              
             <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
             <div class="errors"><%=webBean.dispErrorMessages()%></div>
+            <%
+              Map<String, String> itemErrors = webBean.getItemErrors();
+            %>
+            <%
+              if (itemErrors.containsKey("room_name_empty")) { 
+            %>
+             <div class="field-error"><%=itemErrors.get("room_name_empty")%></div>
+            <%
+              }
+            %>
             
-            <%--  モードによる画面切り替え  --%>
-            <% if (!isConfirm) { %>
-                <%--  入力画面モード  --%>
-                <%
-                  Map<String, String> itemErrors = webBean.getItemErrors();
-                %>
-                <%
-                  if (itemErrors.containsKey("room_name_empty")) { 
-                %>
-                 <div class="field-error"><%=itemErrors.get("room_name_empty")%></div>
-                <%
-                  }
-                %>
-                
-                <%
-                  if (itemErrors.containsKey("room_name_duplicate")) {
-                %>
-                  <div class="field-error"><%=itemErrors.get("room_name_duplicate")%></div>
-                <%
-                  }
-                %>
+            <%
+              if (itemErrors.containsKey("room_name_duplicate")) {
+            %>
+              <div class="field-error"><%=itemErrors.get("room_name_duplicate")%></div>
+            <%
+              }
+            %>
         
-                </div>
-        
-                <div class="left">
-                  <div class="room__form--name">
-                    <input type="text" id="room_name" name="room_name" class="ime_disabled" value="<%=webBean.txt("room_name")%>" placeholder="RoomName" size="25" maxlength="255" />
-                  </div>
-                </div>
-            <% } else { %>
-                <%--  確認画面モード  --%>
-                <%-- room_nameをhiddenで保持 --%>
-                <input type="hidden" name="room_name" id="room_name" value="<%=webBean.txt("room_name")%>" />
-                
-                <div class="left">
-                 <% if ("修正する".equals(val)) { %>
-                 <table class="room__form--name">
-                   <tr class="table-header">
-                     <td>修正前</td>
-                     <td>修正後</td>
-                   </tr>
-                   <tr class="table-date">
-                     <td><%=webBean.txt("before_name")%></td>
-                     <td><%=webBean.txt("room_name")%></td>
-                   </tr>
-                 </table>
-                 <% } else if ("登録する".equals(val)) {%>
-                 <table class="room__form--name">
-                   <tr class="table-header">
-                     <td>部屋名</td>
-                   </tr>
-                   <tr class="table-date">
-                     <td><%=webBean.txt("room_name")%></td>
-                   </tr>
-                  </table>
-                  <%} else if ("削除する".equals(val)) {%> <%--削除する追加--%>
-                 <table class="room__form--name">
-                   <tr class="table-header">
-                     <td>削除</td> 
-                   </tr>
-                   <tr class="table-date">
-                     <td><%=webBean.txt("room_name")%></td>
-                   </tr>
-                 </table>
-                 <%} %>
-                </div>
-            <% } %>
-            <%--  切り替え終了  --%>
-
+            </div>
+    
+            <div class="left">
+              <div class="room__form--name">
+                <input type="text" id="room_name" name="room_name" class="ime_disabled" value="<%=webBean.txt("room_name")%>" placeholder="RoomName" size="25" maxlength="255" />
+              </div>
+            </div>
             <div class="button">
                 <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>')" value="<%=val%>"/>
             </div>

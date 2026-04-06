@@ -12,7 +12,7 @@
  *
  */
 package jp.swell.dao;
-//Test
+
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -373,12 +373,12 @@ public class RoomDao implements Serializable
     public boolean dbSelect(String pRoomId,String roomName) throws AtareSysException
     {
         String sql =  "select "
-                + " room.room_id"
-                + ",room.room_name"
-                + ",room.insert_date"
-                + ",room.insert_user_id"
-                + ",room.update_date"
-                + ",room.update_user_id"
+                + " room.room_id as room___room_id"
+                + ",room.room_name as room___room_name"
+                + ",room.insert_date as room___insert_date"
+                + ",room.insert_user_id as room___insert_user_id"
+                + ",room.update_date as room___update_date"
+                + ",room.update_user_id as room___update_user_id"
         + " from room ";
         sql += ""
         + " where room_id = " + DbS.chara(pRoomId)
@@ -386,7 +386,7 @@ public class RoomDao implements Serializable
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         if(0==rs.size())   return false;
         HashMap<String, String> map = rs.get(0);
-        setRoomDao(map,this);
+        setRoomDaoForJoin(map,this);
         return true;
     }
 
@@ -494,7 +494,7 @@ public class RoomDao implements Serializable
      * @throws AtareSysException
      */
     public ArrayList<RoomDao> getAllRooms() throws AtareSysException {
-      String sql = "SELECT room_id, room_name FROM room WHERE is_deleted = false;";
+      String sql = "SELECT room_id, room_name FROM room;";
       List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
       ArrayList<RoomDao> rooms = new ArrayList<>();
       for (HashMap<String, String> map : rs) {
@@ -550,7 +550,7 @@ public class RoomDao implements Serializable
         {
             RoomDao dao  = new RoomDao();
             map = rs.get(i);
-            dao.setRoomDao(map,dao);
+            dao.setRoomDaoForJoin(map,dao);
             array.add(dao);
         }
         return array;
