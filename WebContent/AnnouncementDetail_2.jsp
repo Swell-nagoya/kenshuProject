@@ -1,21 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-
-<!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ page import="jp.swell.dao.UserInfoDao"%>
-<%@ page import="jp.swell.dao.FileDao"%>
-<%@ page import="jp.swell.dao.RoomDao"%>
-<%@ page import="jp.swell.dao.ReserveDao"%>
+<%@ page import="jp.swell.dao.AnnouncementDao"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
 <%@ page import="jp.patasys.common.http.HtmlParts"%>
 <%@ page import="jp.patasys.common.http.WebBean"%>
 <%@ page import="jp.swell.constant.UserInfoState"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.List"%>
-<%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="java.time.LocalTime"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
+<%@ page import="java.text.SimpleDateFormat"%>
+<!DOCTYPE html>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean"
 	scope="request" />
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -35,7 +30,7 @@
 	src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/flatpickr.min.js"></script>
-<title>部屋情報修正</title>
+<title>確認</title>
 <style>
 body {
 	font-family: 'Arial', sans-serif;
@@ -183,10 +178,11 @@ th {
 }
 </style>
 <script type="text/javascript">
-	function go_submit(action_cmd, request_cmd) {
+	function go_submit(action_cmd, request_cmd,main_key) {
 		document.getElementById('main_form').action = '';
 		document.getElementById('action_cmd').value = action_cmd;
 		document.getElementById('request_cmd').value = request_cmd;
+		document.getElementById('main_key').value = main_key;
 		document.getElementById('main_form').submit();
 	}
 	function go_list(action_cmd, request_cmd) {
@@ -200,16 +196,16 @@ th {
 <body>
 	<%
 	String val = webBean.txt("request_name");
-	String actionType = val.equals("削除する") ? "deleteEnter"
-			: val.equals("登録する") ? "insEnter" : val.equals("一括削除する") ? "deleteEnterAll" : "unknown";
-	String requestType = val.equals("削除する") ? "delete" : val.equals("登録する") ? "ins" : "unknown";
+	String actionType = val.equals("削除する") ? "delete"
+			: val.equals("投稿する") ? "insEnter" : val.equals("一括削除する") ? "deleteEnterAll" : "unknown";
+	String requestType = val.equals("削除する") ? "delete" : val.equals("投稿する") ? "ins" : "unknown";
 	String header = val.equals("削除する") ? "ファイル削除"
-			: val.equals("登録する") ? "ファイル登録確認" : val.equals("一括削除する") ? "⚠期限超過予約情報一括削除" : "unknown";
+			: val.equals("投稿する") ? "投稿内容確認" : val.equals("一括削除する") ? "⚠期限超過予約情報一括削除" : "unknown";
 	%>
 	<div class="container">
 		<div class="new-btn">
 			<input type="button" onclick="go_list('return','<%=requestType%>')"
-				class="submit-btn" value="　戻る　" />
+				class="submit-btn" value="戻る" />
 		</div>
 		<header>
 			<h1><%=header%>ページ
@@ -217,12 +213,14 @@ th {
 		</header>
 
 		<form method="post" id="main_form" action="" class="main__form">
-
 			<input type="hidden" name="form_name" id="form_name"
-				value="FileDetail_2" /> <input type="hidden" name="action_cmd"
-				id="action_cmd" value="" /> <input type="hidden" name="input_name"
-				id="input_name" value="<%=webBean.txt("input_name")%>" /> <input
-				type="hidden" name="request_cmd" id="request_cmd"
+				value="AnnouncementDetail_2" />
+				<input type="hidden"
+				name="action_cmd" id="action_cmd" value="<%=actionType%>" />
+				<input
+				type="hidden" name="input_name" id="input_name"
+				value="<%=webBean.txt("input_name")%>" /> <input type="hidden"
+				name="request_cmd" id="request_cmd"
 				value="<%=webBean.txt("request_cmd")%>" /> <input type="hidden"
 				name="request_name" id="request_name"
 				value="<%=webBean.txt("request_name")%>" /> <input type="hidden"
@@ -230,20 +228,36 @@ th {
 			<input type="hidden" name="input_info" id="input_info"
 				value="<%=webBean.txt("input_info")%>" />
 
-
 			<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
 			<div class="errors"><%=webBean.dispErrorMessages()%></div>
 
 			<div class="left">
 				<%
-				if ("登録する".equals(val)) {
+				AnnouncementDao anno = new AnnouncementDao();
+				String anno_id = webBean.txt("anno_id");
+				anno.dbSelect(anno_id);
+				if ("投稿する".equals(val)) {
 				%>
 				<table class="file__form--name">
 					<tr>
-						<td class="style_head3 style_head_size">登録ファイル名</td>
+						<td class="style_head3 style_head_size"><%=webBean.txt("title")%></td>
 					</tr>
 					<tr>
-						<td class="table-date"><%=webBean.txt("input_name")%></td>
+						<td class="table-date"><%=webBean.txt("text")%></td>
+					</tr>
+					<tr>
+						<%
+						String admin = webBean.txt("admin");
+						if (admin.equals("0")) {
+						%>
+						<td class="table-date">全体</td>
+						<%
+						} else {
+						%>
+						<td class="table-date">管理者</td>
+						<%
+						}
+						%>
 					</tr>
 				</table>
 				<%
@@ -251,49 +265,11 @@ th {
 				%>
 				<table class="file__form--name">
 					<tr>
-						<td class="style_head3 style_head_size">削除ファイル名</td>
+						<td class="style_head3 style_head_size">削除データ</td>
 					</tr>
 					<tr>
-						<td class="table-date"><%=webBean.txt("file_name")%></td>
+						<td class="table-date"><%=WebUtil.htmlEscape(anno.getTitle())%></td>
 					</tr>
-				</table>
-				<%
-				} else {
-				%>
-				<table class="file__form--name">
-					<tr>
-						<th>ファイル名</th>
-						<th>アップロード日時</th>
-						<th>ダウンロード期限</th>
-						<th>アップロードユーザー</th>
-					</tr>
-					<%
-					FileDao dao = new FileDao();
-					FileDao info = null;
-					List<FileDao> userList = dao.getAllFiles();
-					String now = java.time.LocalDateTime.now()
-							.format(java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
-					for (FileDao fileInfo : userList) {
-						if (fileInfo.getExpirationDate() != null && fileInfo.getExpirationDate().compareTo(now) < 0) {
-							info = fileInfo;
-							// 表示形式を指定（例：2023/10/25 15:30）
-							String Date = fileInfo.getUploadDate();
-							String formatDate = (Date != null && !Date.isEmpty()) ? Date : "データを取得していない";
-							
-							//ダウンロード期限の表示
-							String limDate = fileInfo.getExpirationDate();
-							String limitDate = (limDate != null && !limDate.isEmpty()) ? limDate : "データを取得していない";
-					%>
-					<tr>
-						<td><%=WebUtil.htmlEscape(fileInfo.getFileName())%></td>
-						<td><%=WebUtil.htmlEscape(formatDate)%></td>
-						<td><%=WebUtil.htmlEscape(limitDate)%></td>
-						<td><%=WebUtil.htmlEscape(fileInfo.getUploadUserName())%></td>
-					</tr>
-					<%
-					}
-					}
-					%>
 				</table>
 				<%
 				}
@@ -301,7 +277,7 @@ th {
 			</div>
 			<div class="button">
 				<input type="button" id="bt" name="reg-btn"
-					onclick="go_submit('go_next','<%=actionType%>')" value="<%=val%>" />
+					onclick="go_submit('go_next','<%=actionType%>','<%=anno_id%>')" value="<%=val%>" />
 			</div>
 		</form>
 	</div>

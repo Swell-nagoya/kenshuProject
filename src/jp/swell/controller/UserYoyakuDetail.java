@@ -230,6 +230,8 @@ public class UserYoyakuDetail extends ControllerBase {
     } else {
       daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
     }
+
+
     ArrayList<UserInfoDao> listData = UserInfoDao.dbSelectList(dao, sortKey, daoPageInfo);
     bean.setValue("lineCount", daoPageInfo.getLineCount());
     bean.setValue("pageNo", daoPageInfo.getPageNo());
@@ -245,6 +247,16 @@ public class UserYoyakuDetail extends ControllerBase {
     bean.setValue("search_info", search_info);
     bean.setValue("rooms", rooms);
     bean.setValue("list", listData);
+    
+    System.out.println("DEBUG Controller: --- Start User Data Check ---");
+    for (UserInfoDao user : listData) {
+        System.out.println("DEBUG Controller: User ID: " + user.getUserInfoId() + 
+                           ", Name: '" + user.getLastName() + user.getMiddleName() + user.getFirstName() + "'");
+    }
+    System.out.println("DEBUG Controller: --- End User Data Check ---");
+
+    System.out.println("DEBUG Controller: Final list size in WebBean ->" + listData.size() + "<-");
+    System.out.println("DEBUG Controller: Forwarding to JSP...");
   }
 
   /**
@@ -355,7 +367,6 @@ public class UserYoyakuDetail extends ControllerBase {
     // 複数のuser_info_idがある場合、最初の1つを使用する
     String[] userInfoIds = bean.value("user_info_id").split(",");
     reserveDao.setUserInfoIds(userInfoIds);
-    
     reserveDao.setUserInfoId(userInfoIds[0].trim());
     reserveDao.setRoomId(bean.value("room_id"));
     reserveDao.setReservationDate(formattedReservationDate);

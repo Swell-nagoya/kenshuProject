@@ -203,7 +203,7 @@ public class UserReserveDao implements Serializable {
    * @return true:読み込み成功 false:存在しない
    * @throws AtareSysException フレームワーク共通例外
    */
-  public boolean dbSelect(String pUserReserveId,String pas) throws AtareSysException
+ public boolean dbSelect(String pUserReserveId,String pas) throws AtareSysException
   {
       String sql =  "select "
               + " user_reserve.user_reserve_id as user_reserve___user_reserve_id"
@@ -241,16 +241,16 @@ public class UserReserveDao implements Serializable {
    * @param dao UserReserveDaoこのテーブルのインスタンス
    */
   public void setUserReserveDaoForJoin(HashMap<String, String> map, UserReserveDao dao) throws AtareSysException {
-    dao.setUserReserveId(DbI.chara(map.get("user_reserve___user_reserve_id")));
-    dao.setUserInfoId(DbI.chara(map.get("user_reserve___user_info_id")));
-    dao.setReserveId(DbI.chara(map.get("user_reserve___reserve_id")));
+    dao.setUserReserveId(DbI.chara(map.get("user_reserve_id")));
+    dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
+    dao.setReserveId(DbI.chara(map.get("reserve_id")));
     // link_user_idに対応するreserve_idを取得し、セット
     ReserveDao reserve = new ReserveDao();
-    reserve.dbSelect(DbI.chara(map.getOrDefault("user_reserve___reserve_id", "")));
+    reserve.dbSelect(DbI.chara(map.getOrDefault("reserve_id", "")));
     dao.setReserveDaos(reserve);
     // link_user_idに対応するreserve_idを取得し、セット
     ReserveFileDao reserveFile = new ReserveFileDao();
-    reserveFile.dbSelect(DbI.chara(map.getOrDefault("user_reserve___reserve_id", "")));
+    reserveFile.dbSelect(DbI.chara(map.getOrDefault("reserve_id", "")));
     dao.setReserveFileDaos(reserveFile);
   }
   /**
@@ -415,6 +415,7 @@ public class UserReserveDao implements Serializable {
           map = rs.get(i);
           dao.setUserReserveDaoForJoin(map,dao);
           array.add(dao);
+          
       }
       return array;
   }

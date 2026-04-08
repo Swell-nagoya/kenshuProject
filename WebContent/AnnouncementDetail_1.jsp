@@ -1,40 +1,27 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ page import="jp.patasys.common.http.WebBean"%>
-<%@ page import="jp.swell.dao.UserInfoDao"%>
-<%@ page import="jp.patasys.common.http.WebUtil"%>
-<%@ page import="jp.patasys.common.http.HtmlParts"%>
-<%@ page import="jp.swell.constant.UserInfoState"%>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="java.util.List"%>
-<%@ page import="java.text.SimpleDateFormat"%>
-<%@ page import="java.time.LocalTime"%>
-<%@ page import="java.time.format.DateTimeFormatter"%>
+<!DOCTYPE html>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean"
 	scope="request" />
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="keywords" content="">
-		<meta name="description" content="">
-			<meta charset="UTF-8">
-				<link type="text/css" href="jquery-ui/jquery-ui.css"
-					rel="stylesheet" />
-				<link rel="shortcut icon" href="images/favicon.ico"
-					type="image/vnd.microsoft.icon" />
-				<link rel="icon" href="images/favicon.ico"
-					type="image/vnd.microsoft.icon" />
-				<script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
-				<script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
-				<script type="text/javascript"
-					src="jquery.watermark/jquery.watermark.js"></script>
-				<script type="text/javascript" src="js/common.js"></script>
-				<script type="text/javascript" src="js/flatpickr.min.js"></script>
-				<title>アップロード画面</title>
-				<style>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta charset="UTF-8">
+<link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
+<link rel="shortcut icon" href="images/favicon.ico"
+	type="image/vnd.microsoft.icon" />
+<link rel="icon" href="images/favicon.ico"
+	type="image/vnd.microsoft.icon" />
+<script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
+<script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
+<script type="text/javascript"
+	src="jquery.watermark/jquery.watermark.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/flatpickr.min.js"></script>
+<title>投稿画面</title>
+<style>
 body {
 	font-family: 'Arial', sans-serif;
 	background-color: #f9f9f9;
@@ -89,6 +76,7 @@ input[type="button"] {
 	color: #fff; /* 文字色 */
 	cursor: pointer; /* カーソルをポインタにする */
 	background: #90a0b0; /* デフォルトの背景色 */
+	font-size: 100%;
 }
 
 /* ホバー時のスタイル */
@@ -130,6 +118,16 @@ input[type="text"] {
 	border-radius: 4px;
 	padding: 5px;
 	background: #FFF;
+	font-size: 200%;
+}
+
+textarea {
+	border: 1px solid #696969;
+	border-radius: 4px;
+	padding: 5px;
+	background: #FFF;
+	font-size: 150%;
+	text-align: left;
 }
 
 .errors, .messages {
@@ -196,11 +194,11 @@ label.error {
 	color: #FF0000;
 }
 </style>
-				<script type="text/javascript">
+<script type="text/javascript">
 const ctx = '<%=request.getContextPath()%>';
 
 function go_submit(action_cmd) {
-  document.getElementById('main_form').action = 'FileDetail.do';
+  document.getElementById('main_form').action = 'AnnouncementDetail.do';
   document.getElementById('action_cmd').value = action_cmd;
   document.getElementById('main_form').submit();
 }
@@ -211,19 +209,11 @@ function go_upload(action_cmd) {
   document.getElementById('main_form').submit();
 }
 
-// サブ画面処理
-function openUserWindow(action_cmd) {
-  // コントローラー設定
-   const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = ctx + '/FileDetail.do';
-  form.target = 'FileUserList';
-
   // form_name設定
   const formNameInput = document.createElement('input');
   formNameInput.type = 'hidden';
   formNameInput.name = 'form_name';
-  formNameInput.value = 'FileDetail';
+  formNameInput.value = 'AnnouncementDetail';
   form.appendChild(formNameInput);
 
   // アクションコマンド設定
@@ -234,13 +224,6 @@ function openUserWindow(action_cmd) {
   form.appendChild(actionCmdInput);
 
   document.body.appendChild(form);
-
-  // サブ画面表示処理
-  window.open('', 'FileUserList', 'width=600,height=400');
-  form.submit();
-
-  document.body.removeChild(form);
-}
 
 function receiveSelectedUsers(users, type) {
   let selectedUsersDiv;
@@ -273,76 +256,57 @@ function receiveSelectedUsers(users, type) {
 }
 </script>
 </head>
+
 <body>
-	<div class="container">
-		<div class="new-btn">
-			<input type="button" value="　戻る　" onclick="history.back()" />
+	<form method="post" id="main_form"
+		action="/kenshuProject/WebContent/upload"
+		enctype="multipart/form-data">
+
+		<input type="hidden" name="form_name" id="form_name"
+			value="AnnouncementDetail" /> <input type="hidden" name="action_cmd"
+			id="action_cmd" value="" /> <input type="hidden" name="list"
+			id="list" value="<%=webBean.txt("list")%>" /> <input type="hidden"
+			name="name" id="name" value="<%=webBean.txt("name")%>" /> <input
+			type="hidden" name="user_info_id"
+			id="user_info_id" value="<%=webBean.txt("user_info_id")%>">
+
+		<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
+		<div class="errors"><%=webBean.dispErrorMessages()%></div>
+
+		<div class="left">
+			<table class="file__form--name">
+				<tr>
+					<td class="style_head3 style_head_size" style="width: 100%">タイトル</td>
+				</tr>
+				<tr>
+					<td class="input-text" style="width: 100%"><input type="text"
+						name="title" id="title " value="<%=webBean.txt("title")%>"
+						class="ime_disabled" style="width: 100%" /></td>
+				</tr>
+				<!-- 送信先ユーザー選択 -->
+				<tr>
+					<td class="style_head3 style_head_size" style="width: 100%">対象
+						<input type="radio" name="admin" value="1">管理者</input> <input
+						type="radio" name="admin" value="0" id="admin">全体</input>
+					</td>
+				</tr>
+				<tr>
+					<td class="style_head3 style_head_size" style="width: 100%">投稿内容</td>
+				</tr>
+				<tr>
+					<td class="input-text" style="width: 100% "><textarea
+							name="text"
+							value="<%=webBean.txt("text")%>" class="ime_disabled"
+							style="width: 100%;height:600px">
+					</textarea></td>
+				</tr>
+
+			</table>
 		</div>
-		<header>
-		<h1>ファイル登録ページ</h1>
-		</header>
-		<form method="post" id="main_form"
-			action="/kenshuProject/WebContent/upload"
-			enctype="multipart/form-data">
-
-			<input type="hidden" name="form_name" id="form_name"
-				value="FileDetail" />
-			<input type="hidden" name="action_cmd" id="action_cmd" value="" />
-			<input type="hidden" name="list" id="list"
-				value="<%=webBean.txt("list")%>" />
-			<input type="hidden" name="name" id="name"
-				value="<%=webBean.txt("name")%>" />
-			<input type="hidden" name="destination_user_info_id"
-				id="destination_user_info_id">
-
-				<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
-				<div class="errors"><%=webBean.dispErrorMessages()%></div> <!-- ファイルアップロードフォーム -->
-				<div class="left">
-					<table class="file__form--name">
-						<tr>
-							<td class="style_head3 style_head_size" style="width: 40%">ファイル名</td>
-							<td class="input-text" style="width: 60%"><input type="text"
-								name="input_name" id="input_name"
-								value="<%=webBean.txt("file_name")%>" class="ime_disabled"
-								placeholder="入力" /></td>
-						</tr>
-						<tr>
-							<td class="style_head3 style_head_size" style="width: 40%">ファイルリンク</td>
-							<td class="input-text" style="width: 60%"><input type="file"
-								name="file" id="file" class="ime_disabled" /></td>
-						</tr>
-						<!-- 送信元ユーザー選択 -->
-						<tr>
-							<td class="style_head3 style_head_size" style="width: 40%">送信元ユーザー
-							</td>
-							<td class="input-text" style="width: 60%">
-								<!-- ログインユーザー名を直接表示 -->
-								<div class="user-item">
-									<%=WebUtil.htmlEscape(webBean.value("loginUserName"))%>
-								</div> <!-- 隠しフィールドでログインユーザーのIDを送信 --> <input type="hidden"
-								name="user_info_id"
-								value="<%=WebUtil.htmlEscape(webBean.value("loginUserId"))%>" />
-								<span id="error_user_info_id" class="error"><%=webBean.dispError("user_info_id")%></span>
-							</td>
-						</tr>
-						<!-- 送信先ユーザー選択 -->
-						<tr>
-							<td class="style_head3 style_head_size" style="width: 40%">送り先ユーザー
-								<input type="button" value="選択" name="destination_user_info_id"
-								value="<%=webBean.txt("destination_user_info_id")%>"
-								onclick="openUserWindow('sub')" />
-							</td>
-							<td class="input-text" style="width: 60%">
-								<div id="selected_destination_users" class="user_list"></div> <span
-								id="error_destination_user_info_id" class="error"><%=webBean.dispError("destination_user_info_id")%></span>
-							</td>
-						</tr>
-					</table>
-				</div>
-				<div class="button">
-					<input type="button" onclick="go_upload('upload')" value="登録" />
-				</div>
-		</form>
+		<div class="button">
+			<input type="button" onclick="go_upload('upload')" value="登録" />
+		</div>
+	</form>
 	</div>
 </body>
 </html>

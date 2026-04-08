@@ -1086,7 +1086,7 @@ String actionCmd = (String) request.getParameter("action_cmd");
                     <div id="myCalendar"></div>
                 </nav>
                 
-                <main id="calendar"></main>
+                <!-- <main id="calendar"></main>-->
             </div>
         </div>
         <footer>

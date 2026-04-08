@@ -238,7 +238,7 @@ jQuery(function($)
    <div class="container">
     <div class="new-btn">
       <input type="button" value="新規登録" onclick="go_detail('go_next','ins')" />
-      <input type="button" value="　戻る　" onclick="go_submit('return')" />
+      <input type="button" value="　戻る　" onclick="history.back()" />
     </div>
 <header>
     <h1>

@@ -3,6 +3,9 @@
 	pageEncoding="UTF-8"%>
 <%@ page import="jp.swell.dao.FileDao"%>
 <%@ page import="jp.swell.dao.UserFileDao"%>
+<%@ page import="jp.swell.dao.AnnouncementDao"%>
+<%@ page import="jp.swell.user.UserLoginInfo"%>
+<%@ page import="jp.swell.dao.UserInfoDao"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
 <%@ page import="jp.patasys.common.http.HtmlParts"%>
 <%@ page import="jp.patasys.common.http.WebBean"%>
@@ -31,7 +34,7 @@
 <script type="text/javascript"
 	src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
-<title>ファイル一覧</title>
+<title>おしらせ</title>
 <style type="text/css">
 body {
 	font-family: 'Arial', sans-serif;
@@ -201,6 +204,7 @@ th {
 	text-align: center;
 }
 </style>
+</head>
 <script type="text/javascript">
 	
 <%--検索条件入力でenterキーが押された場合の処理--%>
@@ -222,12 +226,6 @@ th {
 		$('table.list_table tr:odd').addClass('odd');
 	});
 
-	function go_submit(action_cmd) {
-		document.getElementById('main_form').action = 'FileList.do';
-		document.getElementById('action_cmd').value = action_cmd;
-		document.getElementById('main_form').submit();
-	}
-
 	function go_sort_request(key) {
 		document.getElementById('sort_key').value = key;
 		document.getElementById('action_cmd').value = 'sort';
@@ -248,67 +246,56 @@ th {
 		document.getElementById('main_form').submit();
 	}
 
-	function go_detail_2(action_cmd, request_cmd, main_key, file_name) {
-		document.getElementById('main_form').action = 'FileDetail.do';
+	function go_delete(action_cmd, request_cmd, main_key) {
+		document.getElementById('main_form').action = 'AnnouncementDetail.do';
 		document.getElementById('action_cmd').value = action_cmd;
 		document.getElementById('request_cmd').value = request_cmd;
 		document.getElementById('main_key').value = main_key;
-		document.getElementById('file_name').value = file_name;
-		document.getElementById('main_form').submit();
-	}
-
-	function go_download(action_cmd, request_cmd, main_key, file_name) {
-		document.getElementById('main_form').action = 'FileDetail.do';
-		document.getElementById('action_cmd').value = action_cmd;
-		document.getElementById('request_cmd').value = request_cmd;
-		document.getElementById('main_key').value = main_key;
-		document.getElementById('file_name').value = file_name;
 		document.getElementById('main_form').submit();
 	}
 
 	function go_detail(action_cmd, request_cmd) {
-		document.getElementById('main_form').action = 'FileDetail.do';
+		document.getElementById('main_form').action = 'AnnouncementDetail.do';
 		document.getElementById('action_cmd').value = action_cmd;
 		document.getElementById('request_cmd').value = request_cmd;
 		document.getElementById('main_form').submit();
 	}
-
-	//期限切れデータを一括削除する
-	function go_delete(action_cmd, request_cmd, main_key, file_name) {
-		document.getElementById('main_form').action = 'FileDetail.do';
+	function go_show(action_cmd, main_key) {
+		document.getElementById('main_form').action = 'AnnouncementDetail.do';
+		dodocument.getElementById('main_form').action = 'AnnouncementDetail.do';
 		document.getElementById('action_cmd').value = action_cmd;
-		document.getElementById('request_cmd').value = request_cmd; 
+		document.getElementById('main_key').value = main_key;
+		document.getElementById('main_form').submit();
+		cument.getElementById('action_cmd').value = action_cmd;
+		document.getElementById('main_key').value = main_key;
 		document.getElementById('main_form').submit();
 	}
-	
-	/*	FileDao dao = new FileDao();
-		List<FileDao> userList = dao.getAllFiles();
-		for (FileDao fileInfo : userList) {
-			if (fileInfo.getExpirationDate() != null && fileInfo.getExpirationDate().isBefore(LocalDateTime.now())) {
-				 dbDelete();
-			}*/
-
+	function go_sort(action_cmd,main_key,sort_key) {
+		document.getElementById('main_form').action = 'AnnouncementList.do';
+		document.getElementById('action_cmd').value = action_cmd;
+		document.getElementById('main_key').value = main_key;
+		document.getElementById('sort_key').value = sort_key;
+		document.getElementById('main_form').submit();
+	}
 </script>
-</head>
 <body>
 	<%
-	WebBean bean = (WebBean) request.getAttribute("webBean");
+	String userAdmin = webBean.txt("main_key");
+	String flg = webBean.txt("sort_key");
 	%>
 	<div class="container">
 		<div class="new-btn">
-			<input type="button" value="新規登録"
+			<input type="button" value="アナウンス登録"
 				onclick="go_detail('go_next','ins')" /> <input type="button"
 				value="　戻る　" onclick="history.back()" />
 		</div>
 		<header>
-		<h1>
-			<a href="javascript:void(0)" value="" onclick="go_menu('top')">ファイル一覧</a>
-		</h1>
+		<h1>おしらせ</h1>
 		</header>
-
 		<form id="main_form" method="post" action="">
 
-			<input type="hidden" name="form_name" id="form_name" value="FileList" />
+			<input type="hidden" name="form_name" id="form_name"
+				value="Announcement" />
 			<input type="hidden" name="action_cmd" id="action_cmd" value="" />
 			<input type="hidden" name="request_cmd" id="request_cmd" value="" />
 			<input type="hidden" name="main_key" id="main_key" value="" />
@@ -322,10 +309,11 @@ th {
 			<input type="hidden" name="user_info_id" id="user_info_id"
 				value="<%=webBean.txt("user_info_id")%>" />
 			<input type="hidden" name="file_name" id="file_name"
-				value="<%=webBean.txt("file_name")%>" />
-			<input type="hidden" name="file_id" id="file_id"
-				value="<%=webBean.txt("file_id")%>" />
-
+				value="<%=webBean.txt("title")%>" />
+			<input type="hidden" name="title" id="title"
+				value="<%=webBean.txt("anno_id")%>" />
+			<input type="hidden" name="flg" id="flg"
+				value="<%=webBean.txt("flg")%>" />
 			<div class="left">
 				<div class="messages">
 					<%=webBean.dispMessages()%>
@@ -335,16 +323,17 @@ th {
 				</div>
 				<table class="select_table">
 					<tr>
-						<td class="search_label center" style="width: 50%">ファイル名</td>
+						<td class="search_label center" style="width: 50%">タイトル名</td>
 						<td class="search_label center" style="width: 25%">表示件数</td>
 						<td class="search_label center" style="width: 25%"></td>
 					</tr>
 					<tr>
 						<td class="search_text center"><input type="text"
 							name="list_search_file_name" id="list_search_file_name" size="30"
-							maxlength="100" value="<%=webBean.txt("list_search_file_name")%>"
-							class="ime_active <%=webBean.dispErrorCSS("list_search_file_name")%>"
-							placeholder="検索" /> <%=webBean.dispError("list_search_file_name")%>
+							maxlength="100"
+							value="<%=webBean.txt("list_search_announce_title")%>"
+							class="ime_active <%=webBean.dispErrorCSS("list_search_announce_title")%>"
+							placeholder="検索" /> <%=webBean.dispError("list_search_announce_title")%>
 						</td>
 						<td class="search_line center"><input type="text"
 							name="lineCount" id="lineCount" size="2" maxlength="5"
@@ -355,9 +344,6 @@ th {
 							value="クリア" onclick="go_submit('clear')" /></td>
 					</tr>
 				</table>
-				<%
-				if (webBean.arrayList("list").size() > 0) {
-				%>
 				<div class="pagenation">
 					<input type="text" name="pageNo" id="pageNo" maxlength="3" size='1'
 						value="<%=webBean.txt("pageNo")%>" class="right ime_disabled" />
@@ -391,70 +377,82 @@ th {
 				</div>
 				<table border="1">
 					<tr>
-						<th>ファイル名</th>
-						<th>アップロード日時</th>
-						<th>ダウンロード期限</th>
-						<th>送信先ユーザー</th>
-						<th>アップロードユーザー</th>
-						<th>ダウンロード</th>
-
-
-						<%
-						FileDao dao = new FileDao();
-						List<FileDao> userList = dao.getAllFiles();
-						List<FileDao> sendList = dao.getSendFiles();
-
-						for (FileDao fileInfo : userList) {
-							FileDao send = null;
-							// fileInfoから送信先のユーザーidを取得
-							String send_id = fileInfo.getUploadUserId();
-							for (FileDao sendInfo : sendList) {
-								// IDが一致するかチェック
-								if (sendInfo.getUserInfoId() != null && sendInfo.getUserInfoId().trim().equals(send_id.trim())) {
-									send = sendInfo;
-									break;
-								}
-							}
-						%>
-<%
-						// 表示形式を指定（例：2023/10/25 15:30）
-						String Date = fileInfo.getUploadDate();
+						<th><a href="javascript:void(0);" onclick="go_sort('news','<%=webBean.txt(" user_info_id ")%>','<%=webBean.txt("sort_key")%>')">日付</a>
+						</th>
+						<th>対象者</th>
+						<th>タイトル</th>
+						<th>発信者</th>
+						<th>削除</th>
+					</tr>
+					<!--表示形式を指定（例：2023/10/25 15:30）-->
+					<%
+					AnnouncementDao anno = new AnnouncementDao();
+					List<AnnouncementDao> List = anno.getAllNews(flg);
+					AnnouncementDao select = null;
+					if (userAdmin.equals("0")) {
+						for (AnnouncementDao Info : List) {
+							if (Info.getAdmin().equals("0")) {
+						select = Info;
+						String Date = select.getUpdateDate();
 						String formatDate = (Date != null && !Date.isEmpty()) ? Date : "データを取得していない";
-						
-						//ダウンロード期限の表示
-						String limDate = fileInfo.getExpirationDate();
-						String limitDate = (limDate != null && !limDate.isEmpty()) ? limDate : "データを取得していない";
-						%>
-					
-					<tr
-						style="background-color:<%="received".equals(fileInfo.getFileType()) ? "#1565c0" : "white"%>">
-						<td><%=WebUtil.htmlEscape(fileInfo.getFileName())%></td>
+						String admin = select.getAdmin();
+						String anno_id = select.getAnnoId();
+					%>
+					<tr>
 						<td><%=WebUtil.htmlEscape(formatDate)%></td>
-						<td><%=WebUtil.htmlEscape(limitDate)%></td>
-						<td><%= (send != null) ? WebUtil.htmlEscape(send.getsendUserName()) : "未設定" %></td>
-						<td><%=WebUtil.htmlEscape(fileInfo.getUploadUserName())%></td>
-						<td><input type="button" value="ダウンロード"
-							onclick="go_download('go_next','download','<%=WebUtil.txtEscape(fileInfo.getFileId())%>','<%=WebUtil.txtEscape(fileInfo.getFileName())%>');" />
-							<input type="button" value="削除"
-							onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(fileInfo.getFileId())%>','<%=WebUtil.txtEscape(fileInfo.getFileName())%>');" />
+						<%
+						if (admin.equals("1") || admin.equals("admin")) {
+						%>
+						<td>管理者</td>
+						<%
+						} else {
+						%>
+						<td>全体</td>
+						<%
+						}
+						%>
+						<td><a href="javascript:void(0);"
+							onclick="go_show('go_show','<%=WebUtil.txtEscape(select.getAnnoId())%>');"><%=WebUtil.htmlEscape(select.getTitle())%></a></td>
+						<td><%=WebUtil.htmlEscape(select.getLastName())%></td>
+						<td><input type="button" value="削除 "
+							onclick="go_delete('go_next','delete','<%=WebUtil.txtEscape(select.getAnnoId())%>');" />
 						</td>
 					</tr>
 					<%
-						}
+					}
+					}
+					} else {
+					for (AnnouncementDao Info : List) {
+					String Date = Info.getUpdateDate();
+					String formatDate = (Date != null && !Date.isEmpty()) ? Date : "データを取得していない";
+					String admin = Info.getAdmin();
+					String anno_id = Info.getAnnoId();
+					%>
+					<tr>
+						<td><%=WebUtil.htmlEscape(formatDate)%></td>
+						<%
+						if (admin.equals("1") || admin.equals("admin")) {
 						%>
-					<%
+						<td>管理者</td>
+						<%
 						} else {
 						%>
-					<tr>
-						<td colspan="5">ファイルがありません</td>
-					</tr>
-					<%
+						<td>全体</td>
+						<%
 						}
 						%>
+						<td><a href="javascript:void(0);"
+							onclick="go_show('go_show','<%=WebUtil.txtEscape(Info.getAnnoId())%>');"><%=WebUtil.htmlEscape(Info.getTitle())%></a></td>
+						<td><%=WebUtil.htmlEscape(Info.getLastName())%></td>
+						<td><input type="button" value="削除 "
+							onclick="go_delete('go_next','delete','<%=WebUtil.txtEscape(Info.getAnnoId())%>');" />
+						</td>
+					</tr>
+					<%
+					}
+					}
+					%>
 				</table>
-			</div>
 		</form>
-		<input type="button" value="⚠期限切れ一括削除" onclick="go_delete('go_next','deleteall')" />
-	</div>
 </body>
 </html>

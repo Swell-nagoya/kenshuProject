@@ -1,21 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-
-<!DOCTYPE html>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
+cvcc	<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="jp.swell.dao.UserInfoDao"%>
-<%@ page import="jp.swell.dao.RoomDao"%>
-<%@ page import="jp.swell.dao.ReserveDao"%>
-<%@ page import="jp.patasys.common.http.WebUtil"%>
-<%@ page import="jp.patasys.common.http.HtmlParts"%>
-<%@ page import="jp.patasys.common.http.WebBean" %>
-<%@ page import="jp.swell.constant.UserInfoState"%>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="java.util.List"%>
-<%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="java.time.LocalTime" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
-<jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
+<!DOCTYPE html>
+<<jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="viewport" content="width=device-width" , initial-scale=1.0">
@@ -30,7 +16,7 @@
 <script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/flatpickr.min.js"></script>
-<title>部屋情報修正</title>
+<title>完了画面</title>
 <style>
 body {
   font-family: Arial, sans-serif;
