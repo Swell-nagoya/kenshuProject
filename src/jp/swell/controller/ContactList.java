@@ -66,7 +66,7 @@ public class ContactList extends ControllerBase {
                 formClear();
                 searchList();
             } else if ("return".equals(action)) {
-                redirect("MenuAdmin.do");
+                redirect("MenuAdmin.do");/*のちに編集予定*/
                 return;
             } else {
                 // 初期表示または未知のactionはそのまま検索

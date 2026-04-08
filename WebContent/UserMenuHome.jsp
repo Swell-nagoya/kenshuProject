@@ -1039,7 +1039,8 @@ String actionCmd = (String) request.getParameter("action_cmd");
                     <div id="month_button">
                         <button id="prev" type="button">＜</button><button id="next" type="button">＞</button><div id="current_month"></div>
                     </div>
-                    <div id="user_menu">
+					<div><%=webBean.txt("admin")%></div>
+					<div id="user_menu">
                         <ul class="menu">
                             <li><i class="material-icons">today</i> カレンダー
                                 <ul class="menuSub">
@@ -1055,10 +1056,10 @@ String actionCmd = (String) request.getParameter("action_cmd");
                                     <li onclick="go_logout('logout')">ログアウト</li>
                                 </ul>
                             </li>
-                            <%
-                                if (webBean.txt("admin").equals("admin")){
-                            %>
-                            <li><i class="material-icons">settings</i> <span class="control">管理画面</span>
+							<%
+							if (webBean.txt("admin").equals("admin") || webBean.txt("admin").equals("1")) {
+							%>
+							<li><i class="material-icons">settings</i> <span class="control">管理画面</span>
                                 <ul class="menuSub">
                                     <li onclick="go_detail('admin1', '');">管理者メニュー</li>
                                     <li onclick="window.location.href='UserMenu.do'">ホーム画面</li>
