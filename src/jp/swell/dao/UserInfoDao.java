@@ -50,6 +50,7 @@ import jp.patasys.common.util.Digest;
  * @version 1.0
  */
 public class UserInfoDao implements Serializable {
+	
     /** Derializable No. */
     private static final long serialVersionUID = 1L;
     /**
@@ -806,9 +807,10 @@ public class UserInfoDao implements Serializable {
      * コンストラクタ。.
      */
     public UserInfoDao() {
+    	
         fieldsArray.put("user_info_id", "user_info.user_info_id");
         fieldsArray.put("password", "user_info.password");
-        fieldsArray.put("last_name", "user_info.last_name");
+        fieldsArray.put("last_name", "last_name");
         fieldsArray.put("middle_name", "user_info.middle_name");
         fieldsArray.put("first_name", "user_info.first_name");
         fieldsArray.put("maiden_name", "user_info.maiden_name");
@@ -851,7 +853,7 @@ public class UserInfoDao implements Serializable {
         if (0 == rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDaoForJoin(map, this);
+        setUserInfoDao(map, this);
         return true;
     }
 
@@ -905,6 +907,8 @@ public class UserInfoDao implements Serializable {
         dao.setMiddleNameKana(DbI.chara(map.get("middle_name_kana")));
         dao.setFirstNameKana(DbI.chara(map.get("first_name_kana")));
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
+        //dao.setInsertUserId(DbI.chara(map.get("insert_user_id")));
+        dao.setMemail(DbI.chara(map.get("memail")));
         dao.setAdmin(DbI.chara(map.get("admin")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));
     }
@@ -920,7 +924,7 @@ public class UserInfoDao implements Serializable {
         dao.setPassword(DbI.chara(map.getOrDefault("user_info___password", "")));
         dao.setLastName(DbI.chara(map.getOrDefault("user_info___last_name", "")));
         dao.setMiddleName(DbI.chara(map.getOrDefault("user_info___middle_name", "")));
-        dao.setFirstName(DbI.chara(map.getOrDefault("user_info___first_name", "")));
+        dao.setFirstName(DbI.chara(map.getOrDefault("user_info___first_name","")));
         dao.setMaidenName(DbI.chara(map.getOrDefault("user_info___maiden_name", "")));
         dao.setLastNameKana(DbI.chara(map.getOrDefault("user_info___last_name_kana", "")));
         dao.setMiddleNameKana(DbI.chara(map.getOrDefault("user_info___middle_name_kana", "")));
@@ -1237,7 +1241,7 @@ public class UserInfoDao implements Serializable {
         for (int i = 0; i < cnt; i++) {
             map = rs.get(i);
             UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
+            dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
         return array;
@@ -1645,5 +1649,4 @@ public class UserInfoDao implements Serializable {
         // TODO 自動生成されたメソッド・スタブ
         return null;
     }
-
 }

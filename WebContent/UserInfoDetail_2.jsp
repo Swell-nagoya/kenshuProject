@@ -1,3 +1,4 @@
+3
 <%@ page language="java" contentType="text/html; charset=UTF-8"
   pageEncoding="UTF-8"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
@@ -192,10 +193,11 @@ input.error {
   }
 
   $(function() {
-      $("#leave_date_input").datepicker();
+      $("#leave_date_input").datepicker({
+          dateFormat: "yy/mm/dd"});
       $("#leave_date_input").on("change",function() {
           var value = $(this).val();
-          var value1 = value.replaceAll("-","");
+          var value1 = value.replace("/","");
           $("#leave_date").val(value1);
       });
   });
@@ -293,7 +295,7 @@ input.error {
           <tr>
             <td class="style_head3 style_head_size" style="width: 30%">退職予定日</td>
               <td class="input-text" style="width: 70%">
-                <input type="text" name="leave_date" id="leave_date_input" value="<%=webBean.txt("leave_date")%>" class="input-text ime_active <%=webBean.dispErrorCSS("leave_date")%>">
+                <input type="text" name="leave_date" id="leave_date_input" value="<%=webBean.txt("leave_date")%>" class="input-text ime_active <%=webBean.dispErrorCSS("leave_date")%>" readonly>
                 <br /> <span id="error_leave_date" class="error"><%=webBean.dispError("leave_date")%> </span>
               </td>
           </tr>
