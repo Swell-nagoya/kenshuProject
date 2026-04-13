@@ -279,7 +279,7 @@ table {
             %>
           <tr>
             <td class="style_head3 style_head_size"> 退職予定日 </td>
-            <td class="input-text"><%= formatLeaveDate %> </td>
+            <td class="input-text"><%= webBean.txt("leave_date") %> </td>
           </tr>
             <% 
             }

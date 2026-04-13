@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -770,7 +771,7 @@ public class UserInfoDao implements Serializable {
     /**
      * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
      */
-    private HashMap<String, String> fieldsArray = new HashMap<String, String>();
+    private Map<String, String> fieldsArray = new HashMap<String, String>();
 
     /**
      * ユーザー情報を全件取得する。
@@ -851,7 +852,7 @@ public class UserInfoDao implements Serializable {
         if (0 == rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDaoForJoin(map, this);
+        setUserInfoDao(map, this);
         return true;
     }
 
@@ -905,6 +906,8 @@ public class UserInfoDao implements Serializable {
         dao.setMiddleNameKana(DbI.chara(map.get("middle_name_kana")));
         dao.setFirstNameKana(DbI.chara(map.get("first_name_kana")));
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
+        //dao.setInsertUserId(DbI.chara(map.get("insert_user_id")));
+        dao.setMemail(DbI.chara(map.get("memail")));
         dao.setAdmin(DbI.chara(map.get("admin")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));
     }
@@ -1237,7 +1240,7 @@ public class UserInfoDao implements Serializable {
         for (int i = 0; i < cnt; i++) {
             map = rs.get(i);
             UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
+            dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
         return array;
