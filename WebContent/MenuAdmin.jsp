@@ -93,23 +93,14 @@ input[type="button"]:hover {
 						</header>
 					</div>
 					<div class="main_link">
-						<input type="button" id="home-btn" name="home-btn"
-							onclick="go_submit('home')" value="ホーム画面" /> <input
-							type="button" id="user-btn" name="user-btn"
-							onclick="go_submit('user')" value="ユーザー情報一覧" /> <input
-							type="button" id="room-btn" name="room-btn"
-							onclick="go_submit('room')" value="部屋情報一覧" /> <input
-							type="button" id="reserve-btn" name="reserve-btn"
-							onclick="go_submit('reserve')" value="予約情報一覧" /> <input
-							type="button" id="file-btn" name="file-btn"
-							onclick="go_submit('file')" value="ファイル情報一覧" /> <input
-							type="button" id="calendar-btn" name="calendar-btn"
-							onclick="go_submit('calendar')" value="カレンダー" /> <input
-							type="button" id="Shift-btn" name="Shift-btn"
-							onclick="go_submit('Shift')" value="シフト管理" /> <input
-							type="button" id="Contact-btn" name="Contact-btn"
-							onclick="go_submit('Contact')" value="連絡先一覧" />
-
+						<input type="button" id="home-btn" name="home-btn" onclick="go_submit('home')" value="ホーム画面" /> 
+						<input type="button" id="user-btn" name="user-btn" onclick="go_submit('user')" value="ユーザー情報一覧" /> 
+						<input type="button" id="room-btn" name="room-btn" onclick="go_submit('room')" value="部屋情報一覧" /> 
+						<input type="button" id="reserve-btn" name="reserve-btn" onclick="go_submit('reserve')" value="予約情報一覧" /> 
+						<input type="button" id="file-btn" name="file-btn" onclick="go_submit('file')" value="ファイル情報一覧" /> 
+						<input type="button" id="calendar-btn" name="calendar-btn" onclick="go_submit('calendar')" value="カレンダー" /> 
+						<input type="button" id="Shift-btn" name="Shift-btn" onclick="go_submit('Shift')" value="シフト管理" /> 
+						<input type="button" id="Contact-btn" name="Contact-btn" onclick="go_submit('Contact')" value="連絡先一覧" />
 					</div>
 				</div>
 			</div>

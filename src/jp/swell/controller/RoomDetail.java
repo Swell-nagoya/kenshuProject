@@ -69,7 +69,7 @@ public class RoomDetail extends ControllerBase
           RoomDao dao = setWeb2Dao2InputInfo();
           bean.setValue("request_name", "修正する");
           if (beforeName == null || beforeName.trim().isEmpty()) {
-              beforeName = roomName;
+              beforeName = "";
               bean.setValue("before_name", beforeName);
           }
           bean.setValue("before_name", beforeName);
@@ -196,7 +196,7 @@ public class RoomDetail extends ControllerBase
         }
         else
         {
-            bean.setError("入力内容に誤りがあります");
+            bean.setError("1入力内容に誤りがあります");
             forward("RoomDetail.jsp");
         }
     }
@@ -297,7 +297,7 @@ public class RoomDetail extends ControllerBase
             errors.put("room_name_empty", "部屋名を入力してください。");
         }
         if (roomName.equalsIgnoreCase(beforeName)) {
-            errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+            errors.put("room_name_duplicate", "1部屋名が以前と同じです。別の名前を入力してください。");
         }
 
         return errors.isEmpty();
