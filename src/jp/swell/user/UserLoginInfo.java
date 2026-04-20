@@ -249,16 +249,21 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
 
     @Override
     public boolean login(String pAccount, String pPassword) {
+    	System.out.println("入力されたアカウントまたはメールアドレス:" + pAccount);
+    	System.out.println("入力されたパスワード:" + pPassword);
         try {
             userInfoDao = new UserInfoDao();
             boolean flg = userInfoDao.login(pAccount, pPassword);
             if (!flg) {
+            	System.out.println("ログインに失敗しました。");
                 return false;
             }
+            System.out.println("ログインに成功しました");
             return true;
         } catch (AtareSysException e) {
             userInfoDao = null;
             e.printStackTrace();
+            System.out.println("ログイン時、エラーが発生しました。");
             return false;
         }
     }
