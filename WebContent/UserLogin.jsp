@@ -117,7 +117,7 @@
     document.getElementById("main_form").submit();
   }
   function go_submit_1(action_cmd) {
-      document.getElementById("main_form").action = 'UserLogin.do';
+      document.getElementById("main_form").action = 'SendPassMail.do';
       document.getElementById("action_cmd").value = action_cmd;
       document.getElementById("main_form").submit();
     }
@@ -147,7 +147,7 @@
                     <input type="submit" id="bt" name="login-btn"  onclick="go_submit('login')" class="submit-btn" value="ログイン"/>
                 </div>
                 <div class="main__form--link">
-                  <a href="#" id="reissue" onclick="go_submit_1('')" class="link-btn">パスワード再発行</a>
+                  <a href="#" id="reissue" onclick="go_submit_1('repassword')" class="link-btn">パスワード再発行</a>
                 </div>
             </form>
             <br/>

@@ -630,6 +630,8 @@ public class UserInfoDetail extends ControllerBase
     private UserInfoDao setWeb2Dao2InputInfo() throws AtareSysException {
       WebBean bean = getWebBean();
       UserInfoDao dao = new UserInfoDao();
+      
+      bean.setValue("user_info_id", bean.value("main_key"));
 
       dao.setUserInfoId(bean.value("user_info_id"));
       dao.setLastName(bean.value("last_name"));
@@ -680,10 +682,12 @@ public class UserInfoDetail extends ControllerBase
         try {
             DbBase.dbBeginTran();
             dao.dbUpdate(userInfoId);
+            System.out.println("ユーザー情報を修正しました。");
             DbBase.dbCommitTran();
             redirect("ViewUserList.do");
         } catch (Exception e) {
             DbBase.dbRollbackTran();
+            System.out.println("パスワードを再設定してください。");
             forward("UserPassReset.jsp");
         }
         
