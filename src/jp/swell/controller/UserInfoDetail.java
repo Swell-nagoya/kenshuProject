@@ -337,6 +337,7 @@ public class UserInfoDetail extends ControllerBase
 
         bean.setValue("select_info", Sup.serialize(dao)); // 編集前に読み込んだデータを格納しておく
         bean.setValue("input_info", Sup.serialize(dao));
+        System.out.println("データベースにアクセス成功");
         return true;
     }
 
@@ -631,7 +632,10 @@ public class UserInfoDetail extends ControllerBase
       WebBean bean = getWebBean();
       UserInfoDao dao = new UserInfoDao();
       
-      bean.setValue("user_info_id", bean.value("main_key"));
+      // 新規登録以外
+      if (!"ins".equals(bean.value("request_cmd"))) {
+          bean.setValue("user_info_id", bean.value("main_key")); 
+      }
 
       dao.setUserInfoId(bean.value("user_info_id"));
       dao.setLastName(bean.value("last_name"));

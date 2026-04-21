@@ -324,9 +324,28 @@ footer {
               UserInfoDao dao = (UserInfoDao) item;
           %>
           <tr class="list_tr">
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
+            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・
+            
+            <%
+            if(!"".equals(dao.getMiddleName())){
+            %>
+            <%=WebUtil.htmlEscape(dao.getMiddleName())%>・
+            <% }
+            %>
+             
+            <%=WebUtil.htmlEscape(dao.getFirstName())%>
             </td>
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
+            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・
+            
+            <%
+            if(!"".equals(dao.getMiddleName())){
+            %>
+            <%=WebUtil.htmlEscape(dao.getMiddleName())%>・
+            <% 
+            }
+            %>
+            
+            <%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
             </td>
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
             <td class="list_btn">
