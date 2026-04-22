@@ -905,6 +905,7 @@ public class UserInfoDao implements Serializable {
         dao.setMiddleNameKana(DbI.chara(map.get("middle_name_kana")));
         dao.setFirstNameKana(DbI.chara(map.get("first_name_kana")));
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
+        dao.setInsertUserId(map.get("insert_user_id"));
         dao.setMemail(DbI.chara(map.get("memail")));
         dao.setAdmin(DbI.chara(map.get("admin")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));

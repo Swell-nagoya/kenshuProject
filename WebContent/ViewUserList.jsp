@@ -340,7 +340,7 @@ footer {
             <%
             if(!"".equals(dao.getMiddleName())){
             %>
-            <%=WebUtil.htmlEscape(dao.getMiddleName())%>・
+            <%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・
             <% 
             }
             %>

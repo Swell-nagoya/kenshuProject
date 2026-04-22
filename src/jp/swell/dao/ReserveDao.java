@@ -944,7 +944,7 @@ public class ReserveDao implements Serializable {
             map = rs.get(i);
             {
                 ReserveDao dao = new ReserveDao();
-                dao.setReserveDaoForJoin(map, dao);
+                dao.setReserveDao(map, dao);
 
                 array.add(dao);
             }

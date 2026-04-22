@@ -117,10 +117,10 @@
     document.getElementById("main_form").submit();
   }
   function go_submit_1(action_cmd) {
-      document.getElementById("main_form").action = 'SendPassMail.do';
-      document.getElementById("action_cmd").value = action_cmd;
-      document.getElementById("main_form").submit();
-    }
+    document.getElementById("main_form").action = 'SendPassMail.do';
+    document.getElementById("action_cmd").value = action_cmd;
+    document.getElementById("main_form").submit();
+  }
   //
 </script>
 </head>
