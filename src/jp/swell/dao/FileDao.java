@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -720,11 +719,6 @@ public class FileDao implements Serializable {
             dao.setUploaderFirstName(map.get("uploader_first_name"));
             dao.setUploaderLastName(map.get("uploader_last_name"));
             resultList.add(dao);
-            System.out.println("****************");
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                System.out.println("key=" + entry.getKey() + ", value=" + entry.getValue());
-            }
-            System.out.println("*****************");
         }
         return resultList;
     }
@@ -798,10 +792,6 @@ public class FileDao implements Serializable {
         fieldsArray.put("system_file_name", "files.system_file_name");
         fieldsArray.put("upload_user_id", "files.upload_user_id");
         fieldsArray.put("expiration_date", "files.expiration_date");
-        fieldsArray.put("uploader_first_name", "uploader.first_name");
-        fieldsArray.put("uploader_last_name", "uploader.last_name");
-        fieldsArray.put("user_first_name","user_info.first_name");
-        fieldsArray.put("user_last_name","user_info.last_name");
     }
 
     /**
