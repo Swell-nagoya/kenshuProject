@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -527,7 +528,7 @@ public class FileDao implements Serializable {
      * @param dao  FileDaoこのテーブルのインスタンス
      */
     public void setFileDaoForJoin(HashMap<String, String> map, FileDao dao) throws AtareSysException {
-        dao.setFileId(DbI.chara(map.get("files___file_id") != null ? map.get("files___file_id") : ""));
+        dao.setFileId(DbI.chara(map.get("files___file_id") != null ? map.get("files___file_id") : "1"));
         dao.setUserInfoId(DbI.chara(map.get("files___user_info_id") != null ? map.get("files___user_info_id") : ""));
         dao.setFileName(DbI.chara(map.get("files___file_name") != null ? map.get("files___file_name") : ""));
         dao.setFilePath(DbI.chara(map.get("files___file_path") != null ? map.get("files___file_path") : ""));
@@ -677,7 +678,8 @@ public class FileDao implements Serializable {
         return files; // 取得したルームリストを返す
     }
 
-    public static ArrayList<FileDao> dbSelectList(FileDao myclass, LinkedHashMap<String, String> sortKey,
+    @SuppressWarnings("null")
+	public static ArrayList<FileDao> dbSelectList(FileDao myclass, LinkedHashMap<String, String> sortKey,
             DaoPageInfo daoPageInfo) throws AtareSysException {
         ArrayList<FileDao> resultList = new ArrayList<>();
 
@@ -689,20 +691,20 @@ public class FileDao implements Serializable {
         int limit = daoPageInfo.getLineCount();
 
         String sql = "SELECT "
-                + "files.file_id AS files___file_id, "
-                + "files.user_info_id AS files___user_info_id, "
-                + "files.file_name AS files___file_name, "
-                + "files.file_path AS files___file_path, "
-                + "files.upload_date AS files___upload_date, "
-                + "files.file_key AS files___file_key, "
-                + "files.mime_type AS files___mime_type, "
-                + "files.system_file_name AS files___system_file_name, "
-                + "files.upload_user_id AS files___upload_user_id, "
-                + "files.expiration_date AS files___expiration_date, "
-                + "uploader.first_name AS uploader_first_name, "
-                + "uploader.last_name AS uploader_last_name, "
-                + "user_info.first_name AS user_first_name, "
-                + "user_info.last_name AS user_last_name "
+                + "files.file_id AS file_id, "
+                + "files.user_info_id AS user_info_id, "
+                + "files.file_name AS file_name, "
+                + "files.file_path AS file_path, "
+                + "files.upload_date AS upload_date, "
+                + "files.file_key AS file_key, "
+                + "files.mime_type AS mime_type, "
+                + "files.system_file_name AS system_file_name, "
+                + "files.upload_user_id AS upload_user_id, "
+                + "files.expiration_date AS expiration_date, "
+                + "CONCAT(uploader.first_name , '') AS uploader_first_name, "
+                + "CONCAT(uploader.last_name ,'') AS uploader_last_name,  "
+                + "CONCAT(user_info.first_name,'') AS user_first_name, "
+                + "CONCAT(user_info.last_name,'') AS user_last_name "
                 + "FROM files "
                 + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
                 + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
@@ -710,15 +712,20 @@ public class FileDao implements Serializable {
                 + " LIMIT " + limit + " OFFSET " + offset;
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
-            dao.setFileDaoForJoin(map, dao);
+            dao.setFileDao(map, dao);
             dao.setFirstName(map.get("user_first_name"));
             dao.setLastName(map.get("user_last_name"));
+            dao.setUploaderFirstName(map.get("uploader_first_name"));
+            dao.setUploaderLastName(map.get("uploader_last_name"));
             resultList.add(dao);
+            System.out.println("****************");
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                System.out.println("key=" + entry.getKey() + ", value=" + entry.getValue());
+            }
+            System.out.println("*****************");
         }
-
         return resultList;
     }
 
@@ -791,6 +798,10 @@ public class FileDao implements Serializable {
         fieldsArray.put("system_file_name", "files.system_file_name");
         fieldsArray.put("upload_user_id", "files.upload_user_id");
         fieldsArray.put("expiration_date", "files.expiration_date");
+        fieldsArray.put("uploader_first_name", "uploader.first_name");
+        fieldsArray.put("uploader_last_name", "uploader.last_name");
+        fieldsArray.put("user_first_name","user_info.first_name");
+        fieldsArray.put("user_last_name","user_info.last_name");
     }
 
     /**

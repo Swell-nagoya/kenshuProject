@@ -30,7 +30,7 @@
 <script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/flatpickr.min.js"></script>
-<title>部屋情報修正</title>
+<title>ファイルアップロード</title>
 <style>
 body {
   font-family: 'Arial', sans-serif;
