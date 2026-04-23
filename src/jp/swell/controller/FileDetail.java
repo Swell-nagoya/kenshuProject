@@ -1,5 +1,6 @@
 package jp.swell.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.ParseException;
@@ -78,6 +79,7 @@ public class FileDetail extends ControllerBase {
                     bean.setValue("input_name", inputName);
                     forward("FileDetail_2.jsp");
                 } catch (IOException | ServletException e) {
+                	System.out.println("a");
                     throw new AtareSysException(e);
                 }
 
@@ -364,6 +366,10 @@ public class FileDetail extends ControllerBase {
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
         String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        File dir = new File(filePath);
+        if(!dir.exists()) {
+        	dir.mkdirs();
+        }
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得

@@ -114,7 +114,7 @@ public class UserInfoDetail extends ControllerBase
                       } 
                       else 
                       {
-                          bean.setValue("request_name", "メール送信");
+                    	  bean.setValue("request_name", "メール送信");
                           forward("UserInfoDetail_3.jsp");
                       }
                   }
@@ -485,7 +485,7 @@ public class UserInfoDetail extends ControllerBase
         else if ("delete".equals(bean.value("request_cmd"))) 
         {
             // 日付フォーマットの指定
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
             String leaveDateStr = bean.value("leave_date");
 
             // `leave_date` が数字でない場合
@@ -509,7 +509,6 @@ public class UserInfoDetail extends ControllerBase
                         Calendar calendar = Calendar.getInstance();
                         calendar.add(Calendar.DATE, -1); // 昨日の日付に設定
                         Date yesterday = calendar.getTime(); // 昨日の日付を取得
-
                         // `leave_date` が昨日以前の日付である場合
                         if (leaveDate.before(yesterday)) {
                             errors.put("leave_date", "本日以降の日付を入力してください");
@@ -538,10 +537,11 @@ public class UserInfoDetail extends ControllerBase
      * @param value チェック対象の文字列
      * @return 文字列が数字で構成されている場合はtrue、それ以外はfalse
      */
-    private boolean isNumeric(String value) {
-      if (!(value == null || value.trim().isEmpty())) {
+    private boolean isNumeric(String value1) {
+    	String value_1 = value1.replace("/","");
+      if (!(value_1 == null || value_1.trim().isEmpty())) {
         try {
-          Integer.parseInt(value);
+          Integer.parseInt(value_1);
         } catch (NumberFormatException e) {
           return false;
         }

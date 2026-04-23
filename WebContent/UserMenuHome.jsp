@@ -1056,7 +1056,7 @@ String actionCmd = (String) request.getParameter("action_cmd");
                                 </ul>
                             </li>
                             <%
-                                if (webBean.txt("admin").equals("admin")){
+                                if (webBean.txt("admin").equals("admin")||webBean.txt("admin").equals("1")){
                             %>
                             <li><i class="material-icons">settings</i> <span class="control">管理画面</span>
                                 <ul class="menuSub">

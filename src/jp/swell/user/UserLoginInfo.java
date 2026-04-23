@@ -202,7 +202,7 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
      * @param pPassword パスワード
      * @return ログインに成功：true、失敗：false
      */
-    public boolean resetUserInfo() {
+    public boolean resetUserInfo() {//パスワードのリセットの処理by服部
         try {
             UserInfoDao dao = new UserInfoDao();
             boolean flg = dao.dbSelect(this.userInfoDao.getUserInfoId());

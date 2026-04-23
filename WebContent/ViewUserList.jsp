@@ -324,15 +324,28 @@ footer {
               UserInfoDao dao = (UserInfoDao) item;
           %>
           <tr class="list_tr">
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
+          	<%
+               if(dao.getMiddleName() == null){
+            %>
+            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%> <%=WebUtil.htmlEscape(dao.getFirstName())%>
             </td>
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
+            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%> <%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
             </td>
+            <%
+              }else if(dao.getMiddleName() != null){
+            %>
+            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%> <%=WebUtil.htmlEscape(dao.getMiddleName())%> <%=WebUtil.htmlEscape(dao.getFirstName())%>
+            </td>
+            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%> <%=WebUtil.htmlEscape(dao.getMiddleNameKana())%> <%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
+            </td>
+            <%
+              }
+            %>
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
             <td class="list_btn">
-              <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+              <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.htmlEscape(dao.getUserInfoId())%>');" />
               <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-              <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+              <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.htmlEscape(dao.getUserInfoId())%>');" />
               <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
             </td>
           </tr>
