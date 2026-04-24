@@ -221,7 +221,7 @@ public class UserYoyakuDetail extends ControllerBase {
 
     DaoPageInfo daoPageInfo = new DaoPageInfo();
     if (!Validate.isInteger(bean.value("lineCount"))) {
-      bean.setValue("lineCount", "20");
+      bean.setValue("lineCount", "100");
     }
     daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
     SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "UserMenuHome", "lineCount", bean.value("lineCount"));

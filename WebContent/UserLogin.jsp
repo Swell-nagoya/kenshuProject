@@ -117,7 +117,7 @@
     document.getElementById("main_form").submit();
   }
   function go_submit_1(action_cmd) {
-    document.getElementById("main_form").action = 'SendPassMail.do';
+    document.getElementById("main_form").action = 'UserLogin.do';
     document.getElementById("action_cmd").value = action_cmd;
     document.getElementById("main_form").submit();
   }

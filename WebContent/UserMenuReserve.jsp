@@ -391,10 +391,12 @@ div.error {
                               // 部屋情報を取るためのループ処理
                               for (Object item : webBean.arrayList("rooms")) {
                                 RoomDao room = (RoomDao) item;
+                                if("0".equals(room.getDeleted())){
                             %>
 
                             <option value="<%= WebUtil.htmlEscape(room.getRoomId()) %>" <%= WebUtil.dispSelected(webBean.value("room_id"), room.getRoomId()) %> data-room-name="<%= WebUtil.htmlEscape(room.getRoomName()) %>"> <%= WebUtil.htmlEscape(room.getRoomName()) %></option>
                             <%
+                                }
                             }
                                   } else { // 部屋情報がない場合
                             %>

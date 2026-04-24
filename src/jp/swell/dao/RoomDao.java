@@ -105,6 +105,10 @@ public class RoomDao implements Serializable
      * 予約用 備考
      */
     private String inputRemark = "";
+    /**
+     * 削除フラグ
+     */
+    private String deleted = "";
 
 
     /**
@@ -130,6 +134,7 @@ public class RoomDao implements Serializable
         fieldsArray.put("insert_user_id","room.insert_user_id");
         fieldsArray.put("update_date","room.update_date");
         fieldsArray.put("update_user_id","room.update_user_id");
+        fieldsArray.put("is_deleted", "room.is_deleted");
 
     }
     /**
@@ -318,6 +323,38 @@ public class RoomDao implements Serializable
     public void setInputRemark(String inputRemark) {
       this.inputRemark = inputRemark;
     }
+    
+    /**
+     * @return delited
+     */
+    public String getDeleted() {
+    	return deleted;
+    }
+    /**
+     * @param deleted セットする deleted
+     */
+    public void setDeleted(String deleted) {
+    	this.deleted = deleted;
+    }
+    
+    public boolean roomCheck(String roomName) throws AtareSysException{
+    	 String sql = "SELECT "
+                 + "room.room_id as room___room_id, "
+                 + "room.room_name as room___room_name, "
+                 + "room.insert_date as room___insert_date, "
+                 + "room.insert_user_id as room___insert_user_id, "
+                 + "room.update_date as room___update_date, "
+                 + "room.update_user_id as room___update_user_id "
+                 + "FROM room "
+                 + "WHERE room_name = " + DbS.chara(roomName)
+                 + "AND is_deleted = 0";
+         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+         if(0==rs.size())   return false;
+         HashMap<String, String> map = rs.get(0);
+         setRoomDao(map,this);
+         return true;
+    	
+    }
 
     /**
      * room 部屋テーブルを検索しroom 部屋テーブルの１行を取得します。.
@@ -362,6 +399,7 @@ public class RoomDao implements Serializable
             throw new AtareSysException("データベース接続中にエラーが発生しました: " + e.getMessage(), e);
         }
     }
+    
 
     /**
      * room 部屋テーブルを検索しroom 部屋テーブルの１行を取得します。.
@@ -404,6 +442,7 @@ public class RoomDao implements Serializable
         dao.setInsertUserId(DbI.chara(map.get("insert_user_id")));
         dao.setUpdateDate(DbI.chara(map.get("update_date")));
         dao.setUpdateUserId(DbI.chara(map.get("update_user_id")));
+        dao.setDeleted(map.get("is_deleted"));
     }
 
     /**
@@ -494,7 +533,7 @@ public class RoomDao implements Serializable
      * @throws AtareSysException
      */
     public ArrayList<RoomDao> getAllRooms() throws AtareSysException {
-      String sql = "SELECT room_id, room_name FROM room;";
+      String sql = "SELECT room_id, room_name, is_deleted FROM room;";
       List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
       ArrayList<RoomDao> rooms = new ArrayList<>();
       for (HashMap<String, String> map : rs) {
@@ -506,6 +545,7 @@ public class RoomDao implements Serializable
           room.setInsertUserId(map.get("insert_user_id"));
           room.setUpdateDate(map.get("update_date"));
           room.setUpdateUserId(map.get("update_user_id"));
+          room.setDeleted(map.get("is_deleted"));
           rooms.add(room);
       }
 
