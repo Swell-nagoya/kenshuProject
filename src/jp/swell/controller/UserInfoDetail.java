@@ -487,9 +487,12 @@ public class UserInfoDetail extends ControllerBase
             // 日付フォーマットの指定
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
             String leaveDateStr = bean.value("leave_date");
+            String leaveDateStr1 = leaveDateStr.replace("年", "");
+            leaveDateStr1 = leaveDateStr1.replace("月", "");
+        	leaveDateStr1 = leaveDateStr1.replace("日", "");
 
             // `leave_date` が数字でない場合
-            if (!isNumeric(leaveDateStr)) 
+            if (!isNumeric(leaveDateStr1)) 
             {
                 errors.put("leave_date", "数字を入力してください");
             } 
@@ -498,12 +501,12 @@ public class UserInfoDetail extends ControllerBase
                 try 
                 {
                     // `leave_date` が空文字でないかチェック
-                    if (leaveDateStr == null || leaveDateStr.trim().isEmpty()) {
+                    if (leaveDateStr1 == null || leaveDateStr1.trim().isEmpty()) {
                         // 空文字の場合はエラーメッセージを設定せずに `true` を返す
                         return true;
                     } else {
                         // `leave_date` を Date 型に変換
-                        Date leaveDate = dateFormat.parse(leaveDateStr);
+                        Date leaveDate = dateFormat.parse(leaveDateStr1);
 
                         // カレンダーを使用して昨日の日付を取得
                         Calendar calendar = Calendar.getInstance();
@@ -538,10 +541,13 @@ public class UserInfoDetail extends ControllerBase
      * @param value チェック対象の文字列
      * @return 文字列が数字で構成されている場合はtrue、それ以外はfalse
      */
-    private boolean isNumeric(String value) {
-      if (!(value == null || value.trim().isEmpty())) {
+    private boolean isNumeric(String value1) {
+    	String value_1 = value1.replace("年", "");
+    	value_1 = value_1.replace("月", "");
+    	value_1 = value_1.replace("日", "");
+      if (!(value_1 == null || value_1.trim().isEmpty())) {
         try {
-          Integer.parseInt(value);
+          Integer.parseInt(value_1);
         } catch (NumberFormatException e) {
           return false;
         }
@@ -684,7 +690,7 @@ public class UserInfoDetail extends ControllerBase
             redirect("ViewUserList.do");
         } catch (Exception e) {
             DbBase.dbRollbackTran();
-            forward("UserPassReset.jsp");
+            forward("ViewUserList.do");
         }
         
     }
