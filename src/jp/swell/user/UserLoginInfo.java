@@ -223,7 +223,7 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
     }
 
     public boolean isAdmin() {
-        return userInfoDao != null && "1".equals(userInfoDao.getAdmin());
+        return userInfoDao != null && ("1".equals(userInfoDao.getAdmin()) || "admin".equals(userInfoDao.getAdmin()));
     }
 
 
