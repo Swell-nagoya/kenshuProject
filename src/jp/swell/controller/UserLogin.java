@@ -49,7 +49,11 @@ public class UserLogin extends ControllerBase {
                     this.forward("/UserLogin.jsp");
                     return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
                 }
-                    redirect("UserMenu.do");
+                UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+                if (userLoginInfo.isAdmin()) {
+                	redirect("MenuAdmin.do");
+                }
+                redirect("UserMenu.do");
                 return;
             } else if ("repassword".equals(bean.value("action_cmd"))) {
                 redirect("SendPassMail.do");
@@ -75,11 +79,11 @@ public class UserLogin extends ControllerBase {
 
         WebBean bean = getWebBean();
         if (bean.value("ac").length() == 0) {
-            bean.setError("ac", "未入力");
+            bean.setError("ac", "usernameが未入力");
             return false;
         }
         if (bean.value("ko").length() == 0) {
-            bean.setError("ko", "未入力");
+            bean.setError("ko", "passwordが未入力");
             return false;
         }
 
