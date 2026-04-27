@@ -1388,11 +1388,13 @@ public class UserInfoDao implements Serializable {
                 + " ( user_info_id  = " + DbS.chara(pAccount)
                 + " or memail = " + DbS.chara(pAccount) + " ) ";
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        System.out.println(rs);
         if (1 != rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
         setUserInfoDao(map, this);
         String password = Digest.hex(Digest.SHA512, pPassword);
+        System.out.println(password);
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
         }

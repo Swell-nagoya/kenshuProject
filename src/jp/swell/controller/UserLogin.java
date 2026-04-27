@@ -46,13 +46,18 @@ public class UserLogin extends ControllerBase {
             if ("login".equals(bean.value("action_cmd"))) {
                 this.setLoginInfo(null);
                 if (!inputCheck()) {
-                    this.forward("/UserLogin.jsp");
+                	this.forward("/UserLogin.jsp");
                     return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
                 }
-                    redirect("UserMenu.do");
+                UserLoginInfo info = (UserLoginInfo) getLoginInfo();
+                if (info.isAdmin()) {
+                	this.forward("/MenuAdmin.jsp");
+                	return;
+                }
+                this.forward("/UserMenu.jsp");
                 return;
             } else if ("repassword".equals(bean.value("action_cmd"))) {
-                redirect("SendPassMail.do");
+            	this.forward("/SendPassMail.jsp");
             }
         } else if ("UserMenuHome".equals(bean.value("form_name"))) {
             // ログインボタンが押されたときの処理
@@ -61,7 +66,7 @@ public class UserLogin extends ControllerBase {
                 return;
             }
         } else {
-            this.forward("/UserLogin.jsp");
+        	redirect("UserLogin.do");
         }
     }
 
@@ -74,12 +79,15 @@ public class UserLogin extends ControllerBase {
     private boolean inputCheck() throws AtareSysException {
 
         WebBean bean = getWebBean();
+        System.out.println(bean.value("ac"));
+        System.out.println(bean.value("ko"));
         if (bean.value("ac").length() == 0) {
-            bean.setError("ac", "未入力");
+            bean.setError("ac", "ユーザー未入力");
             return false;
         }
         if (bean.value("ko").length() == 0) {
-            bean.setError("ko", "未入力");
+            bean.setError("ko", "パス未入力");
+            System.out.println("パスワードが入力されておりません");
             return false;
         }
 
