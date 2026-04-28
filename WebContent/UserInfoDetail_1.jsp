@@ -547,9 +547,9 @@ label.error {
           <tr>
             <td class="style_head3 style_head_size" style="width: 30%">ユーザー区分<span> ※</span></td>
             <td class=" input-text" id="userTypeContainer" style="width: 70%">
-              <input type="radio" name="admin" id="admin_admin" value="1" class="ime_active <%=webBean.dispErrorCSS("admin")%>" <%= webBean.txt("admin").equals("admin") ? "checked" : "" %> />
+              <input type="radio" name="admin" id="admin_admin" value="1" class="ime_active <%=webBean.dispErrorCSS("admin")%>" <%= webBean.txt("admin").equals("admin") || webBean.txt("admin").equals("1") ? "checked" : "" %> />
                 <label for="admin_admin" class="<%=webBean.dispErrorCSS("admin")%>">管理者</label>
-              <input type="radio" name="admin" id="admin_general" value="0" class="ime_active <%=webBean.dispErrorCSS("admin")%>" <%= webBean.txt("admin").equals("general") ? "checked" : "" %> />
+              <input type="radio" name="admin" id="admin_general" value="0" class="ime_active <%=webBean.dispErrorCSS("admin")%>" <%= webBean.txt("admin").equals("general") || webBean.txt("admin").equals("0") ? "checked" : "" %> />
                 <label for="admin_general" class="<%=webBean.dispErrorCSS("admin")%>">一般</label> ※管理者以外は一般を選択して下さい
               <br /> <span id="error_admin" class="error"><%=webBean.dispError("admin")%></span>
             </td>

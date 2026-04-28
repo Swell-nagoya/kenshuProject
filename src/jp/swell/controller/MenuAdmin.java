@@ -32,10 +32,14 @@ public class MenuAdmin extends ControllerBase {
     public void doActionProcess() throws AtareSysException {
         WebBean bean = getWebBean();
         UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
-        if (!"1".equals(loginInfo.getAdmin())) {
-            redirect("UserMenuHome.do");
+        
+        System.out.println("管理者チェック");
+        if (!"1".equals(loginInfo.getAdmin()) && !"admin".equals(loginInfo.getAdmin())) {
+        	System.out.print(loginInfo.getUserName() + "は管理者ではない。");
+            redirect("UserMenu.do");
             return;
         }
+        System.out.println(loginInfo.getUserName() + "は管理者です。");
 
         // フォーム名が 'admin' であるか確認
         if ("admin".equals(bean.value("form_name"))) {

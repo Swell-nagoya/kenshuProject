@@ -1,5 +1,6 @@
 package jp.swell.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.ParseException;
@@ -10,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -363,7 +366,11 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        /*
+         * String filePath = "C:/git/training/kenshuProject/WebContent/upload"; 保存先フォルダのパス設定
+         */
+        
+        String filePath =  "C:/Git/kenshuProject/WebContent/upload"; //このパソコンの保存先
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
@@ -415,16 +422,37 @@ public class FileDetail extends ControllerBase {
         if (fileData.length >= 4) {
             String header = new String(fileData, 0, 4);
 
-            if (header.startsWith("\u00D0\u00CF\u0011")) { // Wordファイルの判定
+            // Wordファイルの判定
+            if (header.startsWith("\u00D0\u00CF\u0011")) {
                 return "application/msword"; // .doc
-            } else if (header.startsWith("PK")) { // Word 2007以降のファイル
-                return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
-            } else if (header.startsWith("PK")) { // Excelファイルの判定
-                return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
-            } else if (header.startsWith("\u00D0\u00CF\u0011")) {
+            }
+            // Word 2007以降のファイル
+            else if (header.startsWith("PK")) { 
+           // ZIP形式のファイルとして解釈
+              try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(fileData))) {
+                  ZipEntry entry;
+                  while ((entry = zis.getNextEntry()) != null) {
+                      String entryName = entry.getName();
+
+                      // .docxファイルの場合
+                      if (entryName.contains("word/")) {
+                          return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
+                      }
+
+                      // .xlsxファイルの場合
+                      if (entryName.contains("xl/")) {
+                          return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
+                      }
+                  }
+              } catch (IOException e) {
+                  e.printStackTrace();
+              }
+          }
+            else if (header.startsWith("\u00D0\u00CF\u0011")) {
                 return "application/vnd.ms-excel"; // .xls
             }
         }
+        
         return ""; // デフォルト
     }
 

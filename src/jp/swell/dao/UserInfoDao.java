@@ -851,7 +851,7 @@ public class UserInfoDao implements Serializable {
         if (0 == rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDaoForJoin(map, this);
+        setUserInfoDao(map, this);
         return true;
     }
 
@@ -905,6 +905,8 @@ public class UserInfoDao implements Serializable {
         dao.setMiddleNameKana(DbI.chara(map.get("middle_name_kana")));
         dao.setFirstNameKana(DbI.chara(map.get("first_name_kana")));
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
+        dao.setInsertUserId(map.get("insert_user_id"));
+        dao.setMemail(DbI.chara(map.get("memail")));
         dao.setAdmin(DbI.chara(map.get("admin")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));
     }
@@ -1237,7 +1239,7 @@ public class UserInfoDao implements Serializable {
         for (int i = 0; i < cnt; i++) {
             map = rs.get(i);
             UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
+            dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
         return array;
@@ -1388,14 +1390,20 @@ public class UserInfoDao implements Serializable {
                 + " ( user_info_id  = " + DbS.chara(pAccount)
                 + " or memail = " + DbS.chara(pAccount) + " ) ";
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        if (1 != rs.size())
+        //アカウントがOKの場合、rz.size()は1が帰ってくる
+        if (1 != rs.size()) {
+        	System.out.println("ユーザーは存在しません。");
             return false;
+        }
+    	System.out.println(pAccount + "は存在します。");
         HashMap<String, String> map = rs.get(0);
         setUserInfoDao(map, this);
         String password = Digest.hex(Digest.SHA512, pPassword);
         if (!password.equals(DbI.chara(map.get("password")))) {
+        	System.out.println("パスワードが一致しません。");
             return false;
         }
+        System.out.println("パスワードが一致しました。");
         return true;
     }
 

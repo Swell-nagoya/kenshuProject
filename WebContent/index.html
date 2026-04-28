@@ -125,6 +125,13 @@
 <![endif]-->
 </head>
 
+<script type="text/javascript">
+	function go_retry(action_cmd) {
+	    document.getElementById("main_form").action = "UserLogin.do";
+	    document.getElementById("action_cmd").value = action_cmd;
+	    document.getElementById("main_form").submit();
+	  }
+</script>
 <body onload="createMenu();">
 	<div id="contents">
 		<div id="main">
@@ -148,7 +155,7 @@
 					<input type="submit" id="bt" name="login-btn" class="submit-btn" value="ログイン" />
 				</div>
 				<div class="main__form--link">
-					<a href="#" id="reissue" onclick="go_retry()">パスワードを忘れた方はこちら</a>
+					<a href="#" id="reissue" onclick="go_retry('repassword')">パスワードを忘れた方はこちら</a>
 				</div>
 			</form>
 			<div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
