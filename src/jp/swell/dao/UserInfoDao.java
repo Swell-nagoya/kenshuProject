@@ -1376,7 +1376,7 @@ public class UserInfoDao implements Serializable {
      *
      * @param pAccount アカウントまたはメールアドレス
      * @param pPassword パスワード
-     * @return 0::失敗 1:成功 2:管理者ログイン
+     * @return false:失敗 true:成功
      * @throws AtareSysException
      *         エラー
      */
