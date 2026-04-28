@@ -52,6 +52,7 @@ public class UserLogin extends ControllerBase {
                 UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
                 if (userLoginInfo.isAdmin()) {
                 	redirect("MenuAdmin.do");
+                	return;
                 }
                 redirect("UserMenu.do");
                 return;
