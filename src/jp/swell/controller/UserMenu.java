@@ -47,6 +47,7 @@ public class UserMenu extends ControllerBase
     {
         WebBean bean = getWebBean();
 
+        System.out.println(bean.value("form_name"));
         if ("UserMenuHome".equals(bean.value("form_name")))
         {
             bean.trimAllItem();
