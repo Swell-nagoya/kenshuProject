@@ -661,7 +661,7 @@ public class FileDao implements Serializable {
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
             // ルームDAOのインスタンスにデータを設定
-            dao.setUserInfoId(map.get("file_id"));
+            dao.setFileId(map.get("file_id"));
             dao.setUserInfoId(map.get("user_info_id"));
             dao.setFileName(map.get("file_name"));
             dao.setFilePath(map.get("file_path"));
@@ -681,6 +681,7 @@ public class FileDao implements Serializable {
             DaoPageInfo daoPageInfo) throws AtareSysException {
         ArrayList<FileDao> resultList = new ArrayList<>();
 
+        UserInfoDao userInfo = (UserInfoDao) new UserInfoDao();
         // WHERE句
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);
@@ -710,12 +711,16 @@ public class FileDao implements Serializable {
                 + " LIMIT " + limit + " OFFSET " + offset;
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        System.out.println(rs);
 
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
-            dao.setFileDaoForJoin(map, dao);
-            dao.setFirstName(map.get("user_first_name"));
-            dao.setLastName(map.get("user_last_name"));
+            dao.setFileDao(map, dao);
+            dao.setFirstName(map.get("first_name")); //送信先ユーザー
+            dao.setLastName(map.get("last_name"));
+            userInfo.dbSelect(dao.getUploadUserId());
+            dao.setUploaderFirstName(userInfo.getFirstName()); //アップロードユーザー
+            dao.setUploaderLastName(userInfo.getLastName());
             resultList.add(dao);
         }
 
@@ -791,6 +796,10 @@ public class FileDao implements Serializable {
         fieldsArray.put("system_file_name", "files.system_file_name");
         fieldsArray.put("upload_user_id", "files.upload_user_id");
         fieldsArray.put("expiration_date", "files.expiration_date");
+        fieldsArray.put("user_first_name", "user_info.first_name");
+        fieldsArray.put("user_last_name", "user_info.last_name");
+        fieldsArray.put("uploader_first_name", "uploader.first_name");
+        fieldsArray.put("uploader_last_name", "uploader.last_name");
     }
 
     /**

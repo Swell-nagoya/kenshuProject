@@ -563,7 +563,7 @@ public class ReserveDao implements Serializable {
         if (0 == rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setReserveDaoForJoin(map, this);
+        setReserveDao(map, this);
         return true;
     }
 
