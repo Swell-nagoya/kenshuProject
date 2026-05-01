@@ -144,8 +144,7 @@
                 </div>
                 <div class="main__form--btn">
                     <input type="button" id="bt" name="login-btn"  onclick="go_submit('login')" class="submit-btn" value="ログイン"/>
-                </div>
-                
+                </div>                    
                 <div style="color:red; text-align:center;">
 					<%=webBean.dispErrorMessages()%>
 				</div>
