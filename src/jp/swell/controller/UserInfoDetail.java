@@ -334,6 +334,7 @@ public class UserInfoDetail extends ControllerBase
         bean.setValue("password", dao.getPassword());
         bean.setValue("admin", dao.getAdmin());
         bean.setValue("leave_date", dao.getLeaveDate());
+        
 
         bean.setValue("select_info", Sup.serialize(dao)); // 編集前に読み込んだデータを格納しておく
         bean.setValue("input_info", Sup.serialize(dao));
@@ -491,6 +492,7 @@ public class UserInfoDetail extends ControllerBase
             // `leave_date` が数字でない場合
             if (!isNumeric(leaveDateStr)) 
             {
+            	System.out.println("3");
                 errors.put("leave_date", "数字を入力してください");
             } 
             else 
@@ -503,6 +505,7 @@ public class UserInfoDetail extends ControllerBase
                         return true;
                     } else {
                         // `leave_date` を Date 型に変換
+                    	System.out.println("1");
                         Date leaveDate = dateFormat.parse(leaveDateStr);
 
                         // カレンダーを使用して昨日の日付を取得
@@ -541,6 +544,7 @@ public class UserInfoDetail extends ControllerBase
     private boolean isNumeric(String value) {
       if (!(value == null || value.trim().isEmpty())) {
         try {
+        	System.out.println("2");
           Integer.parseInt(value);
         } catch (NumberFormatException e) {
           return false;
