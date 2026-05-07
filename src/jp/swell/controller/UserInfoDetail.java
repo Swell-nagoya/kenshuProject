@@ -702,16 +702,17 @@ public class UserInfoDetail extends ControllerBase
         String leaveDate = bean.value("leave_date");     // leave_dateの取得
 
         try {
-          dao.dbUpdate(userInfoId);
           if (leaveDate == null || leaveDate.trim().isEmpty()) {
-            dao.dbCancelDelete(userInfoId);
             redirect("ViewUserList.do");
           }
           else {
+        	DbBase.dbBeginTran();
             dao.dbDelete(userInfoId);
+            DbBase.dbCommitTran();
             redirect("ViewUserList.do");
           }
         }catch (Exception e) {
+          DbBase.dbRollbackTran();
           forward("ViewUserList.do");
         }
     }

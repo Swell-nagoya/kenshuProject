@@ -167,7 +167,6 @@ input.error {
   border: 1px solid #FF0000;
 }
 
-}
 </style>
 <script type="text/javascript">
   

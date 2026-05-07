@@ -72,7 +72,7 @@ h1 {
 }
 
 /* ホバー時のスタイル */
-.new-btn hover {
+.new-btn:hover {
   background-color: #4baea8; /* ホバー時の背景色 */
 }
 
@@ -146,7 +146,6 @@ table {
   background: #fff;
 }
 
-}
 </style>
 <script type="text/javascript">
   
@@ -180,8 +179,7 @@ table {
   }
 
 </script>
-  
-</script>
+
 </head>
 <body>
    <%
@@ -200,7 +198,7 @@ table {
     <h1>ユーザー<%= header %>ページ</h1>
 </header>
    
- 　　　 <form method="post" id="main_form" action="">
+    <form method="post" id="main_form" action="">
 
         <input type="hidden" name="form_name" id="form_name" value="UserInfoDetail_3" /> 
         <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 

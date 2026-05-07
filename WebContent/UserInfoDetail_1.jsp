@@ -534,7 +534,6 @@ label.error {
               <td class="email-container input-text" style="width: 70%">
                 <input type="email" name="memail" id="memail" maxlength="255" value="<%=webBean.txt("memail")%>" class="ime_active <%=webBean.dispErrorCSS("memail")%>" placeholder="example@example.com" /> 
                 <br /> <span id="error_memail" class="error"><%=webBean.dispError("memail")%></span>
-              </div>
             </td>
           </tr>
           <tr>
