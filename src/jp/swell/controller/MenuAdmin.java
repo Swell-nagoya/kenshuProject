@@ -3,7 +3,6 @@ package jp.swell.controller;
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.http.WebBean;
 import jp.swell.common.ControllerBase;
-import jp.swell.user.UserLoginInfo;
 
 /**
  * ログイン時に管理者権限のあるユーザーの遷移先
@@ -31,11 +30,7 @@ public class MenuAdmin extends ControllerBase {
     @Override
     public void doActionProcess() throws AtareSysException {
         WebBean bean = getWebBean();
-        UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
-        if (!"1".equals(loginInfo.getAdmin()) && !"admin".equals(loginInfo.getAdmin())) {
-            redirect("UserMenu.do");
-            return;
-        }
+       
 
         // フォーム名が 'admin' であるか確認
         if ("admin".equals(bean.value("form_name"))) {

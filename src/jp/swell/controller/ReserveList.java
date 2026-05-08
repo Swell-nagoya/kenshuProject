@@ -151,7 +151,7 @@ public class ReserveList extends ControllerBase {
     private void searchReserve() throws AtareSysException {
         WebBean bean = getWebBean();
         HashMap<String, String> errors;
-        bean.setValue("list_search", "");
+       
         
         errors = inputCheck();
         if (errors.size() > 0) {

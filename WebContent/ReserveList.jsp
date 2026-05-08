@@ -28,7 +28,7 @@ scope="request" />
 <script type="text/javascript" src="js/replace2.js"></script>
 <script type="text/javascript" src="js/datePicker.js"></script>
 
-<title>予約一覧</title>
+<title>予約一覧1</title>
 <style>
 body {
   font-family: 'Arial', sans-serif;
