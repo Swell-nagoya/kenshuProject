@@ -1398,6 +1398,14 @@ public class UserInfoDao implements Serializable {
     	System.out.println(pAccount + "は存在します。");
         HashMap<String, String> map = rs.get(0);
         setUserInfoDao(map, this);
+        
+        setAdmin(DbI.chara(map.get("admin")));
+        setLeaveDate(DbI.chara(map.get("leave_date")));
+        if(("0".equals(getAdmin()) || "general".equals(getAdmin())) && null != getLeaveDate()) {
+        	System.out.println("一般退職社員です。");
+        	return false;
+        }
+        
         String password = Digest.hex(Digest.SHA512, pPassword);
         if (!password.equals(DbI.chara(map.get("password")))) {
         	System.out.println("パスワードが一致しません。");

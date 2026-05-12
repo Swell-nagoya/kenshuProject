@@ -169,6 +169,11 @@ public class ContactListDetail extends ControllerBase {
                             forward("ContactListDetail_1.jsp");
                             return;
                         }
+                        // 確認
+                    }else if("check".equals(req)) {
+                    	setInputInfo2Dao2Web();
+                    	redirect("ContactList.do");
+                    	return;
                     }
 
                 } else if ("return".equals(bean.value("action_cmd"))) {
@@ -184,7 +189,7 @@ public class ContactListDetail extends ControllerBase {
                         setWeb2Dao2InputInfo(); // input_info を更新
                         forward("ContactListDetail_1.jsp");
                     } else if ("delete".equals(req)) {
-                        bean.setValue("request_name", "修正");
+                        bean.setValue("request_name", "削除");
                         setInputInfo2Dao2Web();
                         setWeb2Dao2InputInfo();
                         forward("ContactListDetail_1.jsp");
