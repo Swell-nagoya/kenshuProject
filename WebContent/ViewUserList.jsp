@@ -143,7 +143,7 @@ td {
 
 
 .list_tr:nth-child(odd) {
-  background: #efefef;
+  background: #f9f9f9;
 }
 
 /* ボタンの共通スタイル */

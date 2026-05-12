@@ -494,7 +494,7 @@ public class RoomDao implements Serializable
      * @throws AtareSysException
      */
     public ArrayList<RoomDao> getAllRooms() throws AtareSysException {
-      String sql = "SELECT room_id, room_name FROM room;";
+      String sql = "SELECT room_id, room_name FROM room Where is_deleted = false;";
       List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
       ArrayList<RoomDao> rooms = new ArrayList<>();
       for (HashMap<String, String> map : rs) {
@@ -550,7 +550,7 @@ public class RoomDao implements Serializable
         {
             RoomDao dao  = new RoomDao();
             map = rs.get(i);
-            dao.setRoomDaoForJoin(map,dao);
+            dao.setRoomDao(map,dao);
             array.add(dao);
         }
         return array;
