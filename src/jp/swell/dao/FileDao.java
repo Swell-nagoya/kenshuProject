@@ -713,9 +713,13 @@ public class FileDao implements Serializable {
 
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
-            dao.setFileDaoForJoin(map, dao);
-            dao.setFirstName(map.get("user_first_name"));
-            dao.setLastName(map.get("user_last_name"));
+            UserInfoDao udao = new UserInfoDao();
+            dao.setFileDao(map, dao);
+            dao.setFirstName(map.get("first_name"));
+            dao.setLastName(map.get("last_name"));
+            udao.dbSelect(dao.getUploadUserId());
+            dao.setUploaderFirstName(udao.getFirstName());
+            dao.setUploaderLastName(udao.getLastName());
             resultList.add(dao);
         }
 
