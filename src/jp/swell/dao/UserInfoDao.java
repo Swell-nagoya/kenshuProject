@@ -1401,10 +1401,10 @@ public class UserInfoDao implements Serializable {
         
         setAdmin(DbI.chara(map.get("admin")));
         setLeaveDate(DbI.chara(map.get("leave_date")));
-        if(("0".equals(getAdmin()) || "general".equals(getAdmin())) && null != getLeaveDate()) {
+        /* if(("0".equals(getAdmin()) || "general".equals(getAdmin())) && null != getLeaveDate()) {
         	System.out.println("一般退職社員です。");
         	return false;
-        }
+        }*/
         
         String password = Digest.hex(Digest.SHA512, pPassword);
         if (!password.equals(DbI.chara(map.get("password")))) {
