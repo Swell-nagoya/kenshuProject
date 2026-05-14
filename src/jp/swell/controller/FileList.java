@@ -185,13 +185,19 @@ public class FileList extends ControllerBase {
         ArrayList<FileDao> fileList = new ArrayList<>();
         fileList.addAll(receivedFiles);
         fileList.addAll(sentFiles);
+        
+        // ページネーション
+        int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
+        int end = Math.min(start + daoPageInfo.getLineCount(), daoPageInfo.getRecordCount());
+        fileList.subList(end, daoPageInfo.getRecordCount()).clear();
+        fileList.subList(0, start).clear();
 
         bean.setValue("list", fileList);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         // 受信件数だけでは recordCount が正確に反映されない可能性があるため、明示的に再セット
-        bean.setValue("recordCount", fileList.size());
-        bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
+        bean.setValue("recordCount", daoPageInfo.getRecordCount());
+        bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) daoPageInfo.getRecordCount() / daoPageInfo.getLineCount())));
 
         SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
 
