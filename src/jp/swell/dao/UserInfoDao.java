@@ -1017,8 +1017,9 @@ public class UserInfoDao implements Serializable {
                 + " where user_info_id = " + DbS.chara(userInfoId)
                 + "";
         int ret = DbBase.dbExec(sql);
-        if (ret != 1)
+        if (ret != 1) {
             throw new AtareSysException("dbUpdate number or record exception.");
+        }
         return true;
     }
 
