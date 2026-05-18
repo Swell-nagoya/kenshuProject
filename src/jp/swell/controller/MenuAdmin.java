@@ -33,7 +33,7 @@ public class MenuAdmin extends ControllerBase {
         WebBean bean = getWebBean();
         UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
         if (!"1".equals(loginInfo.getAdmin())) {
-            redirect("UserMenuHome.do");
+            redirect("UserMenu.do");
             return;
         }
 
