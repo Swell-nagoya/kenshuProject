@@ -300,7 +300,7 @@ jQuery(function($)
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 70%"><a href="javaScript:go_sort_request('full_name')">部屋名</a></td>
+            <td class="list_label" style="width: 70%"><a href="javaScript:go_sort_request('room_name')">部屋名</a></td>
             <td class="list_label" style="width: 30%"></td>
           </tr>
           <%

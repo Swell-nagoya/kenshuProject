@@ -135,6 +135,46 @@ input[type="button"]:hover {
   border-radius: 4px;
 }
 
+table
+{
+  width : 100%;
+  margin : 0px;
+  padding : 0px;
+  border-collapse : collapse;
+  border-spacing: 0px;
+}
+td
+{
+  height:1.8em;
+  border-collapse: collapse;
+  border: 1px #a0a0a0 solid;
+  padding : 2px;
+}
+.table-header
+{
+  background: #00bcd4;
+  color: #fff;
+  text-align: center;
+}
+.table-date
+{
+  text-align: center;
+  background: #fff;
+}
+
+.errors, .messages {
+  margin-bottom: 20px;
+  font-size: 16px
+}
+
+.style_head3 {
+  padding-left: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  color:#0000ff;
+}
+
 </style>
 <script type="text/javascript">
 function go_submit(action_cmd, request_cmd) {
@@ -151,6 +191,9 @@ function go_list(action_cmd) {
 }
 </script>
 </head>
+<%
+  if (!webBean.txt("form_name").equals("RoomDetail_2")) { 
+%>
 <body>
   <%
       String val = webBean.txt("request_name");
@@ -208,4 +251,77 @@ function go_list(action_cmd) {
           </form>
     </div>
 </body>
+<%
+  } else {
+%>
+<body>
+ <%
+     String roomName = webBean.txt("room_name");
+     String val = webBean.txt("request_name");
+     String actionType =  val.equals("削除する") ? "deleteEnter" : val.equals("修正する") ? "updateEnter" : val.equals("登録する") ? "insEnter" : "unknown";
+     String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
+     String header =  val.equals("削除する") ? "部屋削除" : val.equals("修正する") ? "部屋名修正確認" : val.equals("登録する") ? "新規部屋登録確認" : "unknown";
+   %>
+  <div class="container">
+    <div class="new-btn">
+       <input type="button" onclick="go_list('return')" value="　戻る　" />
+    </div>
+<header>
+    <h1><%= header %>ページ</h1>
+</header>
+      
+       <form method="post" id="main_form" action="" class="main__form">
+             
+       <input type="hidden" name="form_name" id="form_name" value="RoomDetail_2" />
+       <input type="hidden" name="action_cmd" id="action_cmd" value="" />
+       <input type="hidden" name="room_name" id="room_name" value="<%=webBean.txt("room_name")%>" />
+       <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" />
+       <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
+       <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
+       <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name") %>" />
+       
+       <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
+       <div class="errors"><%=webBean.dispErrorMessages()%></div>
+       
+       <div class="left">
+         <% if ("修正する".equals(val)) { %>
+         <table class="room__form--name">
+           <tr class="table-header">
+             <td>修正前</td>
+             <td>修正後</td>
+           </tr>
+           <tr class="table-date">
+             <td><%=webBean.txt("before_name")%></td>
+             <td><%=webBean.txt("room_name")%></td>
+           </tr>
+         </table>
+         <% } else if ("登録する".equals(val)) {%>
+         <table class="room__form--name">
+           <tr class="table-header">
+             <td>部屋名</td>
+           </tr>
+           <tr class="table-date">
+             <td><%=webBean.txt("room_name")%></td>
+           </tr>
+          </table>
+          <%} else if ("削除する".equals(val)) {%> <%--削除する追加--%>
+         <table class="room__form--name">
+           <tr class="table-header">
+             <td>削除</td> 
+           </tr>
+           <tr class="table-date">
+             <td><%=webBean.txt("room_name")%></td>
+           </tr>
+         </table>
+         <%} %>
+        </div>
+          <div class="button">
+            <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next','<%=actionType%>')" value="<%=val%>"/>
+          </div>
+      </form>
+    </div>
+</body>
+<%
+  }
+%>
 </html>
