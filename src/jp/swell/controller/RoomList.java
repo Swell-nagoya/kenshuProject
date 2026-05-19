@@ -188,7 +188,7 @@ public class RoomList extends ControllerBase
         dao.setRoomName("%" + bean.value("list_search_room_name")+ "%");
 
         DaoPageInfo daoPageInfo = new DaoPageInfo();
-        if (!Validate.isInteger(bean.value("lineCount")))
+        if (!Validate.isInteger(bean.value("lineCount")) || Integer.parseInt(bean.value("lineCount")) <= 0)
         {
             bean.setValue("lineCount", "20");
         }
