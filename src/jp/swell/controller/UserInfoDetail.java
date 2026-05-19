@@ -489,10 +489,10 @@ public class UserInfoDetail extends ControllerBase
             String leaveDateStr = bean.value("leave_date");
 
             // `leave_date` が数字でない場合
-            if (!isNumeric(leaveDateStr)) 
+            if (!isDateFormat(leaveDateStr))
             {
-                errors.put("leave_date", "数字を入力してください");
-            } 
+                errors.put("leave_date", "8桁の数字(ex: 20270101)を入力してください");
+            }
             else 
             {
                 try 
@@ -547,6 +547,25 @@ public class UserInfoDetail extends ControllerBase
         }
       }  
         return true;
+    }
+    
+    /**
+     * 文字列が「yyyymmdd」にフォーマットされているかをチェックするメソッド.
+     * 
+     * @param value チェック対象の文字列
+     * @return 文字列が日付フォーマットされている場合true,それ以外はfalse
+     */
+    private boolean isDateFormat(String value) {
+    		if (value == null || value.length() != 8) return false;
+    		else {
+    			try {
+    				Integer.parseInt(value);
+    			} catch (NumberFormatException e) {
+    				return false;
+    			}
+    			
+    			return true;
+    		}
     }
     
     /**
