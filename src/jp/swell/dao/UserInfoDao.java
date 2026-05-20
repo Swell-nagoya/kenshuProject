@@ -1392,10 +1392,8 @@ public class UserInfoDao implements Serializable {
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         //アカウントがOKの場合、rz.size()は1が帰ってくる
         if (1 != rs.size()) {
-        	System.out.println("ユーザーは存在しません。");
             return false;
         }
-    	System.out.println(pAccount + "は存在します。");
         HashMap<String, String> map = rs.get(0);
         setUserInfoDao(map, this);
         
@@ -1408,10 +1406,8 @@ public class UserInfoDao implements Serializable {
         
         String password = Digest.hex(Digest.SHA512, pPassword);
         if (!password.equals(DbI.chara(map.get("password")))) {
-        	System.out.println("パスワードが一致しません。");
             return false;
         }
-        System.out.println("パスワードが一致しました。");
         return true;
     }
 
