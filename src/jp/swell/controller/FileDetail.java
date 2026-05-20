@@ -10,6 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -363,15 +365,22 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        String filePath = "C:/Users/user/eclipse-workspace/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
         FileUtil fileUtil = new FileUtil();
         byte[] fileData = (byte[]) bean.object("file");
-        String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
-        String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
-        String fileName = bean.value("input_name") + fileExtension; // ファイル名を取得
+        String fileName = bean.value("input_name");
+        Pattern pattern = Pattern.compile("\\.[0-9a-zA-Z]{1,4}$"); // 拡張子のパターン
+        Matcher matcher = pattern.matcher(fileName);
+        String mimeType = null;
+        String fileExtension = null;
+        if (!matcher.find()) {
+        	mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
+        	fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
+        	fileName = bean.value("input_name") + fileExtension; 
+        }
         String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8); //system_file_id生成
 
         // 拡張子を一度だけ追加
