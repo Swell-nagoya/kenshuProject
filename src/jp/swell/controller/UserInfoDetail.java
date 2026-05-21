@@ -54,7 +54,7 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -337,7 +337,6 @@ public class UserInfoDetail extends ControllerBase
 
         bean.setValue("select_info", Sup.serialize(dao)); // 編集前に読み込んだデータを格納しておく
         bean.setValue("input_info", Sup.serialize(dao));
-        System.out.println("データベースにアクセス成功");
         return true;
     }
 
@@ -686,12 +685,10 @@ public class UserInfoDetail extends ControllerBase
         try {
             DbBase.dbBeginTran();
             dao.dbUpdate(userInfoId);
-            System.out.println("ユーザー情報を修正しました。");
             DbBase.dbCommitTran();
             redirect("ViewUserList.do");
         } catch (Exception e) {
             DbBase.dbRollbackTran();
-            System.out.println("パスワードを再設定してください。");
             forward("UserPassReset.jsp");
         }
         
@@ -720,7 +717,8 @@ public class UserInfoDetail extends ControllerBase
             redirect("ViewUserList.do");
           }
         }catch (Exception e) {
-          forward("ViewUserList.do");
+        	bean.setError("ユーザーデータの削除に失敗しました。");;
+        	forward("ViewUserList.jsp");
         }
     }
     

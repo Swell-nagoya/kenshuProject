@@ -125,7 +125,7 @@
          <div id="main">
              <h1>LOGIN</h1>
              <div class="main__text">
-             	 <p><% out.print(webBean.dispErrorMessages()); %></p>
+             	 <p><%= webBean.dispErrorMessages() %></p>
                  <p>usernameとpasswordを入力してください</p>
              </div>
             <form method="post" id="main_form" action="" class="main__form">
