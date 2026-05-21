@@ -479,16 +479,16 @@ public class FileDao implements Serializable {
      */
     public boolean dbSelect(String pFileId, String fileName) throws AtareSysException {
         String sql = "select "
-                + "files.file_id as files___file_id, "
-                + "files.user_info_id as files___user_info_id, "
-                + "files.file_name as files___file_name, "
-                + "files.file_path as files___file_path, "
-                + "files.upload_date as files___upload_date, "
-                + "files.file_key as files___file_file_key, "
-                + "files.mime_type as files___mime_type, "
-                + "files.system_file_name as files___system_file_name, "
-                + "files.upload_user_id as files___upload_user_id, "
-                + "files.expiration_date as files___expiration_date "
+                + "files.file_id, "
+                + "files.user_info_id, "
+                + "files.file_name, "
+                + "files.file_path, "
+                + "files.upload_date, "
+                + "files.file_key, "
+                + "files.mime_type, "
+                + "files.system_file_name, "
+                + "files.upload_user_id, "
+                + "files.expiration_date "
                 + " from files ";
         sql += ""
                 + " where file_id = " + DbS.chara(pFileId)
