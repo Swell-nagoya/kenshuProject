@@ -225,7 +225,7 @@ function go_list(action_cmd , request_cmd) {
              <td class="style_head3 style_head_size">登録ファイル名</td>
            </tr>
            <tr >
-             <td class="table-date"><%=webBean.txt("input_name")%></td>
+             <td class="table-date"><%=webBean.txt("input_name")%><%=webBean.txt("user_info_id")%><%=webBean.txt("destination_user_info_id")%></td>
            </tr>
          </table>
          <% } else {%>

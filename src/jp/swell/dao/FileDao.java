@@ -706,8 +706,7 @@ public class FileDao implements Serializable {
                 + "FROM files "
                 + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
                 + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
-                + where + order
-                + " LIMIT " + limit + " OFFSET " + offset;
+                + where + order;
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 
@@ -726,7 +725,6 @@ public class FileDao implements Serializable {
         return resultList;
     }
 
-    
 
     /**
      * files ファイル情報テーブルの検索条件を設定する。.

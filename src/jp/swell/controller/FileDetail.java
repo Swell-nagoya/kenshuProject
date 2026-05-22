@@ -74,18 +74,15 @@ public class FileDetail extends ControllerBase {
         if ("FileDetail".equals(form)) {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
-                try {
-                	System.out.println("nmnn");
-                    setWeb2Dao2InputInfo(getRequest());
+//                try {
+//                    setWeb2Dao2InputInfo(getRequest());
                     bean.setValue("request_name", "登録する");
                     bean.setMessage("この内容で登録します。よろしいですか？");
                     bean.setValue("input_name", inputName);
                     forward("FileDetail_2.jsp");
-                    System.out.println("a");
-                } catch (IOException | ServletException e) {
-                	System.out.println("b");
-                    throw new AtareSysException(e);
-                }
+//                } catch (IOException | ServletException e) {
+//                    throw new AtareSysException(e);
+//                }
 
              // ② sub ボタン押下 → サブ画面（ユーザー選択）へ（送信先のみ）
             } else if ("sub".equals(actionCmd)) {
@@ -127,8 +124,13 @@ public class FileDetail extends ControllerBase {
         } else if ("FileDetail_2".equals(form)) {
             if ("go_next".equals(actionCmd)) {
                 if ("insEnter".equals(requestCmd)) {
+                    try {
+                    setWeb2Dao2InputInfo(getRequest());
                     searchList();
                     redirect("FileList.do");
+                    } catch (IOException | ServletException e) {
+                      throw new AtareSysException(e);
+                  }
 
                 } else if ("download".equals(requestCmd)) {
                     dao.dbSelect(mainKey);
@@ -336,7 +338,6 @@ public class FileDetail extends ControllerBase {
         WebBean bean = getWebBean();
         UserInfoDao dao = new UserInfoDao();
         dao.setUserInfoId(bean.value("user_info_id"));
-
         FileUpload(request, dao.getUserInfoId());
 
         bean.setValue("input_info", Sup.serialize(dao));
@@ -375,6 +376,7 @@ public class FileDetail extends ControllerBase {
 
         // ファイルデータを取得
         FileUtil fileUtil = new FileUtil();
+        System.out.println(bean.object("file"));
         byte[] fileData = (byte[]) bean.object("file");
         String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
         String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得

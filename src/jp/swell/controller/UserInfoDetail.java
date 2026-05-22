@@ -202,9 +202,9 @@ public class UserInfoDetail extends ControllerBase
                       {
                           bean.setMessage("退職予定日を確定します。よろしいですか？");
                           bean.setValue("request_name", "確定");
-                          forward("UserInfoDetail_3.jsp");  
+                          forward("UserInfoDetail_3.jsp");
                       }
-                      else 
+                      else
                       {
                           bean.setError("入力内容に誤りがあります");
                           forward("UserInfoDetail_2.jsp"); 
@@ -492,7 +492,6 @@ public class UserInfoDetail extends ControllerBase
             // `leave_date` が数字でない場合
             if (!isNumeric(leaveDateStr)) 
             {
-            	System.out.println("3");
                 errors.put("leave_date", "数字を入力してください");
             } 
             else 
@@ -505,7 +504,6 @@ public class UserInfoDetail extends ControllerBase
                         return true;
                     } else {
                         // `leave_date` を Date 型に変換
-                    	System.out.println("1");
                         Date leaveDate = dateFormat.parse(leaveDateStr);
 
                         // カレンダーを使用して昨日の日付を取得
@@ -544,7 +542,6 @@ public class UserInfoDetail extends ControllerBase
     private boolean isNumeric(String value) {
       if (!(value == null || value.trim().isEmpty())) {
         try {
-        	System.out.println("2");
           Integer.parseInt(value);
         } catch (NumberFormatException e) {
           return false;
@@ -705,6 +702,7 @@ public class UserInfoDetail extends ControllerBase
         String userInfoId = bean.value("user_info_id");//userIdの取得
         String leaveDate = bean.value("leave_date");     // leave_dateの取得
 
+        System.out.println(userInfoId);
         try {
           dao.dbUpdate(userInfoId);
           if (leaveDate == null || leaveDate.trim().isEmpty()) {
@@ -716,7 +714,8 @@ public class UserInfoDetail extends ControllerBase
             redirect("ViewUserList.do");
           }
         }catch (Exception e) {
-          forward("ViewUserList.do");
+          bean.setError("処理中にエラーが発生しました"+ e.getMessage());
+          forward("ErrorPage.jsp");
         }
     }
     
@@ -752,6 +751,7 @@ public class UserInfoDetail extends ControllerBase
         WebBean bean = getWebBean();
         UserInfoDao dao = (UserInfoDao) Sup.deserialize(bean.value("input_info"));
         bean.setValue("user_info_id", dao.getUserInfoId());
+        System.out.println(dao.getUserInfoId());
         bean.setValue("last_name", dao.getLastName());
         bean.setValue("middle_name", dao.getMiddleName());
         bean.setValue("first_name", dao.getFirstName());

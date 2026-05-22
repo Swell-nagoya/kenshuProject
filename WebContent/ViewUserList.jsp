@@ -300,8 +300,7 @@ footer {
           <%
           if (!webBean.value("pageNo").equals(webBean.value("maxPageNo"))) {
           %>
-          <input type="button" value="次の<%=webBean.html("lineCount")%>件-->"
-            onclick="go_submit('next')" />
+          <input type="button" value="次の<%=webBean.html("lineCount")%>件-->" onclick="go_submit('next')" />
           <%
           } else {
           %>

@@ -250,7 +250,7 @@ table {
           </tr>
           <tr>
             <td class="style_head3 style_head_size" style="width: 30%"> ユーザー区分 </td>
-            <td class="input-text" style="width: 70%"> <%= webBean.txt("admin").equals("admin") ? "管理者" : "一般" %> </td>
+            <td class="input-text" style="width: 70%"> <%= webBean.txt("admin").equals("admin") || webBean.txt("admin").equals("1") ? "管理者" : "一般" %> </td>
           </tr>
           <%
           // actionTypeが"ins"の場合のみ表示
