@@ -130,7 +130,9 @@
          <div id="main">
              <h1>LOGIN</h1>
              <div class="main__text">
-                 <p>usernameとpasswordを入力してください</p>
+                 <p>usernameとpasswordを入力してください
+                 <br/><%=webBean.dispErrorMessages()%>
+                 </p>
              </div>
             <form method="post" id="main_form" action="" class="main__form">
                 <input type="hidden" name="form_name" id="form_name" value="UserLogin" />
@@ -143,14 +145,12 @@
                     <input type="password" id="ko" name="ko" class="ime_disabled" value="" placeholder="Password" size="25" maxlength="60"/>
                 </div>
                 <div class="main__form--btn">
-                    <input type="submit" id="bt" name="login-btn"  onclick="go_submit('')" class="submit-btn" value="ログイン"/>
+                    <input type="submit" id="bt" name="login-btn"  onclick="go_submit('login')" class="submit-btn" value="ログイン"/>
                 </div>
                 <div class="main__form--link">
-                  <a href="#" id="reissue" onclick="go_submit_1('')" class="link-btn">パスワード再発行</a>
+                  <a href="#" id="reissue" onclick="go_submit_1('repassword')" class="link-btn">パスワード再発行</a>
                 </div>
             </form>
-              <%=webBean.dispError("ac")%><br/>
-              <%=webBean.dispError("ko")%>
             <div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
         </div>
     </div>

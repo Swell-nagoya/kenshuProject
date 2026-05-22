@@ -706,23 +706,25 @@ public class FileDao implements Serializable {
                 + "FROM files "
                 + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
                 + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
-                + where + order
-                + " LIMIT " + limit + " OFFSET " + offset;
+                + where + order;
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
-            dao.setFileDaoForJoin(map, dao);
-            dao.setFirstName(map.get("user_first_name"));
-            dao.setLastName(map.get("user_last_name"));
+            UserInfoDao udao = new UserInfoDao();
+            dao.setFileDao(map, dao);
+            dao.setFirstName(map.get("first_name"));
+            dao.setLastName(map.get("last_name"));
+            udao.dbSelect(dao.getUploadUserId());
+            dao.setUploaderFirstName(udao.getFirstName());
+            dao.setUploaderLastName(udao.getLastName());
             resultList.add(dao);
         }
 
         return resultList;
     }
 
-    
 
     /**
      * files ファイル情報テーブルの検索条件を設定する。.

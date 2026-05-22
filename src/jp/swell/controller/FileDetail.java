@@ -1,5 +1,6 @@
 package jp.swell.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.ParseException;
@@ -10,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -71,15 +74,15 @@ public class FileDetail extends ControllerBase {
         if ("FileDetail".equals(form)) {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
-                try {
-                    setWeb2Dao2InputInfo(getRequest());
+//                try {
+//                    setWeb2Dao2InputInfo(getRequest());
                     bean.setValue("request_name", "登録する");
                     bean.setMessage("この内容で登録します。よろしいですか？");
                     bean.setValue("input_name", inputName);
                     forward("FileDetail_2.jsp");
-                } catch (IOException | ServletException e) {
-                    throw new AtareSysException(e);
-                }
+//                } catch (IOException | ServletException e) {
+//                    throw new AtareSysException(e);
+//                }
 
              // ② sub ボタン押下 → サブ画面（ユーザー選択）へ（送信先のみ）
             } else if ("sub".equals(actionCmd)) {
@@ -121,8 +124,13 @@ public class FileDetail extends ControllerBase {
         } else if ("FileDetail_2".equals(form)) {
             if ("go_next".equals(actionCmd)) {
                 if ("insEnter".equals(requestCmd)) {
+                    try {
+                    setWeb2Dao2InputInfo(getRequest());
                     searchList();
                     redirect("FileList.do");
+                    } catch (IOException | ServletException e) {
+                      throw new AtareSysException(e);
+                  }
 
                 } else if ("download".equals(requestCmd)) {
                     dao.dbSelect(mainKey);
@@ -330,7 +338,6 @@ public class FileDetail extends ControllerBase {
         WebBean bean = getWebBean();
         UserInfoDao dao = new UserInfoDao();
         dao.setUserInfoId(bean.value("user_info_id"));
-
         FileUpload(request, dao.getUserInfoId());
 
         bean.setValue("input_info", Sup.serialize(dao));
@@ -363,11 +370,13 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+//        String filePath = "C:/git/training/kenshuProject/WebContent/upload";
+        String filePath = "C:\\kenshuProject\\WebContent\\upload";//保存先フォルダのパス設定
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
         FileUtil fileUtil = new FileUtil();
+        System.out.println(bean.object("file"));
         byte[] fileData = (byte[]) bean.object("file");
         String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
         String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
@@ -382,6 +391,7 @@ public class FileDetail extends ControllerBase {
         // 完全なファイルパスの生成
         String fullPath = filePath + "/" + systemFileName;
         if (!fileUtil.outputFile(fullPath, fileData)) {
+        	System.out.println(fullPath);
             return null;
         }
 
@@ -415,13 +425,32 @@ public class FileDetail extends ControllerBase {
         if (fileData.length >= 4) {
             String header = new String(fileData, 0, 4);
 
-            if (header.startsWith("\u00D0\u00CF\u0011")) { // Wordファイルの判定
+            if (header.startsWith("\u00D0\u00CF\u0011")) {
                 return "application/msword"; // .doc
-            } else if (header.startsWith("PK")) { // Word 2007以降のファイル
-                return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
-            } else if (header.startsWith("PK")) { // Excelファイルの判定
-                return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
-            } else if (header.startsWith("\u00D0\u00CF\u0011")) {
+            }
+            // Word 2007以降のファイル
+            else if (header.startsWith("PK")) { 
+           // ZIP形式のファイルとして解釈
+              try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(fileData))) {
+                  ZipEntry entry;
+                  while ((entry = zis.getNextEntry()) != null) {
+                      String entryName = entry.getName();
+
+                      // .docxファイルの場合
+                      if (entryName.contains("word/")) {
+                          return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
+                      }
+
+                      // .xlsxファイルの場合
+                      if (entryName.contains("xl/")) {
+                          return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
+                      }
+                  }
+              } catch (IOException e) {
+                  e.printStackTrace();
+              }
+          }
+            else if (header.startsWith("\u00D0\u00CF\u0011")) {
                 return "application/vnd.ms-excel"; // .xls
             }
         }

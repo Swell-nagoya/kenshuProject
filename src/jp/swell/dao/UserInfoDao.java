@@ -851,7 +851,7 @@ public class UserInfoDao implements Serializable {
         if (0 == rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDaoForJoin(map, this);
+        setUserInfoDao(map, this);
         return true;
     }
 
@@ -907,6 +907,7 @@ public class UserInfoDao implements Serializable {
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
         dao.setAdmin(DbI.chara(map.get("admin")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));
+        dao.setMemail(DbI.chara(map.get("memail")));
     }
 
     /**
@@ -1237,7 +1238,7 @@ public class UserInfoDao implements Serializable {
         for (int i = 0; i < cnt; i++) {
             map = rs.get(i);
             UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
+            dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
         return array;
@@ -1388,11 +1389,13 @@ public class UserInfoDao implements Serializable {
                 + " ( user_info_id  = " + DbS.chara(pAccount)
                 + " or memail = " + DbS.chara(pAccount) + " ) ";
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        System.out.println(rs);
         if (1 != rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
         setUserInfoDao(map, this);
         String password = Digest.hex(Digest.SHA512, pPassword);
+        System.out.println(password);
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
         }
