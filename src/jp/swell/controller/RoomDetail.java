@@ -163,6 +163,10 @@ public class RoomDetail extends ControllerBase
             	  		bean.setValue("request_name", "修正する");
             	  		forward("RoomDetail.jsp");
             	  	}
+            	  	else if ("deletef".equals(requestCmd))
+            	  	{
+            	  		forward("RoomList.do");
+            	  	}
               }
           }
           else
@@ -303,7 +307,7 @@ public class RoomDetail extends ControllerBase
         if (roomName.length() == 0) {
             errors.put("room_name_empty", "部屋名を入力してください。");
         }
-        if (roomName.equalsIgnoreCase(beforeName)) {
+        else if (roomName.equalsIgnoreCase(beforeName)) {
             errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         }
 
