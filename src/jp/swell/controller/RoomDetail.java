@@ -145,17 +145,22 @@ public class RoomDetail extends ControllerBase
                   if ("insEnter".equals(requestCmd))
                   {
                       dbRegistration();
+                      //二重遷移を防ぐため処理を終了
+                      return;
                   }
                   else if ("updateEnter".equals(requestCmd))
                   {
                       dbEdit();
+                      //二重遷移を防ぐため処理を終了
+                      return;
                   }
                   else if ("deleteEnter".equals(requestCmd))
                   {
                       dbDeletef();
+                      //二重遷移を防ぐため処理を終了               
+                      return;
                   }
               }
-              redirect("RoomList.do");
           }
           else
           {

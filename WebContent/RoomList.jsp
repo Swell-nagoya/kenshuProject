@@ -242,7 +242,7 @@ jQuery(function($)
     </div>
 <header>
     <h1>
-        <a href="javascript:void(0)" value="" onclick="go_menu('top')">部屋情報一覧</a>
+        <a href="javascript:void(0)" value="" onclick="go_submit('return')">部屋情報一覧</a>
     </h1>
 </header>
   <form id="main_form" method="post" action="">

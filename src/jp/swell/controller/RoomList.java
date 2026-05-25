@@ -28,6 +28,7 @@ import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.RoomDao;
+import jp.swell.user.UserLoginInfo;
 
 /**
  * ：user_info ユーザ情報テーブルデータをLIST表示するためのコントローラクラス
@@ -103,7 +104,14 @@ public class RoomList extends ControllerBase
             }
             else if ("return".equals(bean.value("action_cmd")))
             {
-                redirect("MenuAdmin.do");
+            	// ログイン中のユーザー情報を取得
+            	UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+            	// ログインユーザーの権限によって遷移先を変更
+            	if ("1".equals(userLoginInfo.getAdmin()) || "admin".equals(userLoginInfo.getAdmin())) {
+            		redirect("MenuAdmin.do");
+            	} else {
+            		redirect("UserMenu.do");
+            	}           
             }
             else
             {
