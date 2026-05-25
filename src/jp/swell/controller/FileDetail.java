@@ -1,5 +1,6 @@
 package jp.swell.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.ParseException;
@@ -10,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -43,7 +46,7 @@ public class FileDetail extends ControllerBase {
      */
     @Override
     public void doInit() {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -363,8 +366,9 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        String filePath = getServletContext().getRealPath("/upload").toString(); //保存先フォルダのパス設定
         String skey = GetNumber.getRandomNo(16); //file_key生成
+        System.out.println(filePath);
 
         // ファイルデータを取得
         FileUtil fileUtil = new FileUtil();
@@ -417,10 +421,22 @@ public class FileDetail extends ControllerBase {
 
             if (header.startsWith("\u00D0\u00CF\u0011")) { // Wordファイルの判定
                 return "application/msword"; // .doc
-            } else if (header.startsWith("PK")) { // Word 2007以降のファイル
-                return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
-            } else if (header.startsWith("PK")) { // Excelファイルの判定
-                return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
+            } else if (header.startsWith("PK")) { 
+                try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(fileData))) {
+                    ZipEntry entry;
+
+                    while ((entry = zis.getNextEntry()) != null) {
+                        String name = entry.getName();
+
+                        if (name.startsWith("word/")) { // Word 2007以降のファイル
+                            return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
+                        } else if (name.startsWith("xl/")) { // Excelファイルの判定
+                            return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
+                        }
+                }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else if (header.startsWith("\u00D0\u00CF\u0011")) {
                 return "application/vnd.ms-excel"; // .xls
             }
