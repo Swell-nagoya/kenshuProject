@@ -14,7 +14,6 @@ import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.ibm.icu.text.SimpleDateFormat;
 
@@ -363,7 +362,7 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        String filePath = getServletContext().getRealPath("/upload"); //保存先フォルダのパス設定
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
@@ -508,9 +507,9 @@ public class FileDetail extends ControllerBase {
         try {
             // 期限チェック
             if (isExpired(dao.getExpirationDate())) {
-                // 期限が過ぎている場合の処理
-                this.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, "このファイルのダウンロードは期限が切れています。");
-                return; // 処理を中止
+                // 期限が過ぎている場合の処理(ページ遷移)
+                forward("DownloadError.jsp");
+                return;
             }
 
             // ユーザーエージェントを取得

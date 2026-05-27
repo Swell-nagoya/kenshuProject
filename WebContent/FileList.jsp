@@ -282,7 +282,7 @@ th {
 		</div>
 		<header>
 		<h1>
-			<a href="javascript:void(0)" value="" onclick="go_menu('top')">ファイル一覧</a>
+			<a href="javascript:void(0)" value="" onclick="go_submit('return')">ファイル一覧</a>
 		</h1>
 		</header>
 

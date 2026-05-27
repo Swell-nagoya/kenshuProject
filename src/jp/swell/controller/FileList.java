@@ -82,11 +82,24 @@ public class FileList extends ControllerBase {
                 formClear();
                 searchList();
             } else if ("return".equals(bean.value("action_cmd"))) {
-                redirect("MenuAdmin.do");
+            	// ログイン中のユーザー情報を取得
+            	UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+            	// ログインユーザーの権限によって遷移先を変更
+            	if ("1".equals(userLoginInfo.getAdmin()) || "admin".equals(userLoginInfo.getAdmin())) {
+            		redirect("MenuAdmin.do");
+            		//二重遷移を防ぐため処理を終了
+            		return;
+            	} else {
+            		redirect("UserMenu.do");
+            		//二重遷移を防ぐため処理を終了
+            		return;
+            	}
             } else {
                 searchList();
             }
             forward("FileList.jsp");
+            //二重遷移を防ぐため処理を終了
+            return;
         } else if ("FileDetail".equals(bean.value("form_name")) || "FileDetail_2".equals(bean.value("form_name"))) {
             setWebBeanFromSerialize(bean.value("search_info"));
             bean = getWebBean();
