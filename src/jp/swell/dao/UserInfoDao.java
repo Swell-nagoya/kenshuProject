@@ -608,6 +608,14 @@ public class UserInfoDao implements Serializable {
     public String getAdmin() {
         return admin;
     }
+    
+    public boolean isAdmin() {
+    	if (this.admin.equals("admin") || this.admin.equals("1")) {
+    	   	return true;	
+    	} else {
+    		return false;
+    	}
+    }
 
     /**
      * 管理者権限をセットする。.
