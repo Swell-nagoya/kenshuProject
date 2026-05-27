@@ -608,6 +608,14 @@ public class UserInfoDao implements Serializable {
     public String getAdmin() {
         return admin;
     }
+    
+    public boolean isAdmin() {
+    	if (this.admin.equals("admin") || this.admin.equals("1")) {
+    	   	return true;	
+    	} else {
+    		return false;
+    	}
+    }
 
     /**
      * 管理者権限をセットする。.
@@ -851,7 +859,7 @@ public class UserInfoDao implements Serializable {
         if (0 == rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDaoForJoin(map, this);
+        setUserInfoDao(map, this);
         return true;
     }
 
@@ -907,6 +915,7 @@ public class UserInfoDao implements Serializable {
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
         dao.setAdmin(DbI.chara(map.get("admin")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));
+        dao.setMemail(DbI.chara(map.get("memail")));
     }
 
     /**
@@ -1237,7 +1246,7 @@ public class UserInfoDao implements Serializable {
         for (int i = 0; i < cnt; i++) {
             map = rs.get(i);
             UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
+            dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
         return array;

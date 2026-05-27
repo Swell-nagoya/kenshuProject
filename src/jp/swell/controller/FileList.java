@@ -82,11 +82,24 @@ public class FileList extends ControllerBase {
                 formClear();
                 searchList();
             } else if ("return".equals(bean.value("action_cmd"))) {
-                redirect("MenuAdmin.do");
+            	// ログイン中のユーザー情報を取得
+            	UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+            	// ログインユーザーの権限によって遷移先を変更
+            	if ("1".equals(userLoginInfo.getAdmin()) || "admin".equals(userLoginInfo.getAdmin())) {
+            		redirect("MenuAdmin.do");
+            		//二重遷移を防ぐため処理を終了
+            		return;
+            	} else {
+            		redirect("UserMenu.do");
+            		//二重遷移を防ぐため処理を終了
+            		return;
+            	}
             } else {
                 searchList();
             }
             forward("FileList.jsp");
+            //二重遷移を防ぐため処理を終了
+            return;
         } else if ("FileDetail".equals(bean.value("form_name")) || "FileDetail_2".equals(bean.value("form_name"))) {
             setWebBeanFromSerialize(bean.value("search_info"));
             bean = getWebBean();
@@ -183,15 +196,38 @@ public class FileList extends ControllerBase {
 
         // マージしてセット
         ArrayList<FileDao> fileList = new ArrayList<>();
-        fileList.addAll(receivedFiles);
         fileList.addAll(sentFiles);
+        fileList.addAll(receivedFiles);
+        int recordCount = fileList.size();
+        int lineCount = daoPageInfo.getLineCount();
+        int pageNo = daoPageInfo.getPageNo();
+        int maxPageNo = Math.max(1, (int) Math.ceil((double) recordCount / lineCount));
+        
+        if (pageNo > maxPageNo) {
+        	pageNo = maxPageNo;
+        }
+        
+        if (pageNo < 1) {
+        	pageNo = 1;
+        }
+        
+        int startPosition = (pageNo - 1) * lineCount;
+        int endPosition = Math.min(startPosition + lineCount, recordCount);
+        
+        ArrayList<FileDao> pageList = new ArrayList<>();
+        
+        if (recordCount > 0 && startPosition < recordCount) {
+        	pageList.addAll(fileList.subList(startPosition, endPosition));
+        }
+        
+        
 
-        bean.setValue("list", fileList);
-        bean.setValue("lineCount", daoPageInfo.getLineCount());
-        bean.setValue("pageNo", daoPageInfo.getPageNo());
+        bean.setValue("list", pageList);
+        bean.setValue("lineCount", lineCount);
+        bean.setValue("pageNo", pageNo);
         // 受信件数だけでは recordCount が正確に反映されない可能性があるため、明示的に再セット
-        bean.setValue("recordCount", fileList.size());
-        bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
+        bean.setValue("recordCount", recordCount);
+        bean.setValue("maxPageNo", maxPageNo);
 
         SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
 

@@ -68,11 +68,10 @@ public class RoomDetail extends ControllerBase
           String beforeName = bean.value("before_name");
           RoomDao dao = setWeb2Dao2InputInfo();
           bean.setValue("request_name", "修正する");
-          if (beforeName == null || beforeName.trim().isEmpty()) {
+          if ("update".equals(requestCmd) && (beforeName == null || beforeName.trim().isEmpty())) {
               beforeName = roomName;
               bean.setValue("before_name", beforeName);
           }
-          bean.setValue("before_name", beforeName);
           bean.setValue("room_name", roomName);
           if ("RoomDetail".equals(formName))
           {
@@ -146,17 +145,22 @@ public class RoomDetail extends ControllerBase
                   if ("insEnter".equals(requestCmd))
                   {
                       dbRegistration();
+                      //二重遷移を防ぐため処理を終了
+                      return;
                   }
                   else if ("updateEnter".equals(requestCmd))
                   {
                       dbEdit();
+                      //二重遷移を防ぐため処理を終了
+                      return;
                   }
                   else if ("deleteEnter".equals(requestCmd))
                   {
                       dbDeletef();
+                      //二重遷移を防ぐため処理を終了               
+                      return;
                   }
               }
-              redirect("RoomList.do");
           }
           else
           {

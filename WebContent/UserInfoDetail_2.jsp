@@ -206,9 +206,11 @@ input.error {
           // name 属性を fieldName 変数に格納し、値を value 変数に格納
           var fieldName = $(this).attr('name');
           var value = $(this).val();
+          value = value.replace(/年|月|日/g, "");
+          $(this).val(value);          
 
           // 現在のフィールドが leave_dateである場合に、以下の処理を実行する条件を指定
-          if (fieldName === 'leave_date') {
+          if (fieldName === 'leave_date') {            
               if (isNumeric(value)) { // 数字であるかどうかを判断
                   $(this).removeClass('error'); // クラス削除
                   $('#error_' + fieldName).text(''); // エラーメッセージ非表示
