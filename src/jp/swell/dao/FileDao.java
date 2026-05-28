@@ -635,7 +635,9 @@ public class FileDao implements Serializable {
      * @return true:成功 false:失敗
      * @throws AtareSysException エラーs
      */
-    public boolean dbDelete(String pFileId) throws AtareSysException {
+    public String dbDelete(String pFileId) throws AtareSysException {
+
+    	deleteFilePath(pFileId);
         // user_filesテーブルから関連するレコードを削除
         String sqlDeleteUserFiles = "DELETE FROM user_files WHERE file_id = " + DbS.chara(pFileId);
         DbBase.dbExec(sqlDeleteUserFiles);
@@ -646,9 +648,21 @@ public class FileDao implements Serializable {
 
         if (retFiles != 1)
             throw new AtareSysException("dbDelete number or record exception");
-        return true;
+        return getFilePath();
     }
 
+    public boolean deleteFilePath(String pFileId) throws AtareSysException {
+    	FileDao dao = new FileDao();
+    	// 削除する前にファイルパスを取得しておく
+    	String sqlSelectFilePath = "SELECT files.file_path FROM files "
+    			 + " where file_id = " + DbS.chara(pFileId);
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sqlSelectFilePath);
+        if (0 == rs.size())
+            return false;
+        HashMap<String, String> map = rs.get(0);
+        dao.setFilePath(DbI.chara(map.get("file_path")));
+        return true;
+    }
     /**
      * データベースからルーム名を取得するメソッド
      * @return UserMenuに返す

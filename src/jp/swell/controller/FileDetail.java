@@ -1,8 +1,12 @@
 package jp.swell.controller;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,7 +50,7 @@ public class FileDetail extends ControllerBase {
      */
     @Override
     public void doInit() {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -124,12 +128,14 @@ public class FileDetail extends ControllerBase {
         } else if ("FileDetail_2".equals(form)) {
             if ("go_next".equals(actionCmd)) {
                 if ("insEnter".equals(requestCmd)) {
-                    searchList();
-                    redirect("FileList.do");
-
-                } else if ("download".equals(requestCmd)) {
-                    dao.dbSelect(mainKey);
-                    downloadFileWrite(dao);
+                    try {
+                    setWeb2Dao2InputInfo(getRequest());
+                	searchList();
+                	redirect("FileList.do");
+                    } catch (IOException | ServletException e) {
+                    	deleteFile(bean.value("request_cmd"), bean.value("systemFileName"));
+                        throw new AtareSysException(e);
+                    }
 
                 } else if ("deleteEnter".equals(requestCmd)) {
                     dbDeletef();
@@ -137,6 +143,7 @@ public class FileDetail extends ControllerBase {
 
             } else if ("return".equals(actionCmd)) {
                 if ("ins".equals(requestCmd)) {
+                    deleteFile(requestCmd, bean.value("systemFileName"));
                     forward("FileDetail.jsp");
                 } else if ("delete".equals(requestCmd)) {
                     searchList();
@@ -228,7 +235,9 @@ public class FileDetail extends ControllerBase {
         bean.setValue("request_name", req);
         
         String selectedIds = bean.value("selectedIds");
-        if (selectedIds == null) {
+        String[] select = selectedIds.split(",");
+        
+        if (select == null) {
             selectedIds = "";
         }
 
@@ -254,6 +263,7 @@ public class FileDetail extends ControllerBase {
         int toIndex = Math.min(fromIndex + pageSize, total);
         List<UserInfoDao> pageUsers = new ArrayList<>(allUsers.subList(fromIndex, toIndex));
 
+        
         // ページング結果を WebBean に格納
         bean.setValue("user_data", pageUsers);
         bean.setValue("pageNo", String.valueOf(pageNo));
@@ -333,14 +343,18 @@ public class FileDetail extends ControllerBase {
         WebBean bean = getWebBean();
         UserInfoDao dao = new UserInfoDao();
         dao.setUserInfoId(bean.value("user_info_id"));
-
-        FileUpload(request, dao.getUserInfoId());
-
+        
+        if("upload".equals(bean.value("action_cmd"))) {
+            temporaryFile(request, dao.getUserInfoId());
+            
+        }else if("go_next".equals(bean.value("action_cmd")) && "insEnter".equals(bean.value("request_cmd"))) {
+            FileUpload(request, dao.getUserInfoId());
+        }
         bean.setValue("input_info", Sup.serialize(dao));
         bean.setValue("dao", dao);
         return dao;
     }
-
+    
     /**
      * ファイルデータを取得し、アップロードした後にデータベースへ登録
      * @param request
@@ -350,35 +364,24 @@ public class FileDetail extends ControllerBase {
      * @throws IOException
      * @throws ServletException
      */
-    private ArrayList<FileDao> FileUpload(HttpServletRequest request, String pUserInfoId)
+    private void temporaryFile(HttpServletRequest request, String pUserInfoId)
             throws AtareSysException, IOException, ServletException {
         WebBean bean = getWebBean();
-        ArrayList<FileDao> fileDaos = new ArrayList<>();
-
-        // 送信元ユーザーIDを取得
-        String sourceUserInfoIdsString = bean.value("user_info_id"); // 送信元ユーザーIDを取得
-        String[] sourceUserInfoIds = sourceUserInfoIdsString.split(",");
-
-        // 送信先ユーザーIDを取得
-        String destinationUserInfoIdsString = bean.value("destination_user_info_id"); // 送信先ユーザーID
-        String[] destinationUserInfoIds = destinationUserInfoIdsString.split(",");
-
-        // 送信元ユーザーのIDを取得
-        String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
-
+      
         /*
          * String filePath = "C:/git/training/kenshuProject/WebContent/upload"; 保存先フォルダのパス設定
          */
         
-        String filePath =  "C:/Git/kenshuProject/WebContent/upload"; //このパソコンの保存先
-        String skey = GetNumber.getRandomNo(16); //file_key生成
+        String filePath =  "C:/Git/kenshuProject/WebContent/temporary-file"; //このパソコンの保存先
+        
+        // Path path = Paths.get("upload");
+        // filePath = path.toAbsolutePath().toString();
 
         // ファイルデータを取得
         FileUtil fileUtil = new FileUtil();
         byte[] fileData = (byte[]) bean.object("file");
         String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
         String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
-        String fileName = bean.value("input_name") + fileExtension; // ファイル名を取得
         String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8); //system_file_id生成
 
         // 拡張子を一度だけ追加
@@ -386,16 +389,89 @@ public class FileDetail extends ControllerBase {
             systemFileName += fileExtension;
         }
 
+        bean.setValue("systemFileName", systemFileName);
+        
         // 完全なファイルパスの生成
         String fullPath = filePath + "/" + systemFileName;
         if (!fileUtil.outputFile(fullPath, fileData)) {
-            return null;
+            return;
         }
-
         // アップロード期限を設定
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.WEEK_OF_YEAR, 1); // 現在の日時に1週間追加
+        calendar.add(Calendar.HOUR, 1); // 現在の日時に1時間追加
         java.util.Date expirationDate = calendar.getTime(); // Date型を取得
+        // expirationDateをString型に変換
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String tempExpirationDateString = sdf.format(expirationDate);
+        bean.setValue("tempExpirationDateString", tempExpirationDateString);
+
+    }
+        /**
+         * ファイルデータを取得し、アップロードした後にデータベースへ登録
+         * @param request
+         * @param pUserInfoId
+         * @return
+         * @throws AtareSysException
+         * @throws IOException
+         * @throws ServletException
+         */
+        private ArrayList<FileDao> FileUpload(HttpServletRequest request, String pUserInfoId)
+                throws AtareSysException, IOException, ServletException {
+            WebBean bean = getWebBean();
+            ArrayList<FileDao> fileDaos = new ArrayList<>();
+            
+            // 送信元ユーザーIDを取得
+            String sourceUserInfoIdsString = bean.value("user_info_id"); // 送信元ユーザーIDを取得
+            String[] sourceUserInfoIds = sourceUserInfoIdsString.split(",");
+
+            
+            // 送信先ユーザーIDを取得
+            String destinationUserInfoIdsString = bean.value("destination_user_info_id"); // 送信先ユーザーID
+            String[] destinationUserInfoIds = destinationUserInfoIdsString.split(",");
+
+            // 送信元ユーザーのIDを取得
+            String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
+            
+            String systemFileName = bean.value("systemFileName");
+            
+            // 一時保存期限チェック
+            if (isExpired(bean.value("tempExpirationDateString"))) {
+                // 期限が過ぎている場合の処理
+                this.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, "アップロードをやり直してください。");
+                deleteFile(bean.value("request_cmd"), systemFileName);
+                return null; // 処理を中止
+            }
+            
+
+            /*
+             * String filePath = "C:/git/training/kenshuProject/WebContent/upload"; 保存先フォルダのパス設定
+             */
+            // String tempFolder = "C:/git/training/kenshuProject/WebContent/temporaryFile";
+            // String filePath =  "C:/Git/kenshuProject/WebContent/upload"; //このパソコンの保存先
+            
+            String tempFolder = "C:/Git/kenshuProject/WebContent/temporary-File";
+            String tempFilePath = tempFolder + "/" +systemFileName;
+
+            // ファイルデータを取得
+            FileUtil fileUtil = new FileUtil();
+            Path path = Paths.get(tempFilePath);
+            byte[] fileData = (byte[]) Files.readAllBytes(path);
+            String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
+            String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
+            String fileName = bean.value("input_name") + fileExtension; // ファイル名を取得
+            // 完全なファイルパスの生成
+            String fullPath = tempFilePath.replace("temporary-File", "upload");
+
+            if (!fileUtil.outputFile(fullPath, fileData)) {
+                return null;
+            }
+
+            String skey = GetNumber.getRandomNo(16); //file_key生成
+            
+            // アップロード期限を設定
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.WEEK_OF_YEAR, 1); // 現在の日時に1週間追加
+            java.util.Date expirationDate = calendar.getTime(); // Date型を取得
 
         // 各送信先ユーザーに対してデータベースにファイル情報を登録
         for (String userInfoId : destinationUserInfoIds) { // 送信先ユーザーIDを使用
@@ -410,8 +486,10 @@ public class FileDetail extends ControllerBase {
                     expirationDateString);
             fileDaos.add(fileDao);
         }
+        deleteFile(bean.value("request_cmd"), systemFileName);
         return fileDaos;
     }
+
 
     /**
      * MIMEタイプを取得するメソッド
@@ -511,13 +589,39 @@ public class FileDetail extends ControllerBase {
 
             // 所有者が一致する場合は削除処理を実行
             DbBase.dbBeginTran();
-            dao.dbDelete(mainKey);
+            String filePath = dao.dbDelete(mainKey);
             DbBase.dbCommitTran();
+            deleteFile(bean.value("request_cmd"), filePath);
             redirect("FileList.do");
         } catch (Exception e) {
             DbBase.dbRollbackTran();
             forward("FileDetail.jsp");
         }
+    }
+    
+    public void deleteFile(String requestCmd, String systemFileName) throws AtareSysException {
+        String folderPath = "";
+        String filePath = "";
+    	if("insEnter".equals(requestCmd) || "ins".equals(requestCmd)){
+        	// String tempFolder = "C:/git/training/kenshuProject/WebContent/temporaryFile";
+        	folderPath = "C:/Git/kenshuProject/WebContent/temporary-File";
+        	filePath = folderPath + "/" + systemFileName;
+        	
+    	}else if("deleteEnter".equals(requestCmd)) {
+    		// String tempFolder = "C:/git/training/kenshuProject/WebContent/upload";
+        	filePath = systemFileName;
+    	}
+    	
+    	File file = new File(filePath);
+    	if(!file.exists()) {
+    		System.out.println("削除するファイルが存在しません");
+    	}
+    	
+    	if(file.delete()) {
+    		System.out.println("ファイルを削除しました。" + filePath);
+    	}else {
+    		System.out.println("ファイルの削除に失敗しました。" + filePath);
+    	}
     }
 
     /**
@@ -528,11 +632,29 @@ public class FileDetail extends ControllerBase {
      */
     private void downloadFileWrite(FileDao dao) throws AtareSysException {
         // ファイルを保存するフォルダ名を取得
+        WebBean bean = getWebBean();
         ServletOutputStream out = null; // 出力ストリームを初期化
         String baseFileName = dao.getFileName(); // 基本ファイル名を取得
         String mimeType = dao.getMimeType(); // MIMEタイプを取得
         String filePath = dao.getFilePath();// フルファイルパスを取得
+        UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo(); // 現在のユーザー情報を取得
+        System.out.println(userLoginInfo.getUserInfoId());
+        
+        // ファイル情報を取得
+        FileDao fileData = dao; // ここは前の行で dao を設定したので、そのまま使用
 
+        String fileOwnerId = fileData.getUploadUserId(); // ファイルの所有者ID
+        String fileCatcherId = fileData.getUserInfoId();
+        
+        // 所有者が現在のユーザーと一致するか確認
+        if (!(userLoginInfo.getUserInfoId().equals(fileOwnerId) || userLoginInfo.getUserInfoId().equals(fileCatcherId))) {
+            bean.setError("このファイルをダウンロードする権限がありません。");
+            forward("FileDetail_3.jsp");
+            return;
+        }
+
+        
+        
         try {
             // 期限チェック
             if (isExpired(dao.getExpirationDate())) {

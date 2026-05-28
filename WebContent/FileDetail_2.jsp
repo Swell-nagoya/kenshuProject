@@ -213,7 +213,10 @@ function go_list(action_cmd , request_cmd) {
        <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
        <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
        <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
-       
+       <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
+       <input type="hidden" name="destination_user_info_id" id="destination_user_info_id" value="<%=webBean.txt("destination_user_info_id")%>" />
+       <input type="hidden" name="systemFileName" id="systemFileName" value="<%=webBean.txt("systemFileName")%>" />
+              <input type="hidden" name="tempExpirationDateString" id="tempExpirationDateString" value="<%=webBean.txt("tempExpirationDateString")%>" />
       
        <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
        <div class="errors"><%=webBean.dispErrorMessages()%></div>
