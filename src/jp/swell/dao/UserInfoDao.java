@@ -1254,10 +1254,12 @@ public class UserInfoDao implements Serializable {
     String dbWhere() throws AtareSysException {
         StringBuffer where = new StringBuffer(1024);
 
+        /*
         // 本日の日付を取得
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date today = new Date();
         String todayStr = dateFormat.format(today);
+		*/
 
         if (getUserInfoId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
@@ -1338,8 +1340,8 @@ public class UserInfoDao implements Serializable {
             where.append(")");
         }
         where.append(where.length() > 0 ? " AND " : "");
-        where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
-
+        // where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
+        where.append("(state_flg != '9')");
         if (where.length() > 0) {
             return "where " + where.toString();
         }

@@ -374,6 +374,11 @@ public class FileDetail extends ControllerBase {
         
         String filePath =  "C:/Git/kenshuProject/WebContent/temporary-file"; //このパソコンの保存先
         
+        //一時保存フォルダがなければ作成
+        File dir = new File(filePath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
         // Path path = Paths.get("upload");
         // filePath = path.toAbsolutePath().toString();
 
