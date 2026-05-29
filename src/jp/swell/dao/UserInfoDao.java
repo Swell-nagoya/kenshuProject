@@ -916,21 +916,21 @@ public class UserInfoDao implements Serializable {
 	 * @param dao  UserInfoDaoこのテーブルのインスタンス
 	 */
 	public void setUserInfoDaoForJoin(HashMap<String, String> map, UserInfoDao dao) throws AtareSysException {
-		dao.setUserInfoId(DbI.chara(map.getOrDefault("user_info___user_info_id", "")));
-		dao.setPassword(DbI.chara(map.getOrDefault("user_info___password", "")));
-		dao.setLastName(DbI.chara(map.getOrDefault("user_info___last_name", "")));
-		dao.setMiddleName(DbI.chara(map.getOrDefault("user_info___middle_name", "")));
-		dao.setFirstName(DbI.chara(map.getOrDefault("user_info___first_name", "")));
-		dao.setMaidenName(DbI.chara(map.getOrDefault("user_info___maiden_name", "")));
-		dao.setLastNameKana(DbI.chara(map.getOrDefault("user_info___last_name_kana", "")));
-		dao.setMiddleNameKana(DbI.chara(map.getOrDefault("user_info___middle_name_kana", "")));
-		dao.setFirstNameKana(DbI.chara(map.getOrDefault("user_info___first_name_kana", "")));
-		dao.setMaidenNameKana(DbI.chara(map.getOrDefault("user_info___maiden_name_kana", "")));
-		dao.setInsertUserId(DbI.chara(map.getOrDefault("user_info___insert_user_id", "")));
-		dao.setMemail(DbI.chara(map.getOrDefault("user_info___memail", "")));
-		dao.setAdmin(DbI.chara(map.getOrDefault("user_info___admin", "")));
-		dao.setLeaveDate(DbI.chara(map.getOrDefault("user_info___leave_date", "")));
-	}
+		dao.setUserInfoId(DbI.chara(map.getOrDefault("user_info___user_info_id", map.getOrDefault("user_info_id", ""))));
+        dao.setPassword(DbI.chara(map.getOrDefault("user_info___password", map.getOrDefault("password", ""))));
+        dao.setLastName(DbI.chara(map.getOrDefault("user_info___last_name", map.getOrDefault("last_name", ""))));
+        dao.setMiddleName(DbI.chara(map.getOrDefault("user_info___middle_name", map.getOrDefault("middle_name", ""))));
+        dao.setFirstName(DbI.chara(map.getOrDefault("user_info___first_name", map.getOrDefault("first_name", ""))));
+        dao.setMaidenName(DbI.chara(map.getOrDefault("user_info___maiden_name", map.getOrDefault("maiden_name", ""))));
+        dao.setLastNameKana(DbI.chara(map.getOrDefault("user_info___last_name_kana", map.getOrDefault("last_name_kana", ""))));
+        dao.setMiddleNameKana(DbI.chara(map.getOrDefault("user_info___middle_name_kana", map.getOrDefault("middle_name_kana", ""))));
+        dao.setFirstNameKana(DbI.chara(map.getOrDefault("user_info___first_name_kana", map.getOrDefault("first_name_kana", ""))));
+        dao.setMaidenNameKana(DbI.chara(map.getOrDefault("user_info___maiden_name_kana", map.getOrDefault("maiden_name_kana", ""))));
+        dao.setInsertUserId(DbI.chara(map.getOrDefault("user_info___insert_user_id", map.getOrDefault("insert_user_id", ""))));
+        dao.setMemail(DbI.chara(map.getOrDefault("user_info___memail", map.getOrDefault("memail", ""))));
+        dao.setAdmin(DbI.chara(map.getOrDefault("user_info___admin", map.getOrDefault("admin", ""))));
+        dao.setLeaveDate(DbI.chara(map.getOrDefault("user_info___leave_date", map.getOrDefault("leave_date", ""))));
+    }
 
 	/** 
 	 * user_info ユーザ情報テーブルにデータを挿入する 
@@ -1221,7 +1221,7 @@ public class UserInfoDao implements Serializable {
 				+ ",user_info.admin as user_info___admin"
 				+ ",user_info.state_flg as user_info___state_flg"
 				+ ",user_info.leave_date as user_info___leave_date"
-				+ " from user_info ";
+				+ " from testdb.user_info ";
 
 		String where = myclass.dbWhere();
 		String order = myclass.dbOrder(sortKey);
