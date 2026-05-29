@@ -49,7 +49,14 @@ public class UserLogin extends ControllerBase {
                     this.forward("/UserLogin.jsp");
                     return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
                 }
+                UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
+                if (loginInfo.isAdmin()) {
+                    // 管理者
+                    redirect("MenuAdmin.do");
+                } else {
+                    // 一般ユーザー
                     redirect("UserMenu.do");
+                }
                 return;
             } else if ("repassword".equals(bean.value("action_cmd"))) {
                 redirect("SendPassMail.do");
@@ -75,11 +82,11 @@ public class UserLogin extends ControllerBase {
 
         WebBean bean = getWebBean();
         if (bean.value("ac").length() == 0) {
-            bean.setError("ac", "未入力");
+            bean.setValue("ac1", "未入力");
             return false;
         }
         if (bean.value("ko").length() == 0) {
-            bean.setError("ko", "未入力");
+            bean.setValue("ko1", "未入力");
             return false;
         }
 
@@ -88,7 +95,7 @@ public class UserLogin extends ControllerBase {
             userLoginInfo = new UserLoginInfo();
         }
         if (!userLoginInfo.login(bean.value("ac"), bean.value("ko"))) {
-            bean.setError("ac", "usernameかpasswordが違います");
+            bean.setValue("ac1", "usernameかpasswordが違います");
             return false;
         }
         userLoginInfo.setUserInfo(userLoginInfo.getUserInfoDao());
@@ -96,7 +103,6 @@ public class UserLogin extends ControllerBase {
         bean.setValue("user_info_id", userLoginInfo.getUserInfoId());
         return true;
     }
-
     // ログイン情報をクリアするメソッド
     private void clearLoginInfo() {
         setLoginInfo(null); // ログイン情報をクリア

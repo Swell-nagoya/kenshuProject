@@ -120,7 +120,6 @@ public class ViewUserList extends ControllerBase
             forward("ViewUserList.jsp");
         }
     }
-
     /**
      * 最初の画面を表示する。.
      *
