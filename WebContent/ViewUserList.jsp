@@ -241,7 +241,6 @@ footer {
         </h1>
     </header>
     <form id="main_form" method="post" action="">
-    
       <input type="hidden" name="form_name" id="form_name"    value="ViewUserList" /> 
       <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
       <input type="hidden" name="request_cmd" id="request_cmd" value="" /> 

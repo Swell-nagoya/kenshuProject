@@ -511,9 +511,9 @@ public class UserInfoDetail extends ControllerBase
                         Date yesterday = calendar.getTime(); // 昨日の日付を取得
 
                         // `leave_date` が昨日以前の日付である場合
-                        if (leaveDate.before(yesterday)) {
+                        /*if (leaveDate.before(yesterday)) {
                             errors.put("leave_date", "本日以降の日付を入力してください");
-                        }
+                        }*/
                     }
                 } 
                 catch (ParseException e) 
@@ -646,6 +646,7 @@ public class UserInfoDetail extends ControllerBase
       dao.setAdmin(bean.value("admin"));
       dao.setPassword(bean.value("password"));
       dao.setLeaveDate(bean.value("leave_date"));
+      dao.setUpdateDate(bean.value("update_date"));
       
       bean.setValue("input_info", Sup.serialize(dao));  // DAOオブジェクトをシリアライズしてWebBeanに保存
       return dao;
@@ -665,7 +666,6 @@ public class UserInfoDetail extends ControllerBase
         return false;
       }
     }
-    
     /**
      * 修正の場合
      * @throws AtareSysException
@@ -697,22 +697,25 @@ public class UserInfoDetail extends ControllerBase
     public void delete() throws AtareSysException
     {
         WebBean bean = getWebBean();
-        UserInfoDao dao = setWeb2Dao2InputInfo();
-        String userInfoId = bean.value("user_info_id");//userIdの取得
-        String leaveDate = bean.value("leave_date");     // leave_dateの取得
+        UserInfoDao dao = setWeb2Dao2InputInfo(); // 画面の値をDAOにセット
+        String userInfoId = bean.value("user_info_id");
+        String leaveDate = bean.value("leave_date");
 
         try {
-          dao.dbUpdate(userInfoId);
+          DbBase.dbBeginTran(); // トランザクション開始
+          
           if (leaveDate == null || leaveDate.trim().isEmpty()) {
             dao.dbCancelDelete(userInfoId);
-            redirect("ViewUserList.do");
           }
           else {
             dao.dbDelete(userInfoId);
-            redirect("ViewUserList.do");
           }
-        }catch (Exception e) {
-          forward("ViewUserList.do");
+          
+          DbBase.dbCommitTran(); // 確定
+          redirect("ViewUserList.do");
+        } catch (Exception e) {
+          DbBase.dbRollbackTran(); // エラー時は取り消し
+          throw new AtareSysException("削除処理に失敗しました: " + e.toString());
         }
     }
     
@@ -741,6 +744,7 @@ public class UserInfoDetail extends ControllerBase
         bean.setValue("password", dao.getPassword());
         bean.setValue("admin", dao.getAdmin());
         bean.setValue("leave_date", dao.getLeaveDate());
+        bean.setValue("update_date", dao.getUpdateDate());
     }
     
     private void setInputInfo2Dao2WebDelete() throws AtareSysException
@@ -761,6 +765,7 @@ public class UserInfoDetail extends ControllerBase
         bean.setValue("password_user", dao.getPasswordUser());
         bean.setValue("password", dao.getPassword());
         bean.setValue("admin", dao.getAdmin());
+        bean.setValue("update_date", dao.getUpdateDate());
     }
     
     /**
