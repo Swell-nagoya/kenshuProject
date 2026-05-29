@@ -1,0 +1,467 @@
+body
+{
+    margin:0px;
+    padding : 0px;
+    border: 0px;
+    font-size: 80%;
+    line-height: 1.2;
+    letter-spacing: 0;
+    font-family: "Lucida Grande", "Lucida Sans Unicode", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", Helvetica, Arial, Verdana, sans-serif;
+    height: 100%;
+    width : 100%;
+}
+.wrap {
+  width: 75%;
+  background-color: whitesmoke;
+  padding: 50px;
+  margin: 0 auto;
+  height: 100%;
+}
+table
+{
+    width : 100%;
+    margin : 0px;
+    padding : 0px;
+    border-collapse : collapse;
+    border-spacing: 0px;
+    border: 0px #808080 solid;
+}
+td
+{
+    height:1.8em;
+    border-color: #404040;
+    border-collapse: collapse;
+}
+.container
+{
+    text-align: center;
+    flex: 1 1 auto;
+    min-width: 0px;
+}
+.title
+{
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: #222222;
+    background-color: #FFFFFF;
+    table-layout: fixed;
+}
+.title_left
+{
+    width : 30%;
+    text-align: left;
+    color: #ffff00;
+    font-size : 125%;
+    background-repeat : no-repeat;
+    background-position: left center;
+}
+.title_center
+{
+    width : 40%;
+    text-align: center;
+    color: #222222;
+    font-size : 125%;
+}
+.title_right
+{
+    width : 30%;
+        text-align: right;
+    color: #222266;
+}
+
+/* パンくずリスト */
+.bread_crubms_list
+{
+    padding-left:10px;
+    padding-top:5px;
+    font-weight: bold;
+    color:#888888;
+    background-color:#FFFFFF;
+}
+
+.inner_table tr , .inner_table td
+{
+    border-collapse: collapse;
+    border : 1px #ffffff solid;
+}
+
+.center
+{
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.left
+{
+    text-align: left;
+}
+
+.right
+{
+    text-align: right;
+}
+
+.baseline
+{
+    vertical-align : baseline;
+}
+.top
+{
+    vertical-align : top;
+}
+.middle
+{
+    vertical-align : middle;
+}
+.bottom
+{
+    vertical-align : bottom;
+}
+.ime_disabled
+{
+    ime-mode: disabled;
+}
+.ime_active
+{
+    ime-mode: active;
+}
+.ime_inactive
+{
+    ime-mode: inactive;
+}
+.ime_auto
+{
+    ime-mode: auto;
+}
+.error
+{
+    background-color: #FFCCCC;
+}
+.messages
+{
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    color: #0000ff;
+    font-weight: bold;
+}
+.errors
+{
+    padding-left: 3px;
+    padding-right: 3px;
+    color: #ff0000;
+    font-weight: bold;
+}
+.label
+{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: #202020;
+    background-color: #a4c1f5;
+}
+input[type="text"]{
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding-left: 1em;
+  padding-right: 1em;
+  height: 25px;
+  flex: 1;
+  max-width: 410px;
+  background: #F7FFFB;
+  font-size: 18px;
+  padding: 15px 20px 15px 20px;    /* [上]、[右]、[下]、[左]の順に余白を指定 */
+}
+.view
+{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+    padding-right: 5px;
+    color: #202020;
+    background-color: #FFFFF0;
+}
+.odd
+{
+    background-color: #FFFFFF;
+}
+.even
+{
+    background-color: #EFEFEF;
+}
+.list_label
+{
+    text-align: center;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: #666666;
+    background-color: #F7F7D7 ;
+}
+.list_label > a:link
+{
+    color: #666666;
+}
+.list_label > a:visited
+{
+    color: #666666;
+}
+.list_tr
+{
+}
+.list_text
+{
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.search_label
+{
+    padding-left: 3px;
+    padding-right: 3px;
+    color: #666666;
+    background-color: #DCFADC ;
+}
+.search_text
+{
+    padding-left: 3px;
+    padding-right: 3px;
+    background-color: #F8F8F8;
+}
+
+img {
+    border: 0;
+    vertical-align:top;
+    vertical-align:text-top;
+}
+
+input[type="button"]
+{
+    font-size : 100%;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    background-color: #4183c4;
+    margin:10px;
+    margin-top:0px;
+    margin-bottom:0px;
+    padding:10px;
+    padding-top:0px;
+    padding-bottom:0px;
+    
+border-top-left-radius:10px;
+border-top-right-radius:10px;
+border-bottom-left-radius:10px;
+border-bottom-right-radius:10px
+}
+input[type="button"]:hover
+{
+    font-size : 100%;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    background-color: #4169e1;
+    cursor:pointer;
+}
+
+input[type="button"]:focus
+{
+    font-size : 100%;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    background-color: #4169e1;
+    cursor:pointer;
+}
+
+input[type="button"]:active
+{
+    font-size : 100%;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    background-color: #191970;
+    cursor:pointer;
+}
+input[type="button"][disabled]
+{
+    font-size : 100%;
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    background-color: #cccccc;
+    cursor:pointer;
+}
+
+.list_table td
+{
+    border-collapse: collapse;
+    border: 1px #a0a0a0 solid;
+    padding : 2px;
+}
+select{
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding-left: 1em;
+  padding-right: 1em;
+  height: 25px;
+  flex: 1;
+  max-width: 410px;
+  background: #F7FFFB;
+  font-size: 18px;
+}
+.select_table td
+{
+    border-collapse: collapse;
+    border: 1px #a0a0a0 solid;
+    padding : 2px;
+}
+.detail_table td
+{
+    border-collapse: collapse;
+    border: 1px #a0a0a0 solid;
+}
+
+.popup_cal td
+{
+    border-collapse: collapse;
+    border: 0px #a0a0a0 solid;
+    margin:0px;
+    margin-top:0px;
+    margin-bottom:0px;
+    padding:0px;
+    padding-top:0px;
+    padding-bottom:0px;
+    padding : 0px;
+}
+
+.list_table input[type="button"]
+{
+    font-size : 100%;
+    display: inline-block;
+    text-align: center;
+    color: #222222;
+    background-color: #f0f8ff;
+}
+.list_table input[type="button"]:hover
+{
+    font-size : 100%;
+    display: inline-block;
+    text-align: center;
+    color: #222222;
+    background-color: #afeeee;
+    cursor:pointer;
+}
+
+.list_table input[type="button"]:focus
+{
+    font-size : 100%;
+    display: inline-block;
+    text-align: center;
+    color: #222222;
+    background-color: #afeeee;
+    cursor:pointer;
+}
+
+.list_table input[type="button"]:active
+{
+    font-size : 100%;
+    display: inline-block;
+    text-align: center;
+    color: #222222;
+    background-color: #00bfff;
+    cursor:pointer;
+}
+
+select:focus, textarea:focus, input:focus
+{
+    color: #000000;
+    background-color: #E8FFE8;
+}
+select, textarea, input
+{
+    font-size: 1em;
+    color: #000000;
+    background-color: #ffffff;
+}
+input[type="text"],input[type="password"],textarea
+{
+    padding: 0px;
+    color: #000000;
+    border: 1px solid #7f9db9; /* 枠線は淡い青色 */
+}
+input[type="text"][disabled]
+{
+    background-color: #cccccc;
+    color:#000000;
+}
+td.text{
+    padding: 5px 0px 0px 0px;
+}
+textarea
+{
+    padding: 0;
+}
+textarea[disabled]
+{
+    color:#000000;
+}
+.font40
+{
+    font-size : 40%
+}
+.font60
+{
+    font-size : 60%
+}
+.font80
+{
+    font-size : 80%
+}
+.font100
+{
+    font-size : 100%
+}
+.font120
+{
+    font-size : 120%
+}
+.font140
+{
+    font-size : 140%
+}
+.font160
+{
+    font-size : 160%
+}
+.font180
+{
+    font-size : 180%
+}
+.font200
+{
+    font-size : 200%
+}
+.nowrap
+{
+    white-space:nowrap;
+}
+.red
+{
+    color: #ff0000;
+}
+.blue
+{
+    color: #0000ff;
+}
+.green
+{
+    color: #00ff00;
+}
