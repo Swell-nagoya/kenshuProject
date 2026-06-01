@@ -76,8 +76,8 @@ public class UserInfoDetail extends ControllerBase
                   if ("ins".equals(bean.value("request_cmd"))) 
                   {
                       bean.setValue("input_info", Sup.serialize(new UserInfoDao()));
-                      bean.setValue("request_name", "登録");
-                      forward("UserInfoDetail_1.jsp");
+                      bean.setValue("request_name", "新規");
+                      forward("UserInfoDetail.jsp");
                   } 
                   else if ("update".equals(bean.value("request_cmd"))) 
                   {
@@ -88,8 +88,8 @@ public class UserInfoDetail extends ControllerBase
                       } 
                       else 
                       {
-                          bean.setValue("request_name", "修正");
-                          forward("UserInfoDetail_1.jsp");
+                          bean.setValue("request_name", "編集");
+                          forward("UserInfoDetail.jsp");
                       }
                   }
                   else if ("delete".equals(bean.value("request_cmd"))) 
@@ -102,7 +102,8 @@ public class UserInfoDetail extends ControllerBase
                       else 
                       {
                           bean.setMessage("退職予定日を入力してください。");
-                          forward("UserInfoDetail_2.jsp");
+                          bean.setValue("request_name", "削除");
+                          forward("UserInfoDetail.jsp");
                       }
                   }
                   else if ("check".equals(bean.value("request_cmd"))) 
@@ -115,7 +116,7 @@ public class UserInfoDetail extends ControllerBase
                       else 
                       {
                           bean.setValue("request_name", "メール送信");
-                          forward("UserInfoDetail_3.jsp");
+                          forward("UserInfoDetail.jsp");
                       }
                   }
                   else if ("access".equals(bean.value("request_cmd"))) 
@@ -142,12 +143,48 @@ public class UserInfoDetail extends ControllerBase
               }
           }
           
-          else if ("UserInfoDetail_1".equals(bean.value("form_name"))) 
+          else if ("UserInfoDetail".equals(bean.value("form_name"))) 
           {
               if ("go_next".equals(bean.value("action_cmd"))) 
               {
+                  String reqName = bean.value("request_name");
                   
-                  if ("ins".equals(bean.value("request_cmd"))) 
+                  if ("登録".equals(reqName) && "ins".equals(bean.value("request_cmd")))
+                  {
+                      setInputInfo2Dao2Web();
+                      signUp();
+                      scheduleInsert();
+                      redirect("ViewUserList.do");
+                  }
+                  else if ("修正".equals(reqName) && "update".equals(bean.value("request_cmd")))
+                  {
+                      if (checkDataMatching())
+                      {
+                          setInputInfo2Dao2Web();
+                          dbEdit();
+                      }
+                      else
+                      {
+                          bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
+                          setDb2Web();
+                          forward("UserInfoDetail.jsp");
+                      }
+                  }
+                  else if ("確定".equals(reqName) && "delete".equals(bean.value("request_cmd")))
+                  {
+                      if (checkDataMatching())
+                      {
+                          setInputInfo2Dao2Web();
+                          delete();
+                      }
+                      else
+                      {
+                          bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
+                          setDb2Web();
+                          forward("UserInfoDetail.jsp");
+                      }
+                  }
+                  else if ("ins".equals(bean.value("request_cmd"))) 
                   {
                       insUserPass();
                       bean.rtrimAllItem();
@@ -156,12 +193,12 @@ public class UserInfoDetail extends ControllerBase
                       {
                           bean.setMessage("この内容で登録します。よろしいですか？");
                           bean.setValue("request_name", "登録");
-                          forward("UserInfoDetail_3.jsp"); 
+                          forward("UserInfoDetail.jsp"); 
                       }
                       else 
                       {
                           bean.setError("入力内容に誤りがあります");
-                          forward("UserInfoDetail_1.jsp");
+                          forward("UserInfoDetail.jsp");
                       }
                   } 
                   else if ("update".equals(bean.value("request_cmd"))) 
@@ -174,26 +211,15 @@ public class UserInfoDetail extends ControllerBase
                         
                           bean.setMessage("この内容で修正します。よろしいですか？");
                           bean.setValue("request_name", "修正");
-                          forward("UserInfoDetail_3.jsp"); 
+                          forward("UserInfoDetail.jsp"); 
                       }
                       else 
                       {
                         bean.setError("入力内容に誤りがあります");
-                        forward("UserInfoDetail_1.jsp");
+                        forward("UserInfoDetail.jsp");
                       }
                   }
-              } 
-              else if ("return".equals(bean.value("action_cmd"))) 
-              {
-                  forward("ViewUserList.do");
-              }
-          }
-          
-          else if ("UserInfoDetail_2".equals(bean.value("form_name")))  
-          {  
-              if ("go_next".equals(bean.value("action_cmd"))) 
-              {
-                  if ("delete".equals(bean.value("request_cmd"))) 
+                  else if ("delete".equals(bean.value("request_cmd"))) 
                   {
                       setInputInfo2Dao2WebDelete();
                       bean.rtrimAllItem();
@@ -202,100 +228,51 @@ public class UserInfoDetail extends ControllerBase
                       {
                           bean.setMessage("退職予定日を確定します。よろしいですか？");
                           bean.setValue("request_name", "確定");
-                          forward("UserInfoDetail_3.jsp");  
+                          forward("UserInfoDetail.jsp");  
                       }
                       else 
                       {
                           bean.setError("入力内容に誤りがあります");
-                          forward("UserInfoDetail_2.jsp"); 
+                          forward("UserInfoDetail.jsp"); 
                       }
                   }
-              }
-              else if ("return".equals(bean.value("action_cmd"))) 
-              {
-                  forward("ViewUserList.do");
-              }
-          }
-          
-          else if ("UserInfoDetail_3".equals(bean.value("form_name"))) 
-          {
-              if ("go_next".equals(bean.value("action_cmd"))) 
-              {
-                  if ("ins".equals(bean.value("request_cmd"))) 
-                  {
-                      setInputInfo2Dao2Web();
-                      signUp();
-                      scheduleInsert();
-                      redirect("ViewUserList.do");
-                  }
-                  else if ("update".equals(bean.value("request_cmd"))) 
-                  {
-                      if (checkDataMatching())
-                      {
-                          setInputInfo2Dao2Web();
-                          dbEdit();
-                      }
-                      else 
-                      {
-                          bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
-                          setDb2Web();
-                          forward("UserInfoDetail_1.jsp");
-                      }
-                  }
-                  else if ("delete".equals(bean.value("request_cmd"))) 
-                  {
-                      if (checkDataMatching())
-                      {
-                          setInputInfo2Dao2Web();
-                          delete();
-                      }
-                      else 
-                      {
-                          bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
-                          setDb2Web();
-                          forward("UserInfoDetail_1.jsp");
-                      }
-                  }
-              }
-              
+              } 
               else if ("return".equals(bean.value("action_cmd"))) 
               {
                   if ("ins".equals(bean.value("request_cmd"))) 
                   {
-                      bean.setValue("request_name", "登録");
+                      bean.setValue("request_name", "");
                       setInputInfo2Dao2Web();
-                      forward("UserInfoDetail_1.jsp");
+                      forward("UserInfoDetail.jsp");
                   }
                   else if ("update".equals(bean.value("request_cmd"))) 
                   {
-                      bean.setValue("request_name", "修正");
+                      bean.setValue("request_name", "編集");
                       setInputInfo2Dao2Web();
                       setWeb2Dao2InputInfo();
-                      forward("UserInfoDetail_1.jsp");
+                      forward("UserInfoDetail.jsp");
                   }
                   else if ("delete".equals(bean.value("request_cmd"))) 
                   {
-                      bean.setValue("request_name", "修正");
+                      bean.setValue("request_name", "削除");
                       setInputInfo2Dao2Web();
                       setWeb2Dao2InputInfo();
-                      forward("UserInfoDetail_2.jsp");
+                      forward("UserInfoDetail.jsp");
                   }
                   else if ("send".equals(bean.value("request_cmd"))) 
                   {
                       redirect("ViewUserList.do");
+                  }
+                  else
+                  {
+                	  redirect("ViewUserList.do");
                   }
               }
               
           }
           else 
           {
-              bean.setValue("request_name", "修正");
-              bean.setValue("request_cmd", "update");
-              if (!setDb2Web()) {
-                  bean.setError("データの取得に失敗しました");
-              }
-              bean.setMessage("以下の項目を修正してください。");
-              forward("UserInfoDetail_1.jsp");
+        	  redirect("ViewUserList.do");
           }
       } 
       catch (Exception e) 
@@ -708,6 +685,8 @@ public class UserInfoDetail extends ControllerBase
         String leaveDate = bean.value("leave_date");     // leave_dateの取得
 
         try {
+          DbBase.dbBeginTran();
+          dao.setLeaveDate(leaveDate);
           dao.dbUpdate(userInfoId);
           if (leaveDate == null || leaveDate.trim().isEmpty()) {
             dao.dbCancelDelete(userInfoId);
@@ -717,7 +696,10 @@ public class UserInfoDetail extends ControllerBase
             dao.dbDelete(userInfoId);
             redirect("ViewUserList.do");
           }
+          DbBase.dbCommitTran();
         }catch (Exception e) {
+          DbBase.dbRollbackTran();
+          e.printStackTrace();
           forward("ViewUserList.do");
         }
     }

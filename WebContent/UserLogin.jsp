@@ -143,6 +143,7 @@ h1 {
 						name="before_doc" id="before_doc"
 						value="<%=webBean.txt("before_doc")%>" />
 					<div class="main__form--name">
+						<%=webBean.dispError("ac")%>
 						<input type="text" id="ac" name="ac" class="ime_disabled"
 							value="<%=webBean.txt("ac")%>" placeholder="Username" size="25"
 							maxlength="255" />
@@ -160,7 +161,6 @@ h1 {
 							class="link-btn">パスワード再発行</a>
 					</div>
 				</form>
-				<%=webBean.dispError("ac")%>
 				<%=webBean.dispError("ko")%>
 				<div class="copyright">Copyright &#169; 2017 RayD Developer
 					All Rights Reserved.</div>

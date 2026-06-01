@@ -106,7 +106,7 @@ public class ViewUserList extends ControllerBase
             }
             forward("ViewUserList.jsp");
         }
-        else if ("UserInfoDetail_1".equals(bean.value("form_name")) || "UserInfoDetail_2".equals(bean.value("form_name")) || "UserInfoDetail_3".equals(bean.value("form_name")))
+        else if ("UserInfoDetail".equals(bean.value("form_name")))
         {
             setWebBeanFromSerialize(bean.value("search_info"));
             bean = getWebBean();

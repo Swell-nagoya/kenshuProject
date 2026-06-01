@@ -75,7 +75,7 @@ public class SendPassMail extends ControllerBase
                 forward("UserLogin.jsp");
             }
         }
-        else if ("UserInfoDetail_3".equals(bean.value("form_name")))
+        else if ("UserInfoDetail".equals(bean.value("form_name")))
         {
             if("go_next".equals(bean.value("action_cmd"))) 
             {

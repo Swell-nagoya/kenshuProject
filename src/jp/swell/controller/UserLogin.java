@@ -88,7 +88,7 @@ public class UserLogin extends ControllerBase {
             userLoginInfo = new UserLoginInfo();
         }
         if (!userLoginInfo.login(bean.value("ac"), bean.value("ko"))) {
-            bean.setError("ac", "usernameかpasswordが違います");
+            bean.getItemErrors().put("ac", "usernameかpasswordが違います");
             return false;
         }
         userLoginInfo.setUserInfo(userLoginInfo.getUserInfoDao());
