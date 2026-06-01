@@ -276,8 +276,6 @@ function toggleCheckbox(div) {
 }
 
 window.onload = function() {
-  restoreSelectionFromOpener();
-  applyHiddenToCurrentPage();
 };
 </script>
 </head>
@@ -323,7 +321,7 @@ window.onload = function() {
 						    UserInfoDao dao = (UserInfoDao) o;
 						    String userId = WebUtil.htmlEscape(dao.getUserInfoId());
 						    String fullName = WebUtil.htmlEscape(dao.getLastName()) + " " + WebUtil.htmlEscape(dao.getFirstName());
-						    boolean isChecked = stay.contains(dao.getUserInfoId());
+						    boolean isChecked = false;
 						%>
 						<div class="user-item" onclick="toggleCheckbox(this)">
 							<input type="checkbox" name="user_id" id="dest_<%=userId%>"

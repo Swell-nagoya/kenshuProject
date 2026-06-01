@@ -432,6 +432,15 @@ public class FileDetail extends ControllerBase {
             
             // 送信先ユーザーIDを取得
             String destinationUserInfoIdsString = bean.value("destination_user_info_id"); // 送信先ユーザーID
+            
+            // 未選択なら処理しない
+            if (destinationUserInfoIdsString == null || destinationUserInfoIdsString.trim().isEmpty()) {
+                bean.setError("送信先ユーザーを選択してください。");
+                searchUserList();
+                bean.setValue("file_name", bean.value("input_name"));
+                forward("FileDetail.jsp");
+                return null;
+            }
             String[] destinationUserInfoIds = destinationUserInfoIdsString.split(",");
 
             // 送信元ユーザーのIDを取得
