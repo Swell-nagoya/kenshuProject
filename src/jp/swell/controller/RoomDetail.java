@@ -69,7 +69,7 @@ public class RoomDetail extends ControllerBase
           RoomDao dao = setWeb2Dao2InputInfo();
           bean.setValue("request_name", "修正する");
           if (beforeName == null || beforeName.trim().isEmpty()) {
-              beforeName = roomName;
+              beforeName = "";
               bean.setValue("before_name", beforeName);
           }
           bean.setValue("before_name", beforeName);
@@ -83,7 +83,8 @@ public class RoomDetail extends ControllerBase
                       bean.setMessage("この内容で登録します。よろしいですか？");
                       bean.setValue("request_name", "登録する");
                       bean.setValue("room_name", roomName);
-                      forward("RoomDetail_2.jsp");
+                      bean.setValue("form_name", "RoomDetail_2");
+                      forward("RoomDetail.jsp");
                   }
                   else if ("update".equals(requestCmd))
                   {
@@ -91,7 +92,8 @@ public class RoomDetail extends ControllerBase
                       bean.setValue("request_name", "修正する");
                       bean.setValue("before_name", beforeName);
                       bean.setValue("room_name", roomName);
-                      forward("RoomDetail_2.jsp");
+                      bean.setValue("form_name", "RoomDetail_2");
+                      forward("RoomDetail.jsp");
                   }
               }
               else if ("return".equals(actionCmd))
@@ -134,7 +136,8 @@ public class RoomDetail extends ControllerBase
                           bean.setMessage("この部屋を削除します。よろしいですか？");
                           bean.setValue("request_name", "削除する");
                           bean.setValue("room_name", roomName);
-                          forward("RoomDetail_2.jsp");
+                          bean.setValue("form_name", "RoomDetail_2");
+                          forward("RoomDetail.jsp");
                       }
                   }
               }
@@ -190,12 +193,14 @@ public class RoomDetail extends ControllerBase
             }
             else
             {
+            	bean.setValue("form_name", "RoomDetail");
                 bean.setError("登録に失敗しました");
                 forward("RoomDetail.jsp");
             }
         }
         else
         {
+        	bean.setValue("form_name", "RoomDetail");
             bean.setError("入力内容に誤りがあります");
             forward("RoomDetail.jsp");
         }
@@ -227,7 +232,7 @@ public class RoomDetail extends ControllerBase
             String beforeName = bean.value("before_name").trim();
             bean.setValue("room_name", beforeName);
             bean.setValue("before_name", beforeName);
-
+            bean.setValue("form_name", "RoomDetail");
             bean.setError("入力項目にエラーがあります。下記事項をご確認ください。");
             forward("RoomDetail.jsp");
         }

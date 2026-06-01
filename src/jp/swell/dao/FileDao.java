@@ -699,10 +699,10 @@ public class FileDao implements Serializable {
                 + "files.system_file_name AS files___system_file_name, "
                 + "files.upload_user_id AS files___upload_user_id, "
                 + "files.expiration_date AS files___expiration_date, "
-                + "uploader.first_name AS uploader_first_name, "
-                + "uploader.last_name AS uploader_last_name, "
-                + "user_info.first_name AS user_first_name, "
-                + "user_info.last_name AS user_last_name "
+                + "CONCAT (uploader.first_name, '') AS uploader_first_name, "
+                + "CONCAT (uploader.last_name, '') AS uploader_last_name, "
+                + "CONCAT (user_info.first_name, '') AS user_first_name, "
+                + "CONCAT (user_info.last_name, '') AS user_last_name "
                 + "FROM files "
                 + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
                 + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
@@ -713,9 +713,11 @@ public class FileDao implements Serializable {
 
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
-            dao.setFileDaoForJoin(map, dao);
+            dao.setFileDao(map, dao);
             dao.setFirstName(map.get("user_first_name"));
             dao.setLastName(map.get("user_last_name"));
+            dao.setUploaderFirstName(map.get("uploader_first_name"));
+            dao.setUploaderLastName(map.get("uploader_last_name"));
             resultList.add(dao);
         }
 

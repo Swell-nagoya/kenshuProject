@@ -49,7 +49,7 @@ public class UserLogin extends ControllerBase {
                     this.forward("/UserLogin.jsp");
                     return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
                 }
-                    redirect("UserMenu.do");
+                    redirect("MenuAdmin.do");
                 return;
             } else if ("repassword".equals(bean.value("action_cmd"))) {
                 redirect("SendPassMail.do");
@@ -88,7 +88,7 @@ public class UserLogin extends ControllerBase {
             userLoginInfo = new UserLoginInfo();
         }
         if (!userLoginInfo.login(bean.value("ac"), bean.value("ko"))) {
-            bean.setError("ac", "usernameかpasswordが違います");
+            bean.getItemErrors().put("ac", "usernameかpasswordが違います");
             return false;
         }
         userLoginInfo.setUserInfo(userLoginInfo.getUserInfoDao());
