@@ -149,6 +149,14 @@ function go_list(action_cmd) {
     document.getElementById('action_cmd').value = action_cmd;
     document.getElementById('main_form').submit();
 }
+// Enterキーによるフォーム送信イベントの発火をキャンセル
+window.onload = () => {
+	document.getElementById('room_name').addEventListener('keydown', (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	});
+};
 </script>
 </head>
 <body>

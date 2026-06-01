@@ -54,7 +54,7 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -489,10 +489,10 @@ public class UserInfoDetail extends ControllerBase
             String leaveDateStr = bean.value("leave_date");
 
             // `leave_date` が数字でない場合
-            if (!isNumeric(leaveDateStr)) 
+            if (!isDateFormat(leaveDateStr))
             {
-                errors.put("leave_date", "数字を入力してください");
-            } 
+                errors.put("leave_date", "8桁の数字(ex: 20270101)を入力してください");
+            }
             else 
             {
                 try 
@@ -533,20 +533,22 @@ public class UserInfoDetail extends ControllerBase
     }
     
     /**
-     * 文字列が数字で構成されているかをチェックするメソッド.
-     *
+     * 文字列が「yyyymmdd」にフォーマットされているかをチェックするメソッド.
+     * 
      * @param value チェック対象の文字列
-     * @return 文字列が数字で構成されている場合はtrue、それ以外はfalse
+     * @return 文字列が日付フォーマットされている場合true,それ以外はfalse
      */
-    private boolean isNumeric(String value) {
-      if (!(value == null || value.trim().isEmpty())) {
-        try {
-          Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-          return false;
-        }
-      }  
-        return true;
+    private boolean isDateFormat(String value) {
+    		if (value == null || value.length() != 8) return false;
+    		else {
+    			try {
+    				Integer.parseInt(value);
+    			} catch (NumberFormatException e) {
+    				return false;
+    			}
+    			
+    			return true;
+    		}
     }
     
     /**

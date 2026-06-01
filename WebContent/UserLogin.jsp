@@ -143,14 +143,14 @@
                     <input type="password" id="ko" name="ko" class="ime_disabled" value="" placeholder="Password" size="25" maxlength="60"/>
                 </div>
                 <div class="main__form--btn">
-                    <input type="submit" id="bt" name="login-btn"  onclick="go_submit('')" class="submit-btn" value="ログイン"/>
+                    <input type="submit" id="bt" name="login-btn"  onclick="go_submit('login')" class="submit-btn" value="ログイン"/>
                 </div>
                 <div class="main__form--link">
                   <a href="#" id="reissue" onclick="go_submit_1('')" class="link-btn">パスワード再発行</a>
                 </div>
             </form>
-              <%=webBean.dispError("ac")%><br/>
-              <%=webBean.dispError("ko")%>
+              <%=webBean.getErrors().getOrDefault("ac", "")%>
+              <%=webBean.getErrors().getOrDefault("ko", "")%>
             <div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
         </div>
     </div>

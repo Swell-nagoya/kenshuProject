@@ -196,7 +196,20 @@ label.error {
 	color: #FF0000;
 }
 </style>
-				<script type="text/javascript">
+<script type="text/javascript">
+$(() => {
+	$('#file').change(() => {
+		const file_name = $('#file').prop('files')[0].name;
+		$('#input_name').val(file_name);
+	})
+
+	$('#main_form').keydown((event) => {
+		if (event.which === 13) {
+			event.preventDefault();
+		}
+	})
+})
+
 const ctx = '<%=request.getContextPath()%>';
 
 function go_submit(action_cmd) {
@@ -206,6 +219,10 @@ function go_submit(action_cmd) {
 }
 
 function go_upload(action_cmd) {
+  if (document.getElementsByClassName('user-item') == null) {
+	alert('送り先ユーザーを選択してください');
+	return;
+  }
   document.getElementById('main_form').action = '';
   document.getElementById('action_cmd').value = action_cmd;
   document.getElementById('main_form').submit();
@@ -282,7 +299,7 @@ function receiveSelectedUsers(users, type) {
 		<h1>ファイル登録ページ</h1>
 		</header>
 		<form method="post" id="main_form"
-			action="/kenshuProject/WebContent/upload"
+			action=""
 			enctype="multipart/form-data">
 
 			<input type="hidden" name="form_name" id="form_name"

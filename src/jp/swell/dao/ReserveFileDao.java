@@ -137,9 +137,9 @@ public class ReserveFileDao implements Serializable {
      */
     public boolean dbSelect(String pReserveId) throws AtareSysException {
         String sql = "SELECT "
-                + "reserve_file.reserve_file_id as reserve_file___reserve_file_id, "
-                + "reserve_file.reserve_id as reserve_file___reserve_id, "
-                + "reserve_file.file_id as reserve_file___file_id "
+                + "reserve_file.reserve_file_id, "
+                + "reserve_file.reserve_id, "
+                + "reserve_file.file_id "
                 + "FROM reserve_file "
                 + "WHERE reserve_id = ?";
 
@@ -152,9 +152,9 @@ public class ReserveFileDao implements Serializable {
                 }
 
                 HashMap<String, String> map = new HashMap<>();
-                map.put("reserve_file___reserve_file_id", rs.getString("reserve_file___reserve_file_id"));
-                map.put("reserve_file___reserve_id", rs.getString("reserve_file___reserve_id"));
-                map.put("reserve_file___file_id", rs.getString("reserve_file___file_id"));
+                map.put("reserve_file_id", rs.getString("reserve_file_id"));
+                map.put("reserve_id", rs.getString("reserve_id"));
+                map.put("file_id", rs.getString("file_id"));
 
                 setReserveFileDaoForJoin(map, this);
                 return true;
@@ -175,9 +175,9 @@ public class ReserveFileDao implements Serializable {
     public boolean dbSelect(String pReserveFileId,String reserveId) throws AtareSysException
     {
         String sql =  "select "
-                + "reserve_file.reserve_file_id as reserve_file___reserve_file_id, "
-                + "reserve_file.reserve_id as reserve_file___reserve_id, "
-                + "reserve_file.file_id as reserve_file___file_id, "
+                + "reserve_file.reserve_file_id, "
+                + "reserve_file.reserve_id, "
+                + "reserve_file.file_id, "
         + " from reserve_file ";
         sql += ""
         + " where reserve_file_id = " + DbS.chara(pReserveFileId)
@@ -211,9 +211,9 @@ public class ReserveFileDao implements Serializable {
      */
     public void setReserveFileDaoForJoin(HashMap<String, String> map,ReserveFileDao dao)  throws AtareSysException
     {
-        dao.setReserveFileId(DbI.chara(map.get("reserve_file___reserve_file_id") != null ? map.get("reserve_file___reserve_file_id") : ""));
-        dao.setReserveId(DbI.chara(map.get("reserve_file___reserve_id") != null ? map.get("reserve_file___reserve_id") : ""));
-        dao.setFileId(DbI.chara(map.get("reserve_file___file_id") != null ? map.get("reserve_file___file_id") : ""));
+        dao.setReserveFileId(DbI.chara(map.get("reserve_file_id") != null ? map.get("reserve_file_id") : ""));
+        dao.setReserveId(DbI.chara(map.get("reserve_id") != null ? map.get("reserve_id") : ""));
+        dao.setFileId(DbI.chara(map.get("file_id") != null ? map.get("file_id") : ""));
     }
     /**
      * reserve_file テーブルにデータを挿入する
@@ -319,9 +319,9 @@ public class ReserveFileDao implements Serializable {
 
         int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql = "SELECT "
-              + "reserve_file_id AS reserve_file___reserve_file_id, "
-              + "reserve_id AS reserve_file___reserve_id, "
-              + "file_id AS reserve_file___file_id, "
+              + "reserve_file_id, "
+              + "reserve_id, "
+              + "file_id "
               + "FROM reserve_file " + myclass.dbWhere() + " " + myclass.dbOrder(sortKey)
               + " LIMIT " + daoPageInfo.getLineCount() + " OFFSET " + start + ";";
 

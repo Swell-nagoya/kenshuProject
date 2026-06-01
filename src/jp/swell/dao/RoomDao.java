@@ -414,12 +414,12 @@ public class RoomDao implements Serializable
      */
     public void setRoomDaoForJoin(HashMap<String, String> map,RoomDao dao)  throws AtareSysException
     {
-        dao.setRoomId(DbI.chara(map.get("room___room_id") != null ? map.get("room___room_id") : ""));
-        dao.setRoomName(DbI.chara(map.get("room___room_name") != null ? map.get("room___room_name") : ""));
-        dao.setInsertDate(DbI.chara(map.get("room___insert_date") != null ? map.get("room___insert_date") : ""));
-        dao.setInsertUserId(DbI.chara(map.get("room___insert_user_id") != null ? map.get("room___insert_user_id") : ""));
-        dao.setUpdateDate(DbI.chara(map.get("room___update_date") != null ? map.get("room___update_date") : ""));
-        dao.setUpdateUserId(DbI.chara(map.get("room___update_user_id") != null ? map.get("room___update_user_id") : ""));
+        dao.setRoomId(DbI.chara(map.get("room_id") != null ? map.get("room_id") : ""));
+        dao.setRoomName(DbI.chara(map.get("room_name") != null ? map.get("room_name") : ""));
+        dao.setInsertDate(DbI.chara(map.get("insert_date") != null ? map.get("insert_date") : ""));
+        dao.setInsertUserId(DbI.chara(map.get("insert_user_id") != null ? map.get("insert_user_id") : ""));
+        dao.setUpdateDate(DbI.chara(map.get("update_date") != null ? map.get("update_date") : ""));
+        dao.setUpdateUserId(DbI.chara(map.get("update_user_id") != null ? map.get("update_user_id") : ""));
     }
     /**
      * room 部屋テーブルにデータを挿入する
@@ -531,12 +531,12 @@ public class RoomDao implements Serializable
         if(daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo()) daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
         int start  =   (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql =  "select "
-                + " room.room_id room___room_id"
-                + ",room.room_name room___room_name"
-                + ",room.insert_date as room___insert_date"
-                + ",room.insert_user_id as room___insert_user_id"
-                + ",room.update_date as room___update_date"
-                + ",room.update_user_id as room___update_user_id"
+                + " room_id"
+                + ",room_name"
+                + ",insert_date"
+                + ",insert_user_id"
+                + ",update_date"
+                + ",update_user_id"
                 + " from room ";
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);

@@ -49,7 +49,7 @@ public class RoomList extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -188,7 +188,7 @@ public class RoomList extends ControllerBase
         dao.setRoomName("%" + bean.value("list_search_room_name")+ "%");
 
         DaoPageInfo daoPageInfo = new DaoPageInfo();
-        if (!Validate.isInteger(bean.value("lineCount")))
+        if (!Validate.isInteger(bean.value("lineCount")) || Integer.parseInt(bean.value("lineCount")) <= 0)
         {
             bean.setValue("lineCount", "20");
         }

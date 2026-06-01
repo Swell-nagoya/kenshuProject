@@ -44,7 +44,7 @@ public class RoomDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -67,11 +67,6 @@ public class RoomDetail extends ControllerBase
           String roomName = bean.value("room_name");
           String beforeName = bean.value("before_name");
           RoomDao dao = setWeb2Dao2InputInfo();
-          bean.setValue("request_name", "修正する");
-          if (beforeName == null || beforeName.trim().isEmpty()) {
-              beforeName = roomName;
-              bean.setValue("before_name", beforeName);
-          }
           bean.setValue("before_name", beforeName);
           bean.setValue("room_name", roomName);
           if ("RoomDetail".equals(formName))
@@ -156,7 +151,23 @@ public class RoomDetail extends ControllerBase
                       dbDeletef();
                   }
               }
-              redirect("RoomList.do");
+              else if ("return".equals(actionCmd))
+              {
+            	  	if ("ins".equals(requestCmd))
+            	  	{
+            	  		bean.setValue("request_name", "登録する");
+            	  		forward("RoomDetail.jsp");
+            	  	}
+            	  	else if ("update".equals(requestCmd))
+            	  	{
+            	  		bean.setValue("request_name", "修正する");
+            	  		forward("RoomDetail.jsp");
+            	  	}
+            	  	else if ("deletef".equals(requestCmd))
+            	  	{
+            	  		forward("RoomList.do");
+            	  	}
+              }
           }
           else
           {
@@ -296,7 +307,7 @@ public class RoomDetail extends ControllerBase
         if (roomName.length() == 0) {
             errors.put("room_name_empty", "部屋名を入力してください。");
         }
-        if (roomName.equalsIgnoreCase(beforeName)) {
+        else if (roomName.equalsIgnoreCase(beforeName)) {
             errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         }
 

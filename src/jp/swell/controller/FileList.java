@@ -133,7 +133,7 @@ public class FileList extends ControllerBase {
         HashMap<String, String> errors = bean.getItemErrors();
         if (bean.value("list_search_file_name").length() > 0) {
             if (100 < bean.value("list_search_file_name").length()) {
-                errors.put("list_search_file_name", "氏名の入力内容が長すぎます。");
+                errors.put("list_search_file_name", "ファイル名の入力内容が長すぎます。");
             }
         }
         return errors;
