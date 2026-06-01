@@ -372,15 +372,13 @@ public class FileDetail extends ControllerBase {
          * String filePath = "C:/git/training/kenshuProject/WebContent/upload"; 保存先フォルダのパス設定
          */
         
-        String filePath =  "C:/Git/kenshuProject/WebContent/temporary-file"; //このパソコンの保存先
+        String tempFolder = getRequest().getServletContext().getRealPath("/temporary-file").replace("\\", "/");;
         
         //一時保存フォルダがなければ作成
-        File dir = new File(filePath);
+        File dir = new File(tempFolder);
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        // Path path = Paths.get("upload");
-        // filePath = path.toAbsolutePath().toString();
 
         // ファイルデータを取得
         FileUtil fileUtil = new FileUtil();
@@ -397,7 +395,7 @@ public class FileDetail extends ControllerBase {
         bean.setValue("systemFileName", systemFileName);
         
         // 完全なファイルパスの生成
-        String fullPath = filePath + "/" + systemFileName;
+        String fullPath = tempFolder + "/" + systemFileName;
         if (!fileUtil.outputFile(fullPath, fileData)) {
             return;
         }
@@ -463,8 +461,8 @@ public class FileDetail extends ControllerBase {
             // String tempFolder = "C:/git/training/kenshuProject/WebContent/temporaryFile";
             // String filePath =  "C:/Git/kenshuProject/WebContent/upload"; //このパソコンの保存先
             
-            String tempFolder = "C:/Git/kenshuProject/WebContent/temporary-File";
-            String tempFilePath = tempFolder + "/" +systemFileName;
+            String tempFolder = getRequest().getServletContext().getRealPath("/temporary-file").replace("\\", "/");;
+            String tempFilePath =  tempFolder + "/" + systemFileName;
 
             // ファイルデータを取得
             FileUtil fileUtil = new FileUtil();
@@ -473,8 +471,16 @@ public class FileDetail extends ControllerBase {
             String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
             String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
             String fileName = bean.value("input_name") + fileExtension; // ファイル名を取得
+            
+            
+            String uploadFolder = getRequest().getServletContext().getRealPath("/upload").replace("\\", "/");;
+            System.out.println("uploadFolder = " + uploadFolder);
+            File dir = new File(uploadFolder);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
             // 完全なファイルパスの生成
-            String fullPath = tempFilePath.replace("temporary-File", "upload");
+            String fullPath = uploadFolder + "/" + systemFileName;
 
             if (!fileUtil.outputFile(fullPath, fileData)) {
                 return null;
@@ -618,7 +624,7 @@ public class FileDetail extends ControllerBase {
         String filePath = "";
     	if("insEnter".equals(requestCmd) || "ins".equals(requestCmd)){
         	// String tempFolder = "C:/git/training/kenshuProject/WebContent/temporaryFile";
-        	folderPath = "C:/Git/kenshuProject/WebContent/temporary-File";
+        	folderPath = getRequest().getServletContext().getRealPath("/temporary-file").replace("\\", "/");
         	filePath = folderPath + "/" + systemFileName;
         	
     	}else if("deleteEnter".equals(requestCmd)) {
