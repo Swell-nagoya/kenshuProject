@@ -851,7 +851,7 @@ public class UserInfoDao implements Serializable {
         if (0 == rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDaoForJoin(map, this);
+        setUserInfoDao(map, this);
         return true;
     }
 
@@ -905,6 +905,8 @@ public class UserInfoDao implements Serializable {
         dao.setMiddleNameKana(DbI.chara(map.get("middle_name_kana")));
         dao.setFirstNameKana(DbI.chara(map.get("first_name_kana")));
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
+        dao.setInsertUserId(map.get("insert_user_id"));
+        dao.setMemail(DbI.chara(map.get("memail")));
         dao.setAdmin(DbI.chara(map.get("admin")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));
     }
@@ -1237,7 +1239,7 @@ public class UserInfoDao implements Serializable {
         for (int i = 0; i < cnt; i++) {
             map = rs.get(i);
             UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
+            dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
         return array;
@@ -1252,10 +1254,12 @@ public class UserInfoDao implements Serializable {
     String dbWhere() throws AtareSysException {
         StringBuffer where = new StringBuffer(1024);
 
+        /*
         // 本日の日付を取得
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date today = new Date();
         String todayStr = dateFormat.format(today);
+		*/
 
         if (getUserInfoId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
@@ -1336,8 +1340,8 @@ public class UserInfoDao implements Serializable {
             where.append(")");
         }
         where.append(where.length() > 0 ? " AND " : "");
-        where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
-
+        // where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
+        where.append("(state_flg != '9')");
         if (where.length() > 0) {
             return "where " + where.toString();
         }
@@ -1388,10 +1392,20 @@ public class UserInfoDao implements Serializable {
                 + " ( user_info_id  = " + DbS.chara(pAccount)
                 + " or memail = " + DbS.chara(pAccount) + " ) ";
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        if (1 != rs.size())
+        //アカウントがOKの場合、rz.size()は1が帰ってくる
+        if (1 != rs.size()) {
             return false;
+        }
         HashMap<String, String> map = rs.get(0);
         setUserInfoDao(map, this);
+        
+        setAdmin(DbI.chara(map.get("admin")));
+        setLeaveDate(DbI.chara(map.get("leave_date")));
+        /* if(("0".equals(getAdmin()) || "general".equals(getAdmin())) && null != getLeaveDate()) {
+        	System.out.println("一般退職社員です。");
+        	return false;
+        }*/
+        
         String password = Digest.hex(Digest.SHA512, pPassword);
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;

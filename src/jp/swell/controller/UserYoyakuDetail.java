@@ -121,6 +121,7 @@ public class UserYoyakuDetail extends ControllerBase {
         forward("ResDelComp.jsp");
         return; // メソッドを終了
       }
+      //サブメニュー
       else if ("sub".equals(bean.value("action_cmd")))
       {
         searchList();
@@ -221,7 +222,7 @@ public class UserYoyakuDetail extends ControllerBase {
 
     DaoPageInfo daoPageInfo = new DaoPageInfo();
     if (!Validate.isInteger(bean.value("lineCount"))) {
-      bean.setValue("lineCount", "20");
+      bean.setValue("lineCount", "100");
     }
     daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
     SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "UserMenuHome", "lineCount", bean.value("lineCount"));
@@ -376,12 +377,14 @@ public class UserYoyakuDetail extends ControllerBase {
     reserveDao.setUserNames(userNames);
     userInfoDao.dbSelect(userInfoIds[0].trim());
     reserveDao.setUserName(userInfoDao.getLastName() + " " + userInfoDao.getMiddleName() + " " + userInfoDao.getFirstName());
+    bean.setValue("user_name", reserveDao.getUserName());
     reserveDao.setAdmin(userInfoDao.getAdmin());
     userInfoDao.dbSelect(bean.value("update_user_id"));
     reserveDao.setUpdateUserName(userInfoDao.getLastName() + " " + userInfoDao.getMiddleName() + " " + userInfoDao.getFirstName());
     RoomDao roomDao = new RoomDao();
     roomDao.dbSelect(bean.value("room_id"));
     reserveDao.setRoomName(roomDao.getRoomName());
+    bean.setValue("room_name", reserveDao.getRoomName());
 
     bean.setValue("input_info", Sup.serialize(reserveDao));
     return reserveDao;
@@ -443,7 +446,10 @@ public class UserYoyakuDetail extends ControllerBase {
     ReserveFileDao reserveFileDao = new ReserveFileDao();
     
     String fileId = UUID.randomUUID().toString().substring(0, 13);
-    String filePath = "C:/git/training/kenshuProject/WebContent/upload";
+    /*
+     * String filePath = "C:/git/training/kenshuProject/WebContent/upload"; 保存先フォルダのパス設定
+     */
+    String filePath =  "C:/Git/kenshuProject/WebContent/upload"; //このパソコンの保存先
     String userInfoId = bean.value("user_info_id");
     String reserveFileId = GetNumber.getNumberChar("reserveFile"); // reserveFileの作成
     
@@ -452,7 +458,7 @@ public class UserYoyakuDetail extends ControllerBase {
     byte[] fileData = (byte[]) bean.object("file");
     String mimeType = getMimeTypeFromBytes(fileData);
     String fileExtension = getExtensionFromMimeType(mimeType);
-    String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + fileExtension;
+    String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
     // 完全なファイルパスの生成
     String fullPath = filePath + "/" + systemFileName + fileExtension;
     if (!fileUtil.outputFile(fullPath, fileData)) {

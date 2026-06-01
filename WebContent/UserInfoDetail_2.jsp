@@ -192,7 +192,8 @@ input.error {
   }
 
   $(function() {
-      $("#leave_date_input").datepicker();
+      $("#leave_date_input").datepicker({
+    	  dateFormat: 'yymmdd'});
       $("#leave_date_input").on("change",function() {
           var value = $(this).val();
           var value1 = value.replaceAll("-","");
@@ -241,6 +242,7 @@ input.error {
         <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
         <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
         <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
+        <input type="hidden" name="leave_date" id="leave_date" value="<%=webBean.txt("leave_date")%>" />
         
 
         <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
@@ -288,7 +290,7 @@ input.error {
           </tr>
            <tr>
             <td class="style_head3 style_head_size" style="width: 30%"> ユーザー区分 </td>
-            <td class="input-text" style="width: 70%"> <%= webBean.txt("admin").equals("admin") ? "管理者" : "一般" %> </td>
+            <td class="input-text" style="width: 70%"> <%= webBean.txt("admin").equals("admin") || webBean.txt("admin").equals("1") ? "管理者" : "一般" %> </td>
           </tr>
           <tr>
             <td class="style_head3 style_head_size" style="width: 30%">退職予定日</td>

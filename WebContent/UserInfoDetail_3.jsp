@@ -209,6 +209,7 @@ table {
         <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
         <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
         <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
+        <input type="hidden" name="leave_date" id="leave_date" value="<%=webBean.txt("leave_date")%>" />
 
         <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
 
@@ -250,7 +251,7 @@ table {
           </tr>
           <tr>
             <td class="style_head3 style_head_size" style="width: 30%"> ユーザー区分 </td>
-            <td class="input-text" style="width: 70%"> <%= webBean.txt("admin").equals("admin") ? "管理者" : "一般" %> </td>
+            <td class="input-text" style="width: 70%"> <%= webBean.txt("admin").equals("admin") || webBean.txt("admin").equals("1") ? "管理者" : "一般" %> </td>
           </tr>
           <%
           // actionTypeが"ins"の場合のみ表示

@@ -54,7 +54,7 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -630,6 +630,11 @@ public class UserInfoDetail extends ControllerBase
     private UserInfoDao setWeb2Dao2InputInfo() throws AtareSysException {
       WebBean bean = getWebBean();
       UserInfoDao dao = new UserInfoDao();
+      
+      // 新規登録以外
+      if (!"ins".equals(bean.value("request_cmd"))) {
+          bean.setValue("user_info_id", bean.value("main_key")); 
+      }
 
       dao.setUserInfoId(bean.value("user_info_id"));
       dao.setLastName(bean.value("last_name"));
@@ -712,7 +717,8 @@ public class UserInfoDetail extends ControllerBase
             redirect("ViewUserList.do");
           }
         }catch (Exception e) {
-          forward("ViewUserList.do");
+        	bean.setError("ユーザーデータの削除に失敗しました。");;
+        	forward("ViewUserList.jsp");
         }
     }
     
