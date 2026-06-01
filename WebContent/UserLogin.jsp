@@ -104,6 +104,10 @@ h1 {
 	position: absolute;
 	bottom: 0%;
 }
+
+.error-erea {
+    min-height: 20px;
+}
 </style>
 <script type="text/javascript">
   //
@@ -143,7 +147,9 @@ h1 {
 						name="before_doc" id="before_doc"
 						value="<%=webBean.txt("before_doc")%>" />
 					<div class="main__form--name">
-						<%=webBean.dispError("ac")%>
+					  <div class="error-area">
+					    <%=webBean.dispError("ac")%>
+					  </div>
 						<input type="text" id="ac" name="ac" class="ime_disabled"
 							value="<%=webBean.txt("ac")%>" placeholder="Username" size="25"
 							maxlength="255" />
