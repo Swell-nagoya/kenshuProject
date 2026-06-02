@@ -330,12 +330,14 @@ function receiveSelectedUsers(users, type) {
 							<td class="input-text" style="width: 60%"><input type="text"
 								name="input_name" id="input_name"
 								value="<%=webBean.txt("file_name")%>" class="ime_disabled"
-								placeholder="入力" /></td>
+								placeholder="入力" /><span
+								id="error_file_name" class="error"><%=webBean.dispError("file_name")%></span></td>
 						</tr>
 						<tr>
 							<td class="style_head3 style_head_size" style="width: 40%">ファイルリンク</td>
 							<td class="input-text" style="width: 60%"><input type="file"
-								name="file" id="file" class="ime_disabled" /></td>
+								name="file" id="file" class="ime_disabled" /><span
+								id="error_file_link" class="error"><%=webBean.dispError("file_link")%></span></td>
 						</tr>
 						<!-- 送信元ユーザー選択 -->
 						<tr>

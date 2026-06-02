@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -74,11 +75,17 @@ public class FileDetail extends ControllerBase {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
                 try {
-                    setWeb2Dao2InputInfo(getRequest());
-                    bean.setValue("request_name", "登録する");
-                    bean.setMessage("この内容で登録します。よろしいですか？");
-                    bean.setValue("input_name", inputName);
-                    forward("FileDetail_2.jsp");
+                    if (inputCheck()) {
+                        setWeb2Dao2InputInfo(getRequest());
+                        bean.setValue("request_name", "登録する");
+                        bean.setMessage("この内容で登録します。よろしいですか？");
+                        bean.setValue("input_name", inputName);
+                        forward("FileDetail_2.jsp");                    	
+                    } else {
+                        bean.setError("入力項目にエラーがあります");
+                        forward("FileDetail.jsp");
+                    }
+
                 } catch (IOException | ServletException e) {
                     throw new AtareSysException(e);
                 }
@@ -416,6 +423,23 @@ public class FileDetail extends ControllerBase {
             fileDaos.add(fileDao);
         }
         return fileDaos;
+    }
+    
+    private boolean inputCheck() {
+    		WebBean bean = getWebBean();
+    		HashMap<String, String> errors = bean.getItemErrors();
+    		if (bean.value("input_name").trim().length() == 0) {
+    			errors.put("file_name", "ファイル名を入力してください");
+    		} else if (bean.value("input_name").trim().length() > 100) {
+    			errors.put("file_name", "ファイル名が長すぎます");
+    		}
+    		if (bean.value("file").trim().length() == 0) {
+    			errors.put("file_link", "ファイルを選択してください");
+    		}
+    		if (bean.value("destination_user_info_id").trim().length() == 0) {
+    			errors.put("destination_user_info_id", "送信先ユーザーを選択してください");
+    		}
+    		return errors.isEmpty();
     }
 
     /**
