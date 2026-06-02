@@ -193,10 +193,10 @@ input.error {
 
   $(function() {
       $("#leave_date_input").datepicker();
-      $("#leave_date_input").on("change",function() {
+      $("#leave_date_input").on("change", function() {
           var value = $(this).val();
-          var value1 = value.replaceAll("-","");
-          $("#leave_date").val(value1);
+          var numericValue = value.replace(/[^0-9]/g, ""); 
+          $(this).val(numericValue);
       });
   });
 
