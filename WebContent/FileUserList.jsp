@@ -172,7 +172,7 @@ input[type="button"]:hover {
 	display: inline-block;
 }
 </style>
-				<script type="text/javascript">
+<script type="text/javascript">
 // 元の go_submit / go_upload はそのまま残す
 function go_submit(action_cmd) {
   document.getElementById('main_form').action = '';
@@ -195,6 +195,23 @@ function submitSelection() {
       type: 'sub'
     });
   });
+  
+  const prevIdsText = document.getElementById('selectedIds').value;
+  const prevNamesText = document.getElementById('selectedNames').value;
+  const prevIds = prevIdsText.split(',').filter(x => x);
+  const prevNames = prevNamesText.split(',').filter(x => x);
+
+  const existingIds = selected.map(item => item.id);
+  prevIds.forEach((id, index) => {
+    if (existingIds.includes(id)) return;
+
+    selected.push({
+      id: id,
+      name: prevNames[index],
+      type: 'sub'
+    });
+  });
+  
   if (selected.length) {
     window.opener.receiveSelectedUsers(selected, 'sub');
   }
@@ -223,6 +240,8 @@ function toggleCheckbox(div) {
 		<!-- チェック保持用 -->
 		<input type="hidden" name="selectedIds" id="selectedIds"
 			value="<%=webBean.txt("selectedIds")%>" />
+		<input type="hidden" name="selectedNames" id="selectedNames"
+			value="<%=webBean.txt("selectedNames")%>" />
 		<button type="button" onclick="goPage(<%=pageNo - 1%>)"
 			<%=pageNo <= 1 ? "disabled" : ""%>>← 戻る</button>
 		<span><%=pageNo%> / <%=maxPageNo%> ページ</span>
@@ -232,19 +251,41 @@ function toggleCheckbox(div) {
 	<script>
 	function goPage(p) {
 		  // 選択されたチェック状態を保持
-		  const prev = (document.getElementById('selectedIds').value || "")
+		  const Ids = (document.getElementById('selectedIds').value || "")
 		    .split(',').filter(x => x);
-		  const curr = Array.from(
-		    document.querySelectorAll('input[name="user_id"]:checked')
-		  ).map(cb => cb.value);
-		  const merged = [...new Set([...prev, ...curr])];
+		  const Names = (document.getElementById('selectedNames').value || '')
+		  	.split(',').filter(x => x);
 
+		  document.querySelectorAll('input[name="user_id"]')
+		  .forEach(cb => {
+			const id = cb.value.trim();
+			const name = cb.nextElementSibling.innerText.trim();
+
+			const index = Ids.indexOf(id);
+
+			if (cb.checked) {
+			  if (index === -1) {
+				Ids.push(id);
+				Names.push(name);
+			  }
+			} else {
+			  if (index !== -1) {
+				Ids.splice(index, 1);
+				Names.splice(index, 1);
+			  }
+			}
+		  })
+		  
 		  // 両方の hidden に反映させる（上下両方の selectedIds）
-		  const topSelected = document.querySelector('#pagerTop #selectedIds');
-		  const bottomSelected = document.querySelector('#pagerBottom #selectedIds');
-		  if (topSelected) topSelected.value = merged.join(',');
-		  if (bottomSelected) bottomSelected.value = merged.join(',');
+		  const topSelectedIds = document.querySelector('#pagerTop #selectedIds');
+		  const bottomSelectedIds = document.querySelector('#pagerBottom #selectedIds');
+		  if (topSelectedIds) topSelectedIds.value = Ids.join(',');
+		  if (bottomSelectedIds) bottomSelectedIds.value = Ids.join(',');
 
+		  const topSelectedNames = document.querySelector('#pagerTop #selectedNames');
+		  const bottomSelectedNames = document.querySelector('#pagerBottom #selectedNames');
+		  if (topSelectedNames) topSelectedNames.value = Names.join(',');
+		  if (bottomSelectedNames) bottomSelectedNames.value = Names.join(',');
 		  // フォームの送信
 		  const f = document.getElementById("pagerTop") || document.getElementById("pagerBottom");
 		  f.pageNo.value = p;

@@ -219,7 +219,16 @@ function go_submit(action_cmd) {
 }
 
 function go_upload(action_cmd) {
-  if (document.getElementsByClassName('user-item') == null) {
+
+  if (!document.getElementById('file').value) {
+	alert('ファイルを選択してください');
+	return;
+  }
+  if (!document.getElementById('input_name').value) {
+	alert('ファイル名を入力してください');
+	return;
+  }
+  if (document.getElementsByClassName('destination-user-item').length < 1) {
 	alert('送り先ユーザーを選択してください');
 	return;
   }
@@ -276,7 +285,7 @@ function receiveSelectedUsers(users, type) {
   users.forEach((user) => {
     const userDiv = document.createElement('div');
     userDiv.textContent = user.name;
-    userDiv.classList.add('user-item'); // クラスを追加
+    userDiv.classList.add('destination-user-item'); // クラスを追加
     selectedUsersDiv.appendChild(userDiv);
     userIds.push(user.id);
 });
