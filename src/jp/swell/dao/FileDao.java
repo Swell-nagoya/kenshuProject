@@ -687,8 +687,19 @@ public class FileDao implements Serializable {
 
         int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         int limit = daoPageInfo.getLineCount();
+        
+        // レコード件数を求める
+        String sql = "SELECT COUNT(*) as count "
+        		+ "FROM files "
+        		+ where;
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        if(0==rs.size())   return resultList;
+        HashMap<String, String> map = rs.get(0);
+        int len = Integer.parseInt(map.get("count"));
+        daoPageInfo.setRecordCount(len);
+        if(len == 0)   return resultList;
 
-        String sql = "SELECT "
+        sql = "SELECT "
                 + "files.file_id, "
                 + "files.user_info_id, "
                 + "files.file_name, "
@@ -707,7 +718,7 @@ public class FileDao implements Serializable {
                 + where + order
                 + " LIMIT " + limit + " OFFSET " + offset;
 
-        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        rs = DbBase.dbSelect(sql);
         
         String sqlUser = "SELECT "
         		+ "user_info.first_name, "
@@ -732,8 +743,6 @@ public class FileDao implements Serializable {
 
         return resultList;
     }
-
-    
 
     /**
      * files ファイル情報テーブルの検索条件を設定する。.
