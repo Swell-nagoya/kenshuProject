@@ -699,6 +699,26 @@ public class FileDao implements Serializable {
         // WHERE句
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);
+        
+        // 全件数取得
+        String countSql = "SELECT COUNT(*) AS record_count "
+                + "FROM files "
+                + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
+                + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
+                + where;
+        List<HashMap<String, String>> countRs = DbBase.dbSelect(countSql);
+        if (countRs.size() > 0) {
+            int recordCount = Integer.parseInt(countRs.get(0).get("record_count"));
+            daoPageInfo.setRecordCount(recordCount);
+
+            int maxPageNo = Math.max(1,
+                    (int) Math.ceil((double) recordCount / daoPageInfo.getLineCount()));
+            daoPageInfo.setMaxPageNo(maxPageNo);
+
+            if (daoPageInfo.getPageNo() > maxPageNo) {
+                daoPageInfo.setPageNo(maxPageNo);
+            }
+        }
 
         int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         int limit = daoPageInfo.getLineCount();
@@ -769,14 +789,24 @@ public class FileDao implements Serializable {
             where.append("files.file_id = " + DbS.chara(getFileId()));
         }
 
-        if (getUserInfoId().length() > 0) {
+        if (getUserInfoId().length() > 0 || getUploadUserId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
-        }
+            where.append("(");
 
-        if (getUploadUserId().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+            boolean hasCondition = false;
+
+            if (getUserInfoId().length() > 0) {
+                where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
+                hasCondition = true;
+            }
+            
+            if (getUploadUserId().length() > 0) {
+                if (hasCondition) {
+                    where.append(" OR ");
+                }
+                where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+            }
+            where.append(")");
         }
 
         if (getSearchFileName().length() > 0) {
