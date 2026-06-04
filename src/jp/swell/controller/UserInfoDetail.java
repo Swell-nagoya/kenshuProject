@@ -702,7 +702,6 @@ public class UserInfoDetail extends ControllerBase
         String userInfoId = bean.value("user_info_id");//userIdの取得
         String leaveDate = bean.value("leave_date");     // leave_dateの取得
 
-        System.out.println(userInfoId);
         try {
           dao.dbUpdate(userInfoId);
           if (leaveDate == null || leaveDate.trim().isEmpty()) {
