@@ -206,13 +206,19 @@ function go_list(action_cmd , request_cmd) {
 
      <form method="post" id="main_form" action="" class="main__form">
        
-       <input type="hidden" name="form_name" id="form_name" value="FileDetail_2" />
-       <input type="hidden" name="action_cmd" id="action_cmd" value="" />
-       <input type="hidden" name="input_name" id="input_name" value="<%=webBean.txt("input_name")%>" />
-       <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" />
-       <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
-       <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
-       <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
+        <input type="hidden" name="form_name" id="form_name" value="FileDetail_2" />
+        <input type="hidden" name="action_cmd" id="action_cmd" value="" />
+        <input type="hidden" name="input_name" id="input_name" value="<%=webBean.txt("input_name")%>" />
+        <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" />
+        <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
+        <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
+        <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
+        <input type="hidden" name="systemFileName" id="systemFileName" value="<%=webBean.txt("systemFileName")%>" />
+		<input type="hidden" name="fileData" id="fileData" value="<%=webBean.txt("fileData")%>" />
+		<input type="hidden" name="mimeType" id="mimeType" value="<%=webBean.txt("mimeType")%>" />
+		<input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
+		<input type="hidden" name="destination_user_info_id" id="destination_user_info_id" value="<%=webBean.txt("destination_user_info_id")%>" />
+		<input type="hidden" name="file_name" id="file_name" value="<%=webBean.txt("file_name")%>" />
        
       
        <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
@@ -225,7 +231,7 @@ function go_list(action_cmd , request_cmd) {
              <td class="style_head3 style_head_size">登録ファイル名</td>
            </tr>
            <tr >
-             <td class="table-date"><%=webBean.txt("input_name")%><%=webBean.txt("user_info_id")%><%=webBean.txt("destination_user_info_id")%></td>
+             <td class="table-date"><%=webBean.txt("file_name")%></td>
            </tr>
          </table>
          <% } else {%>

@@ -3,6 +3,9 @@ package jp.swell.controller;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -74,15 +77,15 @@ public class FileDetail extends ControllerBase {
         if ("FileDetail".equals(form)) {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
-//                try {
-//                    setWeb2Dao2InputInfo(getRequest());
+                try {
+                    setWeb2Dao2InputInfo(getRequest());
                     bean.setValue("request_name", "登録する");
                     bean.setMessage("この内容で登録します。よろしいですか？");
                     bean.setValue("input_name", inputName);
                     forward("FileDetail_2.jsp");
-//                } catch (IOException | ServletException e) {
-//                    throw new AtareSysException(e);
-//                }
+                } catch (IOException | ServletException e) {
+                    throw new AtareSysException(e);
+                }
 
              // ② sub ボタン押下 → サブ画面（ユーザー選択）へ（送信先のみ）
             } else if ("sub".equals(actionCmd)) {
@@ -125,9 +128,10 @@ public class FileDetail extends ControllerBase {
             if ("go_next".equals(actionCmd)) {
                 if ("insEnter".equals(requestCmd)) {
                     try {
-                    setWeb2Dao2InputInfo(getRequest());
-                    searchList();
-                    redirect("FileList.do");
+                    	setWeb2Dao2InputInfo(getRequest());
+                    	tempFileDelete(getRequest());
+                    	searchList();
+                    	redirect("FileList.do");
                     } catch (IOException | ServletException e) {
                       throw new AtareSysException(e);
                   }
@@ -142,7 +146,12 @@ public class FileDetail extends ControllerBase {
 
             } else if ("return".equals(actionCmd)) {
                 if ("ins".equals(requestCmd)) {
-                    forward("FileDetail.jsp");
+                	try {
+                    	tempFileDelete(getRequest());
+                    	forward("FileDetail.jsp");
+                    } catch (IOException e) {
+                      throw new AtareSysException(e);
+                    }
                 } else if ("delete".equals(requestCmd)) {
                     searchList();
                     redirect("FileList.do");
@@ -338,7 +347,13 @@ public class FileDetail extends ControllerBase {
         WebBean bean = getWebBean();
         UserInfoDao dao = new UserInfoDao();
         dao.setUserInfoId(bean.value("user_info_id"));
-        FileUpload(request, dao.getUserInfoId());
+        //取得したaction_cmdで一時保存と本保存に分岐
+        if("upload".equals(bean.value("action_cmd"))) {
+        	tempFileUpload(request);
+        }
+        if("go_next".equals(bean.value("action_cmd"))) {
+        	FileUpload(request, dao.getUserInfoId());
+        }
 
         bean.setValue("input_info", Sup.serialize(dao));
         bean.setValue("dao", dao);
@@ -349,7 +364,7 @@ public class FileDetail extends ControllerBase {
      * ファイルデータを取得し、アップロードした後にデータベースへ登録
      * @param request
      * @param pUserInfoId
-     * @return
+     * @return　fileDaos
      * @throws AtareSysException
      * @throws IOException
      * @throws ServletException
@@ -372,26 +387,26 @@ public class FileDetail extends ControllerBase {
 
 //        String filePath = "C:/git/training/kenshuProject/WebContent/upload";
         String filePath = "C:\\kenshuProject\\WebContent\\upload";//保存先フォルダのパス設定
+       
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
         FileUtil fileUtil = new FileUtil();
-        System.out.println(bean.object("file"));
-        byte[] fileData = (byte[]) bean.object("file");
-        String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
+        String mimeType = bean.value("mimeType");
         String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
-        String fileName = bean.value("input_name") + fileExtension; // ファイル名を取得
-        String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8); //system_file_id生成
+        String fileName = bean.value("file_name"); // ファイル名を取得
+        String systemFileName = bean.value("systemFileName");
 
         // 拡張子を一度だけ追加
         if (fileExtension != null && !fileExtension.isEmpty()) {
             systemFileName += fileExtension;
         }
 
+        Path path = Paths.get("C:\\kenshuProject\\WebContent\\upload\\temp\\" + systemFileName);
+        byte[] fileData = Files.readAllBytes(path);
         // 完全なファイルパスの生成
         String fullPath = filePath + "/" + systemFileName;
         if (!fileUtil.outputFile(fullPath, fileData)) {
-        	System.out.println(fullPath);
             return null;
         }
 
@@ -409,12 +424,78 @@ public class FileDetail extends ControllerBase {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String expirationDateString = sdf.format(expirationDate);
 
+            System.out.println(fileName);
             fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
                     expirationDateString);
             fileDaos.add(fileDao);
         }
         return fileDaos;
     }
+    
+    /**
+     * ファイルデータを取得し、一時ファイルに保存する
+     * @param request
+     * @return
+     * @throws AtareSysException
+     * @throws IOException
+     * @throws ServletException
+     */
+    private void tempFileUpload(HttpServletRequest request)
+            throws AtareSysException, IOException, ServletException {
+        WebBean bean = getWebBean();
+        
+        String tempPath = "C:\\kenshuProject\\WebContent\\upload\\temp";//一時保存先フォルダのパス設定
+        
+     // ファイルデータを取得
+        FileUtil fileUtil = new FileUtil();
+        byte[] fileData = (byte[]) bean.object("file");
+        String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
+        String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
+        String fileName = bean.value("input_name") + fileExtension; // ファイル名を取得
+        String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8); //system_file_id生成
+        bean.setValue("systemFileName", systemFileName);
+        
+        if (fileExtension != null && !fileExtension.isEmpty()) {
+            systemFileName += fileExtension;
+        }
+        
+        String tempFullPath = tempPath + "/" + systemFileName; //一時保存先のファイルを指定
+        
+        //一時ファイルに保存
+        if (!fileUtil.outputFile(tempFullPath, fileData)) {
+            return;
+        }
+        
+        bean.setValue("file_name", fileName);
+        bean.setValue("fileData", fileData);
+        bean.setValue("mimeType", mimeType);
+    }
+    
+    /**
+     * 一時ファイルからデータを削除する
+     * @param request
+     * @return
+     *
+     * @throws AtareSysException
+     * @throws IOException
+     * @throws ServletException
+     */
+
+    private void tempFileDelete(HttpServletRequest request) throws IOException {
+    	WebBean bean = getWebBean();
+    	
+    	String systemFileName = bean.value("systemFileName");
+    	Path tempPath = Paths.get("C:\\kenshuProject\\WebContent\\upload\\temp\\" + systemFileName);
+    	
+    	try {
+    		
+    		Files.deleteIfExists(tempPath);
+    	}catch(IOException e) {
+    		System.out.println(e);
+    	}
+    	
+    }
+    
 
     /**
      * MIMEタイプを取得するメソッド

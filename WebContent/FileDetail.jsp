@@ -243,33 +243,25 @@ function openUserWindow(action_cmd) {
 }
 
 function receiveSelectedUsers(users, type) {
-  let selectedUsersDiv;
+
+	console.log(users);
+
   let userIds = [];
+  let userNames = [];
+
+  users.forEach(user => {
+
+	  userIds.push(user.id);
+	  userNames.push(user.name);
+  });
 
   if (type === 'source') {
-    selectedUsersDiv = document.getElementById('selected_source_users');
-    selectedUsersDiv.innerHTML = ''; // 既存のユーザーをクリア
-}
-
-  if (type === 'sub') {
-    selectedUsersDiv = document.getElementById('selected_destination_users');
-    selectedUsersDiv.innerHTML = ''; // 既存のユーザーをクリア
-}
-
-  users.forEach((user) => {
-    const userDiv = document.createElement('div');
-    userDiv.textContent = user.name;
-    userDiv.classList.add('user-item'); // クラスを追加
-    selectedUsersDiv.appendChild(userDiv);
-    userIds.push(user.id);
-});
-
-// ユーザーIDを隠しフィールドに設定
-  if (type === 'source') {
-    document.getElementById('user_info_id').value = userIds.join(',');
-} else {
-    document.getElementById('destination_user_info_id').value = userIds.join(',');
-  }
+	    document.getElementById('user_info_id').value = userIds.join(',');
+	} else {
+	    document.getElementById('destination_user_info_id').value = userIds.join(',');
+	    document.getElementById('destination_user_names').value = userNames.join(',');
+	    document.getElementById('selected_destination_users').innerText = userNames.join(',');
+	  }
 }
 </script>
 </head>
@@ -281,19 +273,45 @@ function receiveSelectedUsers(users, type) {
 		<header>
 		<h1>ファイル登録ページ</h1>
 		</header>
-		<form method="post" id="main_form"
-			action="/kenshuProject/WebContent/upload"
-			enctype="multipart/form-data">
+		<form method="post"
+				id="main_form"
+				action="/kenshuProject/WebContent/upload"
+				enctype="multipart/form-data">
 
-			<input type="hidden" name="form_name" id="form_name"
-				value="FileDetail" />
-			<input type="hidden" name="action_cmd" id="action_cmd" value="" />
-			<input type="hidden" name="list" id="list"
-				value="<%=webBean.txt("list")%>" />
-			<input type="hidden" name="name" id="name"
-				value="<%=webBean.txt("name")%>" />
-			<input type="hidden" name="destination_user_info_id"
-				id="destination_user_info_id">
+			<input type="hidden"
+					name="form_name"
+					id="form_name"
+					value="FileDetail"/>
+					
+			<input type="hidden"
+					name="action_cmd"
+					id="action_cmd"
+					value=""/>
+					
+			<input type="hidden"
+					name="list"
+					id="list"
+					value="<%=webBean.txt("list")%>"/>
+					
+			<input type="hidden"
+					name="name"
+					id="name"
+					value="<%=webBean.txt("name")%>"/>
+					
+			<input type="hidden"
+					name="destination_user_info_id"
+					id="destination_user_info_id"
+					value="<%=webBean.txt("destination_user_info_id") %>"/>
+					
+			<input type="hidden"
+					name="destination_user_names"
+					id="destination_user_names"
+					value="<%=webBean.txt("destination_user_names") %>"/>
+					
+			<input type="hidden"
+					name="user_info_id"
+					id="user_info_id"
+					value="<%=WebUtil.htmlEscape(webBean.value("loginUserId"))%>" />
 
 				<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
 				<div class="errors"><%=webBean.dispErrorMessages()%></div> <!-- ファイルアップロードフォーム -->
@@ -319,9 +337,7 @@ function receiveSelectedUsers(users, type) {
 								<!-- ログインユーザー名を直接表示 -->
 								<div class="user-item">
 									<%=WebUtil.htmlEscape(webBean.value("loginUserName"))%>
-								</div> <!-- 隠しフィールドでログインユーザーのIDを送信 --> <input type="hidden"
-								name="user_info_id"
-								value="<%=WebUtil.htmlEscape(webBean.value("loginUserId"))%>" />
+								</div> <!-- 隠しフィールドでログインユーザーのIDを送信 --> 
 								<span id="error_user_info_id" class="error"><%=webBean.dispError("user_info_id")%></span>
 							</td>
 						</tr>
@@ -333,8 +349,8 @@ function receiveSelectedUsers(users, type) {
 								onclick="openUserWindow('sub')" />
 							</td>
 							<td class="input-text" style="width: 60%">
-								<div id="selected_destination_users" class="user_list"></div> <span
-								id="error_destination_user_info_id" class="error"><%=webBean.dispError("destination_user_info_id")%></span>
+								<div id="selected_destination_users" class="user_list"><%=webBean.txt("destination_user_names")%></div>
+								<span id="error_destination_user_info_id" class="error"><%=webBean.dispError("destination_user_info_id")%></span>
 							</td>
 						</tr>
 					</table>
