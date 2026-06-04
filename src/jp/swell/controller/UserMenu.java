@@ -46,7 +46,6 @@ public class UserMenu extends ControllerBase
     public void doActionProcess() throws AtareSysException
     {
         WebBean bean = getWebBean();
-
         if ("UserMenuHome".equals(bean.value("form_name")))
         {
             bean.trimAllItem();
@@ -179,7 +178,7 @@ public class UserMenu extends ControllerBase
         }
     }
 
-
+    
 
     /**
      * 最初の画面を表示する。.
