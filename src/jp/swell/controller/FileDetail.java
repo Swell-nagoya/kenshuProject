@@ -433,7 +433,7 @@ public class FileDetail extends ControllerBase {
     		} else if (bean.value("input_name").trim().length() > 100) {
     			errors.put("file_name", "ファイル名が長すぎます");
     		}
-    		if (bean.value("file").trim().length() == 0) {
+    		if (((byte[]) bean.object("file")).length == 0) {
     			errors.put("file_link", "ファイルを選択してください");
     		}
     		if (bean.value("destination_user_info_id").trim().length() == 0) {

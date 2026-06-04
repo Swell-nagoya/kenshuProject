@@ -356,7 +356,7 @@ function receiveSelectedUsers(users, type) {
 						<!-- 送信先ユーザー選択 -->
 						<tr>
 							<td class="style_head3 style_head_size" style="width: 40%">送り先ユーザー
-								<input type="button" value="選択" name="destination_user_info_id"
+								<input type="button" value="選択" name="select_destination_user"
 								value="<%=webBean.txt("destination_user_info_id")%>"
 								onclick="openUserWindow('sub')" />
 							</td>
