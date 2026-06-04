@@ -1,9 +1,6 @@
 package jp.swell.controller;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -515,38 +512,4 @@ private boolean setDb2Web1() throws AtareSysException
     bean.setValue("input_info", Sup.serialize(dao));
     return true;
 }
-private ReserveDao setWebDaoInputInfo() throws AtareSysException {
-  WebBean bean = getWebBean();
-  ReserveDao reserveDao = new ReserveDao();
-  // reservation_dateを変換: YYYY年MM月DD日 → YYYYMMDD
-  String reservationDateStr = bean.value("reservation_date");
-  SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
-  SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyyMMdd");
-  Date reservationDate = null;
-  try {
-    reservationDate = inputDateFormat.parse(reservationDateStr);
-  } catch (ParseException e) {
-    // TODO 自動生成された catch ブロック
-    e.printStackTrace();
-  } // 入力フォーマットでパース
-  String formattedReservationDate = outputDateFormat.format(reservationDate); // 出力フォーマットでフォーマット
-  // checkin_time, checkout_timeを変換: HH:MM → HHMM
-  String checkinTime = bean.value("checkin_time");
-  String checkoutTime = bean.value("checkout_time");
-  // 単純な文字列操作で":"を除去
-  String formattedCheckinTime = checkinTime.replace(":", "");
-  String formattedCheckoutTime = checkoutTime.replace(":", "");
-  
-  reserveDao.setRoomId(bean.value("room_id"));
-  reserveDao.setReservationDate(formattedReservationDate);
-  reserveDao.setCheckinTime(formattedCheckinTime);
-  reserveDao.setCheckoutTime(formattedCheckoutTime);
-
-  bean.setValue("input_info", Sup.serialize(reserveDao));
-  return reserveDao;
-}
-/**
- * 部屋情報を削除するメソッド
- * @throws AtareSysException
- */
 }
