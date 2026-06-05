@@ -68,12 +68,11 @@ public class RoomDetail extends ControllerBase
           String beforeName = bean.value("before_name");
           RoomDao dao = setWeb2Dao2InputInfo();
           bean.setValue("request_name", "修正する");
-          if (beforeName == null || beforeName.trim().isEmpty()) {
-              beforeName = roomName;
-              bean.setValue("before_name", beforeName);
+          if ((beforeName == null || beforeName.trim().isEmpty()) && "update".equals(requestCmd)) {             
+            bean.setValue("before_name", beforeName);
           }
-          bean.setValue("before_name", beforeName);
-          bean.setValue("room_name", roomName);
+            bean.setValue("before_name", beforeName);
+            bean.setValue("room_name", roomName);
           if ("RoomDetail".equals(formName))
           {
               if ("go_next".equals(actionCmd))

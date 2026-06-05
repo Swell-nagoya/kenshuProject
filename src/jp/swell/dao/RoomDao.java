@@ -550,7 +550,7 @@ public class RoomDao implements Serializable
         {
             RoomDao dao  = new RoomDao();
             map = rs.get(i);
-            dao.setRoomDaoForJoin(map,dao);
+            dao.setRoomDao(map,dao);
             array.add(dao);
         }
         return array;
