@@ -283,9 +283,9 @@ input.error {
             <td class="style_head3 style_head_size" style="width: 30%"> メールアドレス </td>
             <td class="input-text" style="width: 70%"> <%=webBean.txt("memail")%> </td>
           </tr>
-           <tr>
+          <tr>
             <td class="style_head3 style_head_size" style="width: 30%"> ユーザー区分 </td>
-            <td class="input-text" style="width: 70%"> <%= webBean.txt("admin").equals("admin") ? "管理者" : "一般" %> </td>
+            <td class="input-text" style="width: 70%"> <%= "1".equals(webBean.txt("admin")) ? "管理者" : "一般" %> </td>
           </tr>
           <tr>
             <td class="style_head3 style_head_size" style="width: 30%">退職予定日</td>
