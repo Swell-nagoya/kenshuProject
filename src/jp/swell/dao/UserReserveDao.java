@@ -413,7 +413,7 @@ public class UserReserveDao implements Serializable {
       {
           UserReserveDao  dao  = new UserReserveDao();
           map = rs.get(i);
-          dao.setUserReserveDaoForJoin(map,dao);
+          dao.setUserReserveDao(map,dao);
           array.add(dao);
       }
       return array;

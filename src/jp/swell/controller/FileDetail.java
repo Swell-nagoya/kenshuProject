@@ -69,27 +69,24 @@ public class FileDetail extends ControllerBase {
         FileDao dao = setWeb2Dao2InputInfo();
 
         if ("FileDetail".equals(form)) {
-            // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
                 try {
-                    setWeb2Dao2InputInfo(getRequest());
+                    System.out.println("[DEBUG] --- upload処理を開始します ---");                   
+                    setWeb2Dao2InputInfo(getRequest());                   
                     bean.setValue("request_name", "登録する");
                     bean.setMessage("この内容で登録します。よろしいですか？");
                     bean.setValue("input_name", inputName);
                     forward("FileDetail_2.jsp");
-                } catch (IOException | ServletException e) {
+                } catch (Exception e) {
+                    System.out.println("[ERROR] --- upload処理中に重大なエラーが発生しました ---");
+                    e.printStackTrace();                    
                     throw new AtareSysException(e);
                 }
-
-             // ② sub ボタン押下 → サブ画面（ユーザー選択）へ（送信先のみ）
             } else if ("sub".equals(actionCmd)) {
                 searchUserList();
                 bean.setValue("request_name", "送信先");
                 forward("FileUserList.jsp");
-                return;   // 忘れずに戻す
-
-
-                // ③ return ボタン押下 → 一覧画面へ戻す
+                return;
             } else if ("return".equals(actionCmd)) {
                 forward("FileList.do");
             }
@@ -363,9 +360,14 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
-        String skey = GetNumber.getRandomNo(16); //file_key生成
-
+     
+        String filePath = request.getServletContext().getRealPath("/upload");
+        java.io.File uploadDir = new java.io.File(filePath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+        String skey = GetNumber.getRandomNo(16);
+        
         // ファイルデータを取得
         FileUtil fileUtil = new FileUtil();
         byte[] fileData = (byte[]) bean.object("file");
