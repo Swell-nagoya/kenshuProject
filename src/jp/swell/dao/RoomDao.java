@@ -531,8 +531,8 @@ public class RoomDao implements Serializable
         if(daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo()) daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
         int start  =   (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql =  "select "
-                + " room.room_id room___room_id"
-                + ",room.room_name room___room_name"
+                + " room.room_id as room___room_id"
+                + ",room.room_name as room___room_name"
                 + ",room.insert_date as room___insert_date"
                 + ",room.insert_user_id as room___insert_user_id"
                 + ",room.update_date as room___update_date"
@@ -550,7 +550,7 @@ public class RoomDao implements Serializable
         {
             RoomDao dao  = new RoomDao();
             map = rs.get(i);
-            dao.setRoomDaoForJoin(map,dao);
+            dao.setRoomDao(map,dao);
             array.add(dao);
         }
         return array;
