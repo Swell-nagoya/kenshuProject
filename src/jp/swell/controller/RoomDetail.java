@@ -44,7 +44,7 @@ public class RoomDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -290,15 +290,17 @@ public class RoomDetail extends ControllerBase
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
         String roomName = bean.value("room_name").trim();
-        String beforeName = bean.value("before_name").trim(); // ← hidden から来る
+        String requestCmd = bean.value("request_cmd");
 
         if (roomName.length() == 0) {
             errors.put("room_name_empty", "部屋名を入力してください。");
         }
-        if (roomName.equalsIgnoreCase(beforeName)) {
-            errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+        if ("updateEnter".equals(requestCmd)) {
+            String beforeName = bean.value("before_name").trim();
+          if (roomName.equalsIgnoreCase(beforeName)) {
+              errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         }
-
+        }
         return errors.isEmpty();
     }
    
