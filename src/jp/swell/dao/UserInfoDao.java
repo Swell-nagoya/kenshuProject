@@ -1399,20 +1399,6 @@ public class UserInfoDao implements Serializable {
       
         String password = Digest.hex(Digest.SHA512, pPassword);
         
-        System.out.println("入力PW = " + pPassword);
-        System.out.println("password_user = " + map.get("password_user"));
-        
-        System.out.println("入力PWハッシュ = " + password);
-        System.out.println("DBパスワード = " + map.get("password"));
-        
-        System.out.println("hash equals = "
-                + password.equals(DbI.chara(map.get("password"))));
-
-        System.out.println("hash length = " + password.length());
-        System.out.println("db length = "
-                + DbI.chara(map.get("password")).length());
-
-   
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
         }

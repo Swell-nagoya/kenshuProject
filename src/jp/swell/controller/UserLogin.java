@@ -38,12 +38,8 @@ public class UserLogin extends ControllerBase {
 	 */
 	@Override
 	public void doActionProcess() throws AtareSysException {
-		System.out.println("UserLogin doActionProcess 到達");
 		WebBean bean = getWebBean();
 		bean.trimAllItem();
-		
-		System.out.println("form_name = " + bean.value("form_name"));
-		System.out.println("action_cmd = " + bean.value("action_cmd"));
 	
 
 		if ("UserLogin".equals(bean.value("form_name"))) {
@@ -87,12 +83,6 @@ public class UserLogin extends ControllerBase {
 
 		WebBean bean = getWebBean();
 
-		System.out.println("inputCheck開始");
-		System.out.println("ac = " + bean.value("ac"));
-		System.out.println("ko = " + bean.value("ko"));
-		
-		
-
 		if (bean.value("ac").length() == 0) {
 			bean.setError("ac", "未入力");
 			return false;
@@ -108,10 +98,7 @@ public class UserLogin extends ControllerBase {
 		}
 		if (!userLoginInfo.login(bean.value("ac"), bean.value("ko"))) {
 			bean.setError("ac", "usernameかpasswordが違います");
-			
-			 System.out.println("errors = " + bean.getErrors());
-			    System.out.println("errors ac = " + bean.getErrors().get("ac"));
-			
+
 			return false;
 		}
 		userLoginInfo.setUserInfo(userLoginInfo.getUserInfoDao());
