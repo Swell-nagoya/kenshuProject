@@ -170,7 +170,7 @@ public class RoomDetail extends ControllerBase
           }
       } catch (Exception e) {
           bean.setError("処理中にエラーが発生しました: " + e.getMessage());
-          forward("ErrorPage.jsp");
+          forward("ReserveError.jsp");
       }
     }
     /**

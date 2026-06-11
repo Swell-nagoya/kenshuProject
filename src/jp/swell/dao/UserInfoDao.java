@@ -1393,9 +1393,11 @@ public class UserInfoDao implements Serializable {
         HashMap<String, String> map = rs.get(0);
         setUserInfoDao(map, this);
         String password = Digest.hex(Digest.SHA512, pPassword);
+
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
         }
+        
         return true;
     }
 

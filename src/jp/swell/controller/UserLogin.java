@@ -40,6 +40,8 @@ public class UserLogin extends ControllerBase {
     public void doActionProcess() throws AtareSysException {
         WebBean bean = getWebBean();
         bean.trimAllItem();
+        
+        
 
         if ("UserLogin".equals(bean.value("form_name"))) {
             // ログインボタンが押されたときの処理
@@ -47,24 +49,21 @@ public class UserLogin extends ControllerBase {
                 this.setLoginInfo(null);
                 if (!inputCheck()) {
                     this.forward("/UserLogin.jsp");
-                    return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
+                    return;
                 }
+
+                UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+
+                if ("1".equals(userLoginInfo.getAdmin())) {
+                    redirect("MenuAdmin.do");
+                } else {
                     redirect("UserMenu.do");
+                }
                 return;
-            } else if ("repassword".equals(bean.value("action_cmd"))) {
-                redirect("SendPassMail.do");
-            }
-        } else if ("UserMenuHome".equals(bean.value("form_name"))) {
-            // ログインボタンが押されたときの処理
-            if ("logout".equals(bean.value("action_cmd"))) {
-                doLogout(); // ログアウト処理
-                return;
-            }
-        } else {
-            this.forward("/UserLogin.jsp");
+        }
         }
     }
-
+    
     /**
      * 入力チェック
      *
@@ -88,8 +87,9 @@ public class UserLogin extends ControllerBase {
             userLoginInfo = new UserLoginInfo();
         }
         if (!userLoginInfo.login(bean.value("ac"), bean.value("ko"))) {
-            bean.setError("ac", "usernameかpasswordが違います");
-            return false;
+        	getRequest().setAttribute("loginError", "usernameかpasswordが違います");
+        	    this.forward("/UserLogin.jsp");
+        	    return false;
         }
         userLoginInfo.setUserInfo(userLoginInfo.getUserInfoDao());
         setLoginInfo(userLoginInfo);
