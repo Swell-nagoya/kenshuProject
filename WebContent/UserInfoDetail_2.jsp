@@ -192,14 +192,15 @@ input.error {
   }
 
   $(function() {
-      $("#leave_date_input").datepicker();
-      $("#leave_date_input").on("change",function() {
-          var value = $(this).val();
-          var value1 = value.replaceAll("-","");
-          $("#leave_date").val(value1);
-      });
-  });
+	    $("#leave_date_input").datepicker();
 
+	    $("#leave_date_input").on("change", function() {
+	        var value = $(this).val();
+	        var value1 = value.replaceAll(/[^0-9]/g, "");
+
+	        $(this).val(value1);
+	    });
+	});
   $(document).ready(function() {
       // 退職予定日の入力フィールドで入力が行われた時に関数を実行
       $('#leave_date_input').on('change', function() {
@@ -288,7 +289,7 @@ input.error {
           </tr>
            <tr>
             <td class="style_head3 style_head_size" style="width: 30%"> ユーザー区分 </td>
-            <td class="input-text" style="width: 70%"> <%= webBean.txt("admin").equals("admin") ? "管理者" : "一般" %> </td>
+            <td class="input-text" style="width: 70%"> <%= webBean.txt("admin").equals("1") ? "管理者" : "一般" %> </td>
           </tr>
           <tr>
             <td class="style_head3 style_head_size" style="width: 30%">退職予定日</td>
