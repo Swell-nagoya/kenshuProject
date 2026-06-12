@@ -192,13 +192,10 @@ input.error {
   }
 
   $(function() {
-      $("#leave_date_input").datepicker();
-      $("#leave_date_input").on("change",function() {
-          var value = $(this).val();
-          var value1 = value.replaceAll("-","");
-          $("#leave_date").val(value1);
-      });
-  });
+	    $("#leave_date_input").datepicker({
+	        dateFormat: "yymmdd"
+	    });
+	});
 
   $(document).ready(function() {
       // 退職予定日の入力フィールドで入力が行われた時に関数を実行
