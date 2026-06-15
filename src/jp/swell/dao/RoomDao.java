@@ -352,7 +352,6 @@ public class RoomDao implements Serializable
                 map.put("room___insert_user_id", rs.getString("room___insert_user_id"));
                 map.put("room___update_date", rs.getString("room___update_date"));
                 map.put("room___update_user_id", rs.getString("room___update_user_id"));
-                System.out.println(map);
                 
                 setRoomDaoForJoin(map, this);
                 return true;

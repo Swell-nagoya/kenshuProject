@@ -58,8 +58,9 @@ public class RoomDetail extends ControllerBase
     public void doActionProcess() throws AtareSysException
     {
       WebBean bean = getWebBean();
-
+      
       try {
+    	  
           String formName = bean.value("form_name");
           String actionCmd = bean.value("action_cmd");
           String requestCmd = bean.value("request_cmd");
@@ -69,7 +70,7 @@ public class RoomDetail extends ControllerBase
           RoomDao dao = setWeb2Dao2InputInfo();
           bean.setValue("request_name", "修正する");
           bean.setValue("before_name", beforeName);
-          bean.setValue("room_name", roomName);
+          bean.setValue("room_name", roomName);;
           if ("RoomDetail".equals(formName))
           {
               if ("go_next".equals(actionCmd))
@@ -116,6 +117,7 @@ public class RoomDetail extends ControllerBase
                     	  if (beforeName == null || beforeName.trim().isEmpty()) {
                               beforeName = roomName;
                               bean.setValue("before_name", beforeName);
+                              
                           }
                     	  
                           bean.setValue("request_name", "修正する");
@@ -301,7 +303,7 @@ public class RoomDetail extends ControllerBase
         if (roomName.length() == 0) {
             errors.put("room_name_empty", "部屋名を入力してください。");
         }
-        if (roomName.equalsIgnoreCase(beforeName) && "updateEnter".equals(bean.value("requestCmd"))) {
+        if (roomName.equalsIgnoreCase(beforeName) && "updateEnter".equals(bean.value("request_cmd"))) {
             errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         }
         if (!pRoomDao.dbSelectRoomName(roomName)) {
