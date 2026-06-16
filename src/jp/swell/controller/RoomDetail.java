@@ -297,12 +297,21 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
-        String roomName = bean.value("room_name").trim();
-        String beforeName = bean.value("before_name").trim(); // ← hidden から来る
-
-        if (roomName.length() == 0) {
-            errors.put("room_name_empty", "部屋名を入力してください。");
+        
+        String roomName = bean.value("room_name");
+        String beforeName = bean.value("before_name"); // ← hidden から来る
+        
+        if (roomName == null || roomName.trim().isEmpty()) {
+        	errors.put("room_name_empty", "部屋名を入力してください。");
+        } else {
+        	roomName = roomName.trim();
         }
+        
+        if (!(beforeName == null || beforeName.trim().isEmpty())) {
+        	beforeName = beforeName.trim();
+        }
+
+        
         if (roomName.equalsIgnoreCase(beforeName) && "updateEnter".equals(bean.value("request_cmd"))) {
             errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         }
