@@ -307,6 +307,8 @@ jQuery(function($)
           for(Object item : webBean.arrayList("list"))
           {
               RoomDao dao = (RoomDao)item;
+             
+             
           %>
           <tr class="list_tr">
             <td class="list_text">
