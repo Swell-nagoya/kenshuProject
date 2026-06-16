@@ -173,6 +173,8 @@ function go_list(action_cmd) {
             <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
             <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
             <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
+            <input type="hidden" name="insert_user_id"value="<%=webBean.txt("insert_user_id")%>" />
+   		    <input type="hidden" name="update_user_id"value="<%=webBean.txt("update_user_id")%>" />
              
             <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
             <div class="errors"><%=webBean.dispErrorMessages()%></div>
@@ -199,9 +201,15 @@ function go_list(action_cmd) {
     
             <div class="left">
               <div class="room__form--name">
-                <input type="text" id="room_name" name="room_name" class="ime_disabled" value="<%=webBean.txt("room_name")%>" placeholder="RoomName" size="25" maxlength="255" />
+                <input type="text" id="room_name" name="room_name" class="ime_disabled" 
+                value="<%=webBean.txt("room_name")%>" placeholder="RoomName" 
+                size="25" maxlength="255" />
               </div>
             </div>
+            <div class="left">
+              登録者：<%=webBean.txt("insert_user_id")%>
+            </div>
+            
             <div class="button">
                 <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>')" value="<%=val%>"/>
             </div>

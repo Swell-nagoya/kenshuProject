@@ -216,6 +216,8 @@ function go_list(action_cmd)
        <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
        <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
        <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name") %>" />
+       <input type="hidden" name="insert_user_id"value="<%=webBean.txt("insert_user_id")%>" />
+	   <input type="hidden" name="update_user_id"value="<%=webBean.txt("update_user_id")%>" />
        
        <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
        <div class="errors"><%=webBean.dispErrorMessages()%></div>
@@ -244,11 +246,21 @@ function go_list(action_cmd)
           <%} else if ("削除する".equals(val)) {%> <%--削除する追加--%>
          <table class="room__form--name">
            <tr class="table-header">
-             <td>削除</td> 
+             <td>削除対象</td> 
            </tr>
            <tr class="table-date">
              <td><%=webBean.txt("room_name")%></td>
            </tr>
+           
+            <tr class="table-header">
+            	<td>登録者</td>
+            	<td>更新者</td>
+  			</tr>
+  			<tr class="table-date">
+    			<td><%=webBean.txt("insert_user_id")%></td>
+    			<td><%=webBean.txt("update_user_id")%></td>
+  			</tr>
+  
          </table>
          <%} %>
         </div>

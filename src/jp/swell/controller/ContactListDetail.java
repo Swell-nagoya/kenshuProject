@@ -13,6 +13,7 @@ import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.ContactDao;
+import jp.swell.user.UserLoginInfo;
 
 /**
  * 連絡先(Contact)の「一覧 → 入力 → 確認 → 確定」フローを司るコントローラ。
@@ -252,8 +253,11 @@ public class ContactListDetail extends ControllerBase {
      */
     private ContactDao setWeb2Dao2InputInfo() throws AtareSysException {
         WebBean bean = getWebBean();
-        ContactDao dao;
+        
+        UserLoginInfo loginInfo = (UserLoginInfo)getLoginInfo();
 
+        ContactDao dao;
+       
         // 既に input_info があればその内容をベースにする（UserInfo流）
         String inputInfo = bean.value("input_info");
         if (inputInfo != null && !inputInfo.isEmpty()) {

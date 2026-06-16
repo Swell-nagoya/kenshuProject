@@ -23,6 +23,7 @@ import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.RoomDao;
+import jp.swell.user.UserLoginInfo;
 
 /**
  * ：user_info ユーザ情報テーブルデータを登録・更新・削除するためのコントローラクラス
@@ -63,6 +64,7 @@ public class RoomDetail extends ControllerBase
           String formName = bean.value("form_name");
           String actionCmd = bean.value("action_cmd");
           String requestCmd = bean.value("request_cmd");
+          
           String mainKey = bean.value("main_key");
           String roomName = bean.value("room_name");
           String beforeName = bean.value("before_name");
@@ -80,6 +82,7 @@ public class RoomDetail extends ControllerBase
               {
                   if ("ins".equals(requestCmd))
                   {
+                	    
                       bean.setMessage("この内容で登録します。よろしいですか？");
                       bean.setValue("request_name", "登録する");
                       bean.setValue("room_name", roomName);
@@ -101,11 +104,16 @@ public class RoomDetail extends ControllerBase
           }
           else if ("RoomList".equals(formName))
           {
+        	  UserLoginInfo loginInfo = (UserLoginInfo)getLoginInfo();
               if ("go_next".equals(actionCmd)) 
               {
                   if ("ins".equals(requestCmd)) 
                   {
                       bean.setValue("request_name", "登録する");
+                      
+                      bean.setValue("insert_user_id", loginInfo.getUserId());
+                      bean.setValue("update_user_id", loginInfo.getUserId());
+
                       forward("RoomDetail.jsp");
                   } 
                   else if ("update".equals(requestCmd)) 
@@ -134,6 +142,11 @@ public class RoomDetail extends ControllerBase
                           bean.setMessage("この部屋を削除します。よろしいですか？");
                           bean.setValue("request_name", "削除する");
                           bean.setValue("room_name", roomName);
+                          
+                          bean.setValue("insert_user_id", dao.getInsertUserId());
+                          bean.setValue("update_user_id", dao.getUpdateUserId());
+
+                          
                           forward("RoomDetail_2.jsp");
                       }
                   }
@@ -146,14 +159,17 @@ public class RoomDetail extends ControllerBase
                   if ("insEnter".equals(requestCmd))
                   {
                       dbRegistration();
+                      return;
                   }
                   else if ("updateEnter".equals(requestCmd))
                   {
                       dbEdit();
+                      return;
                   }
                   else if ("deleteEnter".equals(requestCmd))
                   {
                       dbDeletef();
+                      return;
                   }
               }
               redirect("RoomList.do");
@@ -169,6 +185,8 @@ public class RoomDetail extends ControllerBase
               forward("RoomList.jsp");
           }
       } catch (Exception e) {
+    	  e.printStackTrace();
+    	  
           bean.setError("処理中にエラーが発生しました: " + e.getMessage());
           forward("ReserveError.jsp");
       }
@@ -184,6 +202,7 @@ public class RoomDetail extends ControllerBase
         RoomDao dao = setWeb2Dao2InputInfo();
         if (inputCheck(dao))
         {
+
             if(signUp())
             {
                 redirect("RoomList.do");
@@ -264,10 +283,12 @@ public class RoomDetail extends ControllerBase
         WebBean bean = getWebBean();
         RoomDao dao = new RoomDao();
         String mainKey = bean.value("main_key");//RoomIdの取得
+        
         if (!dao.dbSelect(mainKey))
         {
             return false;
         }
+        
         bean.setValue("room_id", dao.getRoomId());
         bean.setValue("room_name", dao.getRoomName());
         bean.setValue("insert_date", dao.getInsertDate());
@@ -290,16 +311,19 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
+        
         String roomName = bean.value("room_name").trim();
         String beforeName = bean.value("before_name").trim(); // ← hidden から来る
-
+         
         if (roomName.length() == 0) {
             errors.put("room_name_empty", "部屋名を入力してください。");
         }
-        if (roomName.equalsIgnoreCase(beforeName)) {
+        // 編集時のみ、変更前と同じ名前ならエラー
+        if("updateEnter".equals(bean.value("request_cmd"))
+                && roomName.equalsIgnoreCase(beforeName)) {
+        	
             errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         }
-
         return errors.isEmpty();
     }
    
@@ -314,8 +338,14 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         RoomDao dao = new RoomDao();
+        
+        UserLoginInfo loginInfo = (UserLoginInfo)getLoginInfo();
+        
         dao.setRoomName(bean.value("room_name"));
-
+        
+        dao.setInsertUserId(loginInfo.getUserId());
+        dao.setUpdateUserId(loginInfo.getUserId());
+        
         bean.setValue("input_info", Sup.serialize(dao));
         return dao;
     }
@@ -327,7 +357,7 @@ public class RoomDetail extends ControllerBase
     
     private boolean signUp() throws AtareSysException {
       RoomDao dao = setWeb2Dao2InputInfo(); // setWebDaoInputInfoメソッドを呼び出してreserveDaoを設定する
-
+      
         try {
             DbBase.dbBeginTran();
             dao.dbInsert();
@@ -350,6 +380,7 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         RoomDao dao = (RoomDao) Sup.deserialize(bean.value("input_info"));
+        
         bean.setValue("room_id", dao.getRoomId());
         bean.setValue("room_name", dao.getRoomName());
         bean.setValue("insert_date", dao.getInsertDate());
