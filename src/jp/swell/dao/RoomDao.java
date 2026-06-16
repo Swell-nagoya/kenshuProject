@@ -376,13 +376,9 @@ public class RoomDao implements Serializable {
 				map.put("room___update_date", rs.getString("room___update_date"));
 				map.put("room___update_user_id", rs.getString("room___update_user_id"));
 
-				System.out.println("room一覧map = " + map);
 
 				setRoomDaoForJoin(map, this);
 
-				System.out.println(
-						"roomId=" + getRoomId()
-								+ " roomName=" + getRoomName());
 				return true;
 			} catch (SQLException e) {
 				throw new AtareSysException("データベースクエリの実行中にエラーが発生しました: " + e.getMessage(), e);
@@ -443,12 +439,6 @@ public class RoomDao implements Serializable {
 	 * @param dao  RoomDaoこのテーブルのインスタンス
 	 */
 	public void setRoomDaoForJoin(HashMap<String, String> map, RoomDao dao) throws AtareSysException {
-		System.out.println("===== setRoomDaoForJoin =====");
-		System.out.println("map=" + map);
-		System.out.println("room___room_id=" + map.get("room___room_id"));
-		System.out.println("room_id=" + map.get("room_id"));
-		System.out.println("room___room_name=" + map.get("room___room_name"));
-		System.out.println("room_name=" + map.get("room_name"));
 
 		dao.setRoomId(DbI.chara(nullToEmpty(getValue(map, "room___room_id", "room_id"))));
 		dao.setRoomName(DbI.chara(nullToEmpty(getValue(map, "room___room_name", "room_name"))));
