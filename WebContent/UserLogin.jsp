@@ -130,27 +130,39 @@
          <div id="main">
              <h1>LOGIN</h1>
              <div class="main__text">
-                 <p>usernameとpasswordを入力してください</p>
+             
+             <%
+               java.lang.reflect.Field f = webBean.getClass().getDeclaredField("errors");
+               f.setAccessible(true);
+               java.util.Map<?, ?> errorMap = (java.util.Map<?, ?>) f.get(webBean);
+    
+               // 両方の値を取得（nullの場合は空文字にする）
+               String acError = (errorMap != null && errorMap.get("ac") != null) ? errorMap.get("ac").toString() : "";
+               String koError = (errorMap != null && errorMap.get("ko") != null) ? errorMap.get("ko").toString() : "";
+             %>
+               <p>usernameとpasswordを入力してください</p>
+               <p><%= acError %><%= koError %></p>
              </div>
-            <form method="post" id="main_form" action="" class="main__form">
+            <!-- form method="post" id="main_form" action="" class="main__form"-->
+            <form method="post" id="main_form" action="UserLogin.do" class="main__form">
                 <input type="hidden" name="form_name" id="form_name" value="UserLogin" />
-                <input type="hidden" name="action_cmd" id="action_cmd" value="" />
+                <input type="hidden" name="action_cmd" id="action_cmd" value="login" />
                 <input type="hidden" name="before_doc" id="before_doc" value="<%=webBean.txt("before_doc")%>" />
                 <div class="main__form--name">
                     <input type="text" id="ac" name="ac" class="ime_disabled" value="<%=webBean.txt("ac")%>" placeholder="Username" size="25" maxlength="255" />
                 </div>
                 <div class="main__form--password">
-                    <input type="password" id="ko" name="ko" class="ime_disabled" value="" placeholder="Password" size="25" maxlength="60"/>
+                    <input type="password" id="ko" name="ko" class="ime_disabled" value="<%=webBean.txt("ko")%>" placeholder="Password" size="25" maxlength="60"/>
                 </div>
                 <div class="main__form--btn">
-                    <input type="submit" id="bt" name="login-btn"  onclick="go_submit('')" class="submit-btn" value="ログイン"/>
+                    <!-- input type="submit" id="bt" name="login-btn"  onclick="go_submit('')" class="submit-btn" value="ログイン"/ -->
+                    <input type="submit" id="bt" name="login-btn"  class="submit-btn" value="ログイン"/>
                 </div>
                 <div class="main__form--link">
                   <a href="#" id="reissue" onclick="go_submit_1('')" class="link-btn">パスワード再発行</a>
                 </div>
             </form>
-              <%=webBean.dispError("ac")%><br/>
-              <%=webBean.dispError("ko")%>
+              
             <div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
         </div>
     </div>
