@@ -300,26 +300,22 @@ public class RoomDetail extends ControllerBase
         
         String roomName = bean.value("room_name");
         String beforeName = bean.value("before_name"); // ← hidden から来る
-        
-        if (roomName == null || roomName.trim().isEmpty()) {
-        	errors.put("room_name_empty", "部屋名を入力してください。");
-        } else {
-        	roomName = roomName.trim();
-        }
-        
+       
         if (!(beforeName == null || beforeName.trim().isEmpty())) {
-        	beforeName = beforeName.trim();
+            	beforeName = beforeName.trim();
+            if (!(roomName == null || roomName.trim().isEmpty())) {
+                	roomName = roomName.trim();
+            	if (roomName.equalsIgnoreCase(beforeName) && "updateEnter".equals(bean.value("request_cmd"))) {
+                    errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+                }
+                if (!pRoomDao.dbSelectRoomName(roomName)) {
+                	errors.put("room_name_duplicate", "同じ部屋名が存在します。別の名前を入力してください。");
+                }
+        	} else {
+        		errors.put("room_name_empty", "部屋名を入力してください。");
+        	}
         }
-
-        
-        if (roomName.equalsIgnoreCase(beforeName) && "updateEnter".equals(bean.value("request_cmd"))) {
-            errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
-        }
-        if (!pRoomDao.dbSelectRoomName(roomName)) {
-        	errors.put("room_name_duplicate", "同じ部屋名が存在します。別の名前を入力してください。");
-        }
-
-        return errors.isEmpty();
+       return errors.isEmpty();
     }
    
    
