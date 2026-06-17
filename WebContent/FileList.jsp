@@ -305,6 +305,9 @@ th {
 				value="<%=webBean.txt("file_name")%>" />
 			<input type="hidden" name="file_id" id="file_id"
 				value="<%=webBean.txt("file_id")%>" />
+			<input type="hidden" name="maxPageNo" id="maxPageNo"
+				value="<%=webBean.txt("maxPageNo")%>" />
+
 
 			<div class="left">
 				<div class="messages">
@@ -378,10 +381,10 @@ th {
 						<th>ダウンロード</th>
 						<%
 						for (Object item : webBean.arrayList("list")) {
-						    FileDao dao = (FileDao) item;
+							FileDao dao = (FileDao) item;
 						%>
 						<tr
-							<tr style="background-color:<%="received".equals(dao.getFileType() != null ? dao.getFileType() : "") ? "#1565c0" : "white"%>">
+							style="background-color:<%="received".equals(dao.getFileType() != null ? dao.getFileType() : "") ? "#90caf9" : "white"%>">
 							<td><%=WebUtil.htmlEscape(dao.getFileName())%></td>
 							<td><%=WebUtil.htmlEscape(dao.getUploadDate())%></td>
 							<td><%=WebUtil.htmlEscape(dao.getSendUserName())%></td>
@@ -390,15 +393,21 @@ th {
 								onclick="go_download('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
 								<input type="button" value="削除"
 								onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
-							</td></tr>
+							</td>
+						</tr>
 
-						<%}%>
-						<%} else {%><tr>
-						<td colspan="4">ファイルがありません</td>
-					</tr>
-					<%}%>
-				
-				
+						<%
+						}
+						%>
+						<%
+						} else {
+						%><tr>
+							<td colspan="4">ファイルがありません</td>
+						</tr>
+						<%
+						}
+						%>
+					
 				</table>
 			</div>
 		</form>
