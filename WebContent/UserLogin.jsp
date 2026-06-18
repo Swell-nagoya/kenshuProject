@@ -105,17 +105,15 @@
 <script type="text/javascript">
   //
   jQuery(function($) {
-	/*
-	Enter入力時に送信する
     $("input").keydown(function(e) {
       if (e.which == 13) {
         go_submit('123456');
       }
     });
-  });*/
+  });
   function go_submit(action_cmd) {
     document.getElementById("main_form").action = 'UserLogin.do';
-    document.getElementById("action_cmd").value = action_cmd;
+//    document.getElementById("action_cmd").value = action_cmd;
     document.getElementById("main_form").submit();
   }
   function go_submit_1(action_cmd) {
@@ -138,8 +136,7 @@
 
 
              </div>
-            <!-- form method="post" id="main_form" action="" class="main__form"-->
-            <form method="post" id="main_form" action="UserLogin.do" class="main__form">
+            <form method="post" id="main_form" action="" class="main__form">
                 <input type="hidden" name="form_name" id="form_name" value="UserLogin" />
                 <input type="hidden" name="action_cmd" id="action_cmd" value="login" />
                 <input type="hidden" name="before_doc" id="before_doc" value="<%=webBean.txt("before_doc")%>" />
@@ -150,8 +147,7 @@
                     <input type="password" id="ko" name="ko" class="ime_disabled" value="<%=webBean.txt("ko")%>" placeholder="Password" size="25" maxlength="60"/>
                 </div>
                 <div class="main__form--btn">
-                    <!-- input type="submit" id="bt" name="login-btn"  onclick="go_submit('')" class="submit-btn" value="ログイン"/ -->
-                    <input type="submit" id="bt" name="login-btn"  class="submit-btn" value="ログイン"/>
+                    <input type="submit" id="bt" name="login-btn"  onclick="go_submit('')" class="submit-btn" value="ログイン" />
                 </div>
                 <div class="main__form--link">
                   <a href="#" id="reissue" onclick="go_submit_1('')" class="link-btn">パスワード再発行</a>
