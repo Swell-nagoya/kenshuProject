@@ -130,18 +130,11 @@
          <div id="main">
              <h1>LOGIN</h1>
              <div class="main__text">
-             
-             <%
-               java.lang.reflect.Field f = webBean.getClass().getDeclaredField("errors");
-               f.setAccessible(true);
-               java.util.Map<?, ?> errorMap = (java.util.Map<?, ?>) f.get(webBean);
-    
-               // 両方の値を取得（nullの場合は空文字にする）
-               String acError = (errorMap != null && errorMap.get("ac") != null) ? errorMap.get("ac").toString() : "";
-               String koError = (errorMap != null && errorMap.get("ko") != null) ? errorMap.get("ko").toString() : "";
-             %>
                <p>usernameとpasswordを入力してください</p>
-               <p><%= acError %><%= koError %></p>
+
+               <p><%= webBean.dispErrorMessages() %></p>
+
+
              </div>
             <!-- form method="post" id="main_form" action="" class="main__form"-->
             <form method="post" id="main_form" action="UserLogin.do" class="main__form">
