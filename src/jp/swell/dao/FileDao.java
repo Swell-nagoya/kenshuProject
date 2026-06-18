@@ -766,6 +766,7 @@ public class FileDao implements Serializable {
 		return resultList;
 	}
 
+
 	/**
 	 * files ファイル情報テーブルの検索条件を設定する。.
 	 *
@@ -792,15 +793,23 @@ public class FileDao implements Serializable {
 			where.append(where.length() > 0 ? " AND " : "");
 			where.append("files.file_id = " + DbS.chara(getFileId()));
 		}
-
-		if (getUserInfoId().length() > 0) {
+		if (getUserInfoId().length() > 0 && getUploadUserId().length() > 0) {
 			where.append(where.length() > 0 ? " AND " : "");
+			where.append("(");
 			where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
-		}
-
-		if (getUploadUserId().length() > 0) {
-			where.append(where.length() > 0 ? " AND " : "");
+			where.append(" OR ");
 			where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+			where.append(")");
+		} else {
+			if (getUserInfoId().length() > 0) {
+				where.append(where.length() > 0 ? " AND " : "");
+				where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
+			}
+
+			if (getUploadUserId().length() > 0) {
+				where.append(where.length() > 0 ? " AND " : "");
+				where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+			}
 		}
 
 		if (getSearchFileName().length() > 0) {
@@ -863,19 +872,19 @@ public class FileDao implements Serializable {
 	}
 
 	public static int dbSelectCount(FileDao myclass) throws AtareSysException {
-		String where = myclass.dbWhere();
+	    String where = myclass.dbWhere();
 
-		String sql = "SELECT COUNT(*) AS count "
-				+ "FROM files "
-				+ where;
+	    String sql = "SELECT COUNT(*) AS count "
+	            + "FROM files "
+	            + where;
 
-		List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+	    List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 
-		if (rs.size() == 0) {
-			return 0;
-		}
+	    if (rs.size() == 0) {
+	        return 0;
+	    }
 
-		return Integer.parseInt(rs.get(0).get("count"));
+	    return Integer.parseInt(rs.get(0).get("count"));
 	}
 
 }
