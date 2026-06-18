@@ -105,12 +105,14 @@
 <script type="text/javascript">
   //
   jQuery(function($) {
+	/*
+	Enter入力時に送信する
     $("input").keydown(function(e) {
       if (e.which == 13) {
         go_submit('123456');
       }
     });
-  });
+  });*/
   function go_submit(action_cmd) {
     document.getElementById("main_form").action = 'UserLogin.do';
     document.getElementById("action_cmd").value = action_cmd;

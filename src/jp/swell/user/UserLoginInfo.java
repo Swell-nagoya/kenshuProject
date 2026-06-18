@@ -170,6 +170,11 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
         return userInfoDao.getTel();
     }
 
+    /**
+     * 管理者権限の取得
+     *
+     * @return admin
+     */
     public String getAdmin() {
         return userInfoDao.getAdmin();
     }
@@ -239,7 +244,12 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
 
     @Override
     public boolean isSystemManager() {
-        return true;
+     // userInfoDaoが取得できる。かつDBから読み込んだadminの値が"1"の場合のみ管理者(true)とする
+     if (this.userInfoDao != null && "1".equals(this.userInfoDao.getAdmin())) {
+         return true;
+     }
+     
+     return false;
     }
 
     @Override

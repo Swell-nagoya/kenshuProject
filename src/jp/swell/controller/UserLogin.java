@@ -49,8 +49,20 @@ public class UserLogin extends ControllerBase {
                     this.forward("/UserLogin.jsp");
                     return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
                 }
+
+
+                UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+
+                // 管理メニューへ
+                if (userLoginInfo != null && userLoginInfo.isSystemManager()) {
+                    redirect("MenuAdmin.do"); 
+                // 一般ユーザー
+                } else {
                     redirect("UserMenu.do");
+                }
                 return;
+                
+                
             } else if ("repassword".equals(bean.value("action_cmd"))) {
                 redirect("SendPassMail.do");
             }
@@ -74,6 +86,8 @@ public class UserLogin extends ControllerBase {
     private boolean inputCheck() throws AtareSysException {
 
         WebBean bean = getWebBean();
+        
+        
         if (bean.value("ac").length() == 0) {
             bean.setError("ac", "未入力");
             return false;
