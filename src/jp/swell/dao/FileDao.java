@@ -709,15 +709,35 @@ public class FileDao implements Serializable {
                 + where + order
                 + " LIMIT " + limit + " OFFSET " + offset;
 
-        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql);
+                ResultSet rs = (ResultSet) pstmt.executeQuery()) {
+               
+               while (rs.next()) {
+                   HashMap<String, String> map = new HashMap<>();
+                   map.put("files___file_id", rs.getString("files___file_id"));
+                   map.put("files___user_info_id", rs.getString("files___user_info_id"));
+                   map.put("files___file_name", rs.getString("files___file_name"));
+                   map.put("files___file_path", rs.getString("files___file_path"));
+                   map.put("files___upload_date", rs.getString("files___upload_date"));
+                   map.put("files___file_key", rs.getString("files___file_key"));
+                   map.put("files___mime_type", rs.getString("files___mime_type"));
+                   map.put("files___system_file_name", rs.getString("files___system_file_name"));
+                   map.put("files___upload_user_id", rs.getString("files___upload_user_id"));
+                   map.put("files___expiration_date", rs.getString("files___expiration_date"));
+                   map.put("uploader_first_name", rs.getString("uploader_first_name"));
+                   map.put("uploader_last_name", rs.getString("uploader_last_name"));
+                   map.put("user_first_name", rs.getString("user_first_name"));
+                   map.put("user_last_name", rs.getString("user_last_name"));
 
-        for (HashMap<String, String> map : rs) {
-            FileDao dao = new FileDao();
-            dao.setFileDaoForJoin(map, dao);
-            dao.setFirstName(map.get("user_first_name"));
-            dao.setLastName(map.get("user_last_name"));
-            resultList.add(dao);
-        }
+                   FileDao dao = new FileDao();
+                   dao.setFileDaoForJoin(map, dao);
+                   dao.setFirstName(map.get("user_first_name"));
+                   dao.setLastName(map.get("user_last_name"));
+                   resultList.add(dao);
+               }
+           } catch (SQLException e) {
+               throw new AtareSysException("データベースクエリの実行中にエラーが発生しました: " + e.getMessage(), e);
+           }
 
         return resultList;
     }

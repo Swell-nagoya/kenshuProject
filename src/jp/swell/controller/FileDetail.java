@@ -3,6 +3,7 @@ package jp.swell.controller;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,8 +16,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.ibm.icu.text.SimpleDateFormat;
 
 import jp.patasys.common.AtareSysCalendar;
 import jp.patasys.common.AtareSysException;
@@ -363,7 +362,7 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        String filePath = "C:/eclipse0410/workspace/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
