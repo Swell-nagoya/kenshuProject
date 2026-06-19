@@ -678,7 +678,22 @@ footer {
         if (webBean.arrayList("users") != null && !webBean.arrayList("users").isEmpty()) {
             for (Object allUsers : webBean.arrayList("users")) {
                 UserInfoDao user = (UserInfoDao) allUsers;
-                String userId = WebUtil.htmlEscape(user.getUserInfoId());
+                
+                // 1. 生のIDを取得
+                String rawUserId = user.getUserInfoId();
+                
+                // 2. 生のIDが null、または空文字（トリミング後も空）なら絶対に処理しない
+                if (rawUserId == null || rawUserId.trim().isEmpty()) {
+                    continue;
+                }
+                
+                // 3. エスケープ処理
+                String userId = WebUtil.htmlEscape(rawUserId);
+                
+                // 4. 万が一、エスケープ後の文字列に "&nbsp;" が含まれていたらスキップ
+                if (userId == null || userId.contains("&nbsp;")) {
+                    continue;
+                }
         %>
         const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
         if (checkbox<%=userId%>) {
@@ -699,14 +714,29 @@ footer {
         %>
     }
 
-    //チェックボックスを押したときにイベントが起きるように設定する関数
+  //チェックボックスを押したときにイベントが起きるように設定する関数
     function changeReserveDisplay() {
         let roomElements;
         <%
         if (webBean.arrayList("users") != null && !webBean.arrayList("users").isEmpty()) {
             for (Object allUsers : webBean.arrayList("users")) {
                 UserInfoDao user = (UserInfoDao) allUsers;
-                String userId = WebUtil.htmlEscape(user.getUserInfoId());
+                
+                // IDを取得
+                String rawUserId = user.getUserInfoId();
+                
+                // ID情報が取得できないとき
+                if (rawUserId == null || rawUserId.trim().isEmpty()) {
+                    continue;
+                }
+                
+                // エスケープ処理
+                String userId = WebUtil.htmlEscape(rawUserId);
+                
+                // エスケープ後に "&nbsp;" が含まれていたらスキップ
+                if (userId == null || userId.contains("&nbsp;")) {
+                    continue;
+                }
         %>
         const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
         if (checkbox<%=userId%>) {

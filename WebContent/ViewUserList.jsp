@@ -323,6 +323,8 @@ footer {
           for (Object item : webBean.arrayList("list")) {
               UserInfoDao dao = (UserInfoDao) item;
           %>
+          <% out.print(dao.getFullName()); %>
+         
           <tr class="list_tr">
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
             </td>
