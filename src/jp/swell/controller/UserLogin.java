@@ -64,8 +64,8 @@ public class UserLogin extends ControllerBase {
                     return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
                 }
                 
-                UserLoginInfo userLoginInfo = new UserLoginInfo();
-                
+
+                UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
                 // 管理メニューへ
                 if (userLoginInfo != null && userLoginInfo.isSystemManager()) {
                     redirect("MenuAdmin.do"); 

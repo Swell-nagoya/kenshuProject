@@ -679,18 +679,18 @@ footer {
             for (Object allUsers : webBean.arrayList("users")) {
                 UserInfoDao user = (UserInfoDao) allUsers;
                 
-                // 1. 生のIDを取得
+                // IDを取得
                 String rawUserId = user.getUserInfoId();
-                
-                // 2. 生のIDが null、または空文字（トリミング後も空）なら絶対に処理しない
+
+                // ID情報が取得できないとき
                 if (rawUserId == null || rawUserId.trim().isEmpty()) {
                     continue;
                 }
                 
-                // 3. エスケープ処理
+                // エスケープ処理
                 String userId = WebUtil.htmlEscape(rawUserId);
-                
-                // 4. 万が一、エスケープ後の文字列に "&nbsp;" が含まれていたらスキップ
+
+                // エスケープ後に "&nbsp;" が含まれていたらスキップ
                 if (userId == null || userId.contains("&nbsp;")) {
                     continue;
                 }
