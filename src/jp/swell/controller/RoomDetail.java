@@ -326,14 +326,14 @@ public class RoomDetail extends ControllerBase
             } else {
             	beforeName = beforeName.trim();
             }
-        	if (!pRoomDao.dbSelectRoomName(roomName)) {
-        	errors.put("room_name_duplicate", "同じ部屋名が存在します。別の名前を入力してください。");
-        	return errors.isEmpty();
-        	}
         	if (roomName.equalsIgnoreCase(beforeName)) {
         	errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         	return errors.isEmpty();
         	}
+        	else if (!pRoomDao.dbSelectRoomName(roomName)) {
+            errors.put("room_name_duplicate", "同じ部屋名が存在します。別の名前を入力してください。");
+            return errors.isEmpty();
+            }
         } else {
         	errors.put("room_name_duplicate", "もう一度操作してください。");
         }

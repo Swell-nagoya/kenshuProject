@@ -43,7 +43,7 @@ public class FileDetail extends ControllerBase {
      */
     @Override
     public void doInit() {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -55,7 +55,8 @@ public class FileDetail extends ControllerBase {
         UserLoginInfo login = (UserLoginInfo)getLoginInfo();
         // 追加：JSP 上で使うためのログインユーザー名・ID
         bean.setValue("loginUserName", login.getLastName() + " " + login.getFirstName());
-        bean.setValue("loginUserId", login.getUserInfoId());
+        bean.setValue("loginUserId", login.getUserInfoId())
+        ;
         
         // デバッグログ：どのフォーム／コマンドで呼ばれたか
         String form = bean.value("form_name");
@@ -504,8 +505,13 @@ public class FileDetail extends ControllerBase {
         String baseFileName = dao.getFileName(); // 基本ファイル名を取得
         String mimeType = dao.getMimeType(); // MIMEタイプを取得
         String filePath = dao.getFilePath();// フルファイルパスを取得
-
+        String uploadUserId = dao.getUploadUserId();
+        String userInfoId = dao.getUserInfoId();
+        WebBean bean = getWebBean();
         try {
+        	if(!(bean.value("loginUserId").equals(uploadUserId) || bean.value("loginUserId").equals(userInfoId))) {
+        		return;
+        	}
             // 期限チェック
             if (isExpired(dao.getExpirationDate())) {
                 // 期限が過ぎている場合の処理
