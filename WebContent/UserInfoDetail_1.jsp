@@ -599,6 +599,60 @@ label.error {
       %>
 
 
+       <div class="left">
+         <table class="input-table">
+         <tr>
+            <td class="style_head3 style_head_size" style="width: 30%"> ユーザーID </td>
+            <td class="input-text" style="width: 70%"> <%=webBean.txt("user_info_id")%> </td>
+          </tr>
+          <tr>
+            <td class="style_head3 style_head_size" style="width: 30%"> 氏名 </td>
+            <td class="input-text" style="width: 70%"> <%=webBean.txt("last_name")%>　<%=webBean.txt("middle_name")%>　<%=webBean.txt("first_name")%> </td>
+          </tr>
+          <tr>
+            <td class="style_head3 style_head_size" style="width: 30%"> 氏名よみ </td>
+            <td class="input-text" style="width: 70%"> <%=webBean.txt("last_name_kana")%>　<%=webBean.txt("middle_name_kana")%>　<%=webBean.txt("first_name_kana")%> </td>
+          </tr>
+           <% 
+               if (!maidenName.isEmpty()) { 
+           %>
+          <tr>
+            <td class="style_head3 style_head_size" style="width: 30%"> 旧姓 </td>
+            <td class="input-text" style="width: 70%"> <%=webBean.txt("maiden_name")%> </td>
+          </tr>
+          <tr>
+            <td class="style_head3 style_head_size" style="width: 30%"> 旧姓よみ </td>
+            <td class="input-text" style="width: 70%"> <%=webBean.txt("maiden_name_kana")%> </td>
+          </tr>
+          <% } %>
+          <% 
+               if (!insertUserId.isEmpty()) { 
+          %>
+          <tr>
+            <td class="style_head3 style_head_size" style="width: 30%"> 任意ＩＤ </td>
+            <td class="input-text" style="width: 70%"> <%=webBean.txt("insert_user_id")%> </td>
+          </tr>
+          <% } %>
+          <tr>
+            <td class="style_head3 style_head_size" style="width: 30%"> メールアドレス </td>
+            <td class="input-text" style="width: 70%"> <%=webBean.txt("memail")%> </td>
+          </tr>
+           <tr>
+            <td class="style_head3 style_head_size" style="width: 30%"> ユーザー区分 </td>
+            <td class="input-text" style="width: 70%"> <%= webBean.txt("admin").equals("admin") ? "管理者" : "一般" %> </td>
+          </tr>
+          <tr>
+            <td class="style_head3 style_head_size" style="width: 30%">退職予定日</td>
+              <td class="input-text" style="width: 70%">
+                <input type="text" name="leave_date" id="leave_date_input" value="<%=webBean.txt("leave_date")%>" class="input-text ime_active <%=webBean.dispErrorCSS("leave_date")%>">
+                <br /> <span id="error_leave_date" class="error"><%=webBean.dispError("leave_date")%> </span>
+              </td>
+          </tr>
+          </table>
+        </div>
+        <div class="button">
+          <input type="button" id="submitButton" value=" 確定する " onclick="go_submit('go_next','delete','<%=webBean.txt("user_info_id")%>')" />
+        </div>
 
 
       <% 

@@ -302,7 +302,7 @@ input.error {
         <div class="button">
           <input type="button" id="submitButton" value=" 確定する " onclick="go_submit('go_next','delete','<%=webBean.txt("user_info_id")%>')" />
         </div>
-    </form> 
+    </form>
   </div>
   <script type="text/javascript">
   </script>
