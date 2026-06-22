@@ -101,8 +101,9 @@ public class UserInfoDetail extends ControllerBase
                       } 
                       else 
                       {
+                          bean.setValue("request_name", "削除");
                           bean.setMessage("退職予定日を入力してください。");
-                          forward("UserInfoDetail_2.jsp");
+                          forward("UserInfoDetail_1.jsp");
                       }
                   }
                   else if ("check".equals(bean.value("request_cmd"))) 
@@ -115,7 +116,7 @@ public class UserInfoDetail extends ControllerBase
                       else 
                       {
                           bean.setValue("request_name", "メール送信");
-                          forward("UserInfoDetail_3.jsp");
+                          forward("UserInfoDetail_1.jsp");
                       }
                   }
                   else if ("access".equals(bean.value("request_cmd"))) 

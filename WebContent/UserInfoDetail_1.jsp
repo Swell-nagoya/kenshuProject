@@ -452,15 +452,28 @@ label.error {
 </script>
 </head>
 <body>
+   <%
+     String maidenName = webBean.txt("maiden_name").trim();
+     String insertUserId = webBean.txt("insert_user_id").trim();
+     String val = webBean.txt("request_name");
+     String actionType =  val.equals("登録") ? "ins" : val.equals("修正") ? "update" : val.equals("削除") ? "detail" : val.equals("確定") ? "delete" : val.equals("メール送信") ? "send" : "unknown";
+     String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
+     String header =  val.equals("登録") ? "登録確定" : val.equals("修正") ? "情報編集確定"  : val.equals("削除") ? "削除" : val.equals("確定") ? "情報削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
+   %>
   <div class="container">
     <div class="new-btn">
       <input type="button" value="　戻る　" onclick="go_list('return')" />
     </div>
-<header>
-    <h1> ユーザー情報<%=webBean.txt("request_name")%>ページ </h1>
-</header>
+    <header>
+        <h1> ユーザー情報<%=webBean.txt("request_name")%>ページ </h1>
+    </header>
+    <% 
+        if (webBean.txt("request_name").equals("登録") || webBean.txt("request_name").equals("修正")) {
+    %>
         <div class="required-note">※は必須項目</div>
-         
+    <% 
+         }
+    %>
         <form method="post" id="main_form" action="">
 
         <input type="hidden" name="form_name" id="form_name" value="UserInfoDetail_1" />
@@ -471,8 +484,29 @@ label.error {
         <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
         <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
 
+      
         <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
+        
+        
+      <% 
+      if (
+      		webBean.txt("request_name").equals("登録") || 
+      		webBean.txt("request_name").equals("修正") || 
+      		webBean.txt("request_name").equals("削除")
+      ) {
+      %>
+      
         <div class="errors"><%=webBean.dispErrorMessages()%></div>
+
+        
+      <% 
+
+       }
+      %>
+
+        <% 
+          if (webBean.txt("request_name").equals("登録") || webBean.txt("request_name").equals("修正")) {
+        %>
 
         <div class="left">
           <table class="input-table">
@@ -559,6 +593,20 @@ label.error {
       <div class="button">
         <input type="button" id="submit_btn" value="<%=webBean.txt("request_name")%>する" onclick="go_submit('go_next','<%=webBean.txt("request_cmd")%>')" /> 
       </div>
+      <% 
+
+       } else if (webBean.txt("request_name").equals("削除")) {
+      %>
+
+
+
+
+      <% 
+       } else {
+      %>
+      <%
+       }
+      %>
     </form>
   </div>
 </body>

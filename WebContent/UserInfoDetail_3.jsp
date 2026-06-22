@@ -188,19 +188,19 @@ table {
      String maidenName = webBean.txt("maiden_name").trim();
      String insertUserId = webBean.txt("insert_user_id").trim();
      String val = webBean.txt("request_name");
-     String actionType =  val.equals("登録") ? "ins" : val.equals("修正") ? "update" : val.equals("確定") ? "delete" : val.equals("メール送信") ? "send" : "unknown";
+     String actionType =  val.equals("登録") ? "ins" : val.equals("修正") ? "update" : val.equals("削除") ? "detail" : val.equals("確定") ? "delete" : val.equals("メール送信") ? "send" : "unknown";
      String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
-     String header =  val.equals("登録") ? "登録確定" : val.equals("修正") ? "情報編集確定" : val.equals("確定") ? "情報削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
+     String header =  val.equals("登録") ? "登録確定" : val.equals("修正") ? "情報編集確定"  : val.equals("削除") ? "削除" : val.equals("確定") ? "情報削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
    %>
   <div class="container">
     <div class="new-btn">
       <input type="button" value=" 戻る " onclick="go_list('return','<%=actionType%>','<%=webBean.txt("user_info_id")%>')" />
     </div>
-<header>
-    <h1>ユーザー<%= header %>ページ</h1>
-</header>
+   <header>
+     <h1>ユーザー<%= header %>ページ</h1>
+   </header>
    
- 　　　 <form method="post" id="main_form" action="">
+      <form method="post" id="main_form" action="">
 
         <input type="hidden" name="form_name" id="form_name" value="UserInfoDetail_3" /> 
         <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
