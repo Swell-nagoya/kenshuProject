@@ -221,7 +221,7 @@ public class UserInfoDetail extends ControllerBase
                            forward("UserInfoDetail_1.jsp");
                        }
                   }
-                  else if ("detailConfirm".equals(bean.value("request_cmd"))) 
+                  else if ("deleteConfirm".equals(bean.value("request_cmd"))) 
                   {
                     if (checkDataMatching())
                     {
@@ -241,13 +241,13 @@ public class UserInfoDetail extends ControllerBase
               else if ("return".equals(bean.value("action_cmd"))) 
               {
 
-               if ("insConfirm".equals(bean.value("request_cmd"))) 
+               if ("ins".equals(bean.value("request_cmd"))) 
                {
                    bean.setValue("request_name", "登録");
                    setInputInfo2Dao2Web();
                    forward("UserInfoDetail_1.jsp");
                }
-               else if ("updateConfirm".equals(bean.value("request_cmd"))) 
+               else if ("update".equals(bean.value("request_cmd"))) 
                {
                    bean.setValue("request_name", "修正");
                    setInputInfo2Dao2Web();
