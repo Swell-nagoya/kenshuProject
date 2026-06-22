@@ -156,8 +156,8 @@ public class UserInfoDetail extends ControllerBase
                       if (inputCheck(dao)) 
                       {
                           bean.setMessage("この内容で登録します。よろしいですか？");
-                          bean.setValue("request_name", "登録");
-                          forward("UserInfoDetail_3.jsp"); 
+                          bean.setValue("request_name", "登録確定");
+                          forward("UserInfoDetail_1.jsp"); 
                       }
                       else 
                       {
@@ -175,7 +175,7 @@ public class UserInfoDetail extends ControllerBase
                         
                           bean.setMessage("この内容で修正します。よろしいですか？");
                           bean.setValue("request_name", "修正");
-                          forward("UserInfoDetail_3.jsp"); 
+                          forward("UserInfoDetail_1.jsp"); 
                       }
                       else 
                       {

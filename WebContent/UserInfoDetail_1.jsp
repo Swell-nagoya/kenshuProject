@@ -30,6 +30,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
+<link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
 <link rel="icon" href="/kenshuProject/images/favicon.ico" type="image/x-icon">
 <link rel="stylesheet" href="css/common.css" type="text/css" />
 <link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
@@ -111,8 +112,10 @@ input[type="button"]:hover {
 
 /* .new-btnのスタイル */
 .new-btn input {
+  border-radius: 10px;
   background: #fff; /* 背景色を白に */
   color: #000; /* 文字色を黒に */
+  cursor: pointer;
 }
 
  .button {
@@ -282,17 +285,30 @@ label.error {
 </style>
 <script type="text/javascript">
 
+  function go_submit(action_cmd, request_cmd) {
+    document.getElementById('main_form').action = 'UserInfoDetail.do';
+    document.getElementById('action_cmd').value = action_cmd;
+    document.getElementById('request_cmd').value = request_cmd;
+    document.getElementById('main_form').submit();
+  }
+
+  function go_mail(action_cmd, request_cmd,main_key) {
+    document.getElementById('main_form').action = 'SendPassMail.do';
+    document.getElementById('action_cmd').value = action_cmd;
+    document.getElementById('request_cmd').value = request_cmd;
+    document.getElementById('main_key').value=main_key;
+    document.getElementById('main_form').submit();
+  }
   function go_list(action_cmd) {
     document.getElementById('main_form').action = 'UserInfoDetail.do';
     document.getElementById('action_cmd').value = action_cmd;
     document.getElementById('main_form').submit();
   }
 
-  function go_submit(action_cmd, request_cmd) {
-    document.getElementById('main_form').action = 'UserInfoDetail.do';
-    document.getElementById('action_cmd').value = action_cmd;
-    document.getElementById('request_cmd').value = request_cmd;
-    document.getElementById('main_form').submit();
+  function togglePassword(id) {
+    var input = document.getElementById(id);
+    var type = input.getAttribute('type');
+    input.setAttribute('type', type === 'password' ? 'text' : 'password');
   }
 
   // 入力欄でenterキーが押された場合の処理
@@ -456,9 +472,9 @@ label.error {
      String maidenName = webBean.txt("maiden_name").trim();
      String insertUserId = webBean.txt("insert_user_id").trim();
      String val = webBean.txt("request_name");
-     String actionType =  val.equals("登録") ? "ins" : val.equals("修正") ? "update" : val.equals("削除") ? "detail" : val.equals("確定") ? "delete" : val.equals("メール送信") ? "send" : "unknown";
+     String actionType =  val.equals("登録") ? "ins" : val.equals("登録確定") ? "ins" : val.equals("修正") ? "update" : val.equals("削除") ? "detail" : val.equals("確定") ? "delete" : val.equals("メール送信") ? "send" : "unknown";
      String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
-     String header =  val.equals("登録") ? "登録" : val.equals("修正") ? "編集"  : val.equals("削除") ? "削除" :  val.equals("メール送信") ? "情報確認" : "unknown";
+     String header =  val.equals("登録") ? "登録" : val.equals("登録確定") ? "登録確定" : val.equals("修正") ? "編集"  : val.equals("削除") ? "削除" :  val.equals("メール送信") ? "情報確認" : "unknown";
    %>
   <div class="container">
     <div class="new-btn">
@@ -656,7 +672,10 @@ label.error {
 
       <% 
 
-       } else if (webBean.txt("request_name").equals("メール送信")) {
+       } else if (
+       		webBean.txt("request_name").equals("メール送信") ||
+       		webBean.txt("request_name").equals("登録確定")
+       		) {
       %>
         <div class="left">
           <table class="input-table">
