@@ -487,8 +487,8 @@ label.error {
      
      String actionType =  val.equals("登録") ? "ins" : val.equals("登録確定") ? "insConfirm" 
                         : val.equals("修正") ? "update" : val.equals("修正確定") ? "updateConfirm" 
-                        : val.equals("削除") ? "detail" : val.equals("確定") ? "deleteConfirm"
-                        : val.equals("確定") ? "delete" : val.equals("メール送信") ? "send" : "unknown";
+                        : val.equals("削除") ? "delete" : val.equals("確定") ? "deleteConfirm"
+                        : val.equals("メール送信") ? "send" : "unknown";
      String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
      String header =  val.equals("登録") ? "登録" : val.equals("登録確定") ? "登録確定" 
      		        : val.equals("修正") ? "編集": val.equals("修正確定") ? "情報編集確定" 
@@ -752,7 +752,7 @@ label.error {
           %>
             <% 
             // actionTypeが"delete"の場合のみ表示
-            if ("delete".equals(actionType)) { 
+            if ("deleteConfirm".equals(actionType)) { 
            // 退職予定日のフォーマット変換用変数を初期化
               String formatLeaveDate = "";
               String leaveDate = webBean.txt("leave_date");
