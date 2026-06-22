@@ -338,7 +338,6 @@ label.error {
   */
   
   // イベントリスナーの設定はそのまま
-  /*
   const lastNameInput = document.getElementById("last_name");
   if (lastNameInput) {
     lastNameInput.addEventListener("input", async function () {
@@ -476,7 +475,6 @@ label.error {
         }
       });
     });
-  */
 
   
 </script>
@@ -486,9 +484,10 @@ label.error {
      String maidenName = webBean.txt("maiden_name").trim();
      String insertUserId = webBean.txt("insert_user_id").trim();
      String val = webBean.txt("request_name");
-     String actionType =  val.equals("登録") ? "ins" : val.equals("登録確定") ? "ins" : val.equals("修正") ? "update" : val.equals("削除") ? "detail" : val.equals("確定") ? "delete" : val.equals("メール送信") ? "send" : "unknown";
+     
+     String actionType =  val.equals("登録") ? "ins" : val.equals("登録確定") ? "insConfirm" : val.equals("修正") ? "update" : val.equals("修正確定") ? "updateConfirm" : val.equals("削除") ? "detail" : val.equals("削除確定") ? "detailConfirm" : val.equals("確定") ? "delete" : val.equals("メール送信") ? "send" : "unknown";
      String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
-     String header =  val.equals("登録") ? "登録" : val.equals("登録確定") ? "登録確定" : val.equals("修正") ? "編集"  : val.equals("削除") ? "削除" :  val.equals("メール送信") ? "情報確認" : "unknown";
+     String header =  val.equals("登録") ? "登録" : val.equals("登録確定") ? "登録確定" : val.equals("修正") ? "編集": val.equals("修正確定") ? "編集確定" : val.equals("削除") ? "削除" : val.equals("削除確定") ? "削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
    %>
   <div class="container">
     <div class="new-btn">
