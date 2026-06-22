@@ -299,9 +299,19 @@ label.error {
     document.getElementById('main_key').value=main_key;
     document.getElementById('main_form').submit();
   }
+  /*
   function go_list(action_cmd) {
     document.getElementById('main_form').action = 'UserInfoDetail.do';
     document.getElementById('action_cmd').value = action_cmd;
+    document.getElementById('main_form').submit();
+  }
+  */
+
+  function go_list(action_cmd, request_cmd,main_key) {
+    document.getElementById('main_form').action = 'UserInfoDetail.do';
+    document.getElementById('action_cmd').value = action_cmd;
+    document.getElementById('request_cmd').value = request_cmd;
+	document.getElementById('main_key').value=main_key;
     document.getElementById('main_form').submit();
   }
 
@@ -479,6 +489,7 @@ label.error {
   <div class="container">
     <div class="new-btn">
       <input type="button" value="　戻る　" onclick="go_list('return')" />
+      <input type="button" value=" 戻る " onclick="go_list('return','<%=actionType%>','<%=webBean.txt("user_info_id")%>')" />
     </div>
     <header>
         <h1> ユーザー情報<%=webBean.txt("request_name")%>ページ </h1>
