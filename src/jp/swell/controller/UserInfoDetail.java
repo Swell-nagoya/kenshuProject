@@ -293,10 +293,10 @@ public class UserInfoDetail extends ControllerBase
                   }
                   else if ("delete".equals(bean.value("request_cmd"))) 
                   {
-                      bean.setValue("request_name", "修正");
+                      bean.setValue("request_name", "削除");
                       setInputInfo2Dao2Web();
                       setWeb2Dao2InputInfo();
-                      forward("UserInfoDetail_2.jsp");
+                      forward("UserInfoDetail_1.jsp");
                   }
                   else if ("send".equals(bean.value("request_cmd"))) 
                   {

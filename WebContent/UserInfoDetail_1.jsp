@@ -290,6 +290,7 @@ label.error {
     document.getElementById('action_cmd').value = action_cmd;
     document.getElementById('request_cmd').value = request_cmd;
     document.getElementById('main_form').submit();
+    console.log('hit');
   }
 
   function go_mail(action_cmd, request_cmd,main_key) {
@@ -322,6 +323,7 @@ label.error {
   }
 
   // 入力欄でenterキーが押された場合の処理
+  /*
   jQuery(function($) {
     $("table.input-table input").keydown(function (e) {
       if (e.which === 13) {
@@ -333,9 +335,10 @@ label.error {
       }
     });
   });
-  
+  */
   
   // イベントリスナーの設定はそのまま
+  /*
   const lastNameInput = document.getElementById("last_name");
   if (lastNameInput) {
     lastNameInput.addEventListener("input", async function () {
@@ -473,6 +476,7 @@ label.error {
         }
       });
     });
+  */
 
   
 </script>
