@@ -191,7 +191,7 @@ public class UserInfoDetail extends ControllerBase
                       if (inputCheck(dao)) 
                       {
                           bean.setMessage("退職予定日を確定します。よろしいですか？");
-                          bean.setValue("request_name", "削除確定");
+                          bean.setValue("request_name", "確定");
                           forward("UserInfoDetail_1.jsp");  
                       }
                       else 

@@ -487,7 +487,7 @@ label.error {
      
      String actionType =  val.equals("登録") ? "ins" : val.equals("登録確定") ? "insConfirm" : val.equals("修正") ? "update" : val.equals("修正確定") ? "updateConfirm" : val.equals("削除") ? "detail" : val.equals("削除確定") ? "detailConfirm" : val.equals("確定") ? "delete" : val.equals("メール送信") ? "send" : "unknown";
      String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
-     String header =  val.equals("登録") ? "登録" : val.equals("登録確定") ? "登録確定" : val.equals("修正") ? "編集": val.equals("修正確定") ? "編集確定" : val.equals("削除") ? "削除" : val.equals("削除確定") ? "削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
+     String header =  val.equals("登録") ? "登録" : val.equals("登録確定") ? "登録確定" : val.equals("修正") ? "編集": val.equals("修正確定") ? "情報編集確定" : val.equals("確定") ? "情報削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
    %>
   <div class="container">
     <div class="new-btn">
@@ -498,7 +498,9 @@ label.error {
         <h1> ユーザー情報<%=webBean.txt("request_name")%>ページ </h1>
     </header>
     <% 
-        if (webBean.txt("request_name").equals("登録") || webBean.txt("request_name").equals("修正")) {
+        if (
+        		webBean.txt("request_name").equals("登録") || 
+        		webBean.txt("request_name").equals("修正")) {
     %>
         <div class="required-note">※は必須項目</div>
     <% 
@@ -535,7 +537,8 @@ label.error {
       %>
 
         <% 
-          if (webBean.txt("request_name").equals("登録") || webBean.txt("request_name").equals("修正")) {
+          if (webBean.txt("request_name").equals("登録") || 
+          	 webBean.txt("request_name").equals("修正")) {
         %>
 
         <div class="left">
@@ -687,8 +690,10 @@ label.error {
       <% 
 
        } else if (
+       		webBean.txt("request_name").equals("修正確定") ||
        		webBean.txt("request_name").equals("メール送信") ||
-       		webBean.txt("request_name").equals("登録確定")
+       		webBean.txt("request_name").equals("登録確定") 
+
        		) {
       %>
         <div class="left">
