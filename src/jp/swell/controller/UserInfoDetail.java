@@ -183,13 +183,30 @@ public class UserInfoDetail extends ControllerBase
                         forward("UserInfoDetail_1.jsp");
                       }
                   }
-              } 
+                  else if ("delete".equals(bean.value("request_cmd"))) 
+                  {
+                      setInputInfo2Dao2WebDelete();
+                      bean.rtrimAllItem();
+                      UserInfoDao dao = setWeb2Dao2InputInfo();
+                      if (inputCheck(dao)) 
+                      {
+                          bean.setMessage("退職予定日を確定します。よろしいですか？");
+                          bean.setValue("request_name", "確定");
+                          forward("UserInfoDetail_3.jsp");  
+                      }
+                      else 
+                      {
+                          bean.setError("入力内容に誤りがあります");
+                          forward("UserInfoDetail_1.jsp"); 
+                      }
+                  }
+              }
               else if ("return".equals(bean.value("action_cmd"))) 
               {
                   forward("ViewUserList.do");
               }
           }
-          
+          /*
           else if ("UserInfoDetail_2".equals(bean.value("form_name")))  
           {  
               if ("go_next".equals(bean.value("action_cmd"))) 
@@ -217,7 +234,7 @@ public class UserInfoDetail extends ControllerBase
                   forward("ViewUserList.do");
               }
           }
-          
+           */
           else if ("UserInfoDetail_3".equals(bean.value("form_name"))) 
           {
               if ("go_next".equals(bean.value("action_cmd"))) 
