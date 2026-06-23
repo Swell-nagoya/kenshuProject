@@ -261,13 +261,19 @@ th {
 		document.getElementById('file_name').value = file_name;
 		document.getElementById('main_form').submit();
 	}
+	function go_detail(action_cmd, request_cmd, main_key) {
+	    document.getElementById("main_form").action = "FileDetail.do";
+	    document.getElementById("form_name").value = "FileList";
+	    document.getElementById("action_cmd").value = action_cmd;
+	    document.getElementById("request_cmd").value = request_cmd;
 
-	function go_detail(action_cmd, request_cmd) {
-		document.getElementById('main_form').action = 'FileDetail.do';
-		document.getElementById('action_cmd').value = action_cmd;
-		document.getElementById('request_cmd').value = request_cmd;
-		document.getElementById('main_form').submit();
+	    if (main_key != null) {
+	        document.getElementById("main_key").value = main_key;
+	    }
+
+	    document.getElementById("main_form").submit();
 	}
+	
 </script>
 </head>
 <body>
