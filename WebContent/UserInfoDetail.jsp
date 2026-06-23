@@ -45,18 +45,6 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
 <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
-<link rel="stylesheet" href="css/common.css" type="text/css" />
-<%
-    if (
-     webBean.txt("request_name").equals("登録確定") ||
-     webBean.txt("request_name").equals("修正確定") ||
-     webBean.txt("request_name").equals("確定") ||
-     webBean.txt("request_name").equals("メール送信")) {
-%>
-<link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
-<% 
-    }
-%>
 <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
 <script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
 <% 
@@ -70,12 +58,22 @@
     } else if (
       webBean.txt("request_name").equals("削除")) {
 %>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="js/datePicker.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/datePicker.js"></script>
+<% 
+    } else if (
+      webBean.txt("request_name").equals("登録確定") ||
+      webBean.txt("request_name").equals("修正確定") ||
+      webBean.txt("request_name").equals("確定") ||
+      webBean.txt("request_name").equals("メール送信")) {
+%>
+<link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
 <%
     } else {}
 %>
 
+<link rel="stylesheet" href="css/common.css" type="text/css" />
 <script type="text/javascript" src="js/common.js"></script>
 <% 
     if (
