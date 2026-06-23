@@ -22,7 +22,19 @@
         webBean.setValue("memail", tempBean.value("memail"));
         session.removeAttribute("temp_user_info");
     }
-%>
+    String maidenName = webBean.txt("maiden_name").trim();
+    String insertUserId = webBean.txt("insert_user_id").trim();
+    String val = webBean.txt("request_name");
+     
+    String actionType =  val.equals("登録") ? "ins" : val.equals("登録確定") ? "insConfirm" 
+                       : val.equals("修正") ? "update" : val.equals("修正確定") ? "updateConfirm" 
+                       : val.equals("削除") ? "delete" : val.equals("確定") ? "deleteConfirm"
+                       : val.equals("メール送信") ? "send" : "unknown";
+    String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
+    String header =  val.equals("登録") ? "登録" : val.equals("登録確定") ? "登録確定" 
+    	           : val.equals("修正") ? "編集": val.equals("修正確定") ? "情報編集確定" 
+     		       : val.equals("確定") ? "情報削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
+   %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -34,25 +46,6 @@
 <link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
 <link rel="icon" href="/kenshuProject/images/favicon.ico" type="image/x-icon">
 <link rel="stylesheet" href="css/common.css" type="text/css" />
-<% 
-   if (
-    webBean.txt("request_name").equals("登録") || 
-    webBean.txt("request_name").equals("修正") || 
-    webBean.txt("request_name").equals("削除") ) {
-%>
-<link rel="stylesheet" href="css/UserInfoDetail01.css" type="text/css" />
-<% } else if (webBean.txt("request_name").equals("削除")) {%>
-<link rel="stylesheet" href="css/UserInfoDetail02.css" type="text/css" />
-<% }  
-    else if (
-     webBean.txt("request_name").equals("登録確定") ||
-     webBean.txt("request_name").equals("修正確定") ||
-     webBean.txt("request_name").equals("確定") ||
-     webBean.txt("request_name").equals("メール送信")) 
-  {
-%>
-<link rel="stylesheet" href="css/UserInfoDetail03.css" type="text/css" />
-<% }%>
 <link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
 <link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
 <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
@@ -62,241 +55,44 @@
 <script src="https://unpkg.com/wanakana@4.0.2/umd/wanakana.min.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/datePicker.js"></script>
+<% 
+   if (
+    webBean.txt("request_name").equals("登録") || 
+    webBean.txt("request_name").equals("修正")
+    ) {
+%>
+<link rel="stylesheet" href="css/UserInfoDetail01.css" type="text/css" />
+<script type="text/javascript" src="js/UserInfoDetail01.js"></script>
+<% } else if (webBean.txt("request_name").equals("削除")) {%>
+<link rel="stylesheet" href="css/UserInfoDetail02.css" type="text/css" />
+<script type="text/javascript" src="js/UserInfoDetail02.js"></script>
+<% } else if (
+     webBean.txt("request_name").equals("登録確定") ||
+     webBean.txt("request_name").equals("修正確定") ||
+     webBean.txt("request_name").equals("確定") ||
+     webBean.txt("request_name").equals("メール送信")) {
+%>
+<link rel="stylesheet" href="css/UserInfoDetail03.css" type="text/css" />
+<script type="text/javascript" src="js/UserInfoDetail03.js"></script>
+<% }%>
 <title>プロフィール</title>
-<script type="text/javascript">
-
-  function go_submit(action_cmd, request_cmd) {
-    document.getElementById('main_form').action = 'UserInfoDetail.do';
-    document.getElementById('action_cmd').value = action_cmd;
-    document.getElementById('request_cmd').value = request_cmd;
-    document.getElementById('main_form').submit();
-    console.log('hit');
-  }
-
-  function go_mail(action_cmd, request_cmd,main_key) {
-    document.getElementById('main_form').action = 'SendPassMail.do';
-    document.getElementById('action_cmd').value = action_cmd;
-    document.getElementById('request_cmd').value = request_cmd;
-    document.getElementById('main_key').value=main_key;
-    document.getElementById('main_form').submit();
-  }
-
-  function go_list(action_cmd, request_cmd,main_key) {
-    document.getElementById('main_form').action = 'UserInfoDetail.do';
-    document.getElementById('action_cmd').value = action_cmd;
-    document.getElementById('request_cmd').value = request_cmd;
-	document.getElementById('main_key').value=main_key;
-    document.getElementById('main_form').submit();
-  }
-
-  function togglePassword(id) {
-    var input = document.getElementById(id);
-    var type = input.getAttribute('type');
-    input.setAttribute('type', type === 'password' ? 'text' : 'password');
-  }
-
-  function isNumeric(value) {
-    // 正規表現を使用して値が数字だけで構成されているかどうかをチェックし、その結果を返す
-    return !isNaN(value) && isFinite(value); 
-  }
-  
-  // イベントリスナーの設定はそのまま
-  const lastNameInput = document.getElementById("last_name");
-  if (lastNameInput) {
-    lastNameInput.addEventListener("input", async function () {
-        const lastName = this.value;
-        const lastNameKana = await fetchKanaFromAPI(lastName);
-        document.getElementById("last_name_kana").value = lastNameKana;
-    });
-  }
-
-  const firstNameInput = document.getElementById("first_name");
-  if (firstNameInput) {
-    firstNameInput.addEventListener("input", async function () {
-        const firstName = this.value;
-        const firstNameKana = await fetchKanaFromAPI(firstName);
-        document.getElementById("first_name_kana").value = firstNameKana;
-    });
-  }
-
-  // 入力欄でenterキーが押された場合の処理
-  jQuery(function($) {
-    $("table.input-table input").keydown(function (e) {
-      if (e.which === 13) {
-        e.preventDefault();  // Enterキーでのデフォルト動作をキャンセル
-        let nextInput = $('table.input-table input').eq($('table.input-table input').index(this) + 1);  // 次のinput要素を取得
-        if (nextInput.length) {
-          nextInput.focus();  // 次のinputにフォーカスを移動
-        }
-      }
-    });
-  });
-  $(function() {
-      $("#leave_date_input").datepicker();
-      $("#leave_date_input").on("change",function() {
-          var value = $(this).val();
-          var value1 = value.replaceAll("-","");
-          $("#leave_date").val(value1);
-      });
-  });
-
-  $(document).ready(function() {
-      // 退職予定日の入力フィールドで入力が行われた時に関数を実行
-      $('#leave_date_input').on('change', function() {
-          // name 属性を fieldName 変数に格納し、値を value 変数に格納
-          var fieldName = $(this).attr('name');
-          var value = $(this).val();
-
-          // 現在のフィールドが leave_dateである場合に、以下の処理を実行する条件を指定
-          if (fieldName === 'leave_date') {
-              if (isNumeric(value)) { // 数字であるかどうかを判断
-                  $(this).removeClass('error'); // クラス削除
-                  $('#error_' + fieldName).text(''); // エラーメッセージ非表示
-              }
-          }
-      });
-  });
-  $(document).ready(function() {
-      // ひらがな変換を保持するための変数
-      let lastHiraganaInput = '';  // 最後のひらがな入力を保存
-
-      // 氏名の入力があるたびに変換
-      $('#last_name, #first_name').on('input', function() {
-          // 氏名の内容を取得
-          let inputText = $(this).val();
-          let kanaText = '';
-
-          // ひらがな部分を取り出し、保持する
-          kanaText = getHiragana(inputText);
-          if (kanaText) {
-              lastHiraganaInput = kanaText;  // ひらがなを保存
-          }
-
-          // ひらがなを氏名の氏名よみフィールド（kana）に反映
-          if ($(this).attr('id') === 'last_name') {
-              $('#last_name_kana').val(lastHiraganaInput);  // ひらがなを氏名よみフィールドに反映
-          } else if ($(this).attr('id') === 'first_name') {
-              $('#first_name_kana').val(lastHiraganaInput);  // ひらがなを氏名よみフィールドに反映
-          }
-      });
-
-      // ひらがな部分を抽出する関数
-      function getHiragana(value) {
-          // ひらがなだけを抽出して返す
-          var hiraganaPattern = /[\u3040-\u309Fー]+/g;
-          var matches = value.match(hiraganaPattern);
-          if (matches) {
-              return matches.join('');  // 複数のひらがな部分を1つに結合
-          }
-          return '';  // ひらがな部分がない場合は空
-      }
-  });
-
-  
-  $(document).ready(function() {
-      // 氏名の入力フィールドで入力が行われた時に関数を実行
-      $('#last_name, #first_name').on('input', function() {
-          $(this).removeClass('error'); // 入力が行われたらerrorクラスを削除
-          $('#error_' + $(this).attr('name')).text(''); // エラーメッセージをクリア
-      });
-
-      // 氏名よみ、ミドルネームよみ、旧姓よみの入力フィールドで入力が行われた時に関数を実行
-      $('#last_name_kana, #first_name_kana, #middle_name_kana, #maiden_name_kana').on('input', function() {
-          var fieldName = $(this).attr('name');
-          var value = $(this).val();
-          if (fieldName === 'last_name_kana' || fieldName === 'first_name_kana' || fieldName === 'middle_name_kana' || fieldName === 'maiden_name_kana') {
-              if (isHiragana(value)) {
-                  $(this).removeClass('error');
-                  $('#error_' + $(this).attr('name')).text('');
-              }
-          }
-      });
-
-      function isHiragana(value) {
-          // 正規表現を使ってひらがなの範囲と伸ばし棒（ー）を含むことを確認
-          var hiraganaPattern = /^[\u3040-\u309Fー]+$/;
-          return hiraganaPattern.test(value);
-      }
-
-      // ＩＤの入力フィールドで入力が行われた時に関数を実行
-      $('#insert_user_id').on('input', function() {
-          var idPattern = /^[a-zA-Z0-9]+$/;
-          var value = $(this).val();
-
-          if (idPattern.test(value)) {
-              // 半角英数で入力が行われた場合
-              $(this).removeClass('error');
-              $('#error_' + $(this).attr('name')).text('');
-          }
-      });
-
-      // メールアドレスの入力フィールドで入力が行われた時に関数を実行
-      $('#memail').on('input', function() {
-          var emailPattern = /^[a-zA-Z0-9_+-]+(\.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$/;
-          var value = $(this).val();
-
-          if (emailPattern.test(value)) {
-              // メールアドレス形式が正しい場合
-              $(this).removeClass('error');
-              $('#error_' + $(this).attr('name')).text('');
-          }
-      });
-  
-      // ユーザー区分のラジオボタンに変更があったときにエラーを外す処理
-      $('input[name="admin"]').on('change', function() {
-          // ラジオボタンが選択された時にエラークラスを外す
-          $('#userTypeContainer').find('.error').each(function() {
-              $(this).removeClass('error');
-          });
-          
-          // エラーメッセージのテキストも空にする
-          $('#error_admin').text('');
-      });
-  });
-
-  $(document).ready(function() {
-      // メールアドレスと確認用メールアドレスのフィールドを監視
-      $('#memail, #memail_1').on('input', function() {
-        // 入力フィールドの値を取得
-        var email = $('#memail').val();
-        var confirmEmail = $('#memail_1').val();
-
-        // メールアドレスと確認用メールアドレスが一致するかどうかをチェック
-        if (email !== confirmEmail) {
-          // 一致しない場合、エラークラスを追加
-          $('#memail_1').addClass('error');
-          $('#error_memail_1').text('メールアドレスが一致しません');
-          $('#submit_btn').prop('disabled', true);
-        } else {
-          // 一致する場合、エラークラスを削除
-          $('#memail_1').removeClass('error');
-          $('#error_memail_1').text('');
-          $('#submit_btn').prop('disabled', false);
-        }
-      });
-    });
-
-  
-</script>
 </head>
 <body>
-   <%
-     String maidenName = webBean.txt("maiden_name").trim();
-     String insertUserId = webBean.txt("insert_user_id").trim();
-     String val = webBean.txt("request_name");
-     
-     String actionType =  val.equals("登録") ? "ins" : val.equals("登録確定") ? "insConfirm" 
-                        : val.equals("修正") ? "update" : val.equals("修正確定") ? "updateConfirm" 
-                        : val.equals("削除") ? "delete" : val.equals("確定") ? "deleteConfirm"
-                        : val.equals("メール送信") ? "send" : "unknown";
-     String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
-     String header =  val.equals("登録") ? "登録" : val.equals("登録確定") ? "登録確定" 
-     		        : val.equals("修正") ? "編集": val.equals("修正確定") ? "情報編集確定" 
-     		        : val.equals("確定") ? "情報削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
-   %>
   <div class="container">
     <div class="new-btn">
+    
+    
+<%if (
+     webBean.txt("request_name").equals("登録確定") ||
+     webBean.txt("request_name").equals("修正確定") ||
+     webBean.txt("request_name").equals("確定") ||
+     webBean.txt("request_name").equals("メール送信")) {
+%>
       <input type="button" value=" 戻る " onclick="go_list('return','<%=actionType%>','<%=webBean.txt("user_info_id")%>')" />
+    
+<% } else { %>
+      <input type="button" value="　戻る　" onclick="go_list('return')" />
+<% } %>
     </div>
     <header>
         <h1> ユーザー情報<%=webBean.txt("request_name")%>ページ </h1>
@@ -322,7 +118,6 @@
 
       
         <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
-        
         
       <% 
       if (
