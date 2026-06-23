@@ -42,103 +42,127 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
-<link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
-<link rel="icon" href="/kenshuProject/images/favicon.ico" type="image/x-icon">
+<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
 <link rel="stylesheet" href="css/common.css" type="text/css" />
-<link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
-<link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
-<script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
-<script type="text/javascript" src="js/common.js"></script>
-<script src="https://unpkg.com/wanakana@4.0.2/umd/wanakana.min.js"></script>
-<script type="text/javascript" src="js/common.js"></script>
-<script type="text/javascript" src="js/datePicker.js"></script>
-<% 
-   if (
-    webBean.txt("request_name").equals("登録") || 
-    webBean.txt("request_name").equals("修正")
-    ) {
-%>
-<link rel="stylesheet" href="css/UserInfoDetail01.css" type="text/css" />
-<script type="text/javascript" src="js/UserInfoDetail01.js"></script>
-<% } else if (webBean.txt("request_name").equals("削除")) {%>
-<link rel="stylesheet" href="css/UserInfoDetail02.css" type="text/css" />
-<script type="text/javascript" src="js/UserInfoDetail02.js"></script>
-<% } else if (
+<%
+    if (
      webBean.txt("request_name").equals("登録確定") ||
      webBean.txt("request_name").equals("修正確定") ||
      webBean.txt("request_name").equals("確定") ||
      webBean.txt("request_name").equals("メール送信")) {
 %>
+<link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
+<% 
+    }
+%>
+<script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
+<script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
+<% 
+   if (
+      webBean.txt("request_name").equals("登録") || 
+      webBean.txt("request_name").equals("修正")
+    ) {
+%>
+<script src="https://unpkg.com/wanakana@4.0.2/umd/wanakana.min.js"></script>
+<% 
+    } else if (
+      webBean.txt("request_name").equals("削除")) {
+%>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="js/datePicker.js"></script>
+<%
+    } else {}
+%>
+
+<script type="text/javascript" src="js/common.js"></script>
+<% 
+    if (
+      webBean.txt("request_name").equals("登録") || 
+      webBean.txt("request_name").equals("修正")
+    ) {
+%>
+<link rel="stylesheet" href="css/UserInfoDetail01.css" type="text/css" />
+<script type="text/javascript" src="js/UserInfoDetail01.js"></script>
+<% 
+    } else if (
+      webBean.txt("request_name").equals("削除")) {%>
+<link rel="stylesheet" href="css/UserInfoDetail02.css" type="text/css" />
+<script type="text/javascript" src="js/UserInfoDetail02.js"></script>
+<% 
+    } else if (
+      webBean.txt("request_name").equals("登録確定") ||
+      webBean.txt("request_name").equals("修正確定") ||
+      webBean.txt("request_name").equals("確定") ||
+      webBean.txt("request_name").equals("メール送信")) {
+%>
 <link rel="stylesheet" href="css/UserInfoDetail03.css" type="text/css" />
 <script type="text/javascript" src="js/UserInfoDetail03.js"></script>
-<% }%>
+<% 
+    } else {}
+ %>
 <title>プロフィール</title>
 </head>
 <body>
   <div class="container">
     <div class="new-btn">
     
-    
-<%if (
-     webBean.txt("request_name").equals("登録確定") ||
-     webBean.txt("request_name").equals("修正確定") ||
-     webBean.txt("request_name").equals("確定") ||
-     webBean.txt("request_name").equals("メール送信")) {
+<%
+    if (
+       webBean.txt("request_name").equals("登録確定") ||
+       webBean.txt("request_name").equals("修正確定") ||
+       webBean.txt("request_name").equals("確定") ||
+       webBean.txt("request_name").equals("メール送信")) {
 %>
       <input type="button" value=" 戻る " onclick="go_list('return','<%=actionType%>','<%=webBean.txt("user_info_id")%>')" />
     
-<% } else { %>
+<%
+    } else { 
+%>
       <input type="button" value="　戻る　" onclick="go_list('return')" />
-<% } %>
+<%  
+    }
+%>
     </div>
     <header>
         <h1> ユーザー情報<%=webBean.txt("request_name")%>ページ </h1>
     </header>
-    <% 
-        if (
-        		webBean.txt("request_name").equals("登録") || 
-        		webBean.txt("request_name").equals("修正")) {
-    %>
-        <div class="required-note">※は必須項目</div>
-    <% 
-         }
-    %>
-        <form method="post" id="main_form" action="">
+<% 
+    if (
+        webBean.txt("request_name").equals("登録") || 
+        webBean.txt("request_name").equals("修正")) {
+%>
+    <div class="required-note">※は必須項目</div>
+<% 
+    }
+%>
+    <form method="post" id="main_form" action="">
 
-        <input type="hidden" name="form_name" id="form_name" value="UserInfoDetail_1" />
-        <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
-        <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" /> 
-        <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
-        <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
-        <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
-        <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
+      <input type="hidden" name="form_name" id="form_name" value="UserInfoDetail_1" />
+      <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
+      <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" /> 
+      <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
+      <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
+      <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
+      <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
 
       
-        <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
+      <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
         
-      <% 
-      if (
-      		webBean.txt("request_name").equals("登録") || 
-      		webBean.txt("request_name").equals("修正") || 
-      		webBean.txt("request_name").equals("削除")
-      ) {
-      %>
-      
+<% 
+    if (
+        webBean.txt("request_name").equals("登録") || 
+        webBean.txt("request_name").equals("修正") || 
+        webBean.txt("request_name").equals("削除") ) {
+%>
         <div class="errors"><%=webBean.dispErrorMessages()%></div>
-        
-      <% 
-
-       }
-      %>
-
-        <% 
-          if (webBean.txt("request_name").equals("登録") || 
-          	 webBean.txt("request_name").equals("修正")) {
-        %>
-
+<% 
+  }
+%>
+<% 
+    if (
+        webBean.txt("request_name").equals("登録") || 
+        webBean.txt("request_name").equals("修正")) {
+%>
         <div class="left">
           <table class="input-table">
           <tr>
@@ -224,11 +248,10 @@
       <div class="button">
         <input type="button" id="submit_btn" value="<%=webBean.txt("request_name")%>する" onclick="go_submit('go_next','<%=webBean.txt("request_cmd")%>')" /> 
       </div>
-      <% 
-       } else if (webBean.txt("request_name").equals("削除")) {
-      %>
-
-
+<% 
+    } else if (
+      webBean.txt("request_name").equals("削除")) {
+%>
        <div class="left">
          <table class="input-table">
          <tr>
@@ -283,16 +306,13 @@
         <div class="button">
           <input type="button" id="submitButton" value=" 確定する " onclick="go_submit('go_next','delete','<%=webBean.txt("user_info_id")%>')" />
         </div>
-
-      <% 
-
-       } else if (
-       		webBean.txt("request_name").equals("登録確定") ||
-       		webBean.txt("request_name").equals("修正確定") ||
-       		webBean.txt("request_name").equals("確定") ||
-       		webBean.txt("request_name").equals("メール送信")
-       		) {
-      %>
+<% 
+    } else if (
+      webBean.txt("request_name").equals("登録確定") ||
+      webBean.txt("request_name").equals("修正確定") ||
+      webBean.txt("request_name").equals("確定") ||
+      webBean.txt("request_name").equals("メール送信")) {
+%>
         <div class="left">
           <table class="input-table">
           <tr>
@@ -370,13 +390,9 @@
         <div class="button">
           <input type="button" id="submitButton" value="<%=val%>" onclick="<%=actionBtn%>('go_next','<%=actionType%>','<%=webBean.txt("user_info_id")%>')" />
         </div>
-
-      <% 
-       } else {
-      %>
-      <%
-       }
-      %>
+<% 
+     } else {}
+%>
     </form>
   </div>
 </body>

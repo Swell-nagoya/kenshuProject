@@ -243,19 +243,22 @@ public class UserInfoDetail extends ControllerBase
 
                if ("insConfirm".equals(bean.value("request_cmd"))) 
                {
+                   bean.setValue("request_cmd", "inc");
                    bean.setValue("request_name", "登録");
                    setInputInfo2Dao2Web();
                    forward("UserInfoDetail_1.jsp");
                }
                else if ("updateConfirm".equals(bean.value("request_cmd"))) 
                {
+                   bean.setValue("request_cmd", "update");
                    bean.setValue("request_name", "修正");
                    setInputInfo2Dao2Web();
                    setWeb2Dao2InputInfo();
                    forward("UserInfoDetail_1.jsp");
                }
                else if ("deleteConfirm".equals(bean.value("request_cmd"))) 
-               {
+               {   
+               	   bean.setValue("request_cmd", "delete");
                    bean.setValue("request_name", "削除");
                    setInputInfo2Dao2Web();
                    setWeb2Dao2InputInfo();
