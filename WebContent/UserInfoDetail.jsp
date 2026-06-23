@@ -31,9 +31,11 @@
                        : val.equals("削除") ? "delete" : val.equals("確定") ? "deleteConfirm"
                        : val.equals("メール送信") ? "send" : "unknown";
     String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
-    String header =  val.equals("登録") ? "登録" : val.equals("登録確定") ? "登録確定" 
-    	           : val.equals("修正") ? "編集": val.equals("修正確定") ? "情報編集確定" 
-     		       : val.equals("確定") ? "情報削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
+    
+    String header =  val.equals("登録") ? "登録情報" : val.equals("登録確定") ? "登録確定" 
+    	           : val.equals("修正") ? "編集情報": val.equals("修正確定") ? "情報編集確定" 
+    	           : val.equals("削除") ? "情報削除" : val.equals("確定") ? "情報削除確定" 
+    	           : val.equals("メール送信") ? "情報確認" : "unknown";
    %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -100,7 +102,7 @@
 <% 
     } else {}
  %>
-<title>プロフィール</title>
+<title>ユーザー<%=webBean.txt("request_name")%>ページ</title>
 </head>
 <body>
   <div class="container">
@@ -124,7 +126,7 @@
 %>
     </div>
     <header>
-        <h1> ユーザー情報<%=webBean.txt("request_name")%>ページ </h1>
+        <h1>ユーザー<%=webBean.txt("request_name")%>ページ</h1>
     </header>
 <% 
     if (
