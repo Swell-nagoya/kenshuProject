@@ -30,9 +30,29 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
 <link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
 <link rel="icon" href="/kenshuProject/images/favicon.ico" type="image/x-icon">
 <link rel="stylesheet" href="css/common.css" type="text/css" />
+<% 
+   if (
+    webBean.txt("request_name").equals("登録") || 
+    webBean.txt("request_name").equals("修正") || 
+    webBean.txt("request_name").equals("削除") ) {
+%>
+<link rel="stylesheet" href="css/UserInfoDetail01.css" type="text/css" />
+<% } else if (webBean.txt("request_name").equals("削除")) {%>
+<link rel="stylesheet" href="css/UserInfoDetail02.css" type="text/css" />
+<% }  
+    else if (
+     webBean.txt("request_name").equals("登録確定") ||
+     webBean.txt("request_name").equals("修正確定") ||
+     webBean.txt("request_name").equals("確定") ||
+     webBean.txt("request_name").equals("メール送信")) 
+  {
+%>
+<link rel="stylesheet" href="css/UserInfoDetail03.css" type="text/css" />
+<% }%>
 <link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
 <link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
 <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
@@ -40,249 +60,9 @@
 <script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script src="https://unpkg.com/wanakana@4.0.2/umd/wanakana.min.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/datePicker.js"></script>
 <title>プロフィール</title>
-<style type="text/css">
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f9f9f9;
-  margin: 0;
-  padding: 10px;
-}
-
-header {
-  position: relative;
-  background: #00bcd4; /* ヘッダーの背景色 */
-  width: 100%; /* 幅を画面いっぱいに */
-  height: 70px;
-  margin: 15px auto; /* 不要な余白を排除 */
-  display: flex; /* Flexboxを有効にする */
-  justify-content: center; /* 水平方向に中央揃え */
-  align-items: center; /* 垂直方向に中央揃え */
-}
-
-h1 {
-  font-size: 50px;
-  color: white; /* リンクの文字色を白に */
-  text-decoration: none; /* 下線を削除 */
-  font-weight: normal;
-}
-
-.container {
-  position: relative; /* ボタンを基準に配置するため */
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 90%; /* コンテナの幅を画面幅に揃える */
-  margin: 20px auto; /* 中央寄せ */
-  
-}
-
-.left {
-  margin-bottom: 20px;
-  text-align: center;
-  display: flex;
-  justify-content: center;  /* 横方向で中央に配置 */
-  align-items: center;      /* 縦方向で中央に配置 */
-}
-
-.input-table{
-  width: 60%;
-}
-
-/* ボタンの共通スタイル */
-input[type="button"] {
-  border-radius: 10px; /* 角を丸くする */
-  color: #fff; /* 文字色 */
-  cursor: pointer; /* カーソルをポインタにする */
-  background: #90a0b0; /* デフォルトの背景色 */
-}
-
-/* ホバー時のスタイル */
-input[type="button"]:hover {
-  background-color: #4baea8; /* ホバー時の背景色 */
-}
-
-.new-btn {
-  position: absolute;
-  right: 10px; /* 右端に10pxの余白を取る */
-  top: 5px;   
-}
-
-/* .new-btnのスタイル */
-.new-btn input {
-  border-radius: 10px;
-  background: #fff; /* 背景色を白に */
-  color: #000; /* 文字色を黒に */
-  cursor: pointer;
-}
-
- .button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.button input[type="button"] {
-  padding: 0px 50px; /* ボタンの内側余白 */
-  font-size: 24px; /* 文字サイズ */
-  border: 2px solid #fff; /* ボタンの枠線 */
-  background-color: #00bcd4; /* 上書きの背景色 */
-}
-
-.button input[type="button"]:hover {
-  background-color: #4baea8; /* ホバー時の背景色 */
-}
-
-
-.required-note {
-  position: absolute;
-  top: 110px;
-  right: 20px;
-  font-weight: bold;
-  font-size: 18px;
-  color: #f00;
-}
-
-.Form-Item {
-  border-top: 1px solid #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@media screen and (max-width: 480px) {
-  .Form-Item {
-    padding: 10px;
-    flex-wrap: wrap;
-  }
-}
-
-.Form-Item:nth-child(5) {
-  border-bottom: 1px solid #ddd;
-}
-
-.Form-Item-Label {
-  flex: 0 0 150px;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-@media screen and (max-width: 480px) {
-  .Form-Item-Label {
-    font-size: 16px;
-    flex: 0 0 100%;
-  }
-}
-
-.Form-Item-Label-Required {
-  border-radius: 4px;
-  margin-right: 8px;
-  padding: 2px 6px;
-  background: #5bc8ac;
-  color: #fff;
-  font-size: 16px;
-  text-align: center;
-}
-
-input[type="text"]{
-  border: 1px solid #696969;
-  border-radius: 4px;
-  padding: 5px;
-  background: #FFF;
-}
-
-input[type="email"]{
-  border: 1px solid #696969;
-  border-radius: 4px;
-  padding: 5px;
-}
-
-.email-container input {
-  width: 100%;
-  max-width: 400px;
-  margin-right: 0; 
-}
-
-select, .Form-Item-Input, .Form-Item-Textarea, .email-container input{
-  font-size: 16px;
-  width: 100%;
-  max-width: 400px;
-}
-
-@media screen and (max-width: 480px) {
-  select, .Form-Item-Input, .Form-Item-Textarea, .email-container input{
-    font-size: 16px;
-  }
-}
-
-.errors, .messages {
-  margin-bottom: 20px;
-  font-size: 16px
-}
-
-
-input::placeholder {
-  color: rgba(0, 0, 0, 0.3);
-}
-
-.style_head3 {
-  padding-left: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
-}
-
-.style_head_size {
-  height: 30px;
-  vertical-align: middle;
-  display: table-cell;
-  background: #00bcd4;
-  color: #fff;
-}
-
-td.input-text {
-  text-align: left;
-  background: #fff;
-}
-
-table {
-  border-collapse: collapse; 
-  width: 100%;
-  border: 1px solid #ddd;
-}
-
-td, th {
-  border: 1px solid #ddd; 
-  padding: 5px;
-}
-
-.label {
-  font-weight: 600;
-}
-
-span {
-  color: #f00;
-  font-size: 16px;
-}
-
-span.error{
-  color: #f00;
-  background-color: transparent;
-}
-
-input.error {
-  color: #FF0000;
-  background-color: #FFCCCC;
-  border: 1px solid #FF0000;
-}
-
-label.error {
-  color: #FF0000; 
-
-}
-</style>
 <script type="text/javascript">
 
   function go_submit(action_cmd, request_cmd) {
@@ -300,13 +80,6 @@ label.error {
     document.getElementById('main_key').value=main_key;
     document.getElementById('main_form').submit();
   }
-  /*
-  function go_list(action_cmd) {
-    document.getElementById('main_form').action = 'UserInfoDetail.do';
-    document.getElementById('action_cmd').value = action_cmd;
-    document.getElementById('main_form').submit();
-  }
-  */
 
   function go_list(action_cmd, request_cmd,main_key) {
     document.getElementById('main_form').action = 'UserInfoDetail.do';
@@ -322,20 +95,10 @@ label.error {
     input.setAttribute('type', type === 'password' ? 'text' : 'password');
   }
 
-  // 入力欄でenterキーが押された場合の処理
-  /*
-  jQuery(function($) {
-    $("table.input-table input").keydown(function (e) {
-      if (e.which === 13) {
-        e.preventDefault();  // Enterキーでのデフォルト動作をキャンセル
-        let nextInput = $('table.input-table input').eq($('table.input-table input').index(this) + 1);  // 次のinput要素を取得
-        if (nextInput.length) {
-          nextInput.focus();  // 次のinputにフォーカスを移動
-        }
-      }
-    });
-  });
-  */
+  function isNumeric(value) {
+    // 正規表現を使用して値が数字だけで構成されているかどうかをチェックし、その結果を返す
+    return !isNaN(value) && isFinite(value); 
+  }
   
   // イベントリスナーの設定はそのまま
   const lastNameInput = document.getElementById("last_name");
@@ -356,6 +119,43 @@ label.error {
     });
   }
 
+  // 入力欄でenterキーが押された場合の処理
+  jQuery(function($) {
+    $("table.input-table input").keydown(function (e) {
+      if (e.which === 13) {
+        e.preventDefault();  // Enterキーでのデフォルト動作をキャンセル
+        let nextInput = $('table.input-table input').eq($('table.input-table input').index(this) + 1);  // 次のinput要素を取得
+        if (nextInput.length) {
+          nextInput.focus();  // 次のinputにフォーカスを移動
+        }
+      }
+    });
+  });
+  $(function() {
+      $("#leave_date_input").datepicker();
+      $("#leave_date_input").on("change",function() {
+          var value = $(this).val();
+          var value1 = value.replaceAll("-","");
+          $("#leave_date").val(value1);
+      });
+  });
+
+  $(document).ready(function() {
+      // 退職予定日の入力フィールドで入力が行われた時に関数を実行
+      $('#leave_date_input').on('change', function() {
+          // name 属性を fieldName 変数に格納し、値を value 変数に格納
+          var fieldName = $(this).attr('name');
+          var value = $(this).val();
+
+          // 現在のフィールドが leave_dateである場合に、以下の処理を実行する条件を指定
+          if (fieldName === 'leave_date') {
+              if (isNumeric(value)) { // 数字であるかどうかを判断
+                  $(this).removeClass('error'); // クラス削除
+                  $('#error_' + fieldName).text(''); // エラーメッセージ非表示
+              }
+          }
+      });
+  });
   $(document).ready(function() {
       // ひらがな変換を保持するための変数
       let lastHiraganaInput = '';  // 最後のひらがな入力を保存
@@ -533,7 +333,6 @@ label.error {
       %>
       
         <div class="errors"><%=webBean.dispErrorMessages()%></div>
-
         
       <% 
 
