@@ -111,7 +111,7 @@ public class RoomList extends ControllerBase
                 forward("RoomList.jsp");
             }
         }
-        else if ("RoomDetail".equals(bean.value("form_name")) || "UserInfoDetail_2".equals(bean.value("form_name")) || "UserInfoDetail_3".equals(bean.value("form_name")))
+        else if ("RoomDetail".equals(bean.value("form_name")))
         {
             setWebBeanFromSerialize(bean.value("search_info"));
             bean = getWebBean();
