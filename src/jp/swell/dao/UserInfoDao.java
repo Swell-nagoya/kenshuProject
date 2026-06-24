@@ -1337,7 +1337,7 @@ public class UserInfoDao implements Serializable {
             where.append(")");
         }
         where.append(where.length() > 0 ? " AND " : "");
-        where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date > '" + todayStr + "'))");
+        where.append("state_flg = '1'");
 
         if (where.length() > 0) {
             return "where " + where.toString();
