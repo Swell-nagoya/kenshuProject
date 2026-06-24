@@ -243,7 +243,7 @@ public class UserInfoDetail extends ControllerBase
 
                if ("insConfirm".equals(bean.value("request_cmd"))) 
                {
-                   bean.setValue("request_cmd", "inc");
+                   bean.setValue("request_cmd", "ins");
                    bean.setValue("request_name", "登録");
                    setInputInfo2Dao2Web();
                    forward("UserInfoDetail.jsp");
