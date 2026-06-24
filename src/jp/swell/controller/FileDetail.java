@@ -67,32 +67,52 @@ public class FileDetail extends ControllerBase {
 		String inputName = bean.value("input_name");
 		String mainKey = bean.value("main_key");
 		String fileName = bean.value("file_name");
+		
 		FileDao dao = setWeb2Dao2InputInfo();
 
 		if ("FileDetail".equals(form)) {
-			// ① upload ボタン押下 → 確認画面へ
-			if ("upload".equals(actionCmd)) {
-				try {
-					setWeb2Dao2InputInfo(getRequest());
-					bean.setValue("request_name", "登録する");
-					bean.setMessage("この内容で登録します。よろしいですか？");
-					bean.setValue("input_name", inputName);
-					forward("FileDetail_2.jsp");
-				} catch (IOException | ServletException e) {
-					throw new AtareSysException(e);
-				}
 
-				// ② sub ボタン押下 → サブ画面（ユーザー選択）へ（送信先のみ）
-			} else if ("sub".equals(actionCmd)) {
-				searchUserList();
-				bean.setValue("request_name", "送信先");
-				forward("FileUserList.jsp");
-				return; // 忘れずに戻す
+		    if ("upload".equals(actionCmd)) {
+		        try {
+		            setWeb2Dao2InputInfo(getRequest());
 
-				// ③ return ボタン押下 → 一覧画面へ戻す
-			} else if ("return".equals(actionCmd)) {
-				forward("FileList.do");
-			}
+		            String destinationUserInfoIdsString = bean.value("destination_user_info_id");
+		            byte[] fileData = (byte[]) bean.object("file");
+
+		            if (fileData == null || fileData.length == 0) {
+		                bean.setError("ファイルを選択してください。");
+		                forward("FileDetail.jsp");
+		                return;
+		            }
+
+		            if (destinationUserInfoIdsString == null
+		                    || destinationUserInfoIdsString.replace("\u00A0", "").trim().length() == 0) {
+		                bean.setError("送信先ユーザーを選択してください。");
+		                forward("FileDetail.jsp");
+		                return;
+		            }
+		            UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
+		            FileUpload(getRequest(), loginInfo.getUserInfoId());
+
+		            bean.setValue("request_name", "登録する");
+		            bean.setMessage("この内容で登録します。よろしいですか？");
+		            bean.setValue("input_name", inputName);
+		            forward("FileDetail_2.jsp");
+
+		        } catch (IOException | ServletException e) {
+		            throw new AtareSysException(e);
+		        }
+
+		    } else if ("sub".equals(actionCmd)) {
+		        searchUserList();
+		        bean.setValue("request_name", "送信先");
+		        forward("FileUserList.jsp");
+		        return;
+
+		    } else if ("return".equals(actionCmd)) {
+		        forward("FileList.do");
+		        return;
+		    }
 
 		} else if ("FileList".equals(form)) {
 			if ("go_next".equals(actionCmd)) {
@@ -132,45 +152,41 @@ public class FileDetail extends ControllerBase {
 			}
 
 		} else if ("FileDetail_2".equals(form)) {
-			if ("go_next".equals(actionCmd)) {
-				if ("insEnter".equals(requestCmd)) {
-					searchList();
-					redirect("FileList.do");
 
-				} else if ("download".equals(requestCmd)) {
-					if (!dao.dbSelect(mainKey)) {
-						bean.setError("ファイルが見つかりませんでした。");
-						forward("FileList.jsp");
-						return;
-					}
-					UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
+		    if ("go_next".equals(actionCmd)) {
 
-					if (!loginInfo.getUserInfoId().equals(dao.getUserInfoId())
-							&& !loginInfo.getUserInfoId().equals(dao.getUploadUserId())) {
-						bean.setError("このファイルをダウンロードする権限がありません。");
-						forward("FileList.jsp");
-						return;
-					}
-					downloadFileWrite(dao);
+		        if ("insEnter".equals(requestCmd)) {
+		            searchList();
+		            redirect("FileList.do");
 
-				} else if ("deleteEnter".equals(requestCmd)) {
-					dbDeletef();
-				}
+		        } else if ("download".equals(requestCmd)) {
+		            // ダウンロード処理
 
-			} else if ("return".equals(actionCmd)) {
-				if ("ins".equals(requestCmd)) {
-					forward("FileDetail.jsp");
-				} else if ("delete".equals(requestCmd)) {
-					searchList();
-					redirect("FileList.do");
-				}
-			}
+		        } else if ("deleteEnter".equals(requestCmd)) {
+		            dbDeletef();
+		        }
 
-		} else if ("FileDetail_3".equals(form)) {
-			if ("return".equals(actionCmd)) {
-				searchList();
-				redirect("FileList.do");
-			}
+		    } else if ("return".equals(actionCmd)) {
+
+		        if ("ins".equals(requestCmd)) {
+		            forward("FileDetail.jsp");
+
+		        } else if ("delete".equals(requestCmd)) {
+		            searchList();
+		            redirect("FileList.do");
+		        }
+		    }
+
+		} else if ("FileDetail_3".equals(form)) {	
+
+		    if ("return".equals(actionCmd)) {
+		        searchList();
+		        redirect("FileList.do");
+		    }
+
+		} else {
+		    searchList();
+		    forward("FileDetail.jsp");
 		}
 	}
 
@@ -370,11 +386,14 @@ public class FileDetail extends ControllerBase {
 
 		UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
 
-		System.out.println("loginInfo.getUserInfoId()=" + loginInfo.getUserInfoId());
-		System.out.println("loginInfo.getLoginId()=" + loginInfo.getLoginId());
-		System.out.println("loginInfo.getUserId()=" + loginInfo.getUserId());
 
-		FileUpload(request, loginInfo.getUserInfoId());
+		//FileUpload(request, loginInfo.getUserInfoId());
+		
+		String destinationUserInfoIdsString = bean.value("destination_user_info_id");
+		System.out.println("destination_user_info_id=[" + destinationUserInfoIdsString + "]");
+		
+		Object fileObj = bean.object("file");
+		System.out.println("file=[" + fileObj + "]");
 
 		bean.setValue("input_info", Sup.serialize(dao));
 		bean.setValue("dao", dao);
@@ -399,7 +418,13 @@ public class FileDetail extends ControllerBase {
 		String senderUserId = pUserInfoId;
 
 		// 送信先ユーザーIDを取得
-		String destinationUserInfoIdsString = bean.value("destination_user_info_id"); // 送信先ユーザーID
+		String destinationUserInfoIdsString = bean.value("destination_user_info_id");
+
+		if (destinationUserInfoIdsString == null
+		        || destinationUserInfoIdsString.replace("\u00A0", "").trim().length() == 0) {
+		    return fileDaos;
+		}
+
 		String[] destinationUserInfoIds = destinationUserInfoIdsString.split(",");
 
 		// 最初のユーザーを送信元として選択
@@ -438,9 +463,16 @@ public class FileDetail extends ControllerBase {
 
 		// 各送信先ユーザーに対してデータベースにファイル情報を登録
 		for (String userInfoId : destinationUserInfoIds) { // 送信先ユーザーIDを使用
-			String fileId = UUID.randomUUID().toString().substring(0, 13);
-			FileDao fileDao = new FileDao();
 
+		    userInfoId = userInfoId.replace("\u00A0", "").trim();
+
+		    if (userInfoId.length() == 0) {
+		        continue;
+		    }
+
+		    String fileId = UUID.randomUUID().toString().substring(0, 13);
+		    FileDao fileDao = new FileDao();
+		    
 			// expirationDateをString型に変換
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String expirationDateString = sdf.format(expirationDate);
@@ -458,20 +490,26 @@ public class FileDetail extends ControllerBase {
 	 * @return
 	 */
 	private String getMimeTypeFromBytes(byte[] fileData) {
-		if (fileData.length >= 4) {
-			String header = new String(fileData, 0, 4);
 
-			if (header.startsWith("\u00D0\u00CF\u0011")) { // Wordファイルの判定
-				return "application/msword"; // .doc
-			} else if (header.startsWith("PK")) { // Word 2007以降のファイル
-				return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
-			} else if (header.startsWith("PK")) { // Excelファイルの判定
-				return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
-			} else if (header.startsWith("\u00D0\u00CF\u0011")) {
-				return "application/vnd.ms-excel"; // .xls
-			}
-		}
-		return ""; // デフォルト
+	    if (fileData == null || fileData.length == 0) {
+	        return "";
+	    }
+
+	    if (fileData.length >= 4) {
+	        String header = new String(fileData, 0, 4);
+
+	        if (header.startsWith("\u00D0\u00CF\u0011")) {
+	            return "application/msword";
+	        } else if (header.startsWith("PK")) {
+	            return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	        } else if (header.startsWith("PK")) {
+	            return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	        } else if (header.startsWith("\u00D0\u00CF\u0011")) {
+	            return "application/vnd.ms-excel";
+	        }
+	    }
+
+	    return "";
 	}
 
 	/**
