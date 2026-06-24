@@ -203,8 +203,15 @@ public class UserInfoDetail extends ControllerBase
                   else if ("insConfirm".equals(bean.value("request_cmd"))) 
                   {
                    setInputInfo2Dao2Web();
-                   signUp();
-                   scheduleInsert();
+                   
+                   if (
+                   		(signUp() == false) || 
+                   		(scheduleInsert() == false)
+                    ) {
+                    forward("ViewUserList.jsp");
+                    return;
+                   }
+
                    redirect("ViewUserList.do");
                   }
                   else if ("updateConfirm".equals(bean.value("request_cmd"))) 
@@ -670,7 +677,7 @@ public class UserInfoDetail extends ControllerBase
             redirect("ViewUserList.do");
         } catch (Exception e) {
             DbBase.dbRollbackTran();
-            forward("UserPassReset.jsp");
+            forward("ViewUserList.jsp");
         }
         
     }
