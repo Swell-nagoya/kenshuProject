@@ -24,6 +24,7 @@
 <meta name="description" content="">
 <meta charset="UTF-8">
 <link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet"/>
+<link type="text/css" href="css/RoomDetail01.css" rel="stylesheet"/>
 <link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon"/>
 <link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon"/>
 <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
@@ -32,110 +33,6 @@
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/flatpickr.min.js"></script>
 <title>部屋登録画面</title>
-<style>
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f9f9f9;
-  margin: 0;
-  padding: 10px;
-}
-
-header {
-  position: relative;
-  background: #00bcd4; /* ヘッダーの背景色 */
-  width: 100%; /* 幅を画面いっぱいに */
-  height: 70px;
-  margin: 15px auto; /* 不要な余白を排除 */
-  display: flex; /* Flexboxを有効にする */
-  justify-content: center; /* 水平方向に中央揃え */
-  align-items: center; /* 垂直方向に中央揃え */
-}
-
-h1 {
-  font-size: 50px;
-  color: white; /* リンクの文字色を白に */
-  text-decoration: none; /* 下線を削除 */
-  font-weight: normal;
-}
-
-.container {
-  position: relative; /* ボタンを基準に配置するため */
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 90%; /* コンテナの幅を画面幅に揃える */
-  margin: 20px auto; /* 中央寄せ */
-  
-}
-
-.left {
-  margin-bottom: 20px;
-  text-align: center;
-  display: flex;
-  justify-content: center;  /* 横方向で中央に配置 */
-  align-items: center;      /* 縦方向で中央に配置 */
-}
-
-.room__form--name{
-  width: 60%;
-}
-
-/* ボタンの共通スタイル */
-input[type="button"] {
-  border-radius: 10px; /* 角を丸くする */
-  color: #fff; /* 文字色 */
-  cursor: pointer; /* カーソルをポインタにする */
-  background: #90a0b0; /* デフォルトの背景色 */
-}
-
-/* ホバー時のスタイル */
-input[type="button"]:hover {
-  background-color: #4baea8; /* ホバー時の背景色 */
-}
-
-.new-btn {
-  position: absolute;
-  right: 10px; /* 右端に10pxの余白を取る */
-  top: 5px;   
-}
-
-/* .new-btnのスタイル */
-.new-btn input {
-  background: #fff; /* 背景色を白に */
-  color: #000; /* 文字色を黒に */
-}
-
- .button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.button input[type="button"] {
-  padding: 0px 50px; /* ボタンの内側余白 */
-  font-size: 24px; /* 文字サイズ */
-  border: 2px solid #fff; /* ボタンの枠線 */
-  background-color: #00bcd4; /* 上書きの背景色 */
-}
-
-.button input[type="button"]:hover {
-  background-color: #4baea8; /* ホバー時の背景色 */
-}
-
-.ime_disabled
-{
-  width: 100%;
-  max-width: 350px;
-  height: 40px;
-  margin-top: 10px;
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-</style>
 <script type="text/javascript">
 function go_submit(action_cmd, request_cmd) {
     document.getElementById('main_form').action = '';
@@ -152,30 +49,51 @@ function go_list(action_cmd) {
 </script>
 </head>
 <body>
-  <%
-      String val = webBean.txt("request_name");
-      String actionType = val.equals("修正する") ? "update" : "ins";
-      String header = val.equals("修正する") ? "部屋名修正" : "新規部屋登録";
-  %>
+<%
+  String val = webBean.txt("request_name");
+  String pageNum = "0";
+  //　ページ分岐（登録・修正 入力）
+  if(
+    (val.equals("登録する")) || 
+    (val.equals("修正する"))) {
+ 	  pageNum = "1";
+  //　ページ分岐（削除・修正・登録 確定画面）
+  } else if(
+    (val.equals("削除する")) || 
+    (val.equals("修正を確定する")) ||
+    (val.equals("登録確定"))) {
+  	  pageNum = "2";
+  } else {}
+  System.out.println(pageNum);
+  
+  if (pageNum.equals("2")){
+   String roomName = webBean.txt("room_name");
+  }
+  String actionType = val.equals("登録する") ?  "ins": val.equals("修正する") ? "update" :  val.equals("削除する") ? "deleteEnter" : val.equals("修正を確定する") ? "updateEnter" : val.equals("登録確定") ? "insEnter" : "unknown";
+  String header = val.equals("登録する") ? "新規部屋登録" : val.equals("修正する") ? "部屋名修正" : val.equals("削除する") ? "部屋削除" : val.equals("修正を確定する") ? "部屋名修正確認" : val.equals("登録確定") ? "新規部屋登録確認" : "unknown";
+%>
   <div class="container">
     <div class="new-btn">
       <input type="button" onclick="go_list('return')" value="　戻る　" />
     </div>
-<header>
-    <h1> <%= header %>ページ </h1>
-</header>
-
-            <form method="post" id="main_form" action="" >
+    <header>
+      <h1><%= header %>ページ</h1>
+    </header>
+    
+            <form method="post" id="main_form" action=""<% if (pageNum.equals("2")){ %> class="main__form"<% } %>>
             
             <input type="hidden" name="form_name" id="form_name" value="RoomDetail" />
             <input type="hidden" name="action_cmd" id="action_cmd" value="" />
-            <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>"/>
+            <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" />
             <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
             <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
             <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
-             
+<% if (pageNum.equals("2")){ %>
+             <input type="hidden" name="room_name" id="room_name" value="<%=webBean.txt("room_name")%>" />
+<% } %>
             <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
             <div class="errors"><%=webBean.dispErrorMessages()%></div>
+<% if (pageNum.equals("1")){ %>
             <%
               Map<String, String> itemErrors = webBean.getItemErrors();
             %>
@@ -202,6 +120,40 @@ function go_list(action_cmd) {
                 <input type="text" id="room_name" name="room_name" class="ime_disabled" value="<%=webBean.txt("room_name")%>" placeholder="RoomName" size="25" maxlength="255" />
               </div>
             </div>
+<% } else if(pageNum.equals("2")) { %>
+            <div class="left">
+              <% if ("修正を確定する".equals(val)) { %>
+              <table class="room__form--name">
+                <tr class="table-header">
+                  <td>修正前</td>
+                  <td>修正後</td>
+                </tr>
+                <tr class="table-date">
+                  <td><%=webBean.txt("before_name")%></td>
+                  <td><%=webBean.txt("room_name")%></td>
+                </tr>
+              </table>
+            <% } else if ("登録確定".equals(val)) { %>
+              <table class="room__form--name">
+                <tr class="table-header">
+                  <td>部屋名</td>
+                </tr>
+                <tr class="table-date">
+                  <td><%=webBean.txt("room_name")%></td>
+                </tr>
+               </table>
+          <% } else if ("削除する".equals(val)) { %> <%--削除する追加--%>
+               <table class="room__form--name">
+                 <tr class="table-header">
+                   <td>削除</td> 
+                 </tr>
+                 <tr class="table-date">
+                   <td><%=webBean.txt("room_name")%></td>
+                 </tr>
+               </table>
+         <% } %>
+        </div>
+<% } else {} %>
             <div class="button">
                 <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>')" value="<%=val%>"/>
             </div>
