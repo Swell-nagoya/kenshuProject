@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DbBase;
+import jp.patasys.common.db.GetNumber;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
@@ -58,7 +59,6 @@ public class RoomDetail extends ControllerBase
     public void doActionProcess() throws AtareSysException
     {
       WebBean bean = getWebBean();
-
       try {
           String formName = bean.value("form_name");
           String actionCmd = bean.value("action_cmd");
@@ -84,7 +84,6 @@ public class RoomDetail extends ControllerBase
               {
                   if ("ins".equals(requestCmd)) 
                   {
-                     	System.out.println("test2");
                       bean.setValue("request_name", "登録する");
                       forward("RoomDetail.jsp");
                   }
@@ -125,9 +124,11 @@ public class RoomDetail extends ControllerBase
               {
                   if ("ins".equals(requestCmd))
                   {
-                  	
 
-                  	System.out.println("test1");
+                   insRoomPass();
+                   bean.rtrimAllItem();
+         //          RoomDao dao = setWeb2Dao2InputInfo();
+
 /*
                    bean.setMessage("この内容で登録します。よろしいですか？");
                    bean.setValue("request_name", "登録確定");
@@ -160,7 +161,6 @@ public class RoomDetail extends ControllerBase
                   }
                   else if ("insConfirm".equals(requestCmd))
                   {
-                  	System.out.println("test3");
                       dbRegistration();
                   }
                   else if ("updateConfirm".equals(requestCmd))
@@ -175,15 +175,12 @@ public class RoomDetail extends ControllerBase
                   else if ("return".equals(actionCmd))
                   {
 
-System.out.println("testtest");
                    if ("insConfirm".equals(bean.value("request_cmd"))) {
-System.out.println("testtest1111");
                     bean.setValue("request_cmd", "ins");
                     bean.setValue("request_name", "登録");
                     
                     forward("RoomDetail.jsp");
                    } else {
-                   	System.out.println("testtest2222");
                     forward("RoomList.do");
                    }
                   }
@@ -357,7 +354,6 @@ System.out.println("testtest1111");
              (roomName == "" && beforeName == "") != true &&
         		   (roomName.equalsIgnoreCase(beforeName))
         ) {
-        	System.out.println((roomName == "" && beforeName == "") != true);
             errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         }
 
@@ -375,6 +371,7 @@ System.out.println("testtest1111");
     {
         WebBean bean = getWebBean();
         RoomDao dao = new RoomDao();
+        dao.setRoomId(bean.value("room_id"));
         dao.setRoomName(bean.value("room_name"));
 
         bean.setValue("input_info", Sup.serialize(dao));
@@ -418,4 +415,44 @@ System.out.println("testtest1111");
         bean.setValue("update_date", dao.getUpdateDate());
         bean.setValue("update_user_id", dao.getUpdateUserId());
     }
+    
+    
+    
+    
+    
+    
+    
+
+    private boolean insRoomPass() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        RoomDao dao = new RoomDao();
+        String roomId = GetNumber.getNumberChar("room_id"); // ユーザーIDを新規作成
+        bean.setValue("room_id", roomId);
+        /*
+        String password = generateRandomPassword(8); // ランダムパスワードを新規作成
+        bean.setValue("password", password);
+        */
+        bean.setValue("input_info", Sup.serialize(dao));  // DAOオブジェクトをシリアライズしてWebBeanに保存
+        return true;
+    }
+    /*
+    
+    private boolean setUser() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        UserInfoDao dao = new UserInfoDao();
+        if (!dao.dbSelect(bean.value("main_key")))
+        {
+            return false;
+        }
+        bean.setValue("user_info_id", dao.getUserInfoId());
+        bean.setValue("password", dao.getPassword());
+        bean.setValue("select_info", Sup.serialize(dao)); // 編集前に読み込んだデータを格納しておく
+        bean.setValue("input_info", Sup.serialize(dao));
+        return true;
+    }
+    */
+    
+    
 }

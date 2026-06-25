@@ -16,6 +16,8 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <%
+
+
   String val = webBean.txt("request_name");
   String pageNum1 = "0";
   String pageNum2 = "0";
@@ -44,7 +46,6 @@
   if (pageNum1.equals("2")){
    String roomName = webBean.txt("room_name");
   }
-  
 
 
   String actionType = val.equals("登録する") ?  "ins": val.equals("修正する") ? "update" :  val.equals("削除する") ? "deleteConfirm" : val.equals("修正確定") ? "updateConfirm" : val.equals("登録確定") ? "insConfirm" : "unknown";
@@ -93,13 +94,10 @@
 <%  
     }
 %>
-
-
     </div>
     <header>
       <h1><%= header %>ページ</h1>
     </header>
-    
     <form method="post" id="main_form" action=""<% if (pageNum1.equals("2")){ %> class="main__form"<% } %>>
             
             <input type="hidden" name="form_name" id="form_name" value="RoomDetail" />
@@ -107,7 +105,10 @@
             <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" />
             <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
             <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
-            <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
+            <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" /
+            <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
+            
+             
 <% if (pageNum1.equals("2")){ %>
             <input type="hidden" name="room_name" id="room_name" value="<%=webBean.txt("room_name")%>" />
 <% } %>
