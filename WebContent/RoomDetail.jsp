@@ -46,6 +46,7 @@
 <meta name="description" content="">
 <meta charset="UTF-8">
 <link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet"/>
+<link type="text/css" href="css/RoomDetail.css" rel="stylesheet"/>
 <% if (pageNum.equals("1")){ %>
 <link type="text/css" href="css/RoomDetail01.css" rel="stylesheet"/>
 <% } else if (pageNum.equals("2")){ %>
@@ -83,7 +84,7 @@ function go_list(action_cmd) {
       <h1><%= header %>ページ</h1>
     </header>
     
-            <form method="post" id="main_form" action=""<% if (pageNum.equals("2")){ %> class="main__form"<% } %>>
+    <form method="post" id="main_form" action=""<% if (pageNum.equals("2")){ %> class="main__form"<% } %>>
             
             <input type="hidden" name="form_name" id="form_name" value="RoomDetail" />
             <input type="hidden" name="action_cmd" id="action_cmd" value="" />
@@ -92,18 +93,21 @@ function go_list(action_cmd) {
             <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
             <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
 <% if (pageNum.equals("2")){ %>
-             <input type="hidden" name="room_name" id="room_name" value="<%=webBean.txt("room_name")%>" />
+            <input type="hidden" name="room_name" id="room_name" value="<%=webBean.txt("room_name")%>" />
 <% } %>
             <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
-            <div class="errors"><%=webBean.dispErrorMessages()%></div>
+            <div class="errors text-center"><%=webBean.dispErrorMessages()%></div>
 <% if (pageNum.equals("1")){ %>
             <%
               Map<String, String> itemErrors = webBean.getItemErrors();
             %>
+            <div class="left">
+              <div class="room__form--name">
+                <input type="text" id="room_name" name="room_name" class="ime_disabled" value="<%=webBean.txt("room_name")%>" placeholder="RoomName" size="25" maxlength="255" />
             <%
               if (itemErrors.containsKey("room_name_empty")) { 
             %>
-             <div class="field-error"><%=itemErrors.get("room_name_empty")%></div>
+             <div class="field-error errors text-center"><%=itemErrors.get("room_name_empty")%></div>
             <%
               }
             %>
@@ -111,18 +115,13 @@ function go_list(action_cmd) {
             <%
               if (itemErrors.containsKey("room_name_duplicate")) {
             %>
-              <div class="field-error"><%=itemErrors.get("room_name_duplicate")%></div>
+              <div class="field-error errors text-center"><%=itemErrors.get("room_name_duplicate")%></div>
             <%
               }
             %>
-        
-            </div>
-    
-            <div class="left">
-              <div class="room__form--name">
-                <input type="text" id="room_name" name="room_name" class="ime_disabled" value="<%=webBean.txt("room_name")%>" placeholder="RoomName" size="25" maxlength="255" />
               </div>
             </div>
+            <!-- ./left -->
 <% } else if(pageNum.equals("2")) { %>
             <div class="left">
               <% if ("修正確定".equals(val)) { %>
@@ -155,12 +154,15 @@ function go_list(action_cmd) {
                  </tr>
                </table>
          <% } %>
-        </div>
+             </div>
+             <!-- ./left -->
 <% } else {} %>
             <div class="button">
                 <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>')" value="<%=val%>"/>
             </div>
+             <!-- ./button -->
           </form>
     </div>
+    <!-- ./container -->
 </body>
 </html>
