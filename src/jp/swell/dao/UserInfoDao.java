@@ -1381,6 +1381,9 @@ public class UserInfoDao implements Serializable {
      *         エラー
      */
     public boolean login(String pAccount, String pPassword) throws AtareSysException {
+    	
+    	//実施内容② DBからユーザネーム、PWを取得し比較できているのか
+    	//下記よりユーザネーム、PWを取得し比較できていることを確認。
         String sql = "";
         sql = " SELECT user_info.*"
                 + " FROM user_info "

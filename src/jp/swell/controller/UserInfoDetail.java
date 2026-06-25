@@ -232,6 +232,7 @@ public class UserInfoDetail extends ControllerBase
                   {
                       if (checkDataMatching())
                       {
+                    	  //追加機能要件① 管理者権限の付与
                           setInputInfo2Dao2Web();
                           dbEdit();
                       }
