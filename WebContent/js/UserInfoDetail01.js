@@ -4,8 +4,6 @@ function go_list(action_cmd) {
   document.getElementById('main_form').action = 'UserInfoDetail.do';
   document.getElementById('action_cmd').value = action_cmd;
   document.getElementById('main_form').submit();
-  console.log('hit');
-  return false;
 }
 
 function go_submit(action_cmd, request_cmd) {

@@ -52,7 +52,7 @@ function go_list(action_cmd)
  <%
      String roomName = webBean.txt("room_name");
      String val = webBean.txt("request_name");
-     String actionType =  val.equals("削除する") ? "deleteEnter" : val.equals("修正確定") ? "updateEnter" : val.equals("登録確定") ? "insEnter" : "unknown";
+     String actionType =  val.equals("削除する") ? "deleteConfirm" : val.equals("修正確定") ? "updateConfirm" : val.equals("登録確定") ? "insConfirm" : "unknown";
      String header =  val.equals("削除する") ? "部屋削除" : val.equals("修正確定") ? "部屋名修正確認" : val.equals("登録確定") ? "新規部屋登録確認" : "unknown";
    %>
   <div class="container">

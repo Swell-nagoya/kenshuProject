@@ -158,24 +158,39 @@ public class RoomDetail extends ControllerBase
                       bean.setValue("room_name", roomName);
                       forward("RoomDetail.jsp");
                   }
+                  else if ("insConfirm".equals(requestCmd))
+                  {
+                  	System.out.println("test3");
+                      dbRegistration();
+                  }
+                  else if ("updateConfirm".equals(requestCmd))
+                  {
+                      dbEdit();
+                  }
+                  else if ("deleteConfirm".equals(requestCmd))
+                  {
+                      dbDeletef();
+                  }
+                  //追加ここから
+                  else if ("return".equals(actionCmd))
+                  {
+
+System.out.println("testtest");
+                   if ("insConfirm".equals(bean.value("request_cmd"))) {
+System.out.println("testtest1111");
+                    bean.setValue("request_cmd", "ins");
+                    bean.setValue("request_name", "登録");
+                    
+                    forward("RoomDetail.jsp");
+                   } else {
+                   	System.out.println("testtest2222");
+                    forward("RoomList.do");
+                   }
+                  }
+                  //追加ここまで
               }
               //追加ここから
-              else if ("return".equals(actionCmd))
-              {
-                  forward("RoomList.do");
-              } else if ("insEnter".equals(requestCmd))
-              {
-              	System.out.println("test3");
-                  dbRegistration();
-              }
-              else if ("updateEnter".equals(requestCmd))
-              {
-                  dbEdit();
-              }
-              else if ("deleteEnter".equals(requestCmd))
-              {
-                  dbDeletef();
-              }
+              redirect("RoomList.do");
               //追加ここまで
           }/*
          
@@ -183,16 +198,16 @@ public class RoomDetail extends ControllerBase
           {
               if ("go_next".equals(actionCmd))
               {
-                  if ("insEnter".equals(requestCmd))
+                  if ("insConfirm".equals(requestCmd))
                   {
                   	System.out.println("test3");
                       dbRegistration();
                   }
-                  else if ("updateEnter".equals(requestCmd))
+                  else if ("updateConfirm".equals(requestCmd))
                   {
                       dbEdit();
                   }
-                  else if ("deleteEnter".equals(requestCmd))
+                  else if ("deleteConfirm".equals(requestCmd))
                   {
                       dbDeletef();
                   }

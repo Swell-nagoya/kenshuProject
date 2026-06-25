@@ -17,25 +17,37 @@
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <%
   String val = webBean.txt("request_name");
-  String pageNum = "0";
+  String pageNum1 = "0";
+  String pageNum2 = "0";
   //　ページ分岐（登録・修正 入力）
   if(
     (val.equals("登録する")) || 
     (val.equals("修正する"))) {
- 	  pageNum = "1";
+ 	  pageNum1 = "1";
   //　ページ分岐（削除・修正・登録 確定画面）
   } else if(
     (val.equals("削除する")) || 
     (val.equals("修正確定")) ||
     (val.equals("登録確定"))) {
-  	  pageNum = "2";
+  	  pageNum1 = "2";
   } else {}
-  System.out.println(pageNum);
   
-  if (pageNum.equals("2")){
+  
+  if (
+    webBean.txt("request_name").equals("登録確定") ||
+    webBean.txt("request_name").equals("修正確定") ) {
+  	pageNum2 = "1";
+ } else {
+ 	pageNum2 = "2";
+ }
+  
+  if (pageNum1.equals("2")){
    String roomName = webBean.txt("room_name");
   }
-  String actionType = val.equals("登録する") ?  "ins": val.equals("修正する") ? "update" :  val.equals("削除する") ? "deleteEnter" : val.equals("修正確定") ? "updateEnter" : val.equals("登録確定") ? "insEnter" : "unknown";
+  
+
+
+  String actionType = val.equals("登録する") ?  "ins": val.equals("修正する") ? "update" :  val.equals("削除する") ? "deleteConfirm" : val.equals("修正確定") ? "updateConfirm" : val.equals("登録確定") ? "insConfirm" : "unknown";
   String header = val.equals("登録する") ? "新規部屋登録" : val.equals("修正する") ? "部屋名修正" : val.equals("削除する") ? "部屋削除" : val.equals("修正確定") ? "部屋名修正確認" : val.equals("登録確定") ? "新規部屋登録確認" : "unknown";
 %>
 <!DOCTYPE html>
@@ -47,11 +59,11 @@
 <meta charset="UTF-8">
 <link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet"/>
 <link type="text/css" href="css/RoomDetail.css" rel="stylesheet"/>
-<% if (pageNum.equals("1")){ %>
+<% if (pageNum1.equals("1")){ %>
 <link type="text/css" href="css/RoomDetail01.css" rel="stylesheet"/>
-<% } else if (pageNum.equals("2")){ %>
+<% } else if (pageNum1.equals("2")){ %>
 <link type="text/css" href="css/RoomDetail02.css" rel="stylesheet"/>
-<% } %>
+<% } else {} %>
 <link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon"/>
 <link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon"/>
 <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
@@ -60,31 +72,35 @@
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/flatpickr.min.js"></script>
 <title>部屋登録画面</title>
-<script type="text/javascript">
-function go_submit(action_cmd, request_cmd) {
-    document.getElementById('main_form').action = '';
-    document.getElementById('action_cmd').value = action_cmd;
-    document.getElementById('request_cmd').value = request_cmd;
-    document.getElementById('main_form').submit();
-  }
 
-function go_list(action_cmd) {
-    document.getElementById('main_form').action = '';
-    document.getElementById('action_cmd').value = action_cmd;
-    document.getElementById('main_form').submit();
-}
-</script>
+<% if (pageNum2.equals("1")){ %>
+<script type="text/javascript" src="js/RoomDetail01.js"></script>
+<% } else if (pageNum2.equals("2")){ %>
+<script type="text/javascript" src="js/RoomDetail02.js"></script>
+<% } else {} %>
 </head>
 <body>
   <div class="container">
     <div class="new-btn">
-      <input type="button" onclick="go_list('return')" value="　戻る　" />
+<%
+    if (pageNum2 == "1") {
+%>
+      <input type="button" value=" 戻る " onclick="go_list('return','<%=actionType%>','<%=webBean.txt("room_id")%>')" />
+<%
+    } else { 
+%>
+      <input type="button" value="　戻る　" onclick="go_list('return')" />
+<%  
+    }
+%>
+
+
     </div>
     <header>
       <h1><%= header %>ページ</h1>
     </header>
     
-    <form method="post" id="main_form" action=""<% if (pageNum.equals("2")){ %> class="main__form"<% } %>>
+    <form method="post" id="main_form" action=""<% if (pageNum1.equals("2")){ %> class="main__form"<% } %>>
             
             <input type="hidden" name="form_name" id="form_name" value="RoomDetail" />
             <input type="hidden" name="action_cmd" id="action_cmd" value="" />
@@ -92,12 +108,12 @@ function go_list(action_cmd) {
             <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
             <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
             <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
-<% if (pageNum.equals("2")){ %>
+<% if (pageNum1.equals("2")){ %>
             <input type="hidden" name="room_name" id="room_name" value="<%=webBean.txt("room_name")%>" />
 <% } %>
             <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
             <div class="errors text-center"><%=webBean.dispErrorMessages()%></div>
-<% if (pageNum.equals("1")){ %>
+<% if (pageNum1.equals("1")){ %>
             <%
               Map<String, String> itemErrors = webBean.getItemErrors();
             %>
@@ -122,7 +138,7 @@ function go_list(action_cmd) {
               </div>
             </div>
             <!-- ./left -->
-<% } else if(pageNum.equals("2")) { %>
+<% } else if(pageNum1.equals("2")) { %>
             <div class="left">
               <% if ("修正確定".equals(val)) { %>
               <table class="room__form--name">
