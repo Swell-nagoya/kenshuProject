@@ -52,8 +52,8 @@ function go_list(action_cmd)
  <%
      String roomName = webBean.txt("room_name");
      String val = webBean.txt("request_name");
-     String actionType =  val.equals("削除する") ? "deleteEnter" : val.equals("修正を確定する") ? "updateEnter" : val.equals("登録確定") ? "insEnter" : "unknown";
-     String header =  val.equals("削除する") ? "部屋削除" : val.equals("修正を確定する") ? "部屋名修正確認" : val.equals("登録確定") ? "新規部屋登録確認" : "unknown";
+     String actionType =  val.equals("削除する") ? "deleteEnter" : val.equals("修正確定") ? "updateEnter" : val.equals("登録確定") ? "insEnter" : "unknown";
+     String header =  val.equals("削除する") ? "部屋削除" : val.equals("修正確定") ? "部屋名修正確認" : val.equals("登録確定") ? "新規部屋登録確認" : "unknown";
    %>
   <div class="container">
     <div class="new-btn">
@@ -77,7 +77,7 @@ function go_list(action_cmd)
        <div class="errors"><%=webBean.dispErrorMessages()%></div>
        
        <div class="left">
-         <% if ("修正を確定する".equals(val)) { %>
+         <% if ("修正確定".equals(val)) { %>
          <table class="room__form--name">
            <tr class="table-header">
              <td>修正前</td>

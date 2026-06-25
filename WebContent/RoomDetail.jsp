@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
-<!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="java.util.Map"%>
@@ -17,6 +15,30 @@
 <%@ page import="java.time.LocalTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
+<%
+  String val = webBean.txt("request_name");
+  String pageNum = "0";
+  //　ページ分岐（登録・修正 入力）
+  if(
+    (val.equals("登録する")) || 
+    (val.equals("修正する"))) {
+ 	  pageNum = "1";
+  //　ページ分岐（削除・修正・登録 確定画面）
+  } else if(
+    (val.equals("削除する")) || 
+    (val.equals("修正確定")) ||
+    (val.equals("登録確定"))) {
+  	  pageNum = "2";
+  } else {}
+  System.out.println(pageNum);
+  
+  if (pageNum.equals("2")){
+   String roomName = webBean.txt("room_name");
+  }
+  String actionType = val.equals("登録する") ?  "ins": val.equals("修正する") ? "update" :  val.equals("削除する") ? "deleteEnter" : val.equals("修正確定") ? "updateEnter" : val.equals("登録確定") ? "insEnter" : "unknown";
+  String header = val.equals("登録する") ? "新規部屋登録" : val.equals("修正する") ? "部屋名修正" : val.equals("削除する") ? "部屋削除" : val.equals("修正確定") ? "部屋名修正確認" : val.equals("登録確定") ? "新規部屋登録確認" : "unknown";
+%>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="viewport" content="width=device-width" , initial-scale=1.0">
@@ -24,7 +46,11 @@
 <meta name="description" content="">
 <meta charset="UTF-8">
 <link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet"/>
+<% if (pageNum.equals("1")){ %>
 <link type="text/css" href="css/RoomDetail01.css" rel="stylesheet"/>
+<% } else if (pageNum.equals("2")){ %>
+<link type="text/css" href="css/RoomDetail02.css" rel="stylesheet"/>
+<% } %>
 <link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon"/>
 <link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon"/>
 <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
@@ -49,29 +75,6 @@ function go_list(action_cmd) {
 </script>
 </head>
 <body>
-<%
-  String val = webBean.txt("request_name");
-  String pageNum = "0";
-  //　ページ分岐（登録・修正 入力）
-  if(
-    (val.equals("登録する")) || 
-    (val.equals("修正する"))) {
- 	  pageNum = "1";
-  //　ページ分岐（削除・修正・登録 確定画面）
-  } else if(
-    (val.equals("削除する")) || 
-    (val.equals("修正を確定する")) ||
-    (val.equals("登録確定"))) {
-  	  pageNum = "2";
-  } else {}
-  System.out.println(pageNum);
-  
-  if (pageNum.equals("2")){
-   String roomName = webBean.txt("room_name");
-  }
-  String actionType = val.equals("登録する") ?  "ins": val.equals("修正する") ? "update" :  val.equals("削除する") ? "deleteEnter" : val.equals("修正を確定する") ? "updateEnter" : val.equals("登録確定") ? "insEnter" : "unknown";
-  String header = val.equals("登録する") ? "新規部屋登録" : val.equals("修正する") ? "部屋名修正" : val.equals("削除する") ? "部屋削除" : val.equals("修正を確定する") ? "部屋名修正確認" : val.equals("登録確定") ? "新規部屋登録確認" : "unknown";
-%>
   <div class="container">
     <div class="new-btn">
       <input type="button" onclick="go_list('return')" value="　戻る　" />
@@ -122,7 +125,7 @@ function go_list(action_cmd) {
             </div>
 <% } else if(pageNum.equals("2")) { %>
             <div class="left">
-              <% if ("修正を確定する".equals(val)) { %>
+              <% if ("修正確定".equals(val)) { %>
               <table class="room__form--name">
                 <tr class="table-header">
                   <td>修正前</td>

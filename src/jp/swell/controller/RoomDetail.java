@@ -85,35 +85,35 @@ public class RoomDetail extends ControllerBase
                   	
 
                   	System.out.println("test1");
-
+/*
                    bean.setMessage("この内容で登録します。よろしいですか？");
                    bean.setValue("request_name", "登録確定");
                    bean.setValue("room_name", roomName);
-                   forward("RoomDetail_2.jsp");
+                   forward("RoomDetail.jsp");
+*/
                   	
-                  	/*
                    if (inputCheck(dao)) 
                    {
                   
                        bean.setMessage("この内容で登録します。よろしいですか？");
                        bean.setValue("request_name", "登録確定");
                        bean.setValue("room_name", roomName);
-                       forward("RoomDetail_2.jsp");
+                       forward("RoomDetail.jsp");
                    }
                    else 
                    {
                        bean.setError("入力内容に誤りがあります");
                        forward("RoomDetail.jsp");
                    }
-                   */
+                   
                   }
                   else if ("update".equals(requestCmd))
                   {
                       bean.setMessage("この内容で修正します。よろしいですか？");
-                      bean.setValue("request_name", "修正を確定する");
+                      bean.setValue("request_name", "修正確定");
                       bean.setValue("before_name", beforeName);
                       bean.setValue("room_name", roomName);
-                      forward("RoomDetail_2.jsp");
+                      forward("RoomDetail.jsp");
                   }
               }
               else if ("return".equals(actionCmd))
@@ -157,12 +157,12 @@ public class RoomDetail extends ControllerBase
                           bean.setMessage("この部屋を削除します。よろしいですか？");
                           bean.setValue("request_name", "削除する");
                           bean.setValue("room_name", roomName);
-                          forward("RoomDetail_2.jsp");
+                          forward("RoomDetail.jsp");
                       }
                   }
               }
           }
-          else if ("RoomDetail_2".equals(formName))
+          else if ("RoomDetail".equals(formName))
           {
               if ("go_next".equals(actionCmd))
               {
