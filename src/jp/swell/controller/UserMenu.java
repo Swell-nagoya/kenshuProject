@@ -174,21 +174,9 @@ public class UserMenu extends ControllerBase
             bean.setValue("reserves", reserves);
             RoomDao roomDao = new RoomDao();
             ArrayList<RoomDao> rooms = roomDao.getAllRooms();
-            bean.setValue("rooms", rooms);
-            
-            //実施課題④ 管理者権限の有無によって遷移先を管理メニューと一般メニューに分ける
-            
-            UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
-            
-            if(userLoginInfo.getAdmin().equals("1")) {
-                        	
-                  forward("MenuAdmin.jsp");
-                        		
-            }else if(userLoginInfo.getAdmin().equals("0")){
-                        	
-                   forward("UserMenuHome.jsp");
-            }
-           
+            bean.setValue("rooms", rooms);        	
+            forward("UserMenuHome.jsp");
+       
         }
     }
 
