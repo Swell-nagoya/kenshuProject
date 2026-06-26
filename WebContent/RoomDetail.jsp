@@ -110,8 +110,8 @@
             <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
             <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
             <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
-            
-             
+            <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
+
 <% if (pageNum1.equals("2")){ %>
             <input type="hidden" name="room_name" id="room_name" value="<%=webBean.txt("room_name")%>" />
 <% } %>

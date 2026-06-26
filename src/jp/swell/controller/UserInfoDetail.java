@@ -242,8 +242,6 @@ public class UserInfoDetail extends ControllerBase
                        forward("UserInfoDetail.jsp");
                      }
                    }
-                  
-                  
               }
               else if ("return".equals(bean.value("action_cmd"))) 
               {
