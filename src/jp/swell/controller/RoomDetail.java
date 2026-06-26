@@ -15,6 +15,8 @@
  */
 package jp.swell.controller;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 import jp.patasys.common.AtareSysException;
@@ -24,7 +26,6 @@ import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.RoomDao;
-import jp.swell.dao.UserInfoDao;
 
 /**
  * ：user_info ユーザ情報テーブルデータを登録・更新・削除ためのコントローラクラス
@@ -67,7 +68,6 @@ public class RoomDetail extends ControllerBase
           String mainKey = bean.value("main_key");
           String roomName = bean.value("room_name");
           String beforeName = bean.value("before_name");
-          RoomDao dao = setWeb2Dao2InputInfo();
           /*
            * bean.setValue("request_name", "修正");
           if (beforeName == null || beforeName.trim().isEmpty()) {
@@ -134,7 +134,9 @@ public class RoomDetail extends ControllerBase
               {
                   if ("ins".equals(requestCmd))
                   {
+                   RoomDao dao = setWeb2Dao2InputInfo();
 
+             //      insUserPass();
                   	insRoomId();
                    bean.rtrimAllItem();
                    if (inputCheck(dao)) 
@@ -157,10 +159,11 @@ public class RoomDetail extends ControllerBase
                       
                       setRoom();
                       bean.rtrimAllItem();
+                      RoomDao dao = setWeb2Dao2InputInfo();
                       if (inputCheck(dao)) 
                       {
 
-                       bean.setMessage("この内容で修正します。よろしいですか？");
+                          bean.setMessage("この内容で修正します。よろしいですか？");
                           bean.setValue("request_name", "修正確定");
                           forward("RoomDetail.jsp"); 
                       }
@@ -181,6 +184,7 @@ public class RoomDetail extends ControllerBase
                       if (checkDataMatching())
                       {
                           setInputInfo2Dao2Web();
+                          setWeb2Dao2InputInfo();
                           dbEdit();
                       }
                       else 
@@ -196,6 +200,7 @@ public class RoomDetail extends ControllerBase
                       if (checkDataMatching())
                       {
                          setInputInfo2Dao2Web();
+                         setWeb2Dao2InputInfo();
                          dbDelete();
                       }
                       else 
@@ -389,8 +394,9 @@ public class RoomDetail extends ControllerBase
     private boolean checkDataMatching() throws AtareSysException
     {
         WebBean bean = getWebBean();
-        UserInfoDao dao = new UserInfoDao();
-        if (!dao.dbSelect(bean.value("main_key")))
+        RoomDao dao = new RoomDao();
+        String mainKey = bean.value("main_key");//RoomIdの取得
+        if (!dao.dbSelect(mainKey))
         {
             return false;
         }
@@ -405,16 +411,64 @@ public class RoomDetail extends ControllerBase
      * @throws AtareSysException エラー
      */
     private RoomDao setWeb2Dao2InputInfo() throws AtareSysException
-    {
+    { 
+    	   // 現在の日時を取得し、DBに代入
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+     
+        String formattedDateTime = now.format(formatter);
+     
         WebBean bean = getWebBean();
         RoomDao dao = new RoomDao();
         String mainKey = bean.value("main_key");//RoomIdの取得
+        String userInfoId = bean.value("user_info_id");//user_info_idの取得
+        
         dao.setRoomId(mainKey);
         dao.setRoomName(bean.value("room_name"));
+        
+        String requestCmd = bean.value("request_cmd");
+        
+        // 入力完了時に現在の時刻を代入（user_id, insert_date, update_user_id , update_date）
+        if ("insConfirm".equals(requestCmd))
+        {
+         System.out.println(userInfoId + ":userInfoId");
+          dao.setInsertUserId(userInfoId);
+          dao.setInsertDate(formattedDateTime);
+          dao.setUpdateUserId(userInfoId);
+          dao.setUpdateDate(formattedDateTime);
+          
+        // 更新完了時に現在の時刻を代入（update_user_id , update_date）
+        } 
+        else if ("updateConfirm".equals(requestCmd)) 
+        {
+         dao.setUpdateUserId(userInfoId);
+         dao.setUpdateDate(formattedDateTime);
+        } 
+        else
+        {
+        	
+        }
 
         bean.setValue("input_info", Sup.serialize(dao));
         return dao;
     }
+    
+    
+
+    /**
+     * 既に設定されているパスワードを取得してbeanにセットする
+     *  
+     * @return
+     * @throws AtareSysException
+     */
+
+    /*
+    private boolean insUserPass() throws AtareSysException
+    {
+        
+    }
+    */
+    
     /**
      * 部屋登録処理を行うメソッド
      * @return 登録が成功：true、登録が失敗：false
@@ -445,12 +499,13 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         RoomDao dao = (RoomDao) Sup.deserialize(bean.value("input_info"));
-        bean.setValue("room_id", dao.getRoomId());
+     //   bean.setValue("room_id", dao.getRoomId());
         bean.setValue("room_name", dao.getRoomName());
-        bean.setValue("insert_date", dao.getInsertDate());
+     /*   bean.setValue("insert_date", dao.getInsertDate());
         bean.setValue("insert_user_id", dao.getInsertUserId());
         bean.setValue("update_date", dao.getUpdateDate());
         bean.setValue("update_user_id", dao.getUpdateUserId());
+        */
     }
     
 

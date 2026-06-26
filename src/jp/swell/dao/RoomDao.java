@@ -336,6 +336,7 @@ public class RoomDao implements Serializable
                 + "room.update_user_id as room___update_user_id "
                 + "FROM room "
                 + "WHERE room_id = ?";
+        
 
         try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
             pstmt.setString(1, pRoomId);
@@ -346,12 +347,13 @@ public class RoomDao implements Serializable
                 }
 
                 HashMap<String, String> map = new HashMap<>();
-                map.put("room___room_id", rs.getString("room___room_id"));
-                map.put("room___room_name", rs.getString("room___room_name"));
-                map.put("room___insert_date", rs.getString("room___insert_date"));
-                map.put("room___insert_user_id", rs.getString("room___insert_user_id"));
-                map.put("room___update_date", rs.getString("room___update_date"));
-                map.put("room___update_user_id", rs.getString("room___update_user_id"));
+                map.put("room_id", rs.getString("room___room_id"));
+                map.put("room_name", rs.getString("room___room_name"));
+                map.put("insert_date", rs.getString("room___insert_date"));
+                map.put("insert_user_id", rs.getString("room___insert_user_id"));
+                map.put("update_date", rs.getString("room___update_date"));
+                map.put("update_user_id", rs.getString("room___update_user_id"));
+                
 
                 setRoomDaoForJoin(map, this);
                 return true;
