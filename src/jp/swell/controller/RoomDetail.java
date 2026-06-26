@@ -113,7 +113,7 @@ public class RoomDetail extends ControllerBase
                       }
                       else
                       {
-                      	bean.setMessage("この部屋を削除します。よろしいですか？");
+                     	
                        bean.setValue("request_name", "削除");
                        bean.setValue("room_name", roomName);
                        forward("RoomDetail.jsp");
@@ -134,14 +134,6 @@ public class RoomDetail extends ControllerBase
                    insRoomPass();
                    bean.rtrimAllItem();
          //          RoomDao dao = setWeb2Dao2InputInfo();
-
-/*
-                   bean.setMessage("この内容で登録します。よろしいですか？");
-                   bean.setValue("request_name", "登録確定");
-                   bean.setValue("room_name", roomName);
-                   forward("RoomDetail.jsp");
-*/
-                  	
                    if (inputCheck(dao)) 
                    {
                   
@@ -175,6 +167,23 @@ public class RoomDetail extends ControllerBase
                         forward("RoomDetail.jsp");
                       }
                       
+                  }else if ("deletef".equals(bean.value("request_cmd")))
+                  {
+                   System.out.println("hitdesu");
+                   setInputInfo2Dao2WebDelete();
+                   bean.rtrimAllItem();
+                   System.out.println("hit");
+                   if (inputCheck(dao)) 
+                   {
+                   	   bean.setMessage("この部屋を削除します。よろしいですか？");
+                       bean.setValue("request_name", "確定");
+                       forward("RoomDetail.jsp");  
+                   }
+                   else 
+                   {
+                       bean.setError("入力内容に誤りがあります");
+                       forward("RoomDetail.jsp"); 
+                   }
                   }
                   else if ("insConfirm".equals(requestCmd))
                   {
@@ -432,7 +441,6 @@ public class RoomDetail extends ControllerBase
      * @return なし
      * @throws AtareSysException
      */
-    @SuppressWarnings("unused")
     private void setInputInfo2Dao2Web() throws AtareSysException
     {
         WebBean bean = getWebBean();
@@ -446,6 +454,19 @@ public class RoomDetail extends ControllerBase
     }
     
     
+    private void setInputInfo2Dao2WebDelete() throws AtareSysException
+    {
+
+     WebBean bean = getWebBean();
+     RoomDao dao = (RoomDao) Sup.deserialize(bean.value("input_info"));
+     bean.setValue("room_id", dao.getRoomId());
+     bean.setValue("room_name", dao.getRoomName());
+     bean.setValue("insert_date", dao.getInsertDate());
+     bean.setValue("insert_user_id", dao.getInsertUserId());
+     bean.setValue("update_date", dao.getUpdateDate());
+     bean.setValue("update_user_id", dao.getUpdateUserId());
+    }
+
     
     
     

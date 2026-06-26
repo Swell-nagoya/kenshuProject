@@ -50,7 +50,7 @@
 
   String actionType = val.equals("登録") ?  "ins": val.equals("登録確定") ? "insConfirm"
                                                  : val.equals("修正") ? "update" : val.equals("修正確定") ? "updateConfirm" 
-                                                 : val.equals("削除") ? "deleteConfirm" : val.equals("確定") ? "deleteConfirm"
+                                                 : val.equals("削除") ? "deletef" : val.equals("確定") ? "deleteConfirm"
                                                  : "unknown";
   String header = val.equals("登録") ? "新規部屋登録" : val.equals("登録確定") ? "新規部屋登録確認"
                 : val.equals("修正") ? "部屋名修正" : val.equals("修正確定") ? "部屋名修正確認"
@@ -180,7 +180,17 @@
              <!-- ./left -->
 <% } else {} %>
             <div class="button">
-                <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>')" value="<%=val%>"/>
+<%
+            if (val.equals("削除")) {
+%>
+              <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>', '<%=webBean.txt("main_key")%>')" value="確定する"/>
+<%
+            } else {
+%>
+              <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>', '<%=webBean.txt("main_key")%>')" value="<%=val%>"/>
+<%
+            }
+%>
             </div>
              <!-- ./button -->
           </form>
