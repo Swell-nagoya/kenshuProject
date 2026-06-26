@@ -75,7 +75,7 @@
 <script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/flatpickr.min.js"></script>
-<title>部屋登録画面</title>
+<title><%= header %>ページ</title>
 
 <% if (pageNum2.equals("1")){ %>
 <script type="text/javascript" src="js/RoomDetail01.js"></script>
@@ -108,7 +108,7 @@
             <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" />
             <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
             <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
-            <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" /
+            <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
             <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
             
              
