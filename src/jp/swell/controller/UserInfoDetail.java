@@ -659,11 +659,13 @@ public class UserInfoDetail extends ControllerBase
 
       try {
         // 入力内容をデータベースに保存
+    	    DbBase.dbBeginTran();
         dao.dbInsert();
-        
+        DbBase.dbCommitTran();
         return true;
         
       } catch (Exception e) {
+    	  	DbBase.dbRollbackTran();
         return false;
       }
     }
@@ -706,14 +708,19 @@ public class UserInfoDetail extends ControllerBase
         try {
           dao.dbUpdate(userInfoId);
           if (leaveDate == null || leaveDate.trim().isEmpty()) {
+        	    DbBase.dbBeginTran();
             dao.dbCancelDelete(userInfoId);
+            DbBase.dbCommitTran();
             redirect("ViewUserList.do");
           }
           else {
+        	    DbBase.dbBeginTran();
             dao.dbDelete(userInfoId);
+            DbBase.dbCommitTran();
             redirect("ViewUserList.do");
           }
         }catch (Exception e) {
+        	  DbBase.dbRollbackTran();
           forward("ViewUserList.do");
         }
     }
