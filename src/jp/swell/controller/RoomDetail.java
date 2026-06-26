@@ -422,7 +422,6 @@ public class RoomDetail extends ControllerBase
         RoomDao dao = new RoomDao();
         String mainKey = bean.value("main_key");//RoomIdの取得
         String userInfoId = bean.value("user_info_id");//user_info_idの取得
-        
         dao.setRoomId(mainKey);
         dao.setRoomName(bean.value("room_name"));
         
@@ -431,17 +430,17 @@ public class RoomDetail extends ControllerBase
         // 入力完了時に現在の時刻を代入（user_id, insert_date, update_user_id , update_date）
         if ("insConfirm".equals(requestCmd))
         {
-         System.out.println(userInfoId + ":userInfoId");
-          dao.setInsertUserId(userInfoId);
+        	
+          dao.setInsertUserId(UserLogin.account);
           dao.setInsertDate(formattedDateTime);
-          dao.setUpdateUserId(userInfoId);
+          dao.setUpdateUserId(UserLogin.account);
           dao.setUpdateDate(formattedDateTime);
           
         // 更新完了時に現在の時刻を代入（update_user_id , update_date）
         } 
         else if ("updateConfirm".equals(requestCmd)) 
         {
-         dao.setUpdateUserId(userInfoId);
+         dao.setUpdateUserId(UserLogin.account);
          dao.setUpdateDate(formattedDateTime);
         } 
         else

@@ -98,6 +98,7 @@
     }
 %>
     </div>
+    
     <header>
       <h1><%= header %>ページ</h1>
     </header>
@@ -107,7 +108,7 @@
             <input type="hidden" name="action_cmd" id="action_cmd" value="" />
             <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" />
             <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
-            <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
+            <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("room_id")%>" />
             <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
             <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
             <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
