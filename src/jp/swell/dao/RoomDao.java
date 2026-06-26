@@ -465,6 +465,8 @@ public class RoomDao implements Serializable
     {
         String sql = "update room set "
         + " room_name = " + DbO.chara(getRoomName())
+        + ", update_date = " + DbO.chara(getUpdateDate())
+        + ", update_user_id = " + DbO.chara(getUpdateUserId())
         + " where room_id = " + DbS.chara(pRoomId)
         + "";
         int ret =DbBase.dbExec(sql);

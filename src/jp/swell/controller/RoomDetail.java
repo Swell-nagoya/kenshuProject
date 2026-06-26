@@ -421,7 +421,6 @@ public class RoomDetail extends ControllerBase
         WebBean bean = getWebBean();
         RoomDao dao = new RoomDao();
         String mainKey = bean.value("main_key");//RoomIdの取得
-        String userInfoId = bean.value("user_info_id");//user_info_idの取得
         dao.setRoomId(mainKey);
         dao.setRoomName(bean.value("room_name"));
         
@@ -440,6 +439,7 @@ public class RoomDetail extends ControllerBase
         } 
         else if ("updateConfirm".equals(requestCmd)) 
         {
+        	System.out.println(formattedDateTime + "日時");
          dao.setUpdateUserId(UserLogin.account);
          dao.setUpdateDate(formattedDateTime);
         } 
