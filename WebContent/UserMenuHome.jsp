@@ -680,18 +680,20 @@ footer {
                 UserInfoDao user = (UserInfoDao) allUsers;
                 String userId = WebUtil.htmlEscape(user.getUserInfoId());
         %>
-        const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
-        if (checkbox<%=userId%>) {
-            roomElements = document.getElementsByClassName("<%=userId%>");
-            if (checkbox<%=userId%>.checked) {
-                for (let i = 0; i < roomElements.length; i++) {
-                    roomElements[i].style.display = "block";
-                }
-            } else {
-                for (let i = 0; i < roomElements.length; i++) {
-                    roomElements[i].style.display = "none";
-                }
-            }
+        {
+	        const checkbox = document.getElementById("<%=userId%>check");
+	        if (checkbox) {
+	            roomElements = document.getElementsByClassName("<%=userId%>");
+	            if (checkbox.checked) {
+	                for (let i = 0; i < roomElements.length; i++) {
+	                    roomElements[i].style.display = "block";
+	                }
+	            } else {
+	                for (let i = 0; i < roomElements.length; i++) {
+	                    roomElements[i].style.display = "none";
+	                }
+	            }
+	        }
         }
         <%
             }
@@ -708,20 +710,22 @@ footer {
                 UserInfoDao user = (UserInfoDao) allUsers;
                 String userId = WebUtil.htmlEscape(user.getUserInfoId());
         %>
-        const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
-        if (checkbox<%=userId%>) {
-            checkbox<%=userId%>.addEventListener('change', () => {
-                roomElements = document.getElementsByClassName("<%=userId%>");
-                if (checkbox<%=userId%>.checked) {
-                    for (let i = 0; i < roomElements.length; i++) {
-                        roomElements[i].style.display = "block";
-                    }
-                } else {
-                    for (let i = 0; i < roomElements.length; i++) {
-                        roomElements[i].style.display = "none";
-                    }
-                }
-            });
+        {
+	        const checkbox = document.getElementById("<%=userId%>check");
+	        if (checkbox) {
+	            checkbox.addEventListener('change', () => {
+	                roomElements = document.getElementsByClassName("<%=userId%>");
+	                if (checkbox.checked) {
+	                    for (let i = 0; i < roomElements.length; i++) {
+	                        roomElements[i].style.display = "block";
+	                    }
+	                } else {
+	                    for (let i = 0; i < roomElements.length; i++) {
+	                        roomElements[i].style.display = "none";
+	                    }
+	                }
+	            });
+	        }
         }
         <%
             }
