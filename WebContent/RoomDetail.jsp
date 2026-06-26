@@ -23,12 +23,12 @@
   String pageNum2 = "0";
   //　ページ分岐（登録・修正 入力）
   if(
-    (val.equals("登録する")) || 
-    (val.equals("修正する"))) {
+    (val.equals("登録")) || 
+    (val.equals("修正"))) {
  	  pageNum1 = "1";
   //　ページ分岐（削除・修正・登録 確定画面）
   } else if(
-    (val.equals("削除する")) || 
+    (val.equals("削除")) || 
     (val.equals("修正確定")) ||
     (val.equals("登録確定"))) {
   	  pageNum1 = "2";
@@ -48,8 +48,8 @@
   }
 
 
-  String actionType = val.equals("登録する") ?  "ins": val.equals("修正する") ? "update" :  val.equals("削除する") ? "deleteConfirm" : val.equals("修正確定") ? "updateConfirm" : val.equals("登録確定") ? "insConfirm" : "unknown";
-  String header = val.equals("登録する") ? "新規部屋登録" : val.equals("修正する") ? "部屋名修正" : val.equals("削除する") ? "部屋削除" : val.equals("修正確定") ? "部屋名修正確認" : val.equals("登録確定") ? "新規部屋登録確認" : "unknown";
+  String actionType = val.equals("登録") ?  "ins": val.equals("修正") ? "update" :  val.equals("削除") ? "deleteConfirm" : val.equals("修正確定") ? "updateConfirm" : val.equals("登録確定") ? "insConfirm" : "unknown";
+  String header = val.equals("登録") ? "新規部屋登録" : val.equals("修正") ? "部屋名修正" : val.equals("削除") ? "部屋削除" : val.equals("修正確定") ? "部屋名修正確認" : val.equals("登録確定") ? "新規部屋登録確認" : "unknown";
 %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -161,7 +161,7 @@
                   <td><%=webBean.txt("room_name")%></td>
                 </tr>
                </table>
-          <% } else if ("削除する".equals(val)) { %> <%--削除する追加--%>
+          <% } else if ("削除".equals(val)) { %>
                <table class="room__form--name">
                  <tr class="table-header">
                    <td>削除</td> 
