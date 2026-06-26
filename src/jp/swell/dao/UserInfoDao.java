@@ -1160,7 +1160,7 @@ public class UserInfoDao implements Serializable {
         List<HashMap<String, String>> rs;
         HashMap<String, String> map;
         String sql = "select * "
-                + " from user_info ";;
+                + " from user_info ";
         rs = DbBase.dbSelect(sql);
         int cnt = rs.size();
         if (cnt < 1)
