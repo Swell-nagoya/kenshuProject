@@ -704,7 +704,7 @@ public class UserInfoDetail extends ControllerBase
         UserInfoDao dao = setWeb2Dao2InputInfo();
         String userInfoId = bean.value("user_info_id");//userIdの取得
         String leaveDate = bean.value("leave_date");     // leave_dateの取得
-
+  
         try {
           dao.dbUpdate(userInfoId);
           if (leaveDate == null || leaveDate.trim().isEmpty()) {
