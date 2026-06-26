@@ -314,7 +314,7 @@ jQuery(function($)
             </td>
             <td class="list_btn">
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
-              <input type="button" value="削除" onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
+              <input type="button" value="削除" onclick="go_detail_2('go_next','delete','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
             </td>
           </tr>
           <%}%>

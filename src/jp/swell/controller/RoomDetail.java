@@ -44,8 +44,8 @@ public class RoomDetail extends ControllerBase
      */
     @Override
     public void doInit()
-    {setLoginNeeds(false);
-   //     setLoginNeeds(true); // この処理にはログインが必要かどうか
+    {
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -104,7 +104,7 @@ public class RoomDetail extends ControllerBase
                           forward("RoomDetail.jsp");
                       }
                   } 
-                  else if ("deletef".equals(requestCmd)) 
+                  else if ("delete".equals(requestCmd)) 
                   {
                       if (!dao.dbSelect(mainKey))
                       {
@@ -113,7 +113,8 @@ public class RoomDetail extends ControllerBase
                       }
                       else
                       {
-                     	
+
+                   	   bean.setMessage("この部屋を削除します。よろしいですか？");
                        bean.setValue("request_name", "削除");
                        bean.setValue("room_name", roomName);
                        forward("RoomDetail.jsp");
@@ -133,7 +134,6 @@ public class RoomDetail extends ControllerBase
 
                    insRoomPass();
                    bean.rtrimAllItem();
-         //          RoomDao dao = setWeb2Dao2InputInfo();
                    if (inputCheck(dao)) 
                    {
                   
@@ -167,23 +167,6 @@ public class RoomDetail extends ControllerBase
                         forward("RoomDetail.jsp");
                       }
                       
-                  }else if ("deletef".equals(bean.value("request_cmd")))
-                  {
-                   System.out.println("hitdesu");
-                   setInputInfo2Dao2WebDelete();
-                   bean.rtrimAllItem();
-                   System.out.println("hit");
-                   if (inputCheck(dao)) 
-                   {
-                   	   bean.setMessage("この部屋を削除します。よろしいですか？");
-                       bean.setValue("request_name", "確定");
-                       forward("RoomDetail.jsp");  
-                   }
-                   else 
-                   {
-                       bean.setError("入力内容に誤りがあります");
-                       forward("RoomDetail.jsp"); 
-                   }
                   }
                   else if ("insConfirm".equals(requestCmd))
                   {
@@ -195,10 +178,9 @@ public class RoomDetail extends ControllerBase
                   }
                   else if ("deleteConfirm".equals(requestCmd))
                   {
-                      dbDeletef();
+                      dbDelete();
                   }
               }
-              //追加ここから
               else if ("return".equals(actionCmd))
               {
 
@@ -206,7 +188,6 @@ public class RoomDetail extends ControllerBase
                 bean.setValue("request_cmd", "ins");
                 bean.setValue("request_name", "登録");
                 setInputInfo2Dao2Web();
-                System.out.println("hit");
                 forward("RoomDetail.jsp");
                 
                }
@@ -222,33 +203,8 @@ public class RoomDetail extends ControllerBase
                 forward("RoomList.do");
                }
               }
-              //追加ここまで
-              //追加ここから
-              System.out.println("hithit");
               redirect("RoomList.do");
-              //追加ここまで
-          }/*
-         
-          else if ("RoomDetail".equals(formName))
-          {
-              if ("go_next".equals(actionCmd))
-              {
-                  if ("insConfirm".equals(requestCmd))
-                  {
-                  	System.out.println("test3");
-                      dbRegistration();
-                  }
-                  else if ("updateConfirm".equals(requestCmd))
-                  {
-                      dbEdit();
-                  }
-                  else if ("deleteConfirm".equals(requestCmd))
-                  {
-                      dbDeletef();
-                  }
-              }
-              redirect("RoomList.do");
-          }*/
+          }
           else
           {
               bean.setValue("request_name", "修正");
@@ -328,7 +284,7 @@ public class RoomDetail extends ControllerBase
      * データベースから指定されたレコードを削除メソッド
      * @throws AtareSysException
      */
-    public void dbDeletef() throws AtareSysException
+    public void dbDelete() throws AtareSysException
     {
         WebBean bean = getWebBean();
         bean.rtrimAllItem();

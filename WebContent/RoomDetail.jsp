@@ -16,28 +16,26 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <%
-
-
   String val = webBean.txt("request_name");
   String pageNum1 = "0";
   String pageNum2 = "0";
   //　ページ分岐（登録・修正 入力）
   if(
     (val.equals("登録")) || 
-    (val.equals("修正"))) {
+    (val.equals("修正")) ){
  	  pageNum1 = "1";
   //　ページ分岐（削除・修正・登録 確定画面）
   } else if(
-    (val.equals("削除")) || 
+    (val.equals("登録確定")) ||
     (val.equals("修正確定")) ||
-    (val.equals("登録確定"))) {
+    (val.equals("削除"))) {
   	  pageNum1 = "2";
   } else {}
   
   
   if (
     webBean.txt("request_name").equals("登録確定") ||
-    webBean.txt("request_name").equals("修正確定") ) {
+    webBean.txt("request_name").equals("修正確定")) {
   	pageNum2 = "1";
  } else {
  	pageNum2 = "2";
@@ -50,11 +48,11 @@
 
   String actionType = val.equals("登録") ?  "ins": val.equals("登録確定") ? "insConfirm"
                                                  : val.equals("修正") ? "update" : val.equals("修正確定") ? "updateConfirm" 
-                                                 : val.equals("削除") ? "deletef" : val.equals("確定") ? "deleteConfirm"
+                                                 : val.equals("削除") ? "deleteConfirm"
                                                  : "unknown";
   String header = val.equals("登録") ? "新規部屋登録" : val.equals("登録確定") ? "新規部屋登録確認"
                 : val.equals("修正") ? "部屋名修正" : val.equals("修正確定") ? "部屋名修正確認"
-                : val.equals("削除") ? "部屋削除" : val.equals("確定") ? "部屋削除確定" : "unknown";
+                : val.equals("削除") ? "部屋削除" : "unknown";
 %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -175,22 +173,12 @@
                    <td><%=webBean.txt("room_name")%></td>
                  </tr>
                </table>
-         <% } %>
+         <% } else {} %>
              </div>
              <!-- ./left -->
 <% } else {} %>
             <div class="button">
-<%
-            if (val.equals("削除")) {
-%>
-              <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>', '<%=webBean.txt("main_key")%>')" value="確定する"/>
-<%
-            } else {
-%>
               <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>', '<%=webBean.txt("main_key")%>')" value="<%=val%>"/>
-<%
-            }
-%>
             </div>
              <!-- ./button -->
           </form>
