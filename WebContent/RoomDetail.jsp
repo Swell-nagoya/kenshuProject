@@ -48,8 +48,13 @@
   }
 
 
-  String actionType = val.equals("登録") ?  "ins": val.equals("修正") ? "update" :  val.equals("削除") ? "deleteConfirm" : val.equals("修正確定") ? "updateConfirm" : val.equals("登録確定") ? "insConfirm" : "unknown";
-  String header = val.equals("登録") ? "新規部屋登録" : val.equals("修正") ? "部屋名修正" : val.equals("削除") ? "部屋削除" : val.equals("修正確定") ? "部屋名修正確認" : val.equals("登録確定") ? "新規部屋登録確認" : "unknown";
+  String actionType = val.equals("登録") ?  "ins": val.equals("登録確定") ? "insConfirm"
+                                                 : val.equals("修正") ? "update" : val.equals("修正確定") ? "updateConfirm" 
+                                                 : val.equals("削除") ? "deleteConfirm" : val.equals("確定") ? "deleteConfirm"
+                                                 : "unknown";
+  String header = val.equals("登録") ? "新規部屋登録" : val.equals("登録確定") ? "新規部屋登録確認"
+                : val.equals("修正") ? "部屋名修正" : val.equals("修正確定") ? "部屋名修正確認"
+                : val.equals("削除") ? "部屋削除" : val.equals("確定") ? "部屋削除確定" : "unknown";
 %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">

@@ -44,8 +44,8 @@ public class RoomDetail extends ControllerBase
      */
     @Override
     public void doInit()
-    {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+    {setLoginNeeds(false);
+   //     setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -113,11 +113,14 @@ public class RoomDetail extends ControllerBase
                       }
                       else
                       {
-                          bean.setMessage("この部屋を削除します。よろしいですか？");
-                          bean.setValue("request_name", "削除");
-                          bean.setValue("room_name", roomName);
-                          forward("RoomDetail.jsp");
+                      	bean.setMessage("この部屋を削除します。よろしいですか？");
+                       bean.setValue("request_name", "削除");
+                       bean.setValue("room_name", roomName);
+                       forward("RoomDetail.jsp");
                       }
+                      
+
+                      
                   }
               }
           } 
@@ -156,11 +159,22 @@ public class RoomDetail extends ControllerBase
                   }
                   else if ("update".equals(requestCmd))
                   {
-                      bean.setMessage("この内容で修正します。よろしいですか？");
-                      bean.setValue("request_name", "修正確定");
-                      bean.setValue("before_name", beforeName);
-                      bean.setValue("room_name", roomName);
-                      forward("RoomDetail.jsp");
+                      
+                      setRoom();
+                      bean.rtrimAllItem();
+                      if (inputCheck(dao)) 
+                      {
+
+                       bean.setMessage("この内容で修正します。よろしいですか？");
+                          bean.setValue("request_name", "修正確定");
+                          forward("RoomDetail.jsp"); 
+                      }
+                      else 
+                      {
+                        bean.setError("入力内容に誤りがあります");
+                        forward("RoomDetail.jsp");
+                      }
+                      
                   }
                   else if ("insConfirm".equals(requestCmd))
                   {
@@ -185,6 +199,16 @@ public class RoomDetail extends ControllerBase
                 setInputInfo2Dao2Web();
                 System.out.println("hit");
                 forward("RoomDetail.jsp");
+                
+               }
+                else if ("updateConfirm".equals(bean.value("request_cmd"))) 
+               {
+                    bean.setValue("request_cmd", "update");
+                    bean.setValue("request_name", "修正");
+                    setInputInfo2Dao2Web();
+                    setWeb2Dao2InputInfo();
+                    forward("RoomDetail.jsp");
+                
                } else {
                 forward("RoomList.do");
                }
@@ -354,7 +378,7 @@ public class RoomDetail extends ControllerBase
         if (roomName.length() == 0) {
             errors.put("room_name_empty", "部屋名を入力してください。");
         }
-        
+
         if (
              (roomName == "" && beforeName == "") != true &&
         		   (roomName.equalsIgnoreCase(beforeName))
@@ -434,10 +458,6 @@ public class RoomDetail extends ControllerBase
         RoomDao dao = new RoomDao();
         String roomId = GetNumber.getNumberChar("room_id"); // ユーザーIDを新規作成
         bean.setValue("room_id", roomId);
-        /*
-        String password = generateRandomPassword(8); // ランダムパスワードを新規作成
-        bean.setValue("password", password);
-        */
         bean.setValue("input_info", Sup.serialize(dao));  // DAOオブジェクトをシリアライズしてWebBeanに保存
         return true;
     }
