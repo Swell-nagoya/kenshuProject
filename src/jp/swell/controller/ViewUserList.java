@@ -115,6 +115,7 @@ public class ViewUserList extends ControllerBase
         }
         else
         {
+        	
             formInit();
             searchList();
             forward("ViewUserList.jsp");
@@ -132,6 +133,7 @@ public class ViewUserList extends ControllerBase
         bean.setValue("sort_key", "full_name_kana"); /* 初回のソートキーを入れる */
         bean.setValue("sort_order", "asc");
         bean.setValue("lineCount", SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "ViewUserList", "lineCount", "100"));
+        
     }
 
     /**

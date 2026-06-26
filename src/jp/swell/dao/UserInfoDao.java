@@ -1388,6 +1388,7 @@ public class UserInfoDao implements Serializable {
                 + " ( user_info_id  = " + DbS.chara(pAccount)
                 + " or memail = " + DbS.chara(pAccount) + " ) ";
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        
         if (1 != rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);

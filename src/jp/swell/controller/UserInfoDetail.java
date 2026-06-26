@@ -107,6 +107,8 @@ public class UserInfoDetail extends ControllerBase
                   }
                   else if ("check".equals(bean.value("request_cmd"))) 
                   {
+                	  
+                	  	
                       if (!setDb2Web()) 
                       {
                           bean.setError("データの取得に失敗しました");
@@ -114,7 +116,7 @@ public class UserInfoDetail extends ControllerBase
                       } 
                       else 
                       {
-                          bean.setValue("request_name", "メール送信");
+                          bean.setValue("request_name", "メール送信");                          
                           forward("UserInfoDetail_3.jsp");
                       }
                   }
