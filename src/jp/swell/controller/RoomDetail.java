@@ -425,14 +425,15 @@ public class RoomDetail extends ControllerBase
         dao.setRoomName(bean.value("room_name"));
         
         String requestCmd = bean.value("request_cmd");
+        String loggedInUserId = getLoginUserId();
         
         // 入力完了時に現在の時刻を代入（user_id, insert_date, update_user_id , update_date）
         if ("insConfirm".equals(requestCmd))
         {
         	
-          dao.setInsertUserId(UserLogin.account);
+          dao.setInsertUserId(loggedInUserId);
           dao.setInsertDate(formattedDateTime);
-          dao.setUpdateUserId(UserLogin.account);
+          dao.setUpdateUserId(loggedInUserId);
           dao.setUpdateDate(formattedDateTime);
           
         // 更新完了時に現在の時刻を代入（update_user_id , update_date）
@@ -440,7 +441,8 @@ public class RoomDetail extends ControllerBase
         else if ("updateConfirm".equals(requestCmd)) 
         {
         	System.out.println(formattedDateTime + "日時");
-         dao.setUpdateUserId(UserLogin.account);
+         System.out.println("ログイン中のユーザー: " + loggedInUserId);
+         dao.setUpdateUserId(loggedInUserId);
          dao.setUpdateDate(formattedDateTime);
         } 
         else

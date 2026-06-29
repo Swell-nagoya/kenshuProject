@@ -14,7 +14,6 @@ import jp.swell.user.UserLoginInfo;
  */
 public class UserLogin extends ControllerBase {
 
-	public static String account;
 	
     /**
      * jp.patasys.alumni.controller.HttpServlet のメソッドをオーバライドする。
@@ -46,7 +45,7 @@ public class UserLogin extends ControllerBase {
         bean.trimAllItem();
 
         //usernameのインプットの値を代入
-        account = bean.value("ac");
+        String account = bean.value("ac");
 
         //passwordのインプットの値を代入
         String password = bean.value("ko");
