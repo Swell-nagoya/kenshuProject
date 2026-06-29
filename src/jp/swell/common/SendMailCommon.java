@@ -32,12 +32,6 @@ public class SendMailCommon {
         userName = ParameterManager.getSystemParameter("mail_user_1");
         userPass = ParameterManager.getSystemParameter("mail_password_1");
         port = ParameterManager.getSystemParameter("mail_port");
-        
-        // SMTPホストとポートが正しく取得されているかをログ出力
-        System.out.println("SMTPホスト: " + smtpHost);
-        System.out.println("メール送信元アドレス: " + mailFromAddress);
-        System.out.println("メール送信者名: " + mailFromName);
-        System.out.println("ポート: " + port);
     }
 
     // SendMail クラスの sendHtmlMail メソッドを使用するメール送信メソッド
@@ -75,8 +69,6 @@ public class SendMailCommon {
 
             // メールを送信
             Transport.send(mimeMessage);
-
-            System.out.println("HTMLメール送信が完了しました。");
         } catch (Exception e) {
             e.printStackTrace();
         }

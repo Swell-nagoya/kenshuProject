@@ -434,7 +434,7 @@ a:hover {
             <tbody>
               <%
               // データベースの予約情報が空でないかの確認
-              if (webBean.arrayList("reserve") != null && !webBean.arrayList("reserve").isEmpty()) {
+              if (webBean.arrayList("list") != null && !webBean.arrayList("list").isEmpty()) {
                   // 予約情報を取るためのループ処理
                   for (Object reserveItem : webBean.arrayList("list")) {
                       ReserveDao reserve = (ReserveDao) reserveItem;

@@ -111,7 +111,6 @@ public class SchedulerTask extends TimerTask {
         scheduleDao.dbDelete_2(linkUserId);
       }
     }
-    System.out.println("削除しました");
   }
   /**
    * ソート順番を求める

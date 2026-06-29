@@ -1,8 +1,10 @@
 package jp.swell.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,8 +17,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.ibm.icu.text.SimpleDateFormat;
 
 import jp.patasys.common.AtareSysCalendar;
 import jp.patasys.common.AtareSysException;
@@ -51,101 +51,135 @@ public class FileDetail extends ControllerBase {
 
     @Override
     public void doActionProcess() throws AtareSysException {
+
         WebBean bean = getWebBean();
-        UserLoginInfo login = (UserLoginInfo)getLoginInfo();
-        // 追加：JSP 上で使うためのログインユーザー名・ID
+        UserLoginInfo login = (UserLoginInfo) getLoginInfo();
+
+        // ログイン情報セット
         bean.setValue("loginUserName", login.getLastName() + " " + login.getFirstName());
         bean.setValue("loginUserId", login.getUserInfoId());
-        
-        // デバッグログ：どのフォーム／コマンドで呼ばれたか
+
         String form = bean.value("form_name");
         String actionCmd = bean.value("action_cmd");
         String requestCmd = bean.value("request_cmd");
 
-        // 共通取得
         String inputName = bean.value("input_name");
         String mainKey = bean.value("main_key");
         String fileName = bean.value("file_name");
+
         FileDao dao = setWeb2Dao2InputInfo();
 
-        if ("FileDetail".equals(form)) {
-            // ① upload ボタン押下 → 確認画面へ
-            if ("upload".equals(actionCmd)) {
-                try {
-                    setWeb2Dao2InputInfo(getRequest());
-                    bean.setValue("request_name", "登録する");
-                    bean.setMessage("この内容で登録します。よろしいですか？");
-                    bean.setValue("input_name", inputName);
-                    forward("FileDetail_2.jsp");
-                } catch (IOException | ServletException e) {
-                    throw new AtareSysException(e);
+        try {
+
+            // ==============================
+            // FileDetail
+            // ==============================
+            if ("FileDetail".equals(form)) {
+
+                // ===== 登録ボタン（アップロード）=====
+            	if ("upload".equals(actionCmd)) {
+
+            	    FileUpload(getRequest(), bean.value("user_info_id"));
+
+            	    bean.setValue("request_name", "登録する");
+            	    bean.setMessage("この内容で登録します。よろしいですか？");
+            	    forward("/WEB-INF/FileDetail_2.jsp");
+
+            	    return;
+            	}
+
+                // ===== 送信先選択 =====
+                if ("sub".equals(actionCmd)) {
+                    searchUserList();
+                    bean.setValue("request_name", "送信先");
+                    forward("FileUserList.jsp");
+                    return;
                 }
 
-             // ② sub ボタン押下 → サブ画面（ユーザー選択）へ（送信先のみ）
-            } else if ("sub".equals(actionCmd)) {
-                searchUserList();
-                bean.setValue("request_name", "送信先");
-                forward("FileUserList.jsp");
-                return;   // 忘れずに戻す
-
-
-                // ③ return ボタン押下 → 一覧画面へ戻す
-            } else if ("return".equals(actionCmd)) {
-                forward("FileList.do");
+                // ===== 戻る =====
+                if ("return".equals(actionCmd)) {
+                    forward("FileList.do");
+                    return;
+                }
             }
 
-        } else if ("FileList".equals(form)) {
-            if ("go_next".equals(actionCmd)) {
-                if ("ins".equals(requestCmd)) {
-                    bean.setValue("request_name", "登録する");
-                    searchList();
-                    forward("FileDetail.jsp");
+            // ==============================
+            // FileList
+            // ==============================
+            else if ("FileList".equals(form)) {
 
-                } else if ("download".equals(requestCmd)) {
-                    dao.dbSelect(mainKey);
-                    downloadFileWrite(dao);
+                if ("go_next".equals(actionCmd)) {
 
-                } else if ("deletef".equals(requestCmd)) {
-                    if (!dao.dbSelect(mainKey)) {
-                        bean.setError("データの取得に失敗しました");
-                        forward("FileList.jsp");
-                    } else {
+                    if ("ins".equals(requestCmd)) {
+                        bean.setValue("request_name", "登録する");
+                        forward("FileDetail.jsp");
+                        return;
+
+                    } else if ("download".equals(requestCmd)) {
+                        dao.dbSelect(mainKey);
+                        downloadFileWrite(dao);
+
+                    } else if ("deletef".equals(requestCmd)) {
+
+                        if (!dao.dbSelect(mainKey)) {
+                            bean.setError("データの取得に失敗しました");
+                            forward("FileList.jsp");
+                            return;
+                        }
+                        
                         bean.setValue("request_name", "削除する");
                         bean.setMessage("このファイルを削除します。よろしいですか？");
                         bean.setValue("file_name", fileName);
-                        forward("FileDetail_2.jsp");
+
+                        forward("/WEB-INF/FileDetail_2.jsp");
+                        return;
                     }
                 }
             }
 
-        } else if ("FileDetail_2".equals(form)) {
-            if ("go_next".equals(actionCmd)) {
-                if ("insEnter".equals(requestCmd)) {
-                    searchList();
-                    redirect("FileList.do");
+            // ==============================
+            // FileDetail_2
+            // ==============================
+            else if ("FileDetail_2".equals(form)) {
 
-                } else if ("download".equals(requestCmd)) {
-                    dao.dbSelect(mainKey);
-                    downloadFileWrite(dao);
+                if ("go_next".equals(actionCmd)) {
 
-                } else if ("deleteEnter".equals(requestCmd)) {
-                    dbDeletef();
+                    if ("insEnter".equals(requestCmd)) {
+                        searchList();
+                        redirect("FileList.do");
+
+                    } else if ("download".equals(requestCmd)) {
+                        dao.dbSelect(mainKey);
+                        downloadFileWrite(dao);
+
+                    } else if ("deleteEnter".equals(requestCmd)) {
+                        dbDeletef();
+                    }
+
+                } else if ("return".equals(actionCmd)) {
+
+                    if ("ins".equals(requestCmd)) {
+                        forward("FileDetail.jsp");
+                    } else if ("delete".equals(requestCmd)) {
+                        searchList();
+                        redirect("FileList.do");
+                    }
                 }
+            }
 
-            } else if ("return".equals(actionCmd)) {
-                if ("ins".equals(requestCmd)) {
-                    forward("FileDetail.jsp");
-                } else if ("delete".equals(requestCmd)) {
+            // ==============================
+            // FileDetail_3
+            // ==============================
+            else if ("FileDetail_3".equals(form)) {
+
+                if ("return".equals(actionCmd)) {
                     searchList();
                     redirect("FileList.do");
                 }
             }
 
-        } else if ("FileDetail_3".equals(form)) {
-            if ("return".equals(actionCmd)) {
-                searchList();
-                redirect("FileList.do");
-            }
+        } catch (Exception e) {
+            throw new AtareSysException(e);
         }
     }
 
@@ -347,8 +381,10 @@ public class FileDetail extends ControllerBase {
      * @throws IOException
      * @throws ServletException
      */
+    
     private ArrayList<FileDao> FileUpload(HttpServletRequest request, String pUserInfoId)
             throws AtareSysException, IOException, ServletException {
+    	
         WebBean bean = getWebBean();
         ArrayList<FileDao> fileDaos = new ArrayList<>();
 
@@ -358,49 +394,85 @@ public class FileDetail extends ControllerBase {
 
         // 送信先ユーザーIDを取得
         String destinationUserInfoIdsString = bean.value("destination_user_info_id"); // 送信先ユーザーID
+        
+        if (destinationUserInfoIdsString == null || destinationUserInfoIdsString.isEmpty()) {
+            bean.setError("送信先ユーザーが選択されていません");
+            throw new AtareSysException("destination empty");
+        }
+        
         String[] destinationUserInfoIds = destinationUserInfoIdsString.split(",");
 
-        // 送信元ユーザーのIDを取得
+        // ログインユーザー
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
-        String skey = GetNumber.getRandomNo(16); //file_key生成
-
+        
+        // file_key生成
+        String skey = GetNumber.getRandomNo(16);
+        
         // ファイルデータを取得
         FileUtil fileUtil = new FileUtil();
         byte[] fileData = (byte[]) bean.object("file");
+
+        if (fileData == null) {
+            return null;
+        }
+        
         String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
         String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
         String fileName = bean.value("input_name") + fileExtension; // ファイル名を取得
-        String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8); //system_file_id生成
-
-        // 拡張子を一度だけ追加
+        
+        String filePath = request.getServletContext().getRealPath("/upload");
+        
+        File uploadDir = new File(filePath);
+        if (!uploadDir.exists()) {
+        	uploadDir.mkdirs(); // フォルダが無ければ作成
+        }
+        // 保存ファイル名作成
+        String systemFileName = System.currentTimeMillis()
+                + "_"
+                + UUID.randomUUID().toString().substring(0, 8);
+        // 拡張子追加
         if (fileExtension != null && !fileExtension.isEmpty()) {
             systemFileName += fileExtension;
         }
+        // 保存先パス作成
+        String fullPath = filePath + File.separator + systemFileName;
 
-        // 完全なファイルパスの生成
-        String fullPath = filePath + "/" + systemFileName;
+        // ファイル保存
         if (!fileUtil.outputFile(fullPath, fileData)) {
             return null;
         }
-
         // アップロード期限を設定
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.WEEK_OF_YEAR, 1); // 現在の日時に1週間追加
         java.util.Date expirationDate = calendar.getTime(); // Date型を取得
 
         // 各送信先ユーザーに対してデータベースにファイル情報を登録
-        for (String userInfoId : destinationUserInfoIds) { // 送信先ユーザーIDを使用
+        for (String userInfoId : destinationUserInfoIds) {
+
+            // ★追加①：空ガード
+            if (userInfoId == null || userInfoId.trim().isEmpty()) {
+                continue;
+            }
+
             String fileId = UUID.randomUUID().toString().substring(0, 13);
             FileDao fileDao = new FileDao();
 
-            // expirationDateをString型に変換
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String expirationDateString = sdf.format(expirationDate);
 
-            fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
-                    expirationDateString);
+            fileDao.dbFileInsert(
+                    fileId,
+                    userInfoId,
+                    fullPath,
+                    fileName,
+                    mimeType,
+                    systemFileName,
+                    senderUserId,
+                    skey,
+                    expirationDateString
+            );
+
             fileDaos.add(fileDao);
         }
         return fileDaos;
@@ -463,17 +535,23 @@ public class FileDetail extends ControllerBase {
 
         try {
             // ファイルの存在を確認
-            if (!dao.dbSelect(mainKey)) {
+            if (mainKey == null || mainKey.isEmpty()) {
                 bean.setError("ファイルが見つかりませんでした。");
                 forward("FileList.jsp");
                 return;
             }
 
             // ファイル情報を取得
-            FileDao fileData = dao; // ここは前の行で dao を設定したので、そのまま使用
+            FileDao fileData = new FileDao();
 
+            if (!fileData.dbSelect(mainKey)) {
+                bean.setError("ファイルが見つかりませんでした。");
+                forward("FileList.jsp");
+                return;
+            } 
+            
             String fileOwnerId = fileData.getUploadUserId(); // ファイルの所有者ID
-
+            
             // 所有者が現在のユーザーと一致するか確認
             if (!userLoginInfo.getUserInfoId().equals(fileOwnerId)) {
                 bean.setError("このファイルを削除する権限がありません。");

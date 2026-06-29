@@ -37,7 +37,34 @@
 				<script type="text/javascript" src="js/flatpickr.min.js"></script>
 				<script type="text/javascript" src="js/cell.js"></script>
 				<title>アップロード画面</title>
+				<script type="text/javascript">
+				function selectUser(userId, userName) {
+
+				    let input = window.opener.document.getElementById("destination_user_info_id");
+
+				    let current = input.value;
+
+				    if (current === "") {
+				        input.value = userId;
+				    } else {
+				        input.value = current + "," + userId;
+				    }
+
+				    let nameArea = window.opener.document.getElementById("selected_destination_users");
+				    let currentName = nameArea.innerText;
+
+				    if (currentName === "") {
+				        nameArea.innerText = userName;
+				    } else {
+				        nameArea.innerText = currentName + ", " + userName;
+				    }
+
+				    window.close();
+				}
+				</script>
 				<style>
+				
+				
 body {
 	margin: 0;
 	padding: 0;
@@ -172,7 +199,7 @@ input[type="button"]:hover {
 	display: inline-block;
 }
 </style>
-				<script type="text/javascript">
+<script type="text/javascript">
 // 元の go_submit / go_upload はそのまま残す
 function go_submit(action_cmd) {
   document.getElementById('main_form').action = '';
@@ -206,6 +233,30 @@ function toggleCheckbox(div) {
   if (!cb) return;
   cb.checked = !cb.checked;
 }
+
+window.onload = function () {
+
+    const selectedIds =
+        window.opener.document.getElementById("destination_user_info_id").value;
+
+    console.log("selectedIds:", selectedIds);
+
+    if (!selectedIds) return;
+
+    const idList = selectedIds.split(",");
+
+    idList.forEach(id => {
+        id = id.trim();
+
+        const checkbox = document.querySelector(
+            "input[type='checkbox'][value='" + id + "']"
+        );
+
+        if (checkbox) {
+            checkbox.checked = true;
+        }
+    });
+};
 </script>
 </head>
 <body>
@@ -221,7 +272,7 @@ function toggleCheckbox(div) {
 		<input type="hidden" name="action_cmd" value="sub" />
 		<input type="hidden" name="pageNo" value="<%=pageNo%>" />
 		<!-- チェック保持用 -->
-		<input type="hidden" name="selectedIds" id="selectedIds"
+		<input type="hidden" name="selectedIds" id="selectedIdsTop"
 			value="<%=webBean.txt("selectedIds")%>" />
 		<button type="button" onclick="goPage(<%=pageNo - 1%>)"
 			<%=pageNo <= 1 ? "disabled" : ""%>>← 戻る</button>
@@ -232,7 +283,7 @@ function toggleCheckbox(div) {
 	<script>
 	function goPage(p) {
 		  // 選択されたチェック状態を保持
-		  const prev = (document.getElementById('selectedIds').value || "")
+		  const prev = (document.getElementById('selectedIdsTop').value || "")
 		    .split(',').filter(x => x);
 		  const curr = Array.from(
 		    document.querySelectorAll('input[name="user_id"]:checked')
@@ -275,7 +326,14 @@ function toggleCheckbox(div) {
 								String sel = webBean.value("selectedIds");
 								if (sel == null)
 								    sel = "";
-								List<String> stay = Arrays.asList(sel.split(","));
+								List<String> stay = new ArrayList<>();
+								if (sel != null && !sel.isEmpty()) {
+								    for (String s : sel.split(",")) {
+								        if (s != null && !s.trim().isEmpty()) {
+								            stay.add(s.trim());
+								        }
+								    }
+								}
 								for (Object o : webBean.arrayList("user_data")) {
 								    UserInfoDao dao = (UserInfoDao) o;
 								    String userId = WebUtil.htmlEscape(dao.getUserInfoId());
@@ -311,7 +369,7 @@ function toggleCheckbox(div) {
 								<input type="hidden" name="form_name" value="FileDetail" />
 								<input type="hidden" name="action_cmd" value="sub" />
 								<input type="hidden" name="pageNo" value="<%=pageNo%>" />
-								<input type="hidden" name="selectedIds" id="selectedIds"
+								<input type="hidden" name="selectedIds" id="selectedIdsBottom"
 									value="<%=webBean.txt("selectedIds")%>" />
 
 								<button type="button"

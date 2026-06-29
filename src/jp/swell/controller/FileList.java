@@ -22,6 +22,7 @@ import java.util.List;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
@@ -185,12 +186,19 @@ public class FileList extends ControllerBase {
         ArrayList<FileDao> fileList = new ArrayList<>();
         fileList.addAll(receivedFiles);
         fileList.addAll(sentFiles);
+        
+     // ★ここにデバッグ追加（重要）
+        for (FileDao dao : fileList) {
+        }
+        
+        String sql = "SELECT COUNT(*) cnt FROM files";
+        List<HashMap<String,String>> rs = DbBase.dbSelect(sql);
 
         bean.setValue("list", fileList);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         // 受信件数だけでは recordCount が正確に反映されない可能性があるため、明示的に再セット
-        bean.setValue("recordCount", fileList.size());
+        bean.setValue("recordCount", rs.get(0).get("cnt"));
         bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
 
         SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
@@ -205,7 +213,7 @@ public class FileList extends ControllerBase {
         } else {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
-
+        
     }
 
     /**

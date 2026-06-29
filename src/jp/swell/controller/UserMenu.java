@@ -23,8 +23,7 @@ import jp.swell.dao.UserInfoDao;
 import jp.swell.dao.UserReserveDao;
 import jp.swell.user.UserLoginInfo;
 
-public class UserMenu extends ControllerBase
-{
+public class UserMenu extends ControllerBase{
     /**
      * jp.patasys.alumni.controller.HttpServlet のメソッドをオーバライドする。
      * オーバライドしない場合は、デフォルトが設定される。.
@@ -45,6 +44,7 @@ public class UserMenu extends ControllerBase
     @Override
     public void doActionProcess() throws AtareSysException
     {
+    	
         WebBean bean = getWebBean();
 
         if ("UserMenuHome".equals(bean.value("form_name")))
@@ -126,7 +126,7 @@ public class UserMenu extends ControllerBase
             }
             else if ("admin1".equals(bean.value("action_cmd")))
             {
-                redirect("MenuAdmin.do");
+                redirect("UserMenu.do");
             }
             else if ("admin2".equals(bean.value("action_cmd")))
             {

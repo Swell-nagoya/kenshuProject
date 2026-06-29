@@ -653,80 +653,95 @@ footer {
 
     //チェックボックスの作成
     function createMyCalendar() {
-        let myCalendarHTML = '';
-        <%
-        // データベースの予約情報が空でないかの確認
-        if (webBean.arrayList("users") != null && !webBean.arrayList("users").isEmpty()) {
-          // 予約情報を取るためのループ処理
-            for (Object allUsers : webBean.arrayList("users")) {
-                UserInfoDao user = (UserInfoDao) allUsers;
-                %>
-                myCalendarHTML += 
-                    '<div id="<%=WebUtil.htmlEscape(user.getUserInfoId())%>"><label><input type="checkbox" id="<%=WebUtil.htmlEscape(user.getUserInfoId())%>check" name="<%=WebUtil.htmlEscape(user.getUserInfoId())%>check" value="" checked/><%=WebUtil.htmlEscape(user.getFullName())%></label></div>';
-            <%
-            }
+    let html = '';
+
+    <%
+    if (webBean.arrayList("users") != null && !webBean.arrayList("users").isEmpty()) {
+        for (Object allUsers : webBean.arrayList("users")) {
+            UserInfoDao user = (UserInfoDao) allUsers;
+
+            String userId = user.getUserInfoId().trim();
+            userId = userId.replaceAll("[^a-zA-Z0-9]", ""); // ★重要：JS安全化
+
+            String name = WebUtil.htmlEscape(user.getFullName());
+    %>
+
+    html += `
+        <div class="<%=userId%>">
+            <label>
+                <input type="checkbox"
+                       id="<%=userId%>check"
+                       checked>
+                <%=name%>
+            </label>
+        </div>
+    `;
+
+    <%
         }
-        %>
-        return myCalendarHTML;
     }
+    %>
+
+    return html;
+}
+    
 
     //チェックボックスで予約の表示・非表示を操作する関数
-    function reserveDisplay() {
-        let roomElements;
-        <%
-        if (webBean.arrayList("users") != null && !webBean.arrayList("users").isEmpty()) {
-            for (Object allUsers : webBean.arrayList("users")) {
-                UserInfoDao user = (UserInfoDao) allUsers;
-                String userId = WebUtil.htmlEscape(user.getUserInfoId());
-        %>
-        const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
-        if (checkbox<%=userId%>) {
-            roomElements = document.getElementsByClassName("<%=userId%>");
-            if (checkbox<%=userId%>.checked) {
-                for (let i = 0; i < roomElements.length; i++) {
-                    roomElements[i].style.display = "block";
-                }
-            } else {
-                for (let i = 0; i < roomElements.length; i++) {
-                    roomElements[i].style.display = "none";
-                }
-            }
-        }
-        <%
-            }
-        }
-        %>
-    }
+    //function reserveDisplay() {
+       // let roomElements;
+        //<%
+       // if (webBean.arrayList("users") != null && !webBean.arrayList("users").isEmpty()) {
+         //   for (Object allUsers : webBean.arrayList("users")) {
+               // UserInfoDao user = (UserInfoDao) allUsers;
+               // String userId = WebUtil.htmlEscape(user.getUserInfoId());
+        //%>
+       // const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
+       // if (checkbox<%=userId%>) {
+          //  roomElements = document.getElementsByClassName("<%=userId%>");
+            //if (checkbox<%=userId%>.checked) {
+              //  for (let i = 0; i < roomElements.length; i++) {
+               //     roomElements[i].style.display = "block";
+              //  }
+           // } else {
+              //  for (let i = 0; i < roomElements.length; i++) {
+                  //  roomElements[i].style.display = "none";
+               // }
+           // }
+      //  }
+       // <%
+       //     }
+      //  }
+      //  %>
+    //}
 
     //チェックボックスを押したときにイベントが起きるように設定する関数
     function changeReserveDisplay() {
-        let roomElements;
-        <%
-        if (webBean.arrayList("users") != null && !webBean.arrayList("users").isEmpty()) {
-            for (Object allUsers : webBean.arrayList("users")) {
-                UserInfoDao user = (UserInfoDao) allUsers;
-                String userId = WebUtil.htmlEscape(user.getUserInfoId());
-        %>
-        const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
-        if (checkbox<%=userId%>) {
-            checkbox<%=userId%>.addEventListener('change', () => {
-                roomElements = document.getElementsByClassName("<%=userId%>");
-                if (checkbox<%=userId%>.checked) {
-                    for (let i = 0; i < roomElements.length; i++) {
-                        roomElements[i].style.display = "block";
-                    }
-                } else {
-                    for (let i = 0; i < roomElements.length; i++) {
-                        roomElements[i].style.display = "none";
-                    }
-                }
-            });
-        }
-        <%
+    const checkboxes = document.querySelectorAll("input[type='checkbox'][id$='check']");
+
+    checkboxes.forEach(cb => {
+
+        const apply = () => {
+            const userId = cb.id.replace("check", "");
+            const rooms = document.getElementsByClassName(userId);
+
+            for (let i = 0; i < rooms.length; i++) {
+                rooms[i].style.display = cb.checked ? "block" : "none";
             }
-        }
-        %>
+        };
+
+        cb.addEventListener("change", apply);
+        apply();
+    });
+}
+
+    function initMyCalendar() {
+        document.getElementById("myCalendar").innerHTML = createMyCalendar();
+        bindCheckboxEvent();
     }
+
+    $(function () {
+        initMyCalendar();
+    });
     
     function showSubCalendar() {
         document.getElementById('current_month_sub').innerHTML = calendarDateSub.getFullYear() + '年' + (calendarDateSub.getMonth() + 1) + '月'; //年月の表示
@@ -1060,7 +1075,7 @@ String actionCmd = (String) request.getParameter("action_cmd");
                             <li><i class="material-icons">settings</i> <span class="control">管理画面</span>
                                 <ul class="menuSub">
                                     <li onclick="go_detail('admin1', '');">管理者メニュー</li>
-                                    <li onclick="window.location.href='UserMenu.do'">ホーム画面</li>
+                                    <li onclick="window.location.href='UserMenuHome.do'">ホーム画面</li>
                                     <li onclick="window.location.href='UserLogin.do'">ログイン画面（仮）</li>
                                     <li onclick="window.location.href='Calendar.do'">カレンダー</li>
                                 </ul>

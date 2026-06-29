@@ -56,21 +56,28 @@ $(document).ready(function() {
     function update1(selectedDate) {
         // 予約セルの更新
         $('#scheduleTable td').removeClass('reserved').css({'background-color': '','opacity': ''}); //予約情報のリセット
-        reservationsData.forEach(function(reservation) {
-            if (reservation.reservationDate === selectedDate) {
-                var startHour = parseInt(reservation.checkinTime.substring(0, 2)); // チェックイン時間の時刻を取得
-                var endHour = parseInt(reservation.checkoutTime.substring(0, 2)); // チェックアウト時間の時刻を取得
-                var roomId = reservation.roomId; // 部屋IDを取得
-                var color = reservation.color; // 色情報を取得
+		if (typeof reservationsData !== 'undefined') {
+		    reservationsData.forEach(function(reservation) {
+		        if (reservation.reservationDate === selectedDate) {
+		            var startHour = parseInt(reservation.checkinTime.substring(0, 2));
+		            var endHour = parseInt(reservation.checkoutTime.substring(0, 2));
+		            var roomId = reservation.roomId;
+		            var color = reservation.color;
 
-                // 予約時間内の各時間帯に対してセルを更新
-                for (var hour = startHour; hour < endHour; hour++) {
-                    var cellSelector = `td[data-room-id="${roomId}"][data-hour="${hour}"]`;
-                    $(cellSelector).addClass('reserved').css({'background-color': color,'opacity': 0.4});
-                }
-            }
-        });
-    }
+		            for (var hour = startHour; hour < endHour; hour++) {
+		                var cellSelector =
+		                    `td[data-room-id="${roomId}"][data-hour="${hour}"]`;
+
+		                $(cellSelector)
+		                    .addClass('reserved')
+		                    .css({
+		                        'background-color': color,
+		                        'opacity': 0.4
+		                    });
+		            }
+		        }
+		    });
+		}
 
     // カレンダーの日付に色を付ける関数
     function reservedDateColor(instance) {

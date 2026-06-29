@@ -701,33 +701,17 @@ footer {
 
     //チェックボックスを押したときにイベントが起きるように設定する関数
     function changeReserveDisplay() {
-        let roomElements;
-        <%
-        if (webBean.arrayList("users") != null && !webBean.arrayList("users").isEmpty()) {
-            for (Object allUsers : webBean.arrayList("users")) {
-                UserInfoDao user = (UserInfoDao) allUsers;
-                String userId = WebUtil.htmlEscape(user.getUserInfoId());
-        %>
-        const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
-        if (checkbox<%=userId%>) {
-            checkbox<%=userId%>.addEventListener('change', () => {
-                roomElements = document.getElementsByClassName("<%=userId%>");
-                if (checkbox<%=userId%>.checked) {
-                    for (let i = 0; i < roomElements.length; i++) {
-                        roomElements[i].style.display = "block";
-                    }
-                } else {
-                    for (let i = 0; i < roomElements.length; i++) {
-                        roomElements[i].style.display = "none";
-                    }
-                }
-            });
+    const checkboxes = document.querySelectorAll("input[type='checkbox'][id$='check']");
+
+    checkboxes.forEach(cb => {
+        const userId = cb.id.replace("check", "").trim();
+        const rooms = document.getElementsByClassName(userId);
+
+        for (let i = 0; i < rooms.length; i++) {
+            rooms[i].style.display = cb.checked ? "block" : "none";
         }
-        <%
-            }
-        }
-        %>
-    }
+    });
+}
     
     function showSubCalendar() {
         document.getElementById('current_month_sub').innerHTML = calendarDateSub.getFullYear() + '年' + (calendarDateSub.getMonth() + 1) + '月'; //年月の表示
@@ -1061,7 +1045,7 @@ String actionCmd = (String) request.getParameter("action_cmd");
                             <li><i class="material-icons">settings</i> <span class="control">管理画面</span>
                                 <ul class="menuSub">
                                     <li onclick="go_detail('admin1', '');">管理者メニュー</li>
-                                    <li onclick="window.location.href='UserMenu.do'">ホーム画面</li>
+                                    <li onclick="window.location.href='UserMenuHome.do'">ホーム画面</li>
                                     <li onclick="window.location.href='UserLogin.do'">ログイン画面（仮）</li>
                                     <li onclick="window.location.href='Calendar.do'">カレンダー</li>
                                 </ul>

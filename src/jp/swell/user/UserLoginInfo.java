@@ -172,6 +172,7 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
 
     public String getAdmin() {
         return userInfoDao.getAdmin();
+        
     }
 
     /**
@@ -250,12 +251,18 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
     @Override
     public boolean login(String pAccount, String pPassword) {
         try {
+            
             userInfoDao = new UserInfoDao();
             boolean flg = userInfoDao.login(pAccount, pPassword);
+            
+            if (flg) {
+            }
+
             if (!flg) {
                 return false;
             }
             return true;
+
         } catch (AtareSysException e) {
             userInfoDao = null;
             e.printStackTrace();

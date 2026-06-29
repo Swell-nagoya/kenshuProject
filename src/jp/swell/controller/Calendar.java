@@ -27,7 +27,6 @@ public class Calendar extends ControllerBase
 
         // ログインユーザーIDを取得してログ出力
         String loggedInUserId = getLoginUserId();
-        System.out.println("ログイン中のユーザー: " + loggedInUserId);
     }
     
     @Override

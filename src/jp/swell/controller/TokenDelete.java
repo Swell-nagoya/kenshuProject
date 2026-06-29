@@ -48,7 +48,6 @@ public class TokenDelete {
 
             // SQLクエリを実行し、削除された行数を取得
             int rowsDeleted = pstmt.executeUpdate();
-            System.out.println("Expired tokens cleaned up. Rows deleted: " + rowsDeleted);
 
         } catch (SQLException e) {
             e.printStackTrace(); // またはログに記録

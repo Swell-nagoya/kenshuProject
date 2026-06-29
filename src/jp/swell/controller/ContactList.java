@@ -244,6 +244,7 @@ public class ContactList extends ControllerBase {
         // ★JSPが参照する項目名をUserInfo流に合わせてセット
         bean.setValue("lineCount", lineCount);
         bean.setValue("pageNo", pageNo);
+        
         bean.setValue("recordCount", totalCount); // 総件数
         bean.setValue("maxPageNo", maxPageNo);
         bean.setValue("list", page);

@@ -39,7 +39,6 @@ public class ReserveList extends ControllerBase {
     @Override
     public void doActionProcess() throws AtareSysException {
         WebBean bean = getWebBean();
-
         if ("ReserveList".equals(bean.value("form_name"))) {
             bean.trimAllItem();
             if ("top".equals(bean.value("action_cmd"))) {
@@ -83,7 +82,6 @@ public class ReserveList extends ControllerBase {
             {
                 searchReserve();
             }
-
             forward("ReserveList.jsp");
         }
 
@@ -193,18 +191,16 @@ public class ReserveList extends ControllerBase {
         // ルーム情報の取得とセット
         RoomDao roomDao = new RoomDao();
         ArrayList<RoomDao> rooms = roomDao.getAllRooms();
-
         // 予約情報の取得とセット
-        ReserveDao reserveDao = new ReserveDao();
-        ArrayList<ReserveDao> reserve = reserveDao.getAllReserves();
+        //ReserveDao reserveDao = new ReserveDao();
+       // ArrayList<ReserveDao> reserve = reserveDao.getAllReserves();
 
         bean.getWebValues().remove("search_info");
         String search_info = Sup.serialize(bean);
-
         bean.setValue("users", users);
         bean.setValue("rooms", rooms);
         bean.setValue("list", listData);
-        bean.setValue("reserve", reserve);
+      //  bean.setValue("reserve", reserve);
         bean.setValue("search_info", search_info);
     }
 

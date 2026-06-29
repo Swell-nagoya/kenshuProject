@@ -213,6 +213,7 @@ select:disabled {
     });
     // 削除ボタンの確認処理
     function delete1(reserveId) {
+    	console.log("reserveId=" + reserveId);
         // 削除確認のアラートを表示
         if (confirm("本当に削除してもよろしいですか？")) {
             // ユーザーが「OK」をクリックした場合に処理を進める

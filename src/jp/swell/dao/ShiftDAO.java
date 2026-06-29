@@ -792,6 +792,11 @@ public class ShiftDAO implements Serializable {
     }
 
     public String getStartTime() {
+
+        if (startTime == null || startTime.length() < 5) {
+            return "";
+        }
+
         return startTime.substring(0, 5);
     }
 
@@ -800,6 +805,9 @@ public class ShiftDAO implements Serializable {
     }
 
     public String getEndTime() {
+    	if (endTime == null || endTime.length() < 5) {
+            return "";
+        }
         return endTime.substring(0, 5);
     }
 
@@ -833,12 +841,12 @@ public class ShiftDAO implements Serializable {
      */
     public boolean dbSelect(String pId) throws AtareSysException {
         String sql = "SELECT "
-                + "employee_shifts.id AS employee_shifts___id, "
-                + "employee_shifts.name AS employee_shifts___name, "
-                + "employee_shifts.email AS employee_shifts___email, "
-                + "CONVERT(start_time, CHAR)  AS employee_shifts___start_time, "
-                + "CONVERT(end_time, CHAR)  AS employee_shifts___end_time, "
-                + "employee_shifts.work_place AS employee_shifts___work_place "
+        		+ "id, "
+                + "name, "
+                + "email, "
+                + "CONVERT(start_time, CHAR) AS start_time, "
+                + "CONVERT(end_time, CHAR) AS end_time, "
+                + "work_place "
                 + "FROM testdb.employee_shifts "
                 + "WHERE id = " + DbS.chara(pId);
 
@@ -859,13 +867,19 @@ public class ShiftDAO implements Serializable {
     * @param map  読み込んだテーブルの１レコードが入っているHashMap
     * @param dao  UserInfoDaoこのテーブルのインスタンス
     */
+    
     public void setEmployeeShift(HashMap<String, String> map, ShiftDAO dao) throws AtareSysException {
-        dao.setId(DbI.chara(map.get("employee_shifts___id")));
-        dao.setName(DbI.chara(map.get("employee_shifts___name")));
-        dao.setEmail(DbI.chara(map.get("employee_shifts___email")));
-        dao.setStartTime(DbI.chara(map.get("employee_shifts___start_time")));
-        dao.setEndTime(DbI.chara(map.get("employee_shifts___end_time")));
-        dao.setWorkPlace(DbI.chara(map.get("employee_shifts___work_place")));
+    	
+    	dao.setId(map.get("id") == null ? "" : DbI.chara(map.get("id")));
+        dao.setName(map.get("name") == null ? "" : DbI.chara(map.get("name")));
+        dao.setEmail(map.get("email") == null ? "" : DbI.chara(map.get("email")));
+
+        dao.setStartTime(map.get("employee_shifts___start_time") == null? ""
+        	        : DbI.chara(map.get("employee_shifts___start_time")));
+        dao.setEndTime(map.get("employee_shifts___end_time") == null? ""
+        	        : DbI.chara(map.get("employee_shifts___end_time")));
+
+        dao.setWorkPlace(map.get("work_place") == null ? "" : DbI.chara(map.get("work_place")));
     }
 
     /** 

@@ -245,12 +245,24 @@ th {
 	}
 
 	function go_detail_2(action_cmd, request_cmd, main_key, file_name) {
-		document.getElementById('main_form').action = 'FileDetail.do';
-		document.getElementById('action_cmd').value = action_cmd;
-		document.getElementById('request_cmd').value = request_cmd;
-		document.getElementById('main_key').value = main_key;
-		document.getElementById('file_name').value = file_name;
-		document.getElementById('main_form').submit();
+
+		console.log("main_key=", main_key); // ★追加（超重要）
+
+		if (!main_key) {
+			alert("main_keyが渡ってません");
+			return;
+		}
+
+		var form = document.getElementById('main_form');
+
+		form.action = 'FileDetail.do';
+
+		document.getElementById("action_cmd").value = action_cmd;
+		document.getElementById("request_cmd").value = request_cmd;
+		document.getElementById("main_key").value = main_key;
+		document.getElementById("file_name").value = file_name;
+
+		form.submit();
 	}
 
 	function go_download(action_cmd, request_cmd, main_key, file_name) {
@@ -378,18 +390,26 @@ th {
 						<th>ダウンロード</th>
 						<%
 						for (Object item : webBean.arrayList("list")) {
-						    FileDao dao = (FileDao) item;
+							FileDao dao = (FileDao) item;
 						%>
 						<tr
 							<tr style="background-color:<%="received".equals(dao.getFileType() != null ? dao.getFileType() : "") ? "#1565c0" : "white"%>">
-							<td><%=WebUtil.htmlEscape(dao.getFileName())%></td>
-							<td><%=WebUtil.htmlEscape(dao.getUploadDate())%></td>
+							<%-- %><td><%=WebUtil.htmlEscape(dao.getFileName())%></td>
+							<td><%=WebUtil.htmlEscape(dao.getUploadDate())%></td>--%>
+							<td><%=dao.getFileName()%></td>
+							<td><%=dao.getUploadDate()%></td>
 							<td><%=WebUtil.htmlEscape(dao.getSendUserName())%></td>
 							<td><%=WebUtil.htmlEscape(dao.getUploadUserName())%></td>
 							<td><input type="button" value="ダウンロード"
 								onclick="go_download('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
+							
 								<input type="button" value="削除"
-								onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
+								onclick="go_detail_2(
+  										'go_next',
+  										'deletef',
+   										'<%=WebUtil.txtEscape(dao.getFileId())%>',
+   										'<%=WebUtil.txtEscape(dao.getFileName())%>'
+								);" />
 							</td></tr>
 
 						<%}%>
@@ -397,6 +417,7 @@ th {
 						<td colspan="4">ファイルがありません</td>
 					</tr>
 					<%}%>
+				
 				
 				
 				</table>

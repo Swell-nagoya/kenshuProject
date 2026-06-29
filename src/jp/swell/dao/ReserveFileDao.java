@@ -468,8 +468,8 @@ public class ReserveFileDao implements Serializable {
 
     public ReserveFileDao mapResultSetToReserveFile(ResultSet rs) throws SQLException {
         ReserveFileDao reserveFileDao = new ReserveFileDao();
-        reserveFileDao.setReserveFileId(rs.getString("file_id"));
-        reserveFileDao.setReserveId(rs.getString("user_info_id"));
+        reserveFileDao.setReserveFileId(rs.getString("reserve_file_id"));
+        reserveFileDao.setReserveId(rs.getString("reserve_id"));
         reserveFileDao.setFileId(rs.getString("file_id"));
         return reserveFileDao;
     }

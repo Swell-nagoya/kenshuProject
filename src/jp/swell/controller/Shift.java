@@ -146,7 +146,7 @@ public class Shift extends ControllerBase {
                     return;
                 }
             }
-            else if ("return".equals(bean.value("action_cmd")));
+            else if ("return".equals(bean.value("action_cmd")))
             {
                 formInit();
                 searchList();
@@ -273,6 +273,10 @@ public class Shift extends ControllerBase {
      */
     public void searchList() throws AtareSysException {
         WebBean bean = getWebBean();
+        
+        ArrayList<ShiftDAO> shiftList = ShiftDAO.dbSelectListAll();
+        bean.setValue("shiftList", shiftList);
+        
         HashMap<String, String> errors;
 
         errors = inputCheck();

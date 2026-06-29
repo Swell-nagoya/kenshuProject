@@ -199,6 +199,29 @@ label.error {
 				<script type="text/javascript">
 const ctx = '<%=request.getContextPath()%>';
 
+window.onload = function () {
+    console.log(
+        "hidden value =",
+        document.getElementById("destination_user_info_id").value
+    );
+};
+
+
+function setDestinationUserIds() {
+    let ids = [];
+
+    const checkboxes = document.querySelectorAll("input[type='checkbox'][id$='check']");
+
+    checkboxes.forEach(cb => {
+        if (cb.checked) {
+            const userId = cb.id.replace("check", "");
+            ids.push(userId);
+        }
+    });
+
+    document.getElementById("destination_user_info_id").value = ids.join(",");
+}
+
 function go_submit(action_cmd) {
   document.getElementById('main_form').action = 'FileDetail.do';
   document.getElementById('action_cmd').value = action_cmd;
@@ -206,9 +229,21 @@ function go_submit(action_cmd) {
 }
 
 function go_upload(action_cmd) {
-  document.getElementById('main_form').action = '';
-  document.getElementById('action_cmd').value = action_cmd;
-  document.getElementById('main_form').submit();
+
+    const dest =
+        document.getElementById('destination_user_info_id').value;
+
+    console.log("UPLOAD DEST =", dest);
+
+    if (!dest) {
+        alert("送信先ユーザーが選択されていません");
+        return;
+    }
+
+    document.getElementById('form_name').value = 'FileDetail';
+    document.getElementById('action_cmd').value = action_cmd;
+
+    document.getElementById('main_form').submit();
 }
 
 // サブ画面処理
@@ -243,34 +278,39 @@ function openUserWindow(action_cmd) {
 }
 
 function receiveSelectedUsers(users, type) {
-  let selectedUsersDiv;
-  let userIds = [];
 
-  if (type === 'source') {
-    selectedUsersDiv = document.getElementById('selected_source_users');
-    selectedUsersDiv.innerHTML = ''; // 既存のユーザーをクリア
+    console.log("receiveSelectedUsers 呼ばれた");
+    console.log("type=", type);
+    console.log(users);
+
+    let selectedUsersDiv;
+    let userIds = [];
+
+    if (type === 'sub') {
+        selectedUsersDiv = document.getElementById('selected_destination_users');
+        selectedUsersDiv.innerHTML = '';
+    }
+
+    users.forEach((user) => {
+
+    	console.log("FULL USER =", user);
+    	console.log("user.id=", user.id);
+    	console.log("user.name=", user.name);
+
+        const userDiv = document.createElement('div');
+        userDiv.textContent = user.name;
+        selectedUsersDiv.appendChild(userDiv);
+
+        userIds.push(user.id);
+    });
+
+    // ★ここが超重要（必ず hidden に入れる）
+    const hidden = document.getElementById('destination_user_info_id');
+    hidden.value = userIds.join(',');
+
+    console.log("SET hidden destination =", hidden.value);
 }
 
-  if (type === 'sub') {
-    selectedUsersDiv = document.getElementById('selected_destination_users');
-    selectedUsersDiv.innerHTML = ''; // 既存のユーザーをクリア
-}
-
-  users.forEach((user) => {
-    const userDiv = document.createElement('div');
-    userDiv.textContent = user.name;
-    userDiv.classList.add('user-item'); // クラスを追加
-    selectedUsersDiv.appendChild(userDiv);
-    userIds.push(user.id);
-});
-
-// ユーザーIDを隠しフィールドに設定
-  if (type === 'source') {
-    document.getElementById('user_info_id').value = userIds.join(',');
-} else {
-    document.getElementById('destination_user_info_id').value = userIds.join(',');
-  }
-}
 </script>
 </head>
 <body>
@@ -282,67 +322,103 @@ function receiveSelectedUsers(users, type) {
 		<h1>ファイル登録ページ</h1>
 		</header>
 		<form method="post" id="main_form"
-			action="/kenshuProject/WebContent/upload"
-			enctype="multipart/form-data">
+      action="/kenshuProject/FileDetail.do"
+      enctype="multipart/form-data">
 
-			<input type="hidden" name="form_name" id="form_name"
-				value="FileDetail" />
-			<input type="hidden" name="action_cmd" id="action_cmd" value="" />
-			<input type="hidden" name="list" id="list"
-				value="<%=webBean.txt("list")%>" />
-			<input type="hidden" name="name" id="name"
-				value="<%=webBean.txt("name")%>" />
-			<input type="hidden" name="destination_user_info_id"
-				id="destination_user_info_id">
+    <!-- 必須：画面識別 -->
+    <input type="hidden" name="form_name" id="form_name" value="FileDetail" />
 
-				<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
-				<div class="errors"><%=webBean.dispErrorMessages()%></div> <!-- ファイルアップロードフォーム -->
-				<div class="left">
-					<table class="file__form--name">
-						<tr>
-							<td class="style_head3 style_head_size" style="width: 40%">ファイル名</td>
-							<td class="input-text" style="width: 60%"><input type="text"
-								name="input_name" id="input_name"
-								value="<%=webBean.txt("file_name")%>" class="ime_disabled"
-								placeholder="入力" /></td>
-						</tr>
-						<tr>
-							<td class="style_head3 style_head_size" style="width: 40%">ファイルリンク</td>
-							<td class="input-text" style="width: 60%"><input type="file"
-								name="file" id="file" class="ime_disabled" /></td>
-						</tr>
-						<!-- 送信元ユーザー選択 -->
-						<tr>
-							<td class="style_head3 style_head_size" style="width: 40%">送信元ユーザー
-							</td>
-							<td class="input-text" style="width: 60%">
-								<!-- ログインユーザー名を直接表示 -->
-								<div class="user-item">
-									<%=WebUtil.htmlEscape(webBean.value("loginUserName"))%>
-								</div> <!-- 隠しフィールドでログインユーザーのIDを送信 --> <input type="hidden"
-								name="user_info_id"
-								value="<%=WebUtil.htmlEscape(webBean.value("loginUserId"))%>" />
-								<span id="error_user_info_id" class="error"><%=webBean.dispError("user_info_id")%></span>
-							</td>
-						</tr>
-						<!-- 送信先ユーザー選択 -->
-						<tr>
-							<td class="style_head3 style_head_size" style="width: 40%">送り先ユーザー
-								<input type="button" value="選択" name="destination_user_info_id"
-								value="<%=webBean.txt("destination_user_info_id")%>"
-								onclick="openUserWindow('sub')" />
-							</td>
-							<td class="input-text" style="width: 60%">
-								<div id="selected_destination_users" class="user_list"></div> <span
-								id="error_destination_user_info_id" class="error"><%=webBean.dispError("destination_user_info_id")%></span>
-							</td>
-						</tr>
-					</table>
-				</div>
-				<div class="button">
-					<input type="button" onclick="go_upload('upload')" value="登録" />
-				</div>
-		</form>
+    <!-- 操作コマンド -->
+    <input type="hidden" name="action_cmd" id="action_cmd" value="" />
+
+    <!-- 検索条件など保持 -->
+    <input type="hidden" name="list" id="list"
+           value="<%=webBean.txt("list")%>" />
+
+    <input type="hidden" name="name" id="name"
+           value="<%=webBean.txt("name")%>" />
+
+    <!-- 送信先ユーザー（1個だけに統一） -->
+    <input type="hidden" name="destination_user_info_id"
+           id="destination_user_info_id" value="" />
+
+    <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
+    <div class="errors"><%=webBean.dispErrorMessages()%></div>
+
+    <div class="left">
+        <table class="file__form--name">
+
+            <!-- ファイル名 -->
+            <tr>
+                <td class="style_head3 style_head_size" style="width: 40%">ファイル名</td>
+                <td class="input-text" style="width: 60%">
+                    <input type="text"
+                           name="input_name"
+                           id="input_name"
+                           value="<%=webBean.txt("file_name")%>"
+                           class="ime_disabled"
+                           placeholder="入力" />
+                </td>
+            </tr>
+
+            <!-- ファイル -->
+            <tr>
+                <td class="style_head3 style_head_size" style="width: 40%">ファイルリンク</td>
+                <td class="input-text" style="width: 60%">
+                    <input type="file" name="file" id="file" class="ime_disabled" />
+                </td>
+            </tr>
+
+            <!-- 送信元ユーザー -->
+            <tr>
+                <td class="style_head3 style_head_size" style="width: 40%">送信元ユーザー</td>
+                <td class="input-text" style="width: 60%">
+                    <div class="user-item">
+                        <%=WebUtil.htmlEscape(webBean.value("loginUserName"))%>
+                    </div>
+
+                    <input type="hidden"
+                           name="user_info_id"
+                           value="<%=WebUtil.htmlEscape(webBean.value("loginUserId"))%>" />
+                </td>
+            </tr>
+
+            <!-- 送信先ユーザー -->
+            <tr>
+                <td class="style_head3 style_head_size" style="width: 40%">送り先ユーザー
+                    <input type="button"
+                           value="選択"
+                           onclick="openUserWindow('sub')" />
+                </td>
+
+                <td class="input-text" style="width: 60%">
+                    <div id="selected_destination_users" class="user_list">
+                    <%=webBean.txt("destination_user_name")%>
+                    </div>
+                    <span id="error_destination_user_info_id" class="error">
+                        <%=webBean.dispError("destination_user_info_id")%>
+                    </span>  
+                        <input type="hidden"
+     					 	 	name="destination_user_info_id"
+      				 			id="destination_user_info_id"
+       							value="<%=webBean.txt("destination_user_info_id")%>" />
+
+						<!-- 送信先ユーザー（名前表示用） -->
+						<input type="hidden"
+       							name="destination_user_name"
+       							id="destination_user_name"
+       							value="<%=webBean.txt("destination_user_name")%>" />
+                </td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div class="button">
+        <input type="button" onclick="go_upload('upload')" value="登録" />
+    </div>
+
+</form>
 	</div>
 </body>
 </html>
