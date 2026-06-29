@@ -377,8 +377,8 @@ public class RoomDetail extends ControllerBase
         }
         // 以前と同一の名前で登録をしている時.
         if (
-             (roomName == "" && beforeName == "") != true &&
-        		   (roomName.equalsIgnoreCase(beforeName))
+             (roomName.isEmpty() && beforeName.isEmpty()) != true &&
+        		   (roomName.equals(beforeName))
         ) {
             errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         }
