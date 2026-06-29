@@ -51,7 +51,7 @@ public class UserLogin extends ControllerBase {
                 }
 
                 UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
-                if ("1".equals(userLoginInfo.getAdmin())) {
+                if (userLoginInfo.isAdmin()) {
                     redirect("MenuAdmin.do");
                 } else {
                     redirect("UserMenu.do");
@@ -70,15 +70,20 @@ public class UserLogin extends ControllerBase {
     private boolean inputCheck() throws AtareSysException {
     	
         WebBean bean = getWebBean();
+        if (bean.value("ac").length() == 0 && bean.value("ko").length() == 0) {
+            getRequest().setAttribute("loginError", "ユーザー名とパスワードを入力してください。");
+            return false;
+        }
         if (bean.value("ac").length() == 0) {
             bean.setError("ac", "未入力");
+            getRequest().setAttribute("loginError", "ユーザー名を入力してください。");
             return false;
         }
         if (bean.value("ko").length() == 0) {
             bean.setError("ko", "未入力");
+            getRequest().setAttribute("loginError", "パスワードを入力してください。");
             return false;
         }
-        
         UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
         
         if (userLoginInfo == null) {

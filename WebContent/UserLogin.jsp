@@ -131,7 +131,11 @@
              <h1>LOGIN</h1>
              <div class="main__text">
                  <p>usernameとpasswordを入力してください</p>
-                 <p><%= request.getAttribute("loginError") %></p>
+                 <% String loginError = (String) request.getAttribute("loginError");
+                  if (loginError != null) {
+    			  %>
+       			 <p style="color:red;"><%= loginError %></p>
+    			  <%}%>
              </div>
             <form method="post" id="main_form" action="" class="main__form">
                 <input type="hidden" name="form_name" id="form_name" value="UserLogin" />
