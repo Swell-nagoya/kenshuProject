@@ -54,7 +54,7 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -116,7 +116,10 @@ public class UserInfoDetail extends ControllerBase
                       } 
                       else 
                       {
-                          bean.setValue("request_name", "メール送信");                          
+                          bean.setValue("request_name", "メール送信");      
+                          bean.setValue("actionType","send");
+                          bean.setValue("actionBtn","go_mail");
+                          bean.setValue("header","情報確認");
                           forward("UserInfoDetail_3.jsp");
                       }
                   }
@@ -158,6 +161,9 @@ public class UserInfoDetail extends ControllerBase
                       {
                           bean.setMessage("この内容で登録します。よろしいですか？");
                           bean.setValue("request_name", "登録");
+                          bean.setValue("actionType","ins");
+                          bean.setValue("actionBtn","go_submit");
+                          bean.setValue("header","登録確定");
                           forward("UserInfoDetail_3.jsp"); 
                       }
                       else 
@@ -176,6 +182,9 @@ public class UserInfoDetail extends ControllerBase
                         
                           bean.setMessage("この内容で修正します。よろしいですか？");
                           bean.setValue("request_name", "修正");
+                          bean.setValue("actionType","update");
+                          bean.setValue("actionBtn","go_submit");
+                          bean.setValue("header","情報編集確定");
                           forward("UserInfoDetail_3.jsp"); 
                       }
                       else 
@@ -204,6 +213,9 @@ public class UserInfoDetail extends ControllerBase
                       {
                           bean.setMessage("退職予定日を確定します。よろしいですか？");
                           bean.setValue("request_name", "確定");
+                          bean.setValue("actionType","delete");
+                          bean.setValue("actionBtn","go_submit");
+                          bean.setValue("header","情報削除確定");
                           forward("UserInfoDetail_3.jsp");  
                       }
                       else 
@@ -706,15 +718,15 @@ public class UserInfoDetail extends ControllerBase
         String leaveDate = bean.value("leave_date");     // leave_dateの取得
   
         try {
+          DbBase.dbBeginTran();
           dao.dbUpdate(userInfoId);
           if (leaveDate == null || leaveDate.trim().isEmpty()) {
-        	    DbBase.dbBeginTran();
+        	    
             dao.dbCancelDelete(userInfoId);
             DbBase.dbCommitTran();
             redirect("ViewUserList.do");
           }
           else {
-        	    DbBase.dbBeginTran();
             dao.dbDelete(userInfoId);
             DbBase.dbCommitTran();
             redirect("ViewUserList.do");
