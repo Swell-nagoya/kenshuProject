@@ -17,6 +17,7 @@ package jp.swell.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import jp.patasys.common.AtareSysException;
@@ -75,15 +76,6 @@ public class RoomDetail extends ControllerBase
           LoginInfo loginInfo = getLoginInfo();
           String loginUserName = loginInfo.getUserName(); // ログインユーザー名
           
-          
-          /*
-           * bean.setValue("request_name", "修正");
-          if (beforeName == null || beforeName.trim().isEmpty()) {
-              beforeName = roomName;
-              bean.setValue("before_name", beforeName);
-          }
-          */
-          
           bean.setValue("before_name", beforeName);
           bean.setValue("room_name", roomName);
           
@@ -123,7 +115,6 @@ public class RoomDetail extends ControllerBase
                       }
                       else
                       {
-
                    	   bean.setMessage("この部屋を削除します。よろしいですか？");
                        bean.setValue("login_user_name", loginUserName);
                        bean.setValue("request_name", "削除");
@@ -145,8 +136,8 @@ public class RoomDetail extends ControllerBase
                   if ("ins".equals(requestCmd))
                   {
                    RoomDao dao = setWeb2Dao2InputInfo();
-
-             //      insUserPass();
+                   
+                   
                   	insRoomId();
                    bean.rtrimAllItem();
                    if (inputCheck(dao)) 
@@ -190,7 +181,7 @@ public class RoomDetail extends ControllerBase
                   }
                   else if ("updateConfirm".equals(requestCmd))
                   {
-
+                  	
                       if (checkDataMatching())
                       {
                           setInputInfo2Dao2Web();
@@ -379,18 +370,38 @@ public class RoomDetail extends ControllerBase
         HashMap<String, String> errors = bean.getItemErrors();
         String roomName = bean.value("room_name").trim();
         String beforeName = bean.value("before_name").trim(); // ← hidden から来る
-
+        
+        // 部屋名の入力が空の時.
         if (roomName.length() == 0) {
             errors.put("room_name_empty", "部屋名を入力してください。");
         }
-
+        // 以前と同一の名前で登録をしている時.
         if (
              (roomName == "" && beforeName == "") != true &&
         		   (roomName.equalsIgnoreCase(beforeName))
         ) {
             errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         }
+        
+        // DBのルーム名を全検索.今回の登録と一致するかどうか.
+        RoomDao roomDao = new RoomDao();
+        ArrayList<RoomDao> rooms = roomDao.getAllRooms();
+        
+        boolean registeredFlag = false;
 
+        for (RoomDao room : rooms) {
+            String name = room.getRoomName();
+
+           if( (roomName != null) &&
+           		  (name.equals(roomName))) {
+            registeredFlag = true;
+           	
+           }
+        }
+        if(registeredFlag) {
+          errors.put("room_name_duplicate", "同一の部屋名が登録済みです。別の名前を入力してください。");
+        }
+        
         return errors.isEmpty();
     }
 
@@ -405,11 +416,13 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         RoomDao dao = new RoomDao();
-        String mainKey = bean.value("main_key");//RoomIdの取得
+        String mainKey = bean.value("main_key"); //RoomIdの取得
+
         if (!dao.dbSelect(mainKey))
         {
             return false;
         }
+        
         return Sup.serializeIsEquals(bean.value("select_info"), dao);
     }
     
@@ -439,7 +452,6 @@ public class RoomDetail extends ControllerBase
         LoginInfo loginInfo = getLoginInfo();
         String loginUserName = loginInfo.getUserName(); // ログインユーザー名
         
-        System.out.println(loginUserName );
         
         // 入力完了時に現在の時刻を代入（user_id, insert_date, update_user_id , update_date）
         if ("insConfirm".equals(requestCmd))
@@ -454,35 +466,16 @@ public class RoomDetail extends ControllerBase
         } 
         else if ("updateConfirm".equals(requestCmd)) 
         {
-        	System.out.println(formattedDateTime + "日時");
-         System.out.println("ログイン中のユーザー: " + loggedInUserId);
          dao.setUpdateUserId(loggedInUserId);
          dao.setUpdateDate(formattedDateTime);
         } 
-        else
-        {
-        	
-        }
+        else {}
 
         bean.setValue("input_info", Sup.serialize(dao));
         return dao;
     }
     
     
-
-    /**
-     * 既に設定されているパスワードを取得してbeanにセットする
-     *  
-     * @return
-     * @throws AtareSysException
-     */
-
-    /*
-    private boolean insUserPass() throws AtareSysException
-    {
-        
-    }
-    */
     
     /**
      * 部屋登録処理を行うメソッド
@@ -514,13 +507,7 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         RoomDao dao = (RoomDao) Sup.deserialize(bean.value("input_info"));
-     //   bean.setValue("room_id", dao.getRoomId());
         bean.setValue("room_name", dao.getRoomName());
-     /*   bean.setValue("insert_date", dao.getInsertDate());
-        bean.setValue("insert_user_id", dao.getInsertUserId());
-        bean.setValue("update_date", dao.getUpdateDate());
-        bean.setValue("update_user_id", dao.getUpdateUserId());
-        */
     }
     
 

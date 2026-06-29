@@ -327,42 +327,40 @@ public class RoomDao implements Serializable
      * @throws AtareSysException フレームワーク共通例外
      */
     public boolean dbSelect(String pRoomId) throws AtareSysException {
-        String sql = "SELECT "
-                + "room.room_id as room___room_id, "
-                + "room.room_name as room___room_name, "
-                + "room.insert_date as room___insert_date, "
-                + "room.insert_user_id as room___insert_user_id, "
-                + "room.update_date as room___update_date, "
-                + "room.update_user_id as room___update_user_id "
-                + "FROM room "
-                + "WHERE room_id = ?";
-        
+     // 結合時のスペース不足や全角スペースを排除したクリーンなSQL
+     String sql = "SELECT "
+             + "room.room_id AS room___room_id, "
+             + "room.room_name AS room___room_name, "
+             + "room.insert_date AS room___insert_date, "
+             + "room.insert_user_id AS room___insert_user_id, "
+             + "room.update_date AS room___update_date, "
+             + "room.update_user_id AS room___update_user_id "
+             + "FROM room "
+             + "WHERE room.room_id = ?"; // テーブル名も明示して確実に指定
 
-        try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
-            pstmt.setString(1, pRoomId);
+     try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
+         pstmt.setString(1, pRoomId);
 
-            try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
-                if (!rs.next()) {
-                    return false;
-                }
+         try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
+             if (!rs.next()) {
+                 return false;
+             }
 
-                HashMap<String, String> map = new HashMap<>();
-                map.put("room_id", rs.getString("room___room_id"));
-                map.put("room_name", rs.getString("room___room_name"));
-                map.put("insert_date", rs.getString("room___insert_date"));
-                map.put("insert_user_id", rs.getString("room___insert_user_id"));
-                map.put("update_date", rs.getString("room___update_date"));
-                map.put("update_user_id", rs.getString("room___update_user_id"));
-                
+             HashMap<String, String> map = new HashMap<>();
+             map.put("room_id", rs.getString("room___room_id"));
+             map.put("room_name", rs.getString("room___room_name"));
+             map.put("insert_date", rs.getString("room___insert_date"));
+             map.put("insert_user_id", rs.getString("room___insert_user_id"));
+             map.put("update_date", rs.getString("room___update_date"));
+             map.put("update_user_id", rs.getString("room___update_user_id"));
 
-                setRoomDaoForJoin(map, this);
-                return true;
-            } catch (SQLException e) {
-                throw new AtareSysException("データベースクエリの実行中にエラーが発生しました: " + e.getMessage(), e);
-            }
-        } catch (SQLException e) {
-            throw new AtareSysException("データベース接続中にエラーが発生しました: " + e.getMessage(), e);
-        }
+
+             setRoomDaoForJoin(map, this);
+             return true;
+         }
+     } catch (SQLException e) {
+         throw new AtareSysException("データベース処理中にエラーが発生しました: " + e.getMessage(), e);
+     }
     }
 
     /**
@@ -422,8 +420,6 @@ public class RoomDao implements Serializable
         dao.setInsertUserId(DbI.chara(map.get("insert_user_id") != null ? map.get("insert_user_id") : ""));
         dao.setUpdateDate(DbI.chara(map.get("update_date") != null ? map.get("update_date") : ""));
         dao.setUpdateUserId(DbI.chara(map.get("update_user_id") != null ? map.get("update_user_id") : ""));
-
-    
     }
     /**
      * room 部屋テーブルにデータを挿入する
@@ -517,6 +513,7 @@ public class RoomDao implements Serializable
 
       return rooms; // 取得したルームリストを返す
     }
+
     static public ArrayList<RoomDao> dbSelectList(RoomDao myclass,LinkedHashMap<String,String> sortKey,DaoPageInfo daoPageInfo) throws AtareSysException
     {
         ArrayList<RoomDao> array = new ArrayList<RoomDao>();
