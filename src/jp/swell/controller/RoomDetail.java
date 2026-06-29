@@ -191,6 +191,8 @@ public class RoomDetail extends ControllerBase
                       else 
                       {
                           bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
+                          bean.setValue("request_name", "修正");
+                          setRoom();
                           setDb2Web();
                           forward("RoomDetail.jsp");
                       }
@@ -207,6 +209,7 @@ public class RoomDetail extends ControllerBase
                       else 
                        {
                          bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
+                         setRoom();
                          setDb2Web();
                          forward("RoomDetail.jsp");
                        }
