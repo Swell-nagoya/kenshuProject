@@ -111,13 +111,13 @@ table
   border-collapse : collapse;
   border-spacing: 0px;
 }
-td
-{
+td, th {
+  border: 1px solid #ddd;
+  padding: 5px;
   height:1.8em;
   border-collapse: collapse;
-  border: 1px #a0a0a0 solid;
-  padding : 2px;
 }
+
 .table-header
 {
   background: #00bcd4;
@@ -141,4 +141,19 @@ td
   font-weight: bold;
   text-align: center;
   color:#0000ff;
+}
+
+.style_head_size {
+	height: 30px;
+	vertical-align: middle;
+	display: table-cell;
+	background: #00bcd4;
+	color: #fff;
+}
+
+.input-text {
+    font-size: 20px;
+    font-weight: bold;
+    background: #fff;
+	color: #000;
 }

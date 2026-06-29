@@ -110,6 +110,7 @@
             <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
             <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("room_id")%>" />
             <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
+            <input type="hidden" name="login_user_name" id="login_user_name" value="<%=webBean.txt("login_user_name")%>" />
             <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
             <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
 
@@ -148,8 +149,8 @@
               <% if ("修正確定".equals(val)) { %>
               <table class="room__form--name">
                 <tr class="table-header">
-                  <td>修正前</td>
-                  <td>修正後</td>
+                  <th>修正前</th>
+                  <th>修正後</th>
                 </tr>
                 <tr class="table-date">
                   <td><%=webBean.txt("before_name")%></td>
@@ -159,7 +160,7 @@
             <% } else if ("登録確定".equals(val)) { %>
               <table class="room__form--name">
                 <tr class="table-header">
-                  <td>部屋名</td>
+                  <th>部屋名</th>
                 </tr>
                 <tr class="table-date">
                   <td><%=webBean.txt("room_name")%></td>
@@ -167,11 +168,13 @@
                </table>
           <% } else if ("削除".equals(val)) { %>
                <table class="room__form--name">
-                 <tr class="table-header">
-                   <td>削除</td> 
+                 <tr>
+                   <th class="style_head_size" style="width: 30%">ユーザー名</th>
+                   <td class="input-text" style="width: 70%"><%=webBean.txt("login_user_name")%></td>
                  </tr>
-                 <tr class="table-date">
-                   <td><%=webBean.txt("room_name")%></td>
+                 <tr>
+                   <th class="style_head_size" style="width: 30%">削除</th>
+                   <td class="input-text" style="width: 70%"><%=webBean.txt("room_name")%></td>
                  </tr>
                </table>
          <% } else {} %>

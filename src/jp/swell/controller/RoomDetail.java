@@ -22,6 +22,7 @@ import java.util.HashMap;
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.GetNumber;
+import jp.patasys.common.http.LoginInfo;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
@@ -68,6 +69,13 @@ public class RoomDetail extends ControllerBase
           String mainKey = bean.value("main_key");
           String roomName = bean.value("room_name");
           String beforeName = bean.value("before_name");
+          
+
+          String loggedInUserId = getLoginUserId(); // ログインID
+          LoginInfo loginInfo = getLoginInfo();
+          String loginUserName = loginInfo.getUserName(); // ログインユーザー名
+          
+          
           /*
            * bean.setValue("request_name", "修正");
           if (beforeName == null || beforeName.trim().isEmpty()) {
@@ -117,9 +125,11 @@ public class RoomDetail extends ControllerBase
                       {
 
                    	   bean.setMessage("この部屋を削除します。よろしいですか？");
+                       bean.setValue("login_user_name", loginUserName);
                        bean.setValue("request_name", "削除");
                        bean.setValue("room_name", roomName);
                        forward("RoomDetail.jsp");
+                       
                       }
                   }
                   else 
@@ -425,12 +435,16 @@ public class RoomDetail extends ControllerBase
         dao.setRoomName(bean.value("room_name"));
         
         String requestCmd = bean.value("request_cmd");
-        String loggedInUserId = getLoginUserId();
+        String loggedInUserId = getLoginUserId(); // ログインID
+        LoginInfo loginInfo = getLoginInfo();
+        String loginUserName = loginInfo.getUserName(); // ログインユーザー名
+        
+        System.out.println(loginUserName );
         
         // 入力完了時に現在の時刻を代入（user_id, insert_date, update_user_id , update_date）
         if ("insConfirm".equals(requestCmd))
         {
-        	
+        	 // DBに代入
           dao.setInsertUserId(loggedInUserId);
           dao.setInsertDate(formattedDateTime);
           dao.setUpdateUserId(loggedInUserId);
