@@ -32,13 +32,18 @@
 <meta http-equiv="Content-Style-Type" content="text/css" />
 <link rel="icon" href="/kenshuProject/images/favicon.ico" type="image/x-icon">
 <link rel="stylesheet" href="css/common.css" type="text/css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
 <link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
 <link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
 <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script src="https://unpkg.com/wanakana@4.0.2/umd/wanakana.min.js"></script>
+<script>$(function () {
+    $("#leave_date_input").datepicker({
+        dateFormat: "yymmdd"
+    });
+});</script>
 <title>プロフィール</title>
 <style type="text/css">
 body {
@@ -545,15 +550,58 @@ label.error {
             </td>
           </tr>
           <tr>
-            <td class="style_head3 style_head_size" style="width: 30%">ユーザー区分<span> ※</span></td>
-            <td class=" input-text" id="userTypeContainer" style="width: 70%">
-              <input type="radio" name="admin" id="admin_admin" value="1" class="ime_active <%=webBean.dispErrorCSS("admin")%>" <%= webBean.txt("admin").equals("admin") ? "checked" : "" %> />
-                <label for="admin_admin" class="<%=webBean.dispErrorCSS("admin")%>">管理者</label>
-              <input type="radio" name="admin" id="admin_general" value="0" class="ime_active <%=webBean.dispErrorCSS("admin")%>" <%= webBean.txt("admin").equals("general") ? "checked" : "" %> />
-                <label for="admin_general" class="<%=webBean.dispErrorCSS("admin")%>">一般</label> ※管理者以外は一般を選択して下さい
-              <br /> <span id="error_admin" class="error"><%=webBean.dispError("admin")%></span>
+  			<td class="style_head3 style_head_size" style="width: 30%">
+   			 ユーザー区分
+   			 <% if (!"delete".equals(webBean.txt("request_cmd"))) { %>
+   			   <span> ※</span>
+  			  <% } %>
+  			</td>
+  			<td class="input-text" style="width: 70%">
+  			<% if ("delete".equals(webBean.txt("request_cmd"))) { %>
+  			<%= "1".equals(webBean.txt("admin")) ? "管理者" : "一般" %>
+  			<% } else { %>
+  			<input type="radio"
+               name="admin"
+               id="admin_admin"
+               value="1"
+               class="ime_active <%=webBean.dispErrorCSS("admin")%>"
+               <%= "1".equals(webBean.txt("admin")) ? "checked" : "" %> />
+        <label for="admin_admin">管理者</label>
+
+        <input type="radio"
+               name="admin"
+               id="admin_general"
+               value="0"
+               class="ime_active <%=webBean.dispErrorCSS("admin")%>"
+               <%= "0".equals(webBean.txt("admin")) ? "checked" : "" %> />
+        <label for="admin_general">一般</label>
+
+        ※管理者以外は一般を選択してください
+
+        <br>
+        <span class="error">
+            <%=webBean.dispError("admin")%>
+        </span>
+  			<% } %>
+  			</td>
+  			</tr>
+  			<% if ("delete".equals(webBean.txt("request_cmd"))) { %>
+  			<tr>
+  			<td class="style_head3 style_head_size">
+  				退職予定日
+  			</td>
+  			<td>
+  			<input type="text"
+  			name="leave_date"
+  			id="leave_date_input"
+  			value="<%=webBean.txt("leave_date")%>">
+  			<br>
+  			<span class="error">
+            	<%=webBean.dispError("leave_date")%>
+            </span>
             </td>
-          </tr>
+            </tr>
+            <% } %>
         </table>
         </div>
       <div class="button">

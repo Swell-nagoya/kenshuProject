@@ -79,30 +79,31 @@ public class UserInfoDetail extends ControllerBase
                       bean.setValue("request_name", "登録");
                       forward("UserInfoDetail_1.jsp");
                   } 
-                  else if ("update".equals(bean.value("request_cmd"))) 
+                  else if ("update".equals(bean.value("request_cmd")))
                   {
-                      if (!setDb2Web()) 
+                      if (!setDb2Web())
                       {
                           bean.setError("データの取得に失敗しました");
                           forward("ViewUserList.jsp");
-                      } 
-                      else 
+                      }
+                      else
                       {
                           bean.setValue("request_name", "修正");
                           forward("UserInfoDetail_1.jsp");
                       }
                   }
-                  else if ("delete".equals(bean.value("request_cmd"))) 
+                  else if ("delete".equals(bean.value("request_cmd")))
                   {
-                      if (!setDb2Web()) 
+                      if (!setDb2Web())
                       {
                           bean.setError("データの取得に失敗しました");
                           forward("ViewUserList.jsp");
-                      } 
-                      else 
+                      }
+                      else
                       {
                           bean.setMessage("退職予定日を入力してください。");
-                          forward("UserInfoDetail_2.jsp");
+                          bean.setValue("request_name", "削除");
+                          forward("UserInfoDetail_1.jsp");
                       }
                   }
                   else if ("check".equals(bean.value("request_cmd"))) 
@@ -182,35 +183,26 @@ public class UserInfoDetail extends ControllerBase
                         forward("UserInfoDetail_1.jsp");
                       }
                   }
-              } 
-              else if ("return".equals(bean.value("action_cmd"))) 
-              {
-                  forward("ViewUserList.do");
-              }
-          }
-          
-          else if ("UserInfoDetail_2".equals(bean.value("form_name")))  
-          {  
-              if ("go_next".equals(bean.value("action_cmd"))) 
-              {
-                  if ("delete".equals(bean.value("request_cmd"))) 
+                  else if ("delete".equals(bean.value("request_cmd")))
                   {
                       setInputInfo2Dao2WebDelete();
                       bean.rtrimAllItem();
+
                       UserInfoDao dao = setWeb2Dao2InputInfo();
-                      if (inputCheck(dao)) 
+
+                      if (inputCheck(dao))
                       {
                           bean.setMessage("退職予定日を確定します。よろしいですか？");
                           bean.setValue("request_name", "確定");
-                          forward("UserInfoDetail_3.jsp");  
+                          forward("UserInfoDetail_3.jsp");
                       }
-                      else 
+                      else
                       {
                           bean.setError("入力内容に誤りがあります");
-                          forward("UserInfoDetail_2.jsp"); 
+                          forward("UserInfoDetail_1.jsp");
                       }
                   }
-              }
+              } 
               else if ("return".equals(bean.value("action_cmd"))) 
               {
                   forward("ViewUserList.do");
@@ -275,10 +267,10 @@ public class UserInfoDetail extends ControllerBase
                   }
                   else if ("delete".equals(bean.value("request_cmd"))) 
                   {
-                      bean.setValue("request_name", "修正");
+                      bean.setValue("request_name", "削除");
                       setInputInfo2Dao2Web();
                       setWeb2Dao2InputInfo();
-                      forward("UserInfoDetail_2.jsp");
+                      forward("UserInfoDetail_1.jsp");
                   }
                   else if ("send".equals(bean.value("request_cmd"))) 
                   {
