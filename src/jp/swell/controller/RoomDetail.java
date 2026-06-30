@@ -66,6 +66,7 @@ public class RoomDetail extends ControllerBase {
 			String beforeName = bean.value("before_name");
 			RoomDao dao = setWeb2Dao2InputInfo();
 			
+			
 			if ("RoomDetail".equals(formName)) {
 				if ("go_next".equals(actionCmd)) {
 					if ("ins".equals(requestCmd)) {
@@ -263,11 +264,14 @@ public class RoomDetail extends ControllerBase {
 		String roomName = bean.value("room_name").trim();
 		String beforeName = bean.value("before_name").trim(); // ← hidden から来る
 
-		if (roomName.length() == 0) {
-			errors.put("room_name_empty", "部屋名を入力してください。");
-		}
-		if (roomName.equalsIgnoreCase(beforeName)) {
-			errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+		if("updateEnter".equals(bean.value("request_cmd"))) {
+			
+			if (roomName.length() == 0) {
+				errors.put("room_name_empty", "部屋名を入力してください。");
+			}
+			if (roomName.equalsIgnoreCase(beforeName)) {
+				errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+			}
 		}
 
 		return errors.isEmpty();
