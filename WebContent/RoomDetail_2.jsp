@@ -178,9 +178,9 @@ td
 <script type="text/javascript">
 function go_submit(action_cmd, request_cmd)
 {
-    document.getElementById('main_form').action='';
-    document.getElementById('action_cmd').value=action_cmd;
-    document.getElementById('request_cmd').value=request_cmd;
+    document.getElementById('main_form').action = 'RoomDetail.do'; 
+    document.getElementById('action_cmd').value = action_cmd;
+    document.getElementById('request_cmd').value = request_cmd;
     document.getElementById('main_form').submit();
 }
 function go_list(action_cmd)
@@ -195,9 +195,9 @@ function go_list(action_cmd)
  <%
      String roomName = webBean.txt("room_name");
      String val = webBean.txt("request_name");
-     String actionType =  val.equals("削除する") ? "deleteEnter" : val.equals("修正する") ? "updateEnter" : val.equals("登録する") ? "insEnter" : "unknown";
-     String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
-     String header =  val.equals("削除する") ? "部屋削除" : val.equals("修正する") ? "部屋名修正確認" : val.equals("登録する") ? "新規部屋登録確認" : "unknown";
+     String actionType = webBean.txt("actionType");
+     String actionBtn = webBean.txt("actionBtn");
+     String header = webBean.txt("header");
    %>
   <div class="container">
     <div class="new-btn">

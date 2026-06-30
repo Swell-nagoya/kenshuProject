@@ -138,7 +138,7 @@ input[type="button"]:hover {
 </style>
 <script type="text/javascript">
 function go_submit(action_cmd, request_cmd) {
-    document.getElementById('main_form').action = '';
+    document.getElementById('main_form').action = 'RoomDetail.do'; 
     document.getElementById('action_cmd').value = action_cmd;
     document.getElementById('request_cmd').value = request_cmd;
     document.getElementById('main_form').submit();
@@ -154,8 +154,8 @@ function go_list(action_cmd) {
 <body>
   <%
       String val = webBean.txt("request_name");
-      String actionType = val.equals("修正する") ? "update" : "ins";
-      String header = val.equals("修正する") ? "部屋名修正" : "新規部屋登録";
+      String actionType = webBean.txt("actionType");
+      String header = webBean.txt("header");
   %>
   <div class="container">
     <div class="new-btn">
