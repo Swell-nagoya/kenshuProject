@@ -209,7 +209,7 @@ function go_list(action_cmd)
       
        <form method="post" id="main_form" action="" class="main__form">
              
-       <input type="hidden" name="form_name" id="form_name" value="RoomDetail_2" />
+       <input type="hidden" name="form_name" id="form_name" value="RoomDetail" />
        <input type="hidden" name="action_cmd" id="action_cmd" value="" />
        <input type="hidden" name="room_name" id="room_name" value="<%=webBean.txt("room_name")%>" />
        <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" />

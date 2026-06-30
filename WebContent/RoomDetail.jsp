@@ -153,10 +153,15 @@ function go_list(action_cmd) {
 </head>
 <body>
   <%
-      String val = webBean.txt("request_name");
-      String actionType = val.equals("修正する") ? "update" : "ins";
-      String header = val.equals("修正する") ? "部屋名修正" : "新規部屋登録";
-  %>
+String mode = webBean.txt("mode");
+if (mode == null) mode = "insert";
+%>
+<%
+String header =
+    "update".equals(mode) ? "部屋名修正" :
+    "delete".equals(mode) ? "部屋削除" :
+    "新規部屋登録";
+%>
   <div class="container">
     <div class="new-btn">
       <input type="button" onclick="go_list('return')" value="　戻る　" />
@@ -175,8 +180,7 @@ function go_list(action_cmd) {
             <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
             <input type="hidden" name="insert_user_id"value="<%=webBean.txt("insert_user_id")%>" />
    		    <input type="hidden" name="update_user_id"value="<%=webBean.txt("update_user_id")%>" />
-             
-            <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
+       		<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
             <div class="errors"><%=webBean.dispErrorMessages()%></div>
             <%
               Map<String, String> itemErrors = webBean.getItemErrors();
@@ -200,19 +204,42 @@ function go_list(action_cmd) {
             </div>
     
             <div class="left">
-              <div class="room__form--name">
-                <input type="text" id="room_name" name="room_name" class="ime_disabled" 
-                value="<%=webBean.txt("room_name")%>" placeholder="RoomName" 
-                size="25" maxlength="255" />
-              </div>
-            </div>
+    		<div class="room__form--name">
+
+    		 <% if ("delete".equals(mode)) { %>
+    		 <%=webBean.txt("room_name")%>
+    		 <% } else { %>
+    		 <input type="text"
+               id="room_name"
+               name="room_name"
+               class="ime_disabled"
+               value="<%=webBean.txt("room_name")%>"
+               placeholder="RoomName"
+               size="25"
+               maxlength="255" />
+               <% } %>
+               </div>
+               </div>
             <div class="left">
-              登録者：<%=webBean.txt("insert_user_id")%>
+              登録者：<%=webBean.txt("insert_user_name")%>
             </div>
-            
+            <% if (webBean.txt("update_user_name") != null && !"".equals(webBean.txt("update_user_name"))) { %>
+            <div class="left">
+              更新者：<%=webBean.txt("update_user_name")%>
+            </div>
+            <% } %>
             <div class="button">
-                <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>')" value="<%=val%>"/>
-            </div>
+            <input type="button"
+            id="bt"
+            name="reg-btn"
+            onclick="go_submit(
+               'go_next',
+               '<%= "update".equals(mode) ? "updateEnter"
+                 : "delete".equals(mode) ? "deleteEnter"
+                 : "insEnter" %>'
+           )"
+           value="<%= header %>" />
+</div>
           </form>
     </div>
 </body>
