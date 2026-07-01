@@ -260,13 +260,24 @@ footer {
         </div>
         <table class="select_table">
           <tr>
-            <td class="search_label center" style="width: 50%">氏名</td>
+            <td class="search_label center" style="width: 30%">氏名</td>
+            <td class="search_label center" style="width: 10%"></td>
+            <td class="search_label center" style="width: 30%">メールアドレス</td>
             <td class="search_label center" style="width: 20%">表示件数</td>
-            <td class="search_label center" style="width: 30%"></td>
+            <td class="search_label center" style="width: 10%"></td>
           </tr>
           <tr>
             <td class="search_text center">
               <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>" class="ime_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
+            </td>
+            <td class="search_text center">
+              <input type="radio" id="search_and" name="list_search_operator" value="AND" <%= !"OR".equals(webBean.txt("list_search_operator")) ? "checked" : ""%>>
+              <label for="search_and">AND</label>
+              <input type="radio" id="search_or" name="list_search_operator" value="OR" <%= "OR".equals(webBean.txt("list_search_operator")) ? "checked" : ""%>>
+              <label for="search_or">OR</label>
+            </td>
+            <td class="search_text center">
+              <input type="text" name="list_search_memail" id="list_search_memail" size="30" maxlength="100" value="<%=webBean.txt("list_search_memail")%>" placeholder="検索">
             </td>
             <td class="search_line center">
               <input type="text" name="lineCount" id="lineCount" size="2" maxlength="5" value="<%=webBean.txt("lineCount")%>" class="right ime_disabled" />件
@@ -351,10 +362,8 @@ footer {
 	const sortKeyOld = '<%=webBean.txt("sort_key_old")%>'
 	const sortOrder = '<%=webBean.txt("sort_order")%>'
 	if (sortKeyOld && sortOrder) {
-		console.log('if sortKeyOld && sortOrder')
 		const target = document.getElementById(sortKeyOld)
 		if (target) {
-			console.log('if target')
 			const icon = (sortOrder === 'asc') ? '▲' : '▼'
 			target.innerHTML += icon
 		}
