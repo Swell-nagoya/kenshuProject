@@ -433,17 +433,25 @@ public class FileDetail extends ControllerBase {
      * @return
      */
     private String getMimeTypeFromBytes(byte[] fileData) {
-        if (fileData.length >= 4) {
-            String header = new String(fileData, 0, 4);
+        if (fileData.length >= 8) {
+         String header = new String(fileData, 0, 8, java.nio.charset.StandardCharsets.ISO_8859_1);
 
             if (header.startsWith("\u00D0\u00CF\u0011")) { // Wordファイルの判定
                 return "application/msword"; // .doc
-            } else if (header.startsWith("PK")) { // Word 2007以降のファイル
-                return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
-            } else if (header.startsWith("PK")) { // Excelファイルの判定
-                return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
             } else if (header.startsWith("\u00D0\u00CF\u0011")) {
                 return "application/vnd.ms-excel"; // .xls
+            } else if (header.startsWith("\u00FF\u00D8")) {
+                return "image/jpeg"; // JPEG画像
+            } else if (header.startsWith("\u0089PNG\r\n\u001A\n")) {
+                return "image/png"; // PNG画像
+            } else if (header.startsWith("GIF87a") || header.startsWith("GIF89a")) {
+                return "image/gif"; // GIF画像
+            } else if (header.startsWith("\u00D0\u00CF\u0011\u00E0")) {
+                return "application/msword"; 
+            } else if (header.startsWith("PK")) { // Word 2007以降のファイル
+             return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
+            } else if (header.startsWith("PK")) { // Excelファイルの判定
+             return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
             }
         }
         return ""; // デフォルト
@@ -466,6 +474,12 @@ public class FileDetail extends ControllerBase {
             return ".xlsx"; // Excel 2007+
         case "application/pdf":
             return ".pdf"; // PDFファイル
+        case "image/jpeg":
+            return ".jpg"; // JPEG画像
+        case "image/png":
+            return ".png"; // PNG画像
+        case "image/gif":
+            return ".gif"; // GIF画像
         default:
             return ""; // デフォルトは空文字
         }
