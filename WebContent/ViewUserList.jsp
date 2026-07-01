@@ -314,9 +314,9 @@ footer {
             <td class="list_label" style="width: 25%">
             <a href="javaScript:go_sort_request('last_name_kana')">氏名</a></td>
             <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('last_name_kana')">氏名よみ（かな）</a></td>
+            <a href="javaScript:go_sort_request('last_name_kana')" id="last_name_kana">氏名よみ（かな）</a></td>
             <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('memail')">メールアドレス</a></td>
+            <a href="javaScript:go_sort_request('memail')" id="memail">メールアドレス</a></td>
             <td class="list_label" style="width: 25%"></td>
           </tr>
           <%
@@ -346,5 +346,19 @@ footer {
       </div>
     </form>
   </div>
+  <script>
+ 	// ソート順を表示する
+	const sortKeyOld = '<%=webBean.txt("sort_key_old")%>'
+	const sortOrder = '<%=webBean.txt("sort_order")%>'
+	if (sortKeyOld && sortOrder) {
+		console.log('if sortKeyOld && sortOrder')
+		const target = document.getElementById(sortKeyOld)
+		if (target) {
+			console.log('if target')
+			const icon = (sortOrder === 'asc') ? '▲' : '▼'
+			target.innerHTML += icon
+		}
+	}
+  </script>
 </body>
 </html>
