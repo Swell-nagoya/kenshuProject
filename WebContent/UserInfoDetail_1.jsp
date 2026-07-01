@@ -605,8 +605,32 @@ label.error {
         </table>
         </div>
       <div class="button">
-        <input type="button" id="submit_btn" value="<%=webBean.txt("request_name")%>する" onclick="go_submit('go_next','<%=webBean.txt("request_cmd")%>')" /> 
-      </div>
+
+<input
+    type="button"
+    onclick="go_submit(
+        'go_next',
+        '<%=
+            "登録".equals(webBean.txt("request_name")) ? (
+                "insEnter".equals(webBean.txt("request_cmd")) ? "insEnter" : "ins"
+            ) :
+            "修正".equals(webBean.txt("request_name")) ? (
+                "updateEnter".equals(webBean.txt("request_cmd")) ? "updateEnter" : "update"
+            ) :
+            "確定".equals(webBean.txt("request_name")) ? (
+                "deleteEnter".equals(webBean.txt("request_cmd")) ? "deleteEnter" : "delete"
+            ) :
+            webBean.txt("request_cmd")
+        %>'
+    )"
+    value="<%=
+        "insEnter".equals(webBean.txt("request_cmd")) ? "登録する" :
+        "updateEnter".equals(webBean.txt("request_cmd")) ? "修正する" :
+        "deleteEnter".equals(webBean.txt("request_cmd")) ? "確定する" :
+        "確認"
+    %>" />
+
+</div>
     </form>
   </div>
 </body>

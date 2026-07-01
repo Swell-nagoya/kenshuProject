@@ -20,6 +20,10 @@ import jp.patasys.common.db.DbO;
 import jp.patasys.common.db.DbS;
 
 public class FileDao implements Serializable {
+	
+	private String sendUserName;
+	
+	private String uploadUserName;
 
     /** Derializable No. */
     private static final long serialVersionUID = 1L;
@@ -293,9 +297,13 @@ public class FileDao implements Serializable {
      * @return フルネームを返す
      */
     public String getSendUserName() {
-        return lastName + " " + firstName;
+        return sendUserName;
     }
 
+    public void setSendUserName(String sendUserName) {
+        this.sendUserName = sendUserName;
+    }
+    
     /**
      * searchFileName 検索用氏名
      */
@@ -393,7 +401,11 @@ public class FileDao implements Serializable {
      * @return アップロードユーザーフルネームを返す
      */
     public String getUploadUserName() {
-        return uploaderLastName + " " + uploaderFirstName;
+        return uploadUserName;
+    }
+    
+    public void setUploadUserName(String uploadUserName) {
+        this.uploadUserName = uploadUserName;
     }
 
     private String[] userIds;
@@ -435,7 +447,7 @@ public class FileDao implements Serializable {
                 + "files.file_key as files___file_key, "
                 + "files.mime_type as files___mime_type, "
                 + "files.system_file_name as files___system_file_name, "
-                + "files.upload_user_id as files___upload_user_id, "
+                + "f.upload_user_id as files___upload_user_id, "
                 + "files.expiration_date as files___expiration_date "
                 + "FROM files "
                 + "WHERE file_id = ?";
@@ -487,7 +499,7 @@ public class FileDao implements Serializable {
                 + "files.file_key as files___file_file_key, "
                 + "files.mime_type as files___mime_type, "
                 + "files.system_file_name as files___system_file_name, "
-                + "files.upload_user_id as files___upload_user_id, "
+                + "f.upload_user_id as files___upload_user_id, "
                 + "files.expiration_date as files___expiration_date "
                 + " from files ";
         sql += ""
@@ -542,8 +554,12 @@ public class FileDao implements Serializable {
     	}
     	dao.setUploadUserId(DbI.chara(uploadUserId != null ? uploadUserId : ""));
     	dao.setExpirationDate(DbI.chara(map.get("expiration_date") != null ? map.get("expiration_date") : ""));
-        dao.setUploaderFirstName(map.get("first_name"));
-        dao.setUploaderLastName(map.get("last_name"));
+        dao.setUploaderFirstName(map.get("user_first_name"));
+        dao.setUploaderLastName(map.get("user_last_name"));
+        dao.setUploadUserName(map.get("upload_user_name"));
+        dao.setSendUserName(
+        	    map.get("user_last_name") + " " + map.get("user_first_name")
+        	);
     }
 
     /**
@@ -681,8 +697,10 @@ public class FileDao implements Serializable {
         return files; // 取得したルームリストを返す
     }
 
-    public static ArrayList<FileDao> dbSelectList(FileDao myclass, LinkedHashMap<String, String> sortKey,
+    public static ArrayList<FileDao> dbSelectList(FileDao myclass,
+            LinkedHashMap<String, String> sortKey,
             DaoPageInfo daoPageInfo) throws AtareSysException {
+
         ArrayList<FileDao> resultList = new ArrayList<>();
 
         // WHERE句
@@ -693,53 +711,45 @@ public class FileDao implements Serializable {
         int limit = daoPageInfo.getLineCount();
 
         String sql = "SELECT "
-                + "files.file_id AS files___file_id, "
-                + "files.user_info_id AS files___user_info_id, "
-                + "files.file_name AS files___file_name, "
-                + "files.file_path AS files___file_path, "
-                + "files.upload_date AS files___upload_date, "
-                + "files.file_key AS files___file_key, "
-                + "files.mime_type AS files___mime_type, "
-                + "files.system_file_name AS files___system_file_name, "
-                + "files.upload_user_id AS files___upload_user_id, "
-                + "files.expiration_date AS files___expiration_date, "
-                + "uploader.first_name AS uploader_first_name, "
-                + "uploader.last_name AS uploader_last_name, "
-                + "user_info.first_name AS user_first_name, "
-                + "user_info.last_name AS user_last_name "
-                + "FROM files "
-                + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
-                + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
+                + "f.file_id AS files___file_id, "
+                + "f.user_info_id AS files___user_info_id, "
+                + "f.file_name AS files___file_name, "
+                + "f.file_path AS files___file_path, "
+                + "f.upload_date AS files___upload_date, "
+                + "f.file_key AS files___file_key, "
+                + "f.mime_type AS files___mime_type, "
+                + "f.system_file_name AS files___system_file_name, "
+                + "f.upload_user_id AS files___upload_user_id, "
+                + "f.expiration_date AS files___expiration_date, "
+
+                // 受信ユーザー
+                + "u.first_name AS user_first_name, "
+                + "u.last_name AS user_last_name, "
+
+                // アップロードユーザー
+                + "CONCAT(uploader.last_name, ' ', uploader.first_name) AS upload_user_name "
+
+                + "FROM files f "
+                + "JOIN user_info u ON f.user_info_id = u.user_info_id "
+                + "LEFT JOIN user_info uploader ON f.upload_user_id = uploader.user_info_id "
                 + where + order
                 + " LIMIT " + limit + " OFFSET " + offset;
-        
-        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        if (rs.size() > 0) {
-            HashMap<String, String> debugMap = rs.get(0);
 
-            for (String key : debugMap.keySet()) {
-            }
-        }
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 
         for (HashMap<String, String> map : rs) {
+        	
+        	System.out.println("===== DEBUG LIST =====");
+            System.out.println(map);
+            
+            System.out.println("upload_user_id=" + map.get("upload_user_id"));
+            System.out.println("user_last_name=" + map.get("user_last_name"));
+            System.out.println("user_first_name=" + map.get("user_first_name"));
 
             FileDao dao = new FileDao();
 
+            // JOIN結果をそのまま詰める
             dao.setFileDaoForJoin(map, dao);
-
-            // 送信先ユーザー
-            UserInfoDao sendUser = new UserInfoDao();
-            if (sendUser.dbSelect(dao.getUserInfoId())) {
-                dao.setFirstName(sendUser.getFirstName());
-                dao.setLastName(sendUser.getLastName());
-            }
-
-            // アップロードユーザー
-            UserInfoDao uploadUser = new UserInfoDao();
-            if (uploadUser.dbSelect(dao.getUploadUserId())) {
-                dao.setUploaderFirstName(uploadUser.getFirstName());
-                dao.setUploaderLastName(uploadUser.getLastName());
-            }
 
             resultList.add(dao);
         }
@@ -758,7 +768,7 @@ public class FileDao implements Serializable {
     private String dbWhere() throws AtareSysException {
         StringBuffer where = new StringBuffer(1024);
         if (userIds != null && userIds.length > 0) {
-            where.append(where.length() > 0 ? " OR " : "");
+            where.append(where.length() > 0 ? " AND " : "");
             where.append("files.user_info_id IN (");
 
             for (int i = 0; i < userIds.length; i++) {
@@ -771,19 +781,21 @@ public class FileDao implements Serializable {
             where.append(") ");
         }
 
-        if (getFileId().length() > 0) {
+        if (getFileId() != null && getFileId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("files.file_id = " + DbS.chara(getFileId()));
         }
 
         if (getUserInfoId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
+            where.append("f.user_info_id = " + DbS.chara(getUserInfoId()));
         }
 
-        if (getUploadUserId().length() > 0) {
+        if (getUploadUserId() != null && getUploadUserId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+            where.append("f.upload_user_id = '")
+                 .append(getUploadUserId())
+                 .append("'");
         }
 
         if (getSearchFileName().length() > 0) {
@@ -806,16 +818,16 @@ public class FileDao implements Serializable {
      * コンストラクタ。
      */
     public FileDao() {
-        fieldsArray.put("file_id", "files.file_id");
-        fieldsArray.put("user_info_id", "files.user_info_id");
-        fieldsArray.put("file_name", "files.file_name");
-        fieldsArray.put("file_path", "files.file_path");
-        fieldsArray.put("upload_date", "files.upload_date");
-        fieldsArray.put("file_key", "files.file_key");
-        fieldsArray.put("mime_type", "files.mime_type");
-        fieldsArray.put("system_file_name", "files.system_file_name");
-        fieldsArray.put("upload_user_id", "files.upload_user_id");
-        fieldsArray.put("expiration_date", "files.expiration_date");
+    	fieldsArray.put("file_id", "f.file_id");
+    	fieldsArray.put("user_info_id", "f.user_info_id");
+    	fieldsArray.put("file_name", "f.file_name");
+    	fieldsArray.put("file_path", "f.file_path");
+    	fieldsArray.put("upload_date", "f.upload_date");
+    	fieldsArray.put("file_key", "f.file_key");
+    	fieldsArray.put("mime_type", "f.mime_type");
+    	fieldsArray.put("system_file_name", "f.system_file_name");
+    	fieldsArray.put("upload_user_id", "f.upload_user_id");
+    	fieldsArray.put("expiration_date", "f.expiration_date");
     }
 
     /**

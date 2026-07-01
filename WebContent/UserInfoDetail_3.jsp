@@ -202,7 +202,7 @@ table {
    
  　　　 <form method="post" id="main_form" action="">
 
-        <input type="hidden" name="form_name" id="form_name" value="UserInfoDetail_3" /> 
+        <input type="hidden" name="form_name" id="form_name" value="UserInfoDetail_1" /> 
         <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
         <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" /> 
         <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
