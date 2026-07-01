@@ -685,8 +685,8 @@ public class FileDao implements Serializable {
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);
 
-        int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
-        int limit = daoPageInfo.getLineCount();
+//        int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
+//        int limit = daoPageInfo.getLineCount();
 
         String sql = "SELECT "
                 + "files.file_id AS files___file_id, "
@@ -706,12 +706,23 @@ public class FileDao implements Serializable {
                 + "FROM files "
                 + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
                 + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
-                + where + order
-                + " LIMIT " + limit + " OFFSET " + offset;
+                + where + order;
+//                + " LIMIT " + limit + " OFFSET " + offset;
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-
+        
+        int uploadFileLen = daoPageInfo.getRecordCount();
+        int len = uploadFileLen + rs.size();
+        daoPageInfo.setRecordCount(len);
+        
+        rs = DbBase.dbSelect(sql);
+        
         for (HashMap<String, String> map : rs) {
+        	
+        		//アップロードユーザーの名前を取得
+        		UserInfoDao userInfoDao = new UserInfoDao();
+        		userInfoDao.dbSelect(map.get("upload_user_id"));
+        	
             FileDao dao = new FileDao();
             dao.setFileDaoForJoin(map, dao);
             dao.setFirstName(map.get("user_first_name"));

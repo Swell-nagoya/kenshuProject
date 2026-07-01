@@ -43,7 +43,7 @@ public class FileDetail extends ControllerBase {
      */
     @Override
     public void doInit() {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -121,6 +121,9 @@ public class FileDetail extends ControllerBase {
         } else if ("FileDetail_2".equals(form)) {
             if ("go_next".equals(actionCmd)) {
                 if ("insEnter".equals(requestCmd)) {
+                	
+                	//登録するメソッド を入れる
+                	
                     searchList();
                     redirect("FileList.do");
 

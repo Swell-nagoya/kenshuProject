@@ -206,7 +206,7 @@ function go_submit(action_cmd) {
 }
 
 function go_upload(action_cmd) {
-  document.getElementById('main_form').action = '';
+  document.getElementById('main_form').action = 'FileDetail.do';
   document.getElementById('action_cmd').value = action_cmd;
   document.getElementById('main_form').submit();
 }

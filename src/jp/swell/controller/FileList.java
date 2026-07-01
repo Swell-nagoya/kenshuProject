@@ -109,7 +109,7 @@ public class FileList extends ControllerBase {
         bean.setValue("sort_key", "file_name"); /* 初回のソートキーを入れる */
         bean.setValue("sort_order", "asc");
         bean.setValue("lineCount",
-                SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "RoomList", "lineCount", "100"));
+        SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "RoomList", "lineCount", "100"));
     }
 
     /**
@@ -186,6 +186,12 @@ public class FileList extends ControllerBase {
         fileList.addAll(receivedFiles);
         fileList.addAll(sentFiles);
 
+        // ページネーション
+        int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
+        int end = Math.min(start + daoPageInfo.getLineCount(), daoPageInfo.getRecordCount());
+        fileList.subList(end, daoPageInfo.getRecordCount()).clear();
+        fileList.subList(0, start).clear();
+        
         bean.setValue("list", fileList);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());

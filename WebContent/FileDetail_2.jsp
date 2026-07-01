@@ -176,7 +176,7 @@ td, th {
 </style>
 <script type="text/javascript">
 function go_submit(action_cmd, request_cmd) {
-    document.getElementById('main_form').action='';
+    document.getElementById('main_form').action='FileDetail.do';
     document.getElementById('action_cmd').value=action_cmd;
     document.getElementById('request_cmd').value=request_cmd;
     document.getElementById('main_form').submit();
