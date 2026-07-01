@@ -91,6 +91,10 @@ public class SendPassMail extends ControllerBase
             }
         forward("ViewUserList.do");
         }
+        else
+        {
+        	forward("SendPassMail.jsp");
+        }
     }
     
     /**

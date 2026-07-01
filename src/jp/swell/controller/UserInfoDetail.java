@@ -78,7 +78,7 @@ public class UserInfoDetail extends ControllerBase
                       bean.setValue("input_info", Sup.serialize(new UserInfoDao()));
                       bean.setValue("request_name", "登録");
                       forward("UserInfoDetail_1.jsp");
-                  } 
+                  }
                   else if ("update".equals(bean.value("request_cmd"))) 
                   {
                       if (!setDb2Web()) 

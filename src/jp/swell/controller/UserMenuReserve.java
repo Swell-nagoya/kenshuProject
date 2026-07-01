@@ -74,7 +74,7 @@ public class UserMenuReserve extends ControllerBase {
 
           else if ("reserve".equals(bean.value("action_cmd")))
           {
-            searchList();
+              searchList();
           }
           else if ("edit".equals(bean.value("action_cmd")))
           {
