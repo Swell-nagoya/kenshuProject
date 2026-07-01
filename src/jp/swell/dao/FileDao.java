@@ -544,15 +544,9 @@ public class FileDao implements Serializable {
                 DbI.chara(map.get("expiration_date") != null ? map.get("expiration_date") : ""));
         dao.setUploaderFirstName(DbI.chara(map.get("uploader_first_name") != null ? map.get("uploader_first_name") : ""));
         dao.setUploaderLastName(DbI.chara(map.get("uploader_last_name") != null ? map.get("uploader_last_name") : ""));
-        
-        
-        
-        
         dao.setFirstName(DbI.chara(map.get("first_name") != null ? map.get("first_name") : ""));
         dao.setLastName(DbI.chara(map.get("last_name") != null ? map.get("last_name") : ""));
         
-       	System.out.println(map.get("upload_date"));
-       	System.out.println(map.get("upload_user_id"));
     }
 
     /**
@@ -670,19 +664,19 @@ public class FileDao implements Serializable {
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         ArrayList<FileDao> files = new ArrayList<>();
         for (HashMap<String, String> map : rs) {
-            FileDao dao = new FileDao();
+            FileDao file = new FileDao();
             // ルームDAOのインスタンスにデータを設定
-            dao.setUserInfoId(map.get("file_id"));
-            dao.setUserInfoId(map.get("user_info_id"));
-            dao.setFileName(map.get("file_name"));
-            dao.setFilePath(map.get("file_path"));
-            dao.setUploadDate(map.get("upload_date"));
-            dao.setFileKey(map.get("file_key"));
-            dao.setMimeType(map.get("mime_type"));
-            dao.setSystemFileName(map.get("system_file_name"));
-            dao.setUploadUserId(map.get("upload_user_id"));
-            dao.setExpirationDate(map.get("expiration_date"));
-            files.add(dao);
+            file.setUserInfoId(map.get("file_id"));
+            file.setUserInfoId(map.get("user_info_id"));
+            file.setFileName(map.get("file_name"));
+            file.setFilePath(map.get("file_path"));
+            file.setUploadDate(map.get("upload_date"));
+            file.setFileKey(map.get("file_key"));
+            file.setMimeType(map.get("mime_type"));
+            file.setSystemFileName(map.get("system_file_name"));
+            file.setUploadUserId(map.get("upload_user_id"));
+            file.setExpirationDate(map.get("expiration_date"));
+            files.add(file);
             
 
         }
@@ -724,8 +718,6 @@ public class FileDao implements Serializable {
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 
-        System.out.println(sql);
-        System.out.println(rs);
 
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();

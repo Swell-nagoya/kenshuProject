@@ -68,25 +68,32 @@ public class FileList extends ControllerBase {
             if ("search".equals(bean.value("action_cmd"))) {
                 bean.setValue("pageNo", "1");
                 searchList();
+                forward("FileList.jsp");
             } else if ("next".equals(bean.value("action_cmd"))) {
                 bean.setValue("pageNo", calcPageNo(bean.value("pageNo"), 1));
                 searchList();
+                forward("FileList.jsp");
             } else if ("jump".equals(bean.value("action_cmd"))) {
                 searchList();
+                forward("FileList.jsp");
             } else if ("prior".equals(bean.value("action_cmd"))) {
                 bean.setValue("pageNo", calcPageNo(bean.value("pageNo"), -1));
                 searchList();
+                forward("FileList.jsp");
             } else if ("sort".equals(bean.value("action_cmd"))) {
                 searchList();
+                forward("FileList.jsp");
             } else if ("clear".equals(bean.value("action_cmd"))) {
                 formClear();
                 searchList();
+                forward("FileList.jsp");
             } else if ("return".equals(bean.value("action_cmd"))) {
                 redirect("MenuAdmin.do");
             } else {
                 searchList();
+                forward("FileList.jsp");
             }
-            forward("FileList.jsp");
+
         } else if ("FileDetail".equals(bean.value("form_name")) || "FileDetail_2".equals(bean.value("form_name"))) {
             setWebBeanFromSerialize(bean.value("search_info"));
             bean = getWebBean();
@@ -109,7 +116,7 @@ public class FileList extends ControllerBase {
         bean.setValue("sort_key", "file_name"); /* 初回のソートキーを入れる */
         bean.setValue("sort_order", "asc");
         bean.setValue("lineCount",
-                SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "RoomList", "lineCount", "100"));
+                SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "FileList", "lineCount", "100"));
     }
 
     /**
@@ -152,11 +159,12 @@ public class FileList extends ControllerBase {
         }
 
         LinkedHashMap<String, String> sortKey = sortKey();
+        
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount"))) {
             bean.setValue("lineCount", "20");
         }
-        daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
+         daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
         if (!Validate.isInteger(bean.value("pageNo"))) {
             daoPageInfo.setPageNo(1);
         } else {
@@ -185,11 +193,13 @@ public class FileList extends ControllerBase {
         ArrayList<FileDao> fileList = new ArrayList<>();
         fileList.addAll(receivedFiles);
         fileList.addAll(sentFiles);
+        
 
         bean.setValue("list", fileList);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
-        // 受信件数だけでは recordCount が正確に反映されない可能性があるため、明示的に再セット
+        bean.setValue("recordCount", daoPageInfo.getRecordCount());
+        bean.setValue("maxPageNo", daoPageInfo.getMaxPageNo());
         bean.setValue("recordCount", fileList.size());
         bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
 
@@ -203,6 +213,7 @@ public class FileList extends ControllerBase {
         if (!Validate.isInteger(bean.value("pageNo"))) {
             daoPageInfo.setPageNo(1);
         } else {
+        	System.out.println(Integer.parseInt(bean.value("pageNo")));
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
 

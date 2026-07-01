@@ -340,8 +340,7 @@ th {
 				%>
 				<div class="pagenation">
 					<input type="text" name="pageNo" id="pageNo" maxlength="3" size='1'
-						value="<%=webBean.txt("pageNo")%>" class="right ime_disabled" />
-					/
+						value="<%=webBean.txt("pageNo")%>" class="right ime_disabled" />  /
 					<%=webBean.html("maxPageNo")%>
 					ページ〚全
 					<%=webBean.html("recordCount")%>件〛<br />
@@ -368,6 +367,8 @@ th {
 					<%
 					}
 					%>
+					
+					
 				</div>
 				<table border="1">
 					<tr>

@@ -43,7 +43,7 @@ public class FileDetail extends ControllerBase {
      */
     @Override
     public void doInit() {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -52,6 +52,7 @@ public class FileDetail extends ControllerBase {
     @Override
     public void doActionProcess() throws AtareSysException {
         WebBean bean = getWebBean();
+        try {
         UserLoginInfo login = (UserLoginInfo)getLoginInfo();
         // 追加：JSP 上で使うためのログインユーザー名・ID
         bean.setValue("loginUserName", login.getLastName() + " " + login.getFirstName());
@@ -72,7 +73,10 @@ public class FileDetail extends ControllerBase {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
                 try {
+                	System.out.println("hit");
                     setWeb2Dao2InputInfo(getRequest());
+                    
+                    
                     bean.setValue("request_name", "登録する");
                     bean.setMessage("この内容で登録します。よろしいですか？");
                     bean.setValue("input_name", inputName);
@@ -147,6 +151,10 @@ public class FileDetail extends ControllerBase {
                 redirect("FileList.do");
             }
         }
+        } catch (Exception e) {
+         bean.setError("処理中にエラーが発生しました: " + e.getMessage());
+         forward("ErrorPage.jsp");
+     }
     }
 
     /**
@@ -203,6 +211,7 @@ public class FileDetail extends ControllerBase {
 
         // WebBean にセット
         bean.setValue("user_data", pageUsers);
+        
         bean.setValue("pageNo", String.valueOf(pageNo));
         bean.setValue("maxPageNo", String.valueOf(maxPage));
 
@@ -363,7 +372,14 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        // user.dir でカレントディレクトリ（プロジェクトのルート）を取得
+        String projectPath = System.getProperty("user.dir");
+
+        String projectPathResult = projectPath.replace("\\", "/");
+        
+        
+        String filePath = projectPathResult + "/WebContent/upload"; //保存先フォルダのパス設定
+        System.out.println(filePath);
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
@@ -378,9 +394,14 @@ public class FileDetail extends ControllerBase {
         if (fileExtension != null && !fileExtension.isEmpty()) {
             systemFileName += fileExtension;
         }
-
+        
+        
         // 完全なファイルパスの生成
         String fullPath = filePath + "/" + systemFileName;
+        
+        System.out.println(fullPath);
+        
+        
         if (!fileUtil.outputFile(fullPath, fileData)) {
             return null;
         }
