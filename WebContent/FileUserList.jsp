@@ -15,6 +15,11 @@
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="java.util.Arrays"%>
 
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.regex.Pattern" %>
+<%@ page import="java.util.regex.Matcher" %>
+
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean"
 	scope="request" />
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -172,7 +177,8 @@ input[type="button"]:hover {
 	display: inline-block;
 }
 </style>
-				<script type="text/javascript">
+<script type="text/javascript">
+
 // 元の go_submit / go_upload はそのまま残す
 function go_submit(action_cmd) {
   document.getElementById('main_form').action = '';
@@ -188,6 +194,62 @@ function go_upload(action_cmd) {
 // 子画面で「選択」ボタン押下時の処理
 function submitSelection() {
   const selected = [];
+
+
+  const topSelected = document.querySelector('#pagerTop #selectedIds');
+  <%
+  String allUserName = webBean.value("allUserName"); 
+  
+  List<Map<String, String>> userList = new ArrayList<Map<String, String>>();
+  
+  if (allUserName != null && !allUserName.isEmpty()) {
+      // id と name のペアを抽出
+      Pattern pattern = Pattern.compile("id:\"([^\"]+)\"\\s*,\\s*name:\"([^\"]+)\"");
+      Matcher matcher = pattern.matcher(allUserName);
+      
+      while (matcher.find()) {
+          Map<String, String> userMap = new HashMap<String, String>();
+          userMap.put("id", matcher.group(1));  
+          userMap.put("name", matcher.group(2));
+          userList.add(userMap);
+      }
+  }
+  
+  
+  request.setAttribute("userList", userList);
+%>
+if (topSelected) {
+    const topSelecterValue = topSelected.value
+    const topSelecterArray = topSelecterValue ? topSelecterValue.split(",") : [];
+    
+    const javaUserList = [
+      <% for(Map<String, String> user : userList) { %>
+        { id: "<%= user.get("id") %>", name: "<%= user.get("name") %>" },
+      <% } %>
+    ];
+
+    for(let i = 0; i < topSelecterArray.length; i++) {
+        console.log(topSelecterArray[i]);
+        
+        let userName = "";
+        const currentId = topSelecterArray[i];
+
+        //
+        for (let j = 0; j < javaUserList.length; j++) {
+            if (javaUserList[j].id === currentId) {
+                userName = javaUserList[j].name;;
+                break;
+            }
+        }
+
+        selected.push({
+            id: currentId,
+            name: userName,
+            type: 'sub'
+        });
+    }
+  }
+  
   document.querySelectorAll('input[name="user_id"]:checked').forEach(cb => {
     selected.push({
       id: cb.value,
@@ -206,6 +268,32 @@ function toggleCheckbox(div) {
   if (!cb) return;
   cb.checked = !cb.checked;
 }
+
+
+function goPage(p) {
+	  // 選択されたチェック状態を保持
+	  const prev = (document.getElementById('selectedIds').value || "")
+	    .split(',').filter(x => x);
+
+	    console.log(prev);
+	    
+	  const curr = Array.from(
+	    document.querySelectorAll('input[name="user_id"]:checked')
+	  ).map(cb => cb.value);
+	 const merged = [...new Set([...prev, ...curr])];
+
+	  // 両方の hidden に反映させる（上下両方の selectedIds）
+	  const topSelected = document.querySelector('#pagerTop #selectedIds');
+	  const bottomSelected = document.querySelector('#pagerBottom #selectedIds');
+	  if (topSelected) topSelected.value = merged.join(',');
+	  if (bottomSelected) bottomSelected.value = merged.join(',');
+
+	  // フォームの送信
+	  const f = document.getElementById("pagerTop") || document.getElementById("pagerBottom");
+	  f.pageNo.value = p;
+	  f.submit();
+	}
+	
 </script>
 </head>
 <body>
@@ -230,26 +318,6 @@ function toggleCheckbox(div) {
 			<%=pageNo >= maxPageNo ? "disabled" : ""%>>次へ →</button>
 	</form>
 	<script>
-	function goPage(p) {
-		  // 選択されたチェック状態を保持
-		  const prev = (document.getElementById('selectedIds').value || "")
-		    .split(',').filter(x => x);
-		  const curr = Array.from(
-		    document.querySelectorAll('input[name="user_id"]:checked')
-		  ).map(cb => cb.value);
-		  const merged = [...new Set([...prev, ...curr])];
-
-		  // 両方の hidden に反映させる（上下両方の selectedIds）
-		  const topSelected = document.querySelector('#pagerTop #selectedIds');
-		  const bottomSelected = document.querySelector('#pagerBottom #selectedIds');
-		  if (topSelected) topSelected.value = merged.join(',');
-		  if (bottomSelected) bottomSelected.value = merged.join(',');
-
-		  // フォームの送信
-		  const f = document.getElementById("pagerTop") || document.getElementById("pagerBottom");
-		  f.pageNo.value = p;
-		  f.submit();
-		}
   </script>
 
 
