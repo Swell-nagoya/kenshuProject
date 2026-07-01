@@ -42,46 +42,35 @@ public class UserMenuReserve extends ControllerBase {
       if ("UserMenuReserve".equals(bean.value("form_name")))
       {
           bean.trimAllItem();
-          if("top".equals(bean.value("action_cmd"))) {
+          String action = bean.value("action_cmd");
+
+          if ("top".equals(action) || "home".equals(action)) {
+              formInit();
               searchList();
           }
-
-          else if ("home".equals(bean.value("action_cmd")))
-          {
+          else if ("jump".equals(action)) {
               searchList();
           }
-
-          else if ("jump".equals(bean.value("action_cmd")))
-          {
+          else if ("sort".equals(action)) {
               searchList();
           }
-
-          else if ("sort".equals(bean.value("action_cmd")))
-          {
+          else if ("clear".equals(action)) {
+              clearSearchCondition();
               searchList();
           }
-
-          else if ("clear".equals(bean.value("action_cmd")))
-          {
-              searchList();
-          }
-
-       // 部屋の情報を新規登録する条件を追加
-          else if ("insertRoom".equals(bean.value("form_name")))
-          {
+          else if ("insertRoom".equals(action)) {
               insertRoomInfo();
+              searchList();
           }
-
-          else if ("reserve".equals(bean.value("action_cmd")))
-          {
-            searchList();
+          else if ("reserve".equals(action)) {
+              searchList();
           }
-          else if ("edit".equals(bean.value("action_cmd")))
-          {
+          else if ("edit".equals(action)) {
               forward("UserMenuReserve.jsp");
-              return; // メソッドを終了
+              return;
           }
-          {
+          else {
+              formInit();
               searchList();
           }
 
@@ -262,6 +251,17 @@ private LinkedHashMap<String, String> sortKey()
   bean.setValue("sort_key_old", key);
   bean.setValue("sort_order", sort_key.get(key));
   return sort_key;
+}
+
+private void clearSearchCondition() {
+    WebBean bean = getWebBean();
+
+    bean.setValue("list_search_full_name", "");
+    bean.setValue("list_search_full_name_kana", "");
+    bean.setValue("pageNo", "1");
+    bean.setValue("sort_key", "full_name_kana");
+    bean.setValue("sort_order", "asc");
+    bean.setValue("sort_key_old", "");
 }
 
 
