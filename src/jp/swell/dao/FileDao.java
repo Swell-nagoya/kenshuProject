@@ -731,8 +731,6 @@ public class FileDao implements Serializable {
             dao.setFileDao(map, dao);
             dao.setFirstName(map.get("first_name"));
             dao.setLastName(map.get("last_name"));
-            dao.setUploaderFirstName(userInfoDao.getFirstName());
-            dao.setUploaderLastName(userInfoDao.getLastName());
             resultList.add(dao);
         }
 
