@@ -678,15 +678,17 @@ public class FileDao implements Serializable {
     }
 
     public static ArrayList<FileDao> dbSelectList(FileDao myclass, LinkedHashMap<String, String> sortKey,
-            DaoPageInfo daoPageInfo) throws AtareSysException {
+        DaoPageInfo daoPageInfo) throws AtareSysException {
         ArrayList<FileDao> resultList = new ArrayList<>();
 
         // WHERE句
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);
+        
+        int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
+        int limit = daoPageInfo.getLineCount();
 
-//        int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
-//        int limit = daoPageInfo.getLineCount();
+
 
         String sql = "SELECT "
                 + "files.file_id AS files___file_id, "
@@ -705,9 +707,11 @@ public class FileDao implements Serializable {
                 + "user_info.last_name AS user_last_name "
                 + "FROM files "
                 + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
-                + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
-                + where + order;
-//                + " LIMIT " + limit + " OFFSET " + offset;
+                + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id " 
+                + where + order
+        		    + " LIMIT " + limit + " OFFSET " + offset;
+        			
+
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         
@@ -715,18 +719,20 @@ public class FileDao implements Serializable {
         int len = uploadFileLen + rs.size();
         daoPageInfo.setRecordCount(len);
         
-        rs = DbBase.dbSelect(sql);
+//        rs = DbBase.dbSelect(sql);
         
         for (HashMap<String, String> map : rs) {
         	
         		//アップロードユーザーの名前を取得
-        		UserInfoDao userInfoDao = new UserInfoDao();
-        		userInfoDao.dbSelect(map.get("upload_user_id"));
+        	UserInfoDao userInfoDao = new UserInfoDao();
+        	userInfoDao.dbSelect(map.get("upload_user_id"));
         	
             FileDao dao = new FileDao();
-            dao.setFileDaoForJoin(map, dao);
-            dao.setFirstName(map.get("user_first_name"));
-            dao.setLastName(map.get("user_last_name"));
+            dao.setFileDao(map, dao);
+            dao.setFirstName(map.get("first_name"));
+            dao.setLastName(map.get("last_name"));
+            dao.setUploaderFirstName(userInfoDao.getFirstName());
+            dao.setUploaderLastName(userInfoDao.getLastName());
             resultList.add(dao);
         }
 

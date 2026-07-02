@@ -443,7 +443,7 @@ public class UserYoyakuDetail extends ControllerBase {
     ReserveFileDao reserveFileDao = new ReserveFileDao();
     
     String fileId = UUID.randomUUID().toString().substring(0, 13);
-    String filePath = "C:/git/training/kenshuProject/WebContent/upload";
+    String filePath = getServletContext().getRealPath("/upload").toString();
     String userInfoId = bean.value("user_info_id");
     String reserveFileId = GetNumber.getNumberChar("reserveFile"); // reserveFileの作成
     

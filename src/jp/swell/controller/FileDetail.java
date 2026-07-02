@@ -74,6 +74,9 @@ public class FileDetail extends ControllerBase {
                 try {
                     setWeb2Dao2InputInfo(getRequest());
                     bean.setValue("request_name", "登録する");
+                    bean.setValue("actionType", "insEnter");
+                    bean.setValue("requestType", "ins");
+                    bean.setValue("header", "ファイル登録確認");
                     bean.setMessage("この内容で登録します。よろしいですか？");
                     bean.setValue("input_name", inputName);
                     forward("FileDetail_2.jsp");
@@ -111,6 +114,9 @@ public class FileDetail extends ControllerBase {
                         forward("FileList.jsp");
                     } else {
                         bean.setValue("request_name", "削除する");
+                        bean.setValue("actionType", "deleteEnter");
+                        bean.setValue("requestType", "delete");
+                        bean.setValue("header", "ファイル削除");
                         bean.setMessage("このファイルを削除します。よろしいですか？");
                         bean.setValue("file_name", fileName);
                         forward("FileDetail_2.jsp");
@@ -121,9 +127,6 @@ public class FileDetail extends ControllerBase {
         } else if ("FileDetail_2".equals(form)) {
             if ("go_next".equals(actionCmd)) {
                 if ("insEnter".equals(requestCmd)) {
-                	
-                	//登録するメソッド を入れる
-                	
                     searchList();
                     redirect("FileList.do");
 
@@ -366,7 +369,7 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        String filePath = getServletContext().getRealPath("/upload").toString(); //保存先フォルダのパス設定
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
@@ -427,6 +430,7 @@ public class FileDetail extends ControllerBase {
             } else if (header.startsWith("\u00D0\u00CF\u0011")) {
                 return "application/vnd.ms-excel"; // .xls
             }
+            
         }
         return ""; // デフォルト
     }

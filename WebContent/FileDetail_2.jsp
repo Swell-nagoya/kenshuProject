@@ -192,9 +192,9 @@ function go_list(action_cmd , request_cmd) {
 <body>
  <%
      String val = webBean.txt("request_name");
-     String actionType =  val.equals("削除する") ? "deleteEnter" : val.equals("登録する") ? "insEnter" : "unknown";
-     String requestType =  val.equals("削除する") ? "delete" : val.equals("登録する") ? "ins" : "unknown";
-     String header =  val.equals("削除する") ? "ファイル削除" : val.equals("登録する") ? "ファイル登録確認" : "unknown";
+     String actionType =  webBean.txt("actionType");
+     String requestType = webBean.txt("requestType");
+     String header = webBean.txt("header");
    %>
   <div class="container">
     <div class="new-btn">
