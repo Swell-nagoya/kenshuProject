@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
@@ -164,7 +165,8 @@ public class FileList extends ControllerBase {
         if (!Validate.isInteger(bean.value("lineCount"))) {
             bean.setValue("lineCount", "20");
         }
-         daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
+        daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
+        SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
         if (!Validate.isInteger(bean.value("pageNo"))) {
             daoPageInfo.setPageNo(1);
         } else {
@@ -194,8 +196,13 @@ public class FileList extends ControllerBase {
         fileList.addAll(receivedFiles);
         fileList.addAll(sentFiles);
         
+        // 重複のデータがあれば削除
+        fileList = fileList.stream()
+          .distinct()
+          .collect(Collectors.toCollection(ArrayList::new));
 
-        bean.setValue("list", fileList);
+        
+        // 全件数から各しきい値を取得する
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         bean.setValue("recordCount", daoPageInfo.getRecordCount());
@@ -203,20 +210,23 @@ public class FileList extends ControllerBase {
         bean.setValue("recordCount", fileList.size());
         bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
 
-        SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
-
-        if (!Validate.isInteger(bean.value("lineCount"))) {
-            bean.setValue("lineCount", "20");
+        // ページ描画に使用する分の配列に変更
+        // 配列のfromIndex番から値を取得するか
+        int fromIndex = ( daoPageInfo.getPageNo() - 1 ) * daoPageInfo.getLineCount();
+        // 配列のtoIndex番まで値を取得するか
+        int toIndex = fromIndex + daoPageInfo.getLineCount();
+        if(toIndex > fileList.size()) {
+           toIndex = fileList.size();
         }
-        daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
-        SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
-        if (!Validate.isInteger(bean.value("pageNo"))) {
-            daoPageInfo.setPageNo(1);
+        //　配列をfromIndex番からtoIndex番までの値に変更
+        if (fromIndex >= fileList.size() || fromIndex < 0) {
+        	fileList = new ArrayList<>();
         } else {
-        	System.out.println(Integer.parseInt(bean.value("pageNo")));
-            daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
+        	fileList = new ArrayList<>(fileList.subList(fromIndex, toIndex));
         }
-
+        
+        bean.setValue("list", fileList);
+        
     }
 
     /**

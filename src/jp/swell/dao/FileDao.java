@@ -655,7 +655,7 @@ public class FileDao implements Serializable {
     }
 
     /**
-     * データベースからルーム名を取得するメソッド
+     * データベースからファイル名を取得するメソッド
      * @return UserMenuに返す
      * @throws AtareSysException
      */
@@ -693,7 +693,7 @@ public class FileDao implements Serializable {
         String order = myclass.dbOrder(sortKey);
 
         int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
-        int limit = daoPageInfo.getLineCount();
+       // int limit = daoPageInfo.getLineCount();
 
         String sql = "SELECT "
                 + "files.file_id AS files___file_id, "
@@ -713,10 +713,12 @@ public class FileDao implements Serializable {
                 + "FROM files "
                 + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
                 + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
-                + where + order
-                + " LIMIT " + limit + " OFFSET " + offset;
+                + where + order;
+         //       + " OFFSET " + offset;
+         //       + " LIMIT " + limit + " OFFSET " + offset;
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        System.out.println(sql);
 
 
         for (HashMap<String, String> map : rs) {
@@ -799,9 +801,6 @@ public class FileDao implements Serializable {
         fieldsArray.put("uploader_first_name", "uploader.first_name");
         fieldsArray.put("uploader_last_name", "uploader.last_name");
         fieldsArray.put("expiration_date", "files.expiration_date");
-        
-        
-        
     }
 
     /**

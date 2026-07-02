@@ -73,7 +73,6 @@ public class FileDetail extends ControllerBase {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
                 try {
-                	System.out.println("hit");
                     setWeb2Dao2InputInfo(getRequest());
                     
                     
@@ -88,6 +87,8 @@ public class FileDetail extends ControllerBase {
              // ② sub ボタン押下 → サブ画面（ユーザー選択）へ（送信先のみ）
             } else if ("sub".equals(actionCmd)) {
                 searchUserList();
+                
+                
                 bean.setValue("request_name", "送信先");
                 forward("FileUserList.jsp");
                 return;   // 忘れずに戻す
@@ -104,6 +105,7 @@ public class FileDetail extends ControllerBase {
                     bean.setValue("request_name", "登録する");
                     searchList();
                     forward("FileDetail.jsp");
+                    
 
                 } else if ("download".equals(requestCmd)) {
                     dao.dbSelect(mainKey);
@@ -240,7 +242,7 @@ public class FileDetail extends ControllerBase {
 
         // 全ユーザーを取得
         List<UserInfoDao> allUsers = new UserInfoDao().getAllUsers();
-
+        
         // 現在のページ番号を取得（未設定時は 1）
         int pageNo = 1;
         try {
@@ -260,11 +262,48 @@ public class FileDetail extends ControllerBase {
         int toIndex = Math.min(fromIndex + pageSize, total);
         List<UserInfoDao> pageUsers = new ArrayList<>(allUsers.subList(fromIndex, toIndex));
 
+
+        // ユーザーをすべて取得 
+        String allUserName = null;
+
+         int index = 0;
+
+         for (UserInfoDao user : allUsers) {
+             String userInfoId = user.getUserInfoId();
+             String lastName = user.getLastName();
+             String firstName = user.getFirstName();
+
+             if(index == 0) {
+              	allUserName = "{";
+             } else {
+               allUserName += ",{";
+             }
+             
+             
+             allUserName +=  "id:";
+
+             allUserName += '"' + userInfoId + '"';
+             
+             allUserName += " ,name:";
+             // 2. 文字列を作成し、配列の現在の位置に格納する
+             allUserName += '"' + lastName + " " + firstName + '"';
+               
+             allUserName += "}";
+             
+             index++;
+             
+         }
+         System.out.println(allUserName);
+         
+
+
+         
         // ページング結果を WebBean に格納
         bean.setValue("user_data", pageUsers);
         bean.setValue("pageNo", String.valueOf(pageNo));
         bean.setValue("maxPageNo", String.valueOf(maxPage));
         bean.setValue("selectedIds", selectedIds);
+     
     }
 
     /**
@@ -379,7 +418,6 @@ public class FileDetail extends ControllerBase {
         
         
         String filePath = projectPathResult + "/WebContent/upload"; //保存先フォルダのパス設定
-        System.out.println(filePath);
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
@@ -399,7 +437,6 @@ public class FileDetail extends ControllerBase {
         // 完全なファイルパスの生成
         String fullPath = filePath + "/" + systemFileName;
         
-        System.out.println(fullPath);
         
         
         if (!fileUtil.outputFile(fullPath, fileData)) {
@@ -449,9 +486,9 @@ public class FileDetail extends ControllerBase {
             } else if (header.startsWith("\u00D0\u00CF\u0011\u00E0")) {
                 return "application/msword"; 
             } else if (header.startsWith("PK")) { // Word 2007以降のファイル
-             return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
+                return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
             } else if (header.startsWith("PK")) { // Excelファイルの判定
-             return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
+                return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
             }
         }
         return ""; // デフォルト
