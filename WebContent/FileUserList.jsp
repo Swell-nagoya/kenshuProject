@@ -187,16 +187,21 @@ function go_upload(action_cmd) {
 
 // 子画面で「選択」ボタン押下時の処理
 function submitSelection() {
-  const selected = [];
-  document.querySelectorAll('input[name="user_id"]:checked').forEach(cb => {
-    selected.push({
-      id: cb.value,
-      name: cb.nextElementSibling.innerText,
-      type: 'sub'
-    });
+  const merged = getMergedSelection();
+  
+  const selected = merged.map(item => {
+      const parts = item.split(':');
+      return {
+          id: parts[0],
+          name: parts[1] || '',
+          type: 'sub'
+      };
   });
-  if (selected.length) {
+
+  if (selected.length > 0) {
     window.opener.receiveSelectedUsers(selected, 'sub');
+  } else {
+    window.opener.receiveSelectedUsers([], 'sub'); 
   }
   window.close();
 }
@@ -206,6 +211,28 @@ function toggleCheckbox(div) {
   if (!cb) return;
   cb.checked = !cb.checked;
 }
+
+function getMergedSelection() {
+	  let prev = (document.getElementById('selectedIds').value || "").split(',').filter(x => x);
+	  
+	  const allCheckboxes = document.querySelectorAll('input[name="user_id"]');
+	  const currentPageIds = Array.from(allCheckboxes).map(cb => cb.value);
+	  
+	  prev = prev.filter(item => {
+	      const id = item.split(':')[0]; 
+	      return !currentPageIds.includes(id);
+	  });
+	  
+	  const currChecked = Array.from(
+	    document.querySelectorAll('input[name="user_id"]:checked')
+	  ).map(cb => {
+	      const id = cb.value;
+	      const name = cb.nextElementSibling.innerText.trim();
+	      return id + ":" + name;
+	  });
+	  
+	  return [...prev, ...currChecked];
+	}
 </script>
 </head>
 <body>
@@ -231,21 +258,13 @@ function toggleCheckbox(div) {
 	</form>
 	<script>
 	function goPage(p) {
-		  // 選択されたチェック状態を保持
-		  const prev = (document.getElementById('selectedIds').value || "")
-		    .split(',').filter(x => x);
-		  const curr = Array.from(
-		    document.querySelectorAll('input[name="user_id"]:checked')
-		  ).map(cb => cb.value);
-		  const merged = [...new Set([...prev, ...curr])];
-
-		  // 両方の hidden に反映させる（上下両方の selectedIds）
+		  const merged = getMergedSelection();
+		// 両方の hidden に反映させる
 		  const topSelected = document.querySelector('#pagerTop #selectedIds');
 		  const bottomSelected = document.querySelector('#pagerBottom #selectedIds');
 		  if (topSelected) topSelected.value = merged.join(',');
 		  if (bottomSelected) bottomSelected.value = merged.join(',');
-
-		  // フォームの送信
+		// フォームの送信
 		  const f = document.getElementById("pagerTop") || document.getElementById("pagerBottom");
 		  f.pageNo.value = p;
 		  f.submit();
