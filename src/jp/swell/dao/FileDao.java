@@ -546,7 +546,6 @@ public class FileDao implements Serializable {
         dao.setUploaderLastName(DbI.chara(map.get("uploader_last_name") != null ? map.get("uploader_last_name") : ""));
         dao.setFirstName(DbI.chara(map.get("first_name") != null ? map.get("first_name") : ""));
         dao.setLastName(DbI.chara(map.get("last_name") != null ? map.get("last_name") : ""));
-        
     }
 
     /**
@@ -684,8 +683,12 @@ public class FileDao implements Serializable {
         return files; // 取得したルームリストを返す
     }
 
+    /**
+     * データベースからファイル名を取得するメソッド
+     * @return UserMenuに返す
+     */
     public static ArrayList<FileDao> dbSelectList(FileDao myclass, LinkedHashMap<String, String> sortKey,
-            DaoPageInfo daoPageInfo) throws AtareSysException {
+        DaoPageInfo daoPageInfo) throws AtareSysException {
         ArrayList<FileDao> resultList = new ArrayList<>();
 
         // WHERE句
@@ -693,7 +696,7 @@ public class FileDao implements Serializable {
         String order = myclass.dbOrder(sortKey);
 
         int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
-       // int limit = daoPageInfo.getLineCount();
+        int limit = daoPageInfo.getLineCount();
 
         String sql = "SELECT "
                 + "files.file_id AS files___file_id, "
@@ -706,16 +709,15 @@ public class FileDao implements Serializable {
                 + "files.system_file_name AS files___system_file_name, "
                 + "files.upload_user_id AS files___upload_user_id, "
                 + "files.expiration_date AS files___expiration_date, "
-                + "COALESCE(uploader.first_name, '') AS uploader_first_name, "
-                + "COALESCE(uploader.last_name, '') AS uploader_last_name, "
+                + "coalesce(uploader.first_name, '') AS uploader_first_name, "
+                + "coalesce(uploader.last_name, '') AS uploader_last_name, "
                 + "user_info.first_name AS user_first_name, "
                 + "user_info.last_name AS user_last_name "
-                + "FROM files "
-                + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
-                + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
-                + where + order;
-         //       + " OFFSET " + offset;
-         //       + " LIMIT " + limit + " OFFSET " + offset;
+                + "from files "
+                + "join user_info on files.user_info_id = user_info.user_info_id "
+                + "join user_info as uploader on files.upload_user_id = uploader.user_info_id "
+                + where + order
+                + " limit " + limit + " offset " + offset;
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         System.out.println(sql);
@@ -729,6 +731,84 @@ public class FileDao implements Serializable {
 
         return resultList;
     }
+
+    /**
+     * データベースからファイル名を取得するメソッド
+     * (ログインユーザーがファイルをアップロードまたは送信したDBを取得）
+     * @return UserMenuに返す
+     */
+    public static ArrayList<FileDao> dbSelectList(FileDao myclass, LinkedHashMap<String, String> sortKey,
+      DaoPageInfo daoPageInfo, FileDao myclassUpload) throws AtareSysException {
+      ArrayList<FileDao> array = new ArrayList<>();
+
+      String where = myclass.dbWhere();
+      String whereUpload = myclassUpload.dbWhere();
+      int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
+      int limit = daoPageInfo.getLineCount();
+      
+      String sql = "select count(*) as count"
+        + " from files "
+        + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
+        + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
+        + "WHERE (" + where.replace("where", "") + ") OR (" + whereUpload.replace("where", "") + ") ";
+      
+      List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+
+      if (rs.size() < 1) return array;
+      
+      int len = Integer.parseInt(rs.get(0).get("count"));
+      daoPageInfo.setRecordCount(len);
+      if (len < 1) return array;
+      
+      daoPageInfo.setMaxPageNo((int) Math.ceil((double)len/(double)(daoPageInfo.getLineCount())));
+      if(daoPageInfo.getPageNo() < 1) daoPageInfo.setPageNo(1);
+      if(daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo()) daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
+      int start  =   (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
+
+
+      sql = "select "
+      		      + "files.file_id"
+      		      + ", files.user_info_id"
+      		      + ", files.file_name"
+      		      + ", files.file_path" 
+      		      + ", files.upload_date"
+      		      + ", files.file_key"
+      		      + ", files.mime_type"
+      		      + ", files.system_file_name"
+      		      + ", files.upload_user_id"
+      		      + ", files.expiration_date"
+      		      + ", COALESCE(uploader.first_name, '') AS uploader_first_name"
+              + ", COALESCE(uploader.last_name, '') AS uploader_last_name"
+              + ", user_info.first_name"
+              + ", user_info.last_name FROM files "
+              + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
+              + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
+              + "WHERE (" + where.replace("where", "") + ") OR (" + whereUpload.replace("where", "") + ") "
+              + "ORDER BY files.upload_date ASC "
+              + "LIMIT " + limit + " OFFSET " + start + ";"; // ※再計算した start を使用
+
+      rs = DbBase.dbSelect(sql);
+      int cnt = rs.size();
+      if (cnt < 1) return array;
+      
+      String loginUserId = myclass.getUploadUserId(); 
+
+      for (int i = 0; i < cnt; i++) {
+       FileDao dao = new FileDao();
+       HashMap<String, String> map = rs.get(i);
+       dao.setFileDaoForJoin(map, dao);
+       
+       if (loginUserId != null && loginUserId.equals(dao.getUserInfoId())) {
+           dao.setFileType("received");
+       } else {
+           dao.setFileType("sent");
+       }
+       
+       array.add(dao);
+   }
+
+      return array;
+  }
 
     
 

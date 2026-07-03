@@ -15,11 +15,9 @@
  */
 package jp.swell.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
@@ -177,54 +175,32 @@ public class FileList extends ControllerBase {
         FileDao sentDao = new FileDao();
         sentDao.setUploadUserId(userLoginInfo.getUserInfoId());
         sentDao.setSearchFileName(bean.value("list_search_file_name"));
+/*
         List<FileDao> sentFiles = FileDao.dbSelectList(sentDao, sortKey, daoPageInfo);
         for (FileDao file : sentFiles) {
             file.setFileType("sent");
         }
-
+*/
         // 自分宛てのファイル（受信）
         FileDao receivedDao = new FileDao();
         receivedDao.setUserInfoId(userLoginInfo.getUserInfoId());
         receivedDao.setSearchFileName(bean.value("list_search_file_name"));
+
+/*
         List<FileDao> receivedFiles = FileDao.dbSelectList(receivedDao, sortKey, daoPageInfo);
         for (FileDao file : receivedFiles) {
             file.setFileType("received");
         }
-
-        // マージしてセット
-        ArrayList<FileDao> fileList = new ArrayList<>();
-        fileList.addAll(receivedFiles);
-        fileList.addAll(sentFiles);
         
-        // 重複のデータがあれば削除
-        fileList = fileList.stream()
-          .distinct()
-          .collect(Collectors.toCollection(ArrayList::new));
-
+*/
+        List<FileDao> fileList = FileDao.dbSelectList(sentDao, sortKey, daoPageInfo, receivedDao);
+     
         
-        // 全件数から各しきい値を取得する
+
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         bean.setValue("recordCount", daoPageInfo.getRecordCount());
         bean.setValue("maxPageNo", daoPageInfo.getMaxPageNo());
-        bean.setValue("recordCount", fileList.size());
-        bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
-
-        // ページ描画に使用する分の配列に変更
-        // 配列のfromIndex番から値を取得するか
-        int fromIndex = ( daoPageInfo.getPageNo() - 1 ) * daoPageInfo.getLineCount();
-        // 配列のtoIndex番まで値を取得するか
-        int toIndex = fromIndex + daoPageInfo.getLineCount();
-        if(toIndex > fileList.size()) {
-           toIndex = fileList.size();
-        }
-        //　配列をfromIndex番からtoIndex番までの値に変更
-        if (fromIndex >= fileList.size() || fromIndex < 0) {
-        	fileList = new ArrayList<>();
-        } else {
-        	fileList = new ArrayList<>(fileList.subList(fromIndex, toIndex));
-        }
-        
         bean.setValue("list", fileList);
         
     }

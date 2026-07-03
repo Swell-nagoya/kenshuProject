@@ -186,7 +186,7 @@ public class FileDetail extends ControllerBase {
         ArrayList<FileDao> fileList = FileDao.dbSelectList(fileDao, sortKey, daoPageInfo);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
-        bean.setValue("recordCount", fileList.size()); // ファイルリストのサイズ
+        bean.setValue("recordCount", fileList.size());
         bean.setValue("maxPageNo", (fileList.size() / Integer.parseInt(bean.value("lineCount")) + 1));
 
         // ルーム情報の取得とセット
@@ -293,7 +293,6 @@ public class FileDetail extends ControllerBase {
              index++;
              
          }
-         System.out.println(allUserName);
          
 
 
