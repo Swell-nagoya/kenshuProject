@@ -1070,6 +1070,15 @@ public class UserInfoDao implements Serializable {
             throw new AtareSysException("dbUpdate number or record exception.");
         return true;
     }
+    
+    public boolean dbUpdateAdmin(String userInfoId) throws AtareSysException {
+    		String sql = "update user_info set "
+    				+ "admin = " + DbO.chara(getAdmin())
+    				+ " where user_info_id = " + DbS.chara(userInfoId);
+    		int ret = DbBase.dbExec(sql);
+    		if (ret != 1) throw new AtareSysException("dbUpdate number or record exception.");
+    		return true;
+    }
 
     /**
      * user_info ユーザ情報テーブルからデータを削除する

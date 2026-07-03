@@ -28,6 +28,7 @@ import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.UserInfoDao;
+import jp.swell.user.UserLoginInfo;
 
 /**
  * ：user_info ユーザ情報テーブルデータをLIST表示するためのコントローラクラス
@@ -100,6 +101,11 @@ public class ViewUserList extends ControllerBase
                 redirect("MenuAdmin.do");
                 return;
             }
+            else if ("bulk_update".equals(bean.value("action_cmd")))
+            {
+                forward("UserInfoDetail_4.jsp");
+                return;
+            }
             else
             {
                 searchList();
@@ -132,6 +138,8 @@ public class ViewUserList extends ControllerBase
         bean.setValue("sort_key", "full_name_kana"); /* 初回のソートキーを入れる */
         bean.setValue("sort_order", "asc");
         bean.setValue("lineCount", SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "ViewUserList", "lineCount", "100"));
+        UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
+        bean.setValue("admin", loginInfo.getAdmin());
     }
 
     /**

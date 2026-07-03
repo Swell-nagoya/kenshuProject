@@ -227,6 +227,47 @@ footer {
 
       navigator.clipboard.writeText(str)
     }
+    function showSortIcon() {
+	    	const sortKeyOldValue = document.getElementById("sort_key_old").value;
+	    	const sortOrderValue = document.getElementById("sort_order").value;
+	    	if (sortKeyOldValue && sortOrderValue) {
+	    		const target = document.getElementById(sortKeyOldValue);
+	    		if (target) {
+	    			const icon = (sortOrderValue === 'asc') ? '▲' : '▼';
+	    			target.innerHTML += icon;
+	    		}
+	    	}
+    }
+    function handleCheckboxChange(event) {
+      const selectedUsers = document.getElementById('selected_users');
+      let usersArray = selectedUsers.value ? JSON.parse(selectedUsers.value) : [];
+      const checkbox = event.target;
+      const targetValue = checkbox.value;
+      const nameTd = checkbox.closest('td').nextElementSibling;
+      const targetName = nameTd.innerText;
+
+      if (checkbox.checked) {
+        if (!usersArray.some(user => user[0] === targetValue)) usersArray.push([targetValue, targetName]);
+      }
+      else {
+        usersArray = usersArray.filter(user => user[0] !== targetValue);
+      }
+
+      selectedUsers.value = JSON.stringify(usersArray);
+    }
+    function restoreCheckboxState() {
+      const selectedUsers = document.getElementById('selected_users');
+      let usersArray = selectedUsers.value ? JSON.parse(selectedUsers.value) : [];
+      const checkboxes = document.querySelectorAll('input[name="checked_users"]');
+      checkboxes.forEach(checkbox => {
+        if (usersArray.some(user => user[0] === checkbox.value)) checkbox.checked = true;
+      })
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      showSortIcon();
+      restoreCheckboxState();
+    });
   </script>
 </head>
 <body>
@@ -251,6 +292,8 @@ footer {
       <input type="hidden" name="sort_order" id="sort_order"value="<%=webBean.txt("sort_order")%>" />
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" /> 
       <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
+      <input type="hidden" name="admin" id="admin" value="<%=webBean.txt("admin") %>" />
+      <input type="hidden" name="selected_users" id="selected_users" value="<%=webBean.txt("selected_users") %>" />
       <div class="left">
         <div class="messages">
           <%=webBean.dispMessages()%>
@@ -322,29 +365,41 @@ footer {
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 25%">
+            <td class="list_label" style="width: 4%"></td>
+            <td class="list_label" style="width: 24%">
             <a href="javaScript:go_sort_request('last_name_kana')">氏名</a></td>
-            <td class="list_label" style="width: 25%">
+            <td class="list_label" style="width: 24%">
             <a href="javaScript:go_sort_request('last_name_kana')" id="last_name_kana">氏名よみ（かな）</a></td>
-            <td class="list_label" style="width: 25%">
+            <td class="list_label" style="width: 24%">
             <a href="javaScript:go_sort_request('memail')" id="memail">メールアドレス</a></td>
-            <td class="list_label" style="width: 25%"></td>
+            <td class="list_label" style="width: 24%">
+            <% if (webBean.checkValue("admin", "1")) { %>
+             <input type="button" id="update_permissions" value="一括権限更新" onclick="go_submit('bulk_update')"/>
+            <% } %>
+            </td>
           </tr>
           <%
           for (Object item : webBean.arrayList("list")) {
               UserInfoDao dao = (UserInfoDao) item;
           %>
           <tr class="list_tr">
+            <td class="list_checkbox">
+              <% if (webBean.checkValue("admin", "1")) { %>
+              <input type="checkbox" name="checked_users" value="<%=dao.getUserInfoId()%>" onchange="handleCheckboxChange(event)">
+              <% } %>
+            </td>
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%> <%=WebUtil.htmlEscape(dao.getMiddleName())%> <%=WebUtil.htmlEscape(dao.getFirstName())%>
             </td>
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%> <%=WebUtil.htmlEscape(dao.getMiddleNameKana())%> <%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
             </td>
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
             <td class="list_btn">
+            <% if (webBean.checkValue("admin", "1")) { %>
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
               <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-              <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
               <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+            <% } %>
+              <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
             </td>
           </tr>
           <%
@@ -357,17 +412,5 @@ footer {
       </div>
     </form>
   </div>
-  <script>
- 	// ソート順を表示する
-	const sortKeyOld = '<%=webBean.txt("sort_key_old")%>'
-	const sortOrder = '<%=webBean.txt("sort_order")%>'
-	if (sortKeyOld && sortOrder) {
-		const target = document.getElementById(sortKeyOld)
-		if (target) {
-			const icon = (sortOrder === 'asc') ? '▲' : '▼'
-			target.innerHTML += icon
-		}
-	}
-  </script>
 </body>
 </html>

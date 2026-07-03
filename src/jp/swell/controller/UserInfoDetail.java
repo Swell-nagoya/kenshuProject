@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.GetNumber;
@@ -286,6 +289,10 @@ public class UserInfoDetail extends ControllerBase
                   }
               }
               
+          }
+          else if ("UserInfoDetail_4".equals(bean.value("form_name")))
+          {
+              dbBulkUpdate();
           }
           else 
           {
@@ -716,6 +723,32 @@ public class UserInfoDetail extends ControllerBase
         }catch (Exception e) {
           forward("ViewUserList.do");
         }
+    }
+    
+    public void dbBulkUpdate() throws AtareSysException
+    {
+    		WebBean bean = getWebBean();
+    		UserInfoDao dao = new UserInfoDao();
+    		dao.setAdmin(bean.value("target_role"));
+    		ObjectMapper mapper = new ObjectMapper();
+		try {
+			String [][] usersArray = mapper.readValue(bean.value("selected_users"), String[][].class);
+			DbBase.dbBeginTran();
+			for (String[] user : usersArray) {
+				String userInfoId = user[0];
+				dao.dbUpdateAdmin(userInfoId);
+			}
+			DbBase.dbCommitTran();
+			forward("ViewUserList.do");
+		} catch (JsonMappingException e) {
+			bean.setError("error", "JSONデータの処理中にエラーが発生しました。");
+			forward("ErrorPage.jsp");
+		} catch (Exception e) {
+			DbBase.dbRollbackTran();
+			bean.setError("transaction_error", "データベースの更新中にエラーが発生したためロールバックしました。");
+			forward("UserInfoDetail_4.jsp");
+		}
+
     }
     
     /**
