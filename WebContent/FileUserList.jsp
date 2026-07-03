@@ -193,12 +193,12 @@ function go_upload(action_cmd) {
 
 // 子画面で「選択」ボタン押下時の処理
 function submitSelection() {
-  const selected = [];
+  let selected = [];
 
 
   const topSelected = document.querySelector('#pagerTop #selectedIds');
   <%
-  String allUserName = webBean.value("allUserName"); 
+  String allUserName = webBean.value("allUserName");
   
   List<Map<String, String>> userList = new ArrayList<Map<String, String>>();
   
@@ -219,29 +219,34 @@ function submitSelection() {
   request.setAttribute("userList", userList);
 %>
 if (topSelected) {
-    const topSelecterValue = topSelected.value
+    const topSelecterValue = topSelected.value;
     const topSelecterArray = topSelecterValue ? topSelecterValue.split(",") : [];
     
     const javaUserList = [
-      <% for(Map<String, String> user : userList) { %>
-        { id: "<%= user.get("id") %>", name: "<%= user.get("name") %>" },
-      <% } %>
+    <% 
+      boolean isFirst = true; // 初回判定フラグ
+      for(Map<String, String> user : userList) { 
+        if (!isFirst) { 
+          out.print(",");
+        }
+        isFirst = false;
+     %>
+        { id: "<%= user.get("id") %>", name: "<%= user.get("name") %>" }
+    <% } %>
     ];
 
     for(let i = 0; i < topSelecterArray.length; i++) {
-        console.log(topSelecterArray[i]);
         
         let userName = "";
         const currentId = topSelecterArray[i];
 
-        //
         for (let j = 0; j < javaUserList.length; j++) {
             if (javaUserList[j].id === currentId) {
-                userName = javaUserList[j].name;;
+                userName = javaUserList[j].name;
                 break;
             }
         }
-
+        
         selected.push({
             id: currentId,
             name: userName,
@@ -249,13 +254,19 @@ if (topSelected) {
         });
     }
   }
-  
+
+
   document.querySelectorAll('input[name="user_id"]:checked').forEach(cb => {
-    selected.push({
-      id: cb.value,
-      name: cb.nextElementSibling.innerText,
-      type: 'sub'
-    });
+
+	  const existingItem = selected.find(item => item.id === cb.value);
+	  // 重複分以外のチェック項目を追加
+	  if (!existingItem) {
+	    selected.push({
+	      id: cb.value,
+	      name: cb.nextElementSibling.innerText,
+	      type: 'sub'
+	    });
+	  }
   });
   if (selected.length) {
     window.opener.receiveSelectedUsers(selected, 'sub');
