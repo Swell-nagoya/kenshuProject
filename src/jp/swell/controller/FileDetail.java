@@ -2,6 +2,7 @@ package jp.swell.controller;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -418,6 +419,33 @@ public class FileDetail extends ControllerBase {
      * @return
      */
     private String getMimeTypeFromBytes(byte[] fileData) {
+    	
+    	    String fileName = new String(fileData, StandardCharsets.UTF_8);
+		String fe = "";
+		
+		int i = fileName.lastIndexOf('.');
+	    if (i > 0) {
+	      fe = fileName.substring(i + 1);
+	    }
+	
+	    switch (fe) {
+	    case "txt" :
+	    		return "text/plain";
+	    case "xls" :
+	    		return "application/vnd.ms-excel";
+	    case "xlsx" :
+	    		return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	    case "doc" :
+	    		return "application/msword";
+	    case "docx" :
+	    		return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	    case "pdf" :
+	    		return "application/pdf";
+	    case "png" :
+	    		return "image/png";
+	    }
+    	
+    	
         if (fileData.length >= 4) {
             String header = new String(fileData, 0, 4);
 
@@ -431,8 +459,9 @@ public class FileDetail extends ControllerBase {
                 return "application/vnd.ms-excel"; // .xls
             }
             
-        }
-        return ""; // デフォルト
+        }   
+		return ""; 
+        
     }
 
     /**
@@ -480,6 +509,7 @@ public class FileDetail extends ControllerBase {
             FileDao fileData = dao; // ここは前の行で dao を設定したので、そのまま使用
 
             String fileOwnerId = fileData.getUploadUserId(); // ファイルの所有者ID
+   
 
             // 所有者が現在のユーザーと一致するか確認
             if (!userLoginInfo.getUserInfoId().equals(fileOwnerId)) {
@@ -512,7 +542,22 @@ public class FileDetail extends ControllerBase {
         String mimeType = dao.getMimeType(); // MIMEタイプを取得
         String filePath = dao.getFilePath();// フルファイルパスを取得
 
+        WebBean bean = getWebBean();
+        UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+        
         try {
+        	
+        	String fileOwnerId = dao.getUploadUserId();
+        	String fileRecipientName = dao.getSendUserName();
+        	
+        	
+        	// 所有者が現在のユーザーと一致するか確認
+            if (!userLoginInfo.getUserInfoId().equals(fileOwnerId) || !userLoginInfo.getFullName().equals(fileRecipientName) ) {
+                bean.setError("このファイルをダウンロードする権限がありません。");
+                forward("FileDetail_3.jsp");
+                return;
+            }
+        	
             // 期限チェック
             if (isExpired(dao.getExpirationDate())) {
                 // 期限が過ぎている場合の処理

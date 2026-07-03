@@ -636,6 +636,8 @@ public class FileDao implements Serializable {
      * @throws AtareSysException エラーs
      */
     public boolean dbDelete(String pFileId) throws AtareSysException {
+    	
+    	
         // user_filesテーブルから関連するレコードを削除
         String sqlDeleteUserFiles = "DELETE FROM user_files WHERE file_id = " + DbS.chara(pFileId);
         DbBase.dbExec(sqlDeleteUserFiles);
