@@ -182,11 +182,13 @@ public class FileList extends ControllerBase {
             file.setFileType("received");
         }
 
+        
         // マージしてセット
         ArrayList<FileDao> fileList = new ArrayList<>();
         fileList.addAll(receivedFiles);
         fileList.addAll(sentFiles);
 
+        
         
         bean.setValue("list", fileList);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
