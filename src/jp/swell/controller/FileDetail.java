@@ -548,11 +548,11 @@ public class FileDetail extends ControllerBase {
         try {
         	
         	String fileOwnerId = dao.getUploadUserId();
-        	String fileRecipientName = dao.getSendUserName();
+        	String fileRecipientName = dao.getUserInfoId();
         	
         	
         	// 所有者が現在のユーザーと一致するか確認
-            if (!userLoginInfo.getUserInfoId().equals(fileOwnerId) || !userLoginInfo.getFullName().equals(fileRecipientName) ) {
+            if (!userLoginInfo.getUserInfoId().equals(fileOwnerId) && !userLoginInfo.getUserInfoId().equals(fileRecipientName) ) {
                 bean.setError("このファイルをダウンロードする権限がありません。");
                 forward("FileDetail_3.jsp");
                 return;
