@@ -175,24 +175,24 @@ public class FileList extends ControllerBase {
         FileDao sentDao = new FileDao();
         sentDao.setUploadUserId(userLoginInfo.getUserInfoId());
         sentDao.setSearchFileName(bean.value("list_search_file_name"));
-/*
+        
         List<FileDao> sentFiles = FileDao.dbSelectList(sentDao, sortKey, daoPageInfo);
         for (FileDao file : sentFiles) {
             file.setFileType("sent");
         }
-*/
+
         // 自分宛てのファイル（受信）
         FileDao receivedDao = new FileDao();
         receivedDao.setUserInfoId(userLoginInfo.getUserInfoId());
         receivedDao.setSearchFileName(bean.value("list_search_file_name"));
 
-/*
+
         List<FileDao> receivedFiles = FileDao.dbSelectList(receivedDao, sortKey, daoPageInfo);
         for (FileDao file : receivedFiles) {
             file.setFileType("received");
         }
         
-*/
+
         List<FileDao> fileList = FileDao.dbSelectList(sentDao, sortKey, daoPageInfo, receivedDao);
      
         

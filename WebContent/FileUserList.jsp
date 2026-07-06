@@ -201,7 +201,7 @@ function submitSelection() {
   String allUserName = webBean.value("allUserName");
   
   List<Map<String, String>> userList = new ArrayList<Map<String, String>>();
-  
+
   if (allUserName != null && !allUserName.isEmpty()) {
       // id と name のペアを抽出
       Pattern pattern = Pattern.compile("id:\"([^\"]+)\"\\s*,\\s*name:\"([^\"]+)\"");
@@ -236,6 +236,7 @@ if (topSelected) {
     ];
 
     for(let i = 0; i < topSelecterArray.length; i++) {
+
         
         let userName = "";
         const currentId = topSelecterArray[i];
@@ -259,6 +260,7 @@ if (topSelected) {
   document.querySelectorAll('input[name="user_id"]:checked').forEach(cb => {
 
 	  const existingItem = selected.find(item => item.id === cb.value);
+
 	  // 重複分以外のチェック項目を追加
 	  if (!existingItem) {
 	    selected.push({

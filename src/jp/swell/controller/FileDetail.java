@@ -293,7 +293,8 @@ public class FileDetail extends ControllerBase {
              index++;
              
          }
-         
+
+        bean.setValue("allUserName", allUserName);
 
 
          
@@ -448,18 +449,20 @@ public class FileDetail extends ControllerBase {
         java.util.Date expirationDate = calendar.getTime(); // Date型を取得
 
         // 各送信先ユーザーに対してデータベースにファイル情報を登録
-        for (String userInfoId : destinationUserInfoIds) { // 送信先ユーザーIDを使用
-            String fileId = UUID.randomUUID().toString().substring(0, 13);
-            FileDao fileDao = new FileDao();
+       for (String userInfoId : destinationUserInfoIds) { // 送信先ユーザーIDを使用
+        String fileId = UUID.randomUUID().toString().substring(0, 13);
+        FileDao fileDao = new FileDao();
 
             // expirationDateをString型に変換
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String expirationDateString = sdf.format(expirationDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String expirationDateString = sdf.format(expirationDate);
 
-            fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
-                    expirationDateString);
-            fileDaos.add(fileDao);
-        }
+        fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
+        expirationDateString);
+        fileDaos.add(fileDao);
+      }
+
+
         return fileDaos;
     }
 
@@ -575,6 +578,12 @@ public class FileDetail extends ControllerBase {
         String baseFileName = dao.getFileName(); // 基本ファイル名を取得
         String mimeType = dao.getMimeType(); // MIMEタイプを取得
         String filePath = dao.getFilePath();// フルファイルパスを取得
+        WebBean bean = getWebBean();
+        bean.rtrimAllItem();
+        // 現在のユーザー情報を取得
+        UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+        // 送信先ユーザーIDを取得
+        String destinationUserInfoId = dao.getUserInfoId();
 
         try {
             // 期限チェック
@@ -583,11 +592,27 @@ public class FileDetail extends ControllerBase {
                 this.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, "このファイルのダウンロードは期限が切れています。");
                 return; // 処理を中止
             }
+            
+            // ファイル情報を取得
+            FileDao fileData = dao; // ここは前の行で dao を設定したので、そのまま使用
+
+            String fileOwnerId = fileData.getUploadUserId(); // ファイルの所有者ID
+            
+            // 所有者が「現在のユーザー」または「送信先ユーザー」と一致するか確認
+            if (
+                (!userLoginInfo.getUserInfoId().equals(fileOwnerId)) &&
+                (!destinationUserInfoId.equals(fileOwnerId))
+               ) {
+                bean.setError("このファイルをダウンロードする権限がありません。");
+                forward("FileDetail_3.jsp");
+                return;
+            }
+            
+
 
             // ユーザーエージェントを取得
             String ua = this.getRequest().getHeader("user-agent");
             String attachmentFileName = ""; // 添付ファイル名を初期化
-
             // ブラウザによってファイル名の設定を分岐
             if (ua.indexOf("MSIE") == -1) {
                 // Firefox, Opera 11など
