@@ -179,6 +179,7 @@ function go_submit(action_cmd, request_cmd) {
     document.getElementById('main_form').action='';
     document.getElementById('action_cmd').value=action_cmd;
     document.getElementById('request_cmd').value=request_cmd;
+
     document.getElementById('main_form').submit();
 }
 function go_list(action_cmd , request_cmd) {
@@ -209,6 +210,7 @@ function go_list(action_cmd , request_cmd) {
        <input type="hidden" name="form_name" id="form_name" value="FileDetail_2" />
        <input type="hidden" name="action_cmd" id="action_cmd" value="" />
        <input type="hidden" name="input_name" id="input_name" value="<%=webBean.txt("input_name")%>" />
+       <input type="hidden" name="file_value" id="file_value" value="<%=webBean.txt("file_value")%>" />
        <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" />
        <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
        <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />

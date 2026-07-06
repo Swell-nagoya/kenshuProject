@@ -202,12 +202,25 @@ const ctx = '<%=request.getContextPath()%>';
 function go_submit(action_cmd) {
   document.getElementById('main_form').action = 'FileDetail.do';
   document.getElementById('action_cmd').value = action_cmd;
+
+
+
   document.getElementById('main_form').submit();
 }
 
 function go_upload(action_cmd) {
   document.getElementById('main_form').action = '';
   document.getElementById('action_cmd').value = action_cmd;
+
+  // file inputのvalueを取得
+  var fileInput = document.getElementById('file');
+  if (fileInput.files.length > 0) {
+	  
+      var fullPath = fileInput.files[0].name;
+      document.getElementById('file_value').value = fullPath;
+  }
+
+  
   document.getElementById('main_form').submit();
 }
 
@@ -290,6 +303,8 @@ function receiveSelectedUsers(users, type) {
 			<input type="hidden" name="action_cmd" id="action_cmd" value="" />
 			<input type="hidden" name="list" id="list"
 				value="<%=webBean.txt("list")%>" />
+			<input type="hidden" name="file_value" id="file_value"
+				value="<%=webBean.txt("file_value")%>" />
 			<input type="hidden" name="name" id="name"
 				value="<%=webBean.txt("name")%>" />
 			<input type="hidden" name="destination_user_info_id"

@@ -64,7 +64,6 @@ public class FileDetail extends ControllerBase {
         String requestCmd = bean.value("request_cmd");
 
         // 共通取得
-        String inputName = bean.value("input_name");
         String mainKey = bean.value("main_key");
         String fileName = bean.value("file_name");
         FileDao dao = setWeb2Dao2InputInfo();
@@ -74,12 +73,14 @@ public class FileDetail extends ControllerBase {
             if ("upload".equals(actionCmd)) {
                 try {
                     setWeb2Dao2InputInfo(getRequest());
-                    
+
                     
                     bean.setValue("request_name", "登録する");
                     bean.setMessage("この内容で登録します。よろしいですか？");
-                    bean.setValue("input_name", inputName);
+                    
+
                     forward("FileDetail_2.jsp");
+                    
                 } catch (IOException | ServletException e) {
                     throw new AtareSysException(e);
                 }
@@ -397,9 +398,13 @@ public class FileDetail extends ControllerBase {
      */
     private ArrayList<FileDao> FileUpload(HttpServletRequest request, String pUserInfoId)
             throws AtareSysException, IOException, ServletException {
+    	
+    	
         WebBean bean = getWebBean();
         ArrayList<FileDao> fileDaos = new ArrayList<>();
 
+        
+        
         // 送信元ユーザーIDを取得
         String sourceUserInfoIdsString = bean.value("user_info_id"); // 送信元ユーザーIDを取得
         String[] sourceUserInfoIds = sourceUserInfoIdsString.split(",");
@@ -423,11 +428,20 @@ public class FileDetail extends ControllerBase {
         // ファイルデータを取得
         FileUtil fileUtil = new FileUtil();
         byte[] fileData = (byte[]) bean.object("file");
-        String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
-        String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
-        String fileName = bean.value("input_name") + fileExtension; // ファイル名を取得
-        String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8); //system_file_id生成
 
+
+        String file_value = bean.value("file_value");
+        String fileExtension = file_value.replaceAll("^.*\\.", "");
+        
+        //String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
+        //String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
+
+        String mimeType = getExtensionFromFileMimeType(fileExtension); //ファイルデータからmimetypeを取得
+        		
+        String fileName = bean.value("input_name") + "." + fileExtension; // ファイル名を取得
+        String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8); //system_file_id生成
+        
+        
         // 拡張子を一度だけ追加
         if (fileExtension != null && !fileExtension.isEmpty()) {
             systemFileName += fileExtension;
@@ -453,7 +467,7 @@ public class FileDetail extends ControllerBase {
         String fileId = UUID.randomUUID().toString().substring(0, 13);
         FileDao fileDao = new FileDao();
 
-            // expirationDateをString型に変換
+        // expirationDateをString型に変換
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String expirationDateString = sdf.format(expirationDate);
 
@@ -461,7 +475,6 @@ public class FileDetail extends ControllerBase {
         expirationDateString);
         fileDaos.add(fileDao);
       }
-
 
         return fileDaos;
     }
@@ -471,10 +484,12 @@ public class FileDetail extends ControllerBase {
      * @param fileData
      * @return
      */
+    /*
     private String getMimeTypeFromBytes(byte[] fileData) {
         if (fileData.length >= 8) {
          String header = new String(fileData, 0, 8, java.nio.charset.StandardCharsets.ISO_8859_1);
-
+         
+         
             if (header.startsWith("\u00D0\u00CF\u0011")) { // Wordファイルの判定
                 return "application/msword"; // .doc
             } else if (header.startsWith("\u00D0\u00CF\u0011")) {
@@ -495,12 +510,14 @@ public class FileDetail extends ControllerBase {
         }
         return ""; // デフォルト
     }
+    */
 
     /**
      * MIMEタイプから拡張子を取得するメソッド
      * @param mimeType
      * @return
      */
+    /*
     private String getExtensionFromMimeType(String mimeType) {
         switch (mimeType) {
         case "application/msword":
@@ -523,6 +540,36 @@ public class FileDetail extends ControllerBase {
             return ""; // デフォルトは空文字
         }
     }
+    */
+
+    private String getExtensionFromFileMimeType(String fileExtension) {
+
+        switch (fileExtension) {
+        case "doc":
+            return "application/msword";
+        case "docx":
+         return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        case "xls":
+         return "application/vnd.ms-excel";
+        case "xlsx":
+            return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        case "pptx":
+            return"application/vnd.openxmlformats-officedocument.presentationml.presentation";
+        case "pdf":
+            return "application/pdf";
+        case "png":
+            return "image/png";
+        case "jpg":
+            return "image/jpeg";
+        case "jpeg":
+            return "image/jpeg";
+        case "txt":
+            return "text/plain"; 
+        default:
+             return "application/octet-stream"; // デフォルトは空文字
+        }
+    }
+    
 
     /**
      * データベースから指定されたレコードを削除するメソッド

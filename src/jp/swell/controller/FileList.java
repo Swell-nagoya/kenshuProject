@@ -173,6 +173,7 @@ public class FileList extends ControllerBase {
 
         // 自分がアップロードしたファイル（送信）
         FileDao sentDao = new FileDao();
+        System.out.println("userLoginInfo:" + userLoginInfo);
         sentDao.setUploadUserId(userLoginInfo.getUserInfoId());
         sentDao.setSearchFileName(bean.value("list_search_file_name"));
         
@@ -188,6 +189,7 @@ public class FileList extends ControllerBase {
 
 
         List<FileDao> receivedFiles = FileDao.dbSelectList(receivedDao, sortKey, daoPageInfo);
+        System.out.println("receivedFiles:" + receivedFiles);
         for (FileDao file : receivedFiles) {
             file.setFileType("received");
         }
