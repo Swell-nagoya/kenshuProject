@@ -798,10 +798,13 @@ public class FileDao implements Serializable {
        HashMap<String, String> map = rs.get(i);
        dao.setFileDaoForJoin(map, dao);
        
+       
        if (loginUserId != null && loginUserId.equals(dao.getUserInfoId())) {
            dao.setFileType("received");
        } else {
            dao.setFileType("sent");
+           
+           
        }
        
        array.add(dao);
