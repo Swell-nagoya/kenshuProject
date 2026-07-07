@@ -42,3 +42,5 @@ jp.patasys.common.AtareSysException: ERROR [ErrCd=データベースから読み
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
+07/07/26 11:54:24 INFO jp.patasys.common.log.LogManager [info] <jp.patasys.common.db.GetNumber> - 
+ナンバーの日付を変更しました。 before=20260706 now=20260707

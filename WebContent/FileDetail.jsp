@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.Map"%>
 <%@ page import="jp.patasys.common.http.WebBean"%>
 <%@ page import="jp.swell.dao.UserInfoDao"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
@@ -13,28 +13,23 @@
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="java.time.LocalTime"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
-<jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean"
-	scope="request" />
+<jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="keywords" content="">
-		<meta name="description" content="">
-			<meta charset="UTF-8">
-				<link type="text/css" href="jquery-ui/jquery-ui.css"
-					rel="stylesheet" />
-				<link rel="shortcut icon" href="images/favicon.ico"
-					type="image/vnd.microsoft.icon" />
-				<link rel="icon" href="images/favicon.ico"
-					type="image/vnd.microsoft.icon" />
-				<script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
-				<script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
-				<script type="text/javascript"
-					src="jquery.watermark/jquery.watermark.js"></script>
-				<script type="text/javascript" src="js/common.js"></script>
-				<script type="text/javascript" src="js/flatpickr.min.js"></script>
-				<title>アップロード画面</title>
-				<style>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta charset="UTF-8">
+<link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
+<link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
+<link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
+<script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
+<script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
+<script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/flatpickr.min.js"></script>
+<title>アップロード画面</title>
+<style>
 body {
 	font-family: 'Arial', sans-serif;
 	background-color: #f9f9f9;
@@ -58,6 +53,10 @@ h1 {
 	color: white; /* リンクの文字色を白に */
 	text-decoration: none; /* 下線を削除 */
 	font-weight: normal;
+}
+
+.text-center {
+  text-align: center;
 }
 
 .container {
@@ -176,6 +175,14 @@ td, th {
 	font-weight: 600;
 }
 
+.errors {
+  color: #FF0000;
+  font-weight: bold;
+}
+.errors:last-child {
+   margin-bottom: 0;
+}
+
 span {
 	color: #f00;
 	font-size: 16px;
@@ -191,7 +198,6 @@ input.error {
 	background-color: #FFCCCC;
 	border: 1px solid #FF0000;
 }
-
 label.error {
 	color: #FF0000;
 }
@@ -287,6 +293,7 @@ function receiveSelectedUsers(users, type) {
 </script>
 </head>
 <body>
+
 	<div class="container">
 		<div class="new-btn">
 			<input type="button" value="　戻る　" onclick="go_submit('return')" />
@@ -304,27 +311,48 @@ function receiveSelectedUsers(users, type) {
 			<input type="hidden" name="list" id="list"
 				value="<%=webBean.txt("list")%>" />
 			<input type="hidden" name="file_value" id="file_value"
-				value="<%=webBean.txt("file_value")%>" />
+				value="" />
 			<input type="hidden" name="name" id="name"
 				value="<%=webBean.txt("name")%>" />
 			<input type="hidden" name="destination_user_info_id"
 				id="destination_user_info_id">
 
+            <%
+              Map<String, String> itemErrors = webBean.getItemErrors();
+            %>   
 				<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
-				<div class="errors"><%=webBean.dispErrorMessages()%></div> <!-- ファイルアップロードフォーム -->
+				<div class="errors text-center"><%=webBean.dispErrorMessages()%></div> <!-- ファイルアップロードフォーム -->
 				<div class="left">
 					<table class="file__form--name">
 						<tr>
 							<td class="style_head3 style_head_size" style="width: 40%">ファイル名</td>
 							<td class="input-text" style="width: 60%"><input type="text"
 								name="input_name" id="input_name"
-								value="<%=webBean.txt("file_name")%>" class="ime_disabled"
-								placeholder="入力" /></td>
+								value="<%=webBean.txt("input_name")%>" class="ime_disabled"
+								placeholder="入力" />
+                                 <%
+                                  if (itemErrors.containsKey("input_name_empty")) { 
+                                 %>
+            					 <div class="field-error errors"><%=itemErrors.get("input_name_empty")%></div>
+                                 <%
+                                  }
+                                 %>
+                            </td>
 						</tr>
 						<tr>
 							<td class="style_head3 style_head_size" style="width: 40%">ファイルリンク</td>
 							<td class="input-text" style="width: 60%"><input type="file"
-								name="file" id="file" class="ime_disabled" /></td>
+								name="file" id="file" class="ime_disabled" />
+								
+								
+                                 <%
+                                  if (itemErrors.containsKey("file_value_empty")) { 
+                                 %>
+            					 <div class="field-error errors"><%=itemErrors.get("file_value_empty")%></div>
+                                 <%
+                                  }
+                                 %>
+								</td>
 						</tr>
 						<!-- 送信元ユーザー選択 -->
 						<tr>
@@ -354,6 +382,7 @@ function receiveSelectedUsers(users, type) {
 						</tr>
 					</table>
 				</div>
+            <div class="field-error errors"></div>
 				<div class="button">
 					<input type="button" onclick="go_upload('upload')" value="登録" />
 				</div>

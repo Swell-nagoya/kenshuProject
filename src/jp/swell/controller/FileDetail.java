@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -66,23 +67,28 @@ public class FileDetail extends ControllerBase {
         // 共通取得
         String mainKey = bean.value("main_key");
         String fileName = bean.value("file_name");
-        //FileDao dao = setWeb2Dao2InputInfo();
-        FileDao dao = new FileDao();
+        FileDao dao = setWeb2Dao2InputInfo();
 
         if ("FileDetail".equals(form)) {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
+             
             	
+            	  if(inputCheck(dao)) {
+            	
+            	    dao.setUserInfoId(bean.value("user_info_id"));
+                 bean.setValue("input_info", Sup.serialize(dao));
 
-                    dao.setUserInfoId(bean.value("user_info_id"));
-                    bean.setValue("input_info", Sup.serialize(dao));
-             
-             
-                    bean.setValue("request_name", "登録する");
-                    bean.setMessage("この内容で登録します。よろしいですか？");
-                    
-
-                    forward("FileDetail_2.jsp");
+                 bean.setValue("request_name", "登録する");
+                 bean.setMessage("この内容で登録します。よろしいですか？");
+                 forward("FileDetail_2.jsp");
+            	}
+             else 
+             {
+                 bean.setError("入力内容に誤りがあります");
+                 forward("FileDetail.jsp");
+             }
+                   
 
 
              // ② sub ボタン押下 → サブ画面（ユーザー選択）へ（送信先のみ）
@@ -129,9 +135,9 @@ public class FileDetail extends ControllerBase {
             if ("go_next".equals(actionCmd)) {
                 if ("insEnter".equals(requestCmd)) {
                    try {
-                       setWeb2Dao2InputInfo(getRequest());
+                   	  dbEdit(getRequest());
                    } catch (IOException | ServletException e) {
-                       throw new AtareSysException(e);
+                      throw new AtareSysException(e);
                    }
                     searchList();
                     redirect("FileList.do");
@@ -361,10 +367,15 @@ public class FileDetail extends ControllerBase {
         bean.setValue("sort_order", sort_key.get(key));
         return sort_key;
     }
-/*
-    private UserInfoDao setWeb2Dao2InputInfo() throws AtareSysException {
+    /**
+     * 画面の項目をDAOクラスに格納しそれをシリアライズして、input_infoフィールドに格納する。.
+     *
+     * @return dao 
+     * @throws AtareSysException フレームワーク共通例外
+     */
+    private FileDao setWeb2Dao2InputInfo() throws AtareSysException {
      WebBean bean = getWebBean();
-     UserInfoDao dao = new UserInfoDao();
+     FileDao dao = new FileDao();
      dao.setUserInfoId(bean.value("user_info_id"));
 
 
@@ -372,19 +383,18 @@ public class FileDetail extends ControllerBase {
      bean.setValue("dao", dao);
      return dao;
     }
-*/
     /**
-     * 画面の項目をDAOクラスに格納しそれをシリアライズして、input_infoフィールドに格納する。.
+     * ファイルアップロード
      *
-     * @return なし
+     * @return dao
      * @throws ServletException 
      * @throws IOException 
      * @throws AtareSysException フレームワーク共通例外
      */
-    private UserInfoDao setWeb2Dao2InputInfo(HttpServletRequest request)
+    private FileDao dbEdit(HttpServletRequest request)
             throws AtareSysException, IOException, ServletException {
         WebBean bean = getWebBean();
-        UserInfoDao dao = new UserInfoDao();
+        FileDao dao = new FileDao();
 
         FileUpload(request, dao.getUserInfoId());
 
@@ -586,8 +596,7 @@ public class FileDetail extends ControllerBase {
     public void dbDeletef() throws AtareSysException {
         WebBean bean = getWebBean();
         bean.rtrimAllItem();
-       // FileDao dao = setWeb2Dao2InputInfo();
-        FileDao dao = new FileDao();
+        FileDao dao = setWeb2Dao2InputInfo();
 
         String mainKey = bean.value("main_key"); // fileIdの取得
         UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo(); // 現在のユーザー情報を取得
@@ -745,4 +754,60 @@ public class FileDetail extends ControllerBase {
             return false; // 解析に失敗した場合、期限切れとしない
         }
     }
+    
+
+    private boolean inputCheck(FileDao pFileDao) throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        HashMap<String, String> errors = bean.getItemErrors();
+
+        String inputName = bean.value("input_name").trim();
+        System.out.println("fileValue:" + inputName);
+        if (inputName.length() == 0) {
+          errors.put("input_name_empty", "ファイル名を入力してください。");
+        }
+        String fileValue = bean.value("file_value").trim();
+        
+        System.out.println("fileValue:" + fileValue);
+        if (fileValue.length() == 0) {
+          errors.put("file_value_empty", "ファイルリンクを入力してください。");
+        }
+        /*
+        String roomName = bean.value("room_name").trim();
+        String beforeName = bean.value("before_name").trim(); // ← hidden から来る
+        // 部屋名の入力が空の時.
+        if (roomName.length() == 0) {
+            errors.put("room_name_empty", "部屋名を入力してください。");
+        }
+        // 以前と同一の名前で登録をしている時.
+        if (
+             (roomName.isEmpty() && beforeName.isEmpty()) != true &&
+        		   (roomName.equals(beforeName))
+        ) {
+            errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+        }
+        
+        // DBのルーム名を全検索.今回の登録と一致するかどうか.
+        FileDao fileDao = new FileDao();
+        ArrayList<RoomDao> rooms = roomDao.getAllRooms();
+        
+        boolean registeredFlag = false;
+
+        for (FileDao room : rooms) {
+            String name = room.getRoomName();
+
+           if( (roomName != null) &&
+           		  (name.equals(roomName))) {
+            registeredFlag = true;
+           	
+           }
+        }
+        if(registeredFlag) {
+          errors.put("room_name_duplicate", "同一の部屋名が登録済みです。別の名前を入力してください。");
+        }
+        */
+        
+        return errors.isEmpty();
+    }
+
 }
