@@ -66,24 +66,24 @@ public class FileDetail extends ControllerBase {
         // 共通取得
         String mainKey = bean.value("main_key");
         String fileName = bean.value("file_name");
-        FileDao dao = setWeb2Dao2InputInfo();
+        //FileDao dao = setWeb2Dao2InputInfo();
+        FileDao dao = new FileDao();
 
         if ("FileDetail".equals(form)) {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
-                try {
-                    setWeb2Dao2InputInfo(getRequest());
+            	
 
-                    
+                    dao.setUserInfoId(bean.value("user_info_id"));
+                    bean.setValue("input_info", Sup.serialize(dao));
+             
+             
                     bean.setValue("request_name", "登録する");
                     bean.setMessage("この内容で登録します。よろしいですか？");
                     
 
                     forward("FileDetail_2.jsp");
-                    
-                } catch (IOException | ServletException e) {
-                    throw new AtareSysException(e);
-                }
+
 
              // ② sub ボタン押下 → サブ画面（ユーザー選択）へ（送信先のみ）
             } else if ("sub".equals(actionCmd)) {
@@ -128,6 +128,11 @@ public class FileDetail extends ControllerBase {
         } else if ("FileDetail_2".equals(form)) {
             if ("go_next".equals(actionCmd)) {
                 if ("insEnter".equals(requestCmd)) {
+                   try {
+                       setWeb2Dao2InputInfo(getRequest());
+                   } catch (IOException | ServletException e) {
+                       throw new AtareSysException(e);
+                   }
                     searchList();
                     redirect("FileList.do");
 
@@ -356,16 +361,18 @@ public class FileDetail extends ControllerBase {
         bean.setValue("sort_order", sort_key.get(key));
         return sort_key;
     }
+/*
+    private UserInfoDao setWeb2Dao2InputInfo() throws AtareSysException {
+     WebBean bean = getWebBean();
+     UserInfoDao dao = new UserInfoDao();
+     dao.setUserInfoId(bean.value("user_info_id"));
 
-    private FileDao setWeb2Dao2InputInfo() throws AtareSysException {
-        WebBean bean = getWebBean();
-        FileDao dao = new FileDao();
-        dao.setFileName(bean.value("file_name"));
 
-        bean.setValue("input_info", Sup.serialize(dao));
-        return dao;
+     bean.setValue("input_info", Sup.serialize(dao));
+     bean.setValue("dao", dao);
+     return dao;
     }
-
+*/
     /**
      * 画面の項目をDAOクラスに格納しそれをシリアライズして、input_infoフィールドに格納する。.
      *
@@ -378,12 +385,9 @@ public class FileDetail extends ControllerBase {
             throws AtareSysException, IOException, ServletException {
         WebBean bean = getWebBean();
         UserInfoDao dao = new UserInfoDao();
-        dao.setUserInfoId(bean.value("user_info_id"));
 
         FileUpload(request, dao.getUserInfoId());
 
-        bean.setValue("input_info", Sup.serialize(dao));
-        bean.setValue("dao", dao);
         return dao;
     }
 
@@ -426,9 +430,8 @@ public class FileDetail extends ControllerBase {
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
-        FileUtil fileUtil = new FileUtil();
-        byte[] fileData = (byte[]) bean.object("file");
-
+        // FileUtil fileUtil = new FileUtil();
+        // byte[] fileData = (byte[]) bean.object("file");
 
         String file_value = bean.value("file_value");
         String fileExtension = file_value.replaceAll("^.*\\.", "");
@@ -437,7 +440,6 @@ public class FileDetail extends ControllerBase {
         //String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
 
         String mimeType = getExtensionFromFileMimeType(fileExtension); //ファイルデータからmimetypeを取得
-        		
         String fileName = bean.value("input_name") + "." + fileExtension; // ファイル名を取得
         String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8); //system_file_id生成
         
@@ -451,12 +453,16 @@ public class FileDetail extends ControllerBase {
         // 完全なファイルパスの生成
         String fullPath = filePath + "/" + systemFileName;
         
-        
-        
+
+
+        /*
         if (!fileUtil.outputFile(fullPath, fileData)) {
             return null;
         }
-
+        */
+        if (fullPath == "") {
+         return null;
+        }
         // アップロード期限を設定
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.WEEK_OF_YEAR, 1); // 現在の日時に1週間追加
@@ -464,6 +470,8 @@ public class FileDetail extends ControllerBase {
 
         // 各送信先ユーザーに対してデータベースにファイル情報を登録
        for (String userInfoId : destinationUserInfoIds) { // 送信先ユーザーIDを使用
+       	
+       	
         String fileId = UUID.randomUUID().toString().substring(0, 13);
         FileDao fileDao = new FileDao();
 
@@ -578,7 +586,9 @@ public class FileDetail extends ControllerBase {
     public void dbDeletef() throws AtareSysException {
         WebBean bean = getWebBean();
         bean.rtrimAllItem();
-        FileDao dao = setWeb2Dao2InputInfo();
+       // FileDao dao = setWeb2Dao2InputInfo();
+        FileDao dao = new FileDao();
+
         String mainKey = bean.value("main_key"); // fileIdの取得
         UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo(); // 現在のユーザー情報を取得
 
