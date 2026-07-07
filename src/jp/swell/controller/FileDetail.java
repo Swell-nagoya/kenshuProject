@@ -31,6 +31,7 @@ import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.FileDao;
+import jp.swell.dao.UserFileDao;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.user.UserLoginInfo;
 
@@ -479,20 +480,31 @@ public class FileDetail extends ControllerBase {
         java.util.Date expirationDate = calendar.getTime(); // Date型を取得
 
         // 各送信先ユーザーに対してデータベースにファイル情報を登録
-       for (String userInfoId : destinationUserInfoIds) { // 送信先ユーザーIDを使用
-       	
-       	
         String fileId = UUID.randomUUID().toString().substring(0, 13);
         FileDao fileDao = new FileDao();
 
         // expirationDateをString型に変換
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String expirationDateString = sdf.format(expirationDate);
-
+        
+        System.out.println(sourceUserInfoIdsString);
+      /*
         fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
         expirationDateString);
+        */
+        // fileテーブルにユーザー情報を挿入
+        fileDao.dbFileInsert(fileId, sourceUserInfoIdsString, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
+        expirationDateString);
+
         fileDaos.add(fileDao);
-      }
+
+        UserFileDao userFileDao = new UserFileDao();
+        
+        for (String userInfoId : destinationUserInfoIds) { // 送信先ユーザーIDを使用
+          // user_filesテーブルにユーザー情報を挿入
+          userFileDao.dbUserFileInsert(userInfoId,fileId);
+        }
+        
 
         return fileDaos;
     }

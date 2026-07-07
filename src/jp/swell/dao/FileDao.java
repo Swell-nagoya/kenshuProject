@@ -720,7 +720,6 @@ public class FileDao implements Serializable {
                 + " limit " + limit + " offset " + offset;
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        System.out.println(sql);
 
 
         for (HashMap<String, String> map : rs) {
