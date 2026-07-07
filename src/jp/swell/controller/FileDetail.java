@@ -756,57 +756,26 @@ public class FileDetail extends ControllerBase {
     }
     
 
+    /**
+     * 入力チェックを行う。.
+     *
+     * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
+     * @throws AtareSysException
+     */
     private boolean inputCheck(FileDao pFileDao) throws AtareSysException
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
 
         String inputName = bean.value("input_name").trim();
-        System.out.println("fileValue:" + inputName);
         if (inputName.length() == 0) {
           errors.put("input_name_empty", "ファイル名を入力してください。");
         }
         String fileValue = bean.value("file_value").trim();
         
-        System.out.println("fileValue:" + fileValue);
         if (fileValue.length() == 0) {
           errors.put("file_value_empty", "ファイルリンクを入力してください。");
         }
-        /*
-        String roomName = bean.value("room_name").trim();
-        String beforeName = bean.value("before_name").trim(); // ← hidden から来る
-        // 部屋名の入力が空の時.
-        if (roomName.length() == 0) {
-            errors.put("room_name_empty", "部屋名を入力してください。");
-        }
-        // 以前と同一の名前で登録をしている時.
-        if (
-             (roomName.isEmpty() && beforeName.isEmpty()) != true &&
-        		   (roomName.equals(beforeName))
-        ) {
-            errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
-        }
-        
-        // DBのルーム名を全検索.今回の登録と一致するかどうか.
-        FileDao fileDao = new FileDao();
-        ArrayList<RoomDao> rooms = roomDao.getAllRooms();
-        
-        boolean registeredFlag = false;
-
-        for (FileDao room : rooms) {
-            String name = room.getRoomName();
-
-           if( (roomName != null) &&
-           		  (name.equals(roomName))) {
-            registeredFlag = true;
-           	
-           }
-        }
-        if(registeredFlag) {
-          errors.put("room_name_duplicate", "同一の部屋名が登録済みです。別の名前を入力してください。");
-        }
-        */
-        
         return errors.isEmpty();
     }
 
