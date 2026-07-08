@@ -717,6 +717,8 @@ public class FileDao implements Serializable {
                 + where + order
                 + " limit " + limit + " offset " + offset;
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        
+        System.out.println(rs);
 
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
@@ -744,11 +746,14 @@ public class FileDao implements Serializable {
       
       String sql = "select count(*) as count"
         + " from files "
-        + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
-        + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
+        + "LEFT JOIN user_info ON files.user_info_id = user_info.user_info_id "
+        + "LEFT JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
+        + "LEFT JOIN user_files ON files.file_id = user_files.file_id "
+        + "LEFT JOIN user_info AS receiver_info ON user_files.user_info_id = receiver_info.user_info_id "
         + "WHERE (" + where.replace("where", "") + ") OR (" + whereUpload.replace("where", "") + ") ";
       
       List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+
 
       if (rs.size() < 1) return array;
       
@@ -780,8 +785,8 @@ public class FileDao implements Serializable {
             + ", receiver_info.first_name"
             + ", receiver_info.last_name"
             + " FROM files "
-            + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
-            + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
+            + "LEFT JOIN user_info ON files.user_info_id = user_info.user_info_id "
+            + "LEFT JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
             + "LEFT JOIN user_files ON files.file_id = user_files.file_id "
             + "LEFT JOIN user_info AS receiver_info ON user_files.user_info_id = receiver_info.user_info_id "
             + "WHERE (" + where.replace("where", "") + ") OR (" + whereUpload.replace("where", "") + ") "
