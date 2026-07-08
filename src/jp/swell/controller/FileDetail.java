@@ -487,7 +487,6 @@ public class FileDetail extends ControllerBase {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String expirationDateString = sdf.format(expirationDate);
         
-        System.out.println(sourceUserInfoIdsString);
       /*
         fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
         expirationDateString);

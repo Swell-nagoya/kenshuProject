@@ -676,8 +676,6 @@ public class FileDao implements Serializable {
             file.setUploadUserId(map.get("upload_user_id"));
             file.setExpirationDate(map.get("expiration_date"));
             files.add(file);
-            
-
         }
 
         return files; // 取得したルームリストを返す
@@ -718,9 +716,7 @@ public class FileDao implements Serializable {
                 + "join user_info as uploader on files.upload_user_id = uploader.user_info_id "
                 + where + order
                 + " limit " + limit + " offset " + offset;
-
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-
 
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
@@ -736,6 +732,7 @@ public class FileDao implements Serializable {
      * (ログインユーザーがファイルをアップロードまたは送信したDBを取得）
      * @return UserMenuに返す
      */
+    //
     public static ArrayList<FileDao> dbSelectList(FileDao myclass, LinkedHashMap<String, String> sortKey,
       DaoPageInfo daoPageInfo, FileDao myclassUpload) throws AtareSysException {
       ArrayList<FileDao> array = new ArrayList<>();
@@ -763,30 +760,37 @@ public class FileDao implements Serializable {
       if(daoPageInfo.getPageNo() < 1) daoPageInfo.setPageNo(1);
       if(daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo()) daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
       int start  =   (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
-
-
+      
+      
+      
       sql = "select "
-      		      + "files.file_id"
-      		      + ", files.user_info_id"
-      		      + ", files.file_name"
-      		      + ", files.file_path" 
-      		      + ", files.upload_date"
-      		      + ", files.file_key"
-      		      + ", files.mime_type"
-      		      + ", files.system_file_name"
-      		      + ", files.upload_user_id"
-      		      + ", files.expiration_date"
-      		      + ", COALESCE(uploader.first_name, '') AS uploader_first_name"
-              + ", COALESCE(uploader.last_name, '') AS uploader_last_name"
-              + ", user_info.first_name"
-              + ", user_info.last_name FROM files "
-              + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
-              + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
-              + "WHERE (" + where.replace("where", "") + ") OR (" + whereUpload.replace("where", "") + ") "
-              + "ORDER BY files.upload_date ASC "
-              + "LIMIT " + limit + " OFFSET " + start + ";"; // ※再計算した start を使用
+            + "files.file_id"
+            + ", files.user_info_id"
+            + ", files.file_name"
+            + ", files.file_path" 
+            + ", files.upload_date"
+            + ", files.file_key"
+            + ", files.mime_type"
+            + ", files.system_file_name"
+            + ", files.upload_user_id"
+            + ", files.expiration_date"
+            + ", COALESCE(uploader.first_name, '') AS uploader_first_name"
+            + ", COALESCE(uploader.last_name, '') AS uploader_last_name"
+            + ", user_files.user_info_id" 
+            + ", receiver_info.first_name"
+            + ", receiver_info.last_name"
+            + " FROM files "
+            + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
+            + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
+            + "LEFT JOIN user_files ON files.file_id = user_files.file_id "
+            + "LEFT JOIN user_info AS receiver_info ON user_files.user_info_id = receiver_info.user_info_id "
+            + "WHERE (" + where.replace("where", "") + ") OR (" + whereUpload.replace("where", "") + ") "
+            + "ORDER BY files.upload_date ASC "
+            + "LIMIT " + limit + " OFFSET " + start + ";";
 
-      rs = DbBase.dbSelect(sql);
+     rs = DbBase.dbSelect(sql);
+     
+     
       int cnt = rs.size();
       if (cnt < 1) return array;
       
@@ -802,14 +806,13 @@ public class FileDao implements Serializable {
            dao.setFileType("received");
        } else {
            dao.setFileType("sent");
-           
-           
        }
        
        array.add(dao);
    }
+       
 
-      return array;
+     return array;
   }
 
     
