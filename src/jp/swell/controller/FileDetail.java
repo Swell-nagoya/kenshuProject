@@ -253,6 +253,7 @@ public class FileDetail extends ControllerBase {
         bean.setValue("pageNo", String.valueOf(pageNo));
         bean.setValue("maxPageNo", String.valueOf(maxPage));
         bean.setValue("selectedIds", selectedIds);
+        bean.setValue("allUsers", allUsers);
     }
 
     /**

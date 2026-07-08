@@ -206,27 +206,42 @@ function go_submit(action_cmd) {
 }
 
 function go_upload(action_cmd) {
-  document.getElementById('main_form').action = '';
-  document.getElementById('action_cmd').value = action_cmd;
-  document.getElementById('main_form').submit();
-}
+	  const fileName = document.getElementById("input_name").value.trim();
+	  const fileLink = document.getElementById("file").value;
+	  const destinationUser = document.getElementById("destination_user_info_id").value;
 
-// サブ画面処理
+	  if (fileName === "") {
+	    alert("ファイル名を入力してください。");
+	    return;
+	  }
+
+	  if (fileLink === "") {
+	    alert("ファイルを選択してください。");
+	    return;
+	  }
+
+	  if (destinationUser === "") {
+	    alert("送り先ユーザーを選択してください。");
+	    return;
+	  }
+
+	  document.getElementById('main_form').action = '';
+	  document.getElementById('action_cmd').value = action_cmd;
+	  document.getElementById('main_form').submit();
+	}
+
 function openUserWindow(action_cmd) {
-  // コントローラー設定
    const form = document.createElement('form');
   form.method = 'POST';
   form.action = ctx + '/FileDetail.do';
   form.target = 'FileUserList';
 
-  // form_name設定
   const formNameInput = document.createElement('input');
   formNameInput.type = 'hidden';
   formNameInput.name = 'form_name';
   formNameInput.value = 'FileDetail';
   form.appendChild(formNameInput);
 
-  // アクションコマンド設定
   const actionCmdInput = document.createElement('input');
   actionCmdInput.type = 'hidden';
   actionCmdInput.name = 'action_cmd';
@@ -235,7 +250,6 @@ function openUserWindow(action_cmd) {
 
   document.body.appendChild(form);
 
-  // サブ画面表示処理
   window.open('', 'FileUserList', 'width=600,height=400');
   form.submit();
 
@@ -243,34 +257,35 @@ function openUserWindow(action_cmd) {
 }
 
 function receiveSelectedUsers(users, type) {
-  let selectedUsersDiv;
-  let userIds = [];
+	  let selectedUsersDiv;
+	  let userIds = [];
 
-  if (type === 'source') {
-    selectedUsersDiv = document.getElementById('selected_source_users');
-    selectedUsersDiv.innerHTML = ''; // 既存のユーザーをクリア
-}
+	  if (type === 'source') {
+	    selectedUsersDiv = document.getElementById('selected_source_users');
+	    if (selectedUsersDiv) selectedUsersDiv.innerHTML = '';
+	  }
 
-  if (type === 'sub') {
-    selectedUsersDiv = document.getElementById('selected_destination_users');
-    selectedUsersDiv.innerHTML = ''; // 既存のユーザーをクリア
-}
+	  if (type === 'sub') {
+	    selectedUsersDiv = document.getElementById('selected_destination_users');
+	    if (selectedUsersDiv) selectedUsersDiv.innerHTML = ''; 
+	  }
 
-  users.forEach((user) => {
-    const userDiv = document.createElement('div');
-    userDiv.textContent = user.name;
-    userDiv.classList.add('user-item'); // クラスを追加
-    selectedUsersDiv.appendChild(userDiv);
-    userIds.push(user.id);
-});
+	  if (selectedUsersDiv) {
+	    users.forEach((user) => {
+	      const userDiv = document.createElement('div');
+	      userDiv.textContent = user.name;
+	      userDiv.classList.add('user-item'); 
+	      selectedUsersDiv.appendChild(userDiv);
+	      userIds.push(user.id);
+	    });
+	  }
 
-// ユーザーIDを隠しフィールドに設定
-  if (type === 'source') {
-    document.getElementById('user_info_id').value = userIds.join(',');
-} else {
-    document.getElementById('destination_user_info_id').value = userIds.join(',');
-  }
-}
+	  if (type === 'source') {
+	    document.getElementById('user_info_id').value = userIds.join(',');
+	  } else if (type === 'sub') {
+	    document.getElementById('destination_user_info_id').value = userIds.join(',');
+	  }
+	}
 </script>
 </head>
 <body>
@@ -282,9 +297,9 @@ function receiveSelectedUsers(users, type) {
 		<h1>ファイル登録ページ</h1>
 		</header>
 		<form method="post" id="main_form"
-			action="/kenshuProject/WebContent/upload"
-			enctype="multipart/form-data">
-
+	      action="FileDetail.do"
+	      enctype="multipart/form-data">
+	
 			<input type="hidden" name="form_name" id="form_name"
 				value="FileDetail" />
 			<input type="hidden" name="action_cmd" id="action_cmd" value="" />

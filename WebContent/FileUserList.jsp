@@ -173,7 +173,24 @@ input[type="button"]:hover {
 }
 </style>
 				<script type="text/javascript">
+const allUserMap = {
+  <%
+    java.util.List<?> allUsersList = webBean.arrayList("allUsers");
+      if (allUsersList != null) {
+      for (int i = 0; i < allUsersList.size(); i++) {
+        jp.swell.dao.UserInfoDao uDao = (jp.swell.dao.UserInfoDao) allUsersList.get(i);
+        String uId = jp.patasys.common.http.WebUtil.htmlEscape(uDao.getUserInfoId());
+        String uName = jp.patasys.common.http.WebUtil.htmlEscape(uDao.getLastName()) + " " + jp.patasys.common.http.WebUtil.htmlEscape(uDao.getFirstName());
+          %>
+            "<%= uId %>": "<%= uName %>"<%= (i < allUsersList.size() - 1) ? "," : "" %>
+            <%
+     }
+     }
+            %>
+};
+				
 // 元の go_submit / go_upload はそのまま残す
+
 function go_submit(action_cmd) {
   document.getElementById('main_form').action = '';
   document.getElementById('action_cmd').value = action_cmd;
@@ -185,18 +202,33 @@ function go_upload(action_cmd) {
   document.getElementById('main_form').submit();
 }
 
-// 子画面で「選択」ボタン押下時の処理
+//子画面で「選択」ボタン押下時の処理
 function submitSelection() {
+  const prev = (document.getElementById('selectedIds').value || "").split(',').filter(x => x);
+  const currentChecked = [];
+  const currentUnchecked = [];
+  document.querySelectorAll('input[name="user_id"]').forEach(cb => {
+    if (cb.checked) {
+      currentChecked.push(cb.value);
+    } else {
+      currentUnchecked.push(cb.value);
+    }
+  });
+  let allSelectedIds = prev.filter(id => !currentUnchecked.includes(id));
+  allSelectedIds = [...new Set([...allSelectedIds, ...currentChecked])];
   const selected = [];
-  document.querySelectorAll('input[name="user_id"]:checked').forEach(cb => {
+  allSelectedIds.forEach(id => {
+    const name = allUserMap[id] || ("ユーザー(ID:" + id + ")");
     selected.push({
-      id: cb.value,
-      name: cb.nextElementSibling.innerText,
+      id: id,
+      name: name,
       type: 'sub'
     });
   });
   if (selected.length) {
     window.opener.receiveSelectedUsers(selected, 'sub');
+  } else {
+    window.opener.receiveSelectedUsers([], 'sub');
   }
   window.close();
 }
@@ -234,11 +266,10 @@ function toggleCheckbox(div) {
 		  // 選択されたチェック状態を保持
 		  const prev = (document.getElementById('selectedIds').value || "")
 		    .split(',').filter(x => x);
-		  const curr = Array.from(
-		    document.querySelectorAll('input[name="user_id"]:checked')
-		  ).map(cb => cb.value);
-		  const merged = [...new Set([...prev, ...curr])];
-
+		  const currentChecked = Array.from(document.querySelectorAll('input[name="user_id"]:checked')).map(cb => cb.value);
+		  const currentUnchecked = Array.from(document.querySelectorAll('input[name="user_id"]:not(:checked)')).map(cb => cb.value);
+		  let merged = prev.filter(id => !currentUnchecked.includes(id));
+		  merged = [...new Set([...merged, ...currentChecked])];
 		  // 両方の hidden に反映させる（上下両方の selectedIds）
 		  const topSelected = document.querySelector('#pagerTop #selectedIds');
 		  const bottomSelected = document.querySelector('#pagerBottom #selectedIds');
