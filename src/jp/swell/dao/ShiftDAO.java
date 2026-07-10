@@ -860,7 +860,6 @@ public class ShiftDAO implements Serializable {
     * @param dao  UserInfoDaoこのテーブルのインスタンス
     */
     public void setEmployeeShift(HashMap<String, String> map, ShiftDAO dao) throws AtareSysException {
-    	System.out.println(map);
         dao.setId(DbI.chara(map.get("id")));
         dao.setName(DbI.chara(map.get("name")));
         dao.setEmail(DbI.chara(map.get("email")));
@@ -1064,7 +1063,6 @@ public class ShiftDAO implements Serializable {
         String sql = "select * "
                 + " FROM employee_shifts ";
         rs = DbBase.dbSelect(sql);
-        System.out.println(sql);
         int cnt = rs.size();
         if (cnt < 1)
             return array;
@@ -1126,7 +1124,7 @@ public class ShiftDAO implements Serializable {
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
 
         rs = DbBase.dbSelect(sql);
-        System.out.println(sql);
+       
         int cnt = rs.size();
         if (cnt < 1)
             return array;
