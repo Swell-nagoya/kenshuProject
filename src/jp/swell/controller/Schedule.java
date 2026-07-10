@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
 import jp.patasys.common.db.SystemUserInfoValue;
+import jp.patasys.common.http.LoginInfo;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
@@ -26,7 +27,7 @@ public class Schedule extends ControllerBase {
    */
   @Override
   public void doInit() {
-    setLoginNeeds(false); // この処理にはログインが必要かどうか
+    setLoginNeeds(true); // この処理にはログインが必要かどうか
     setHttpNeeds(false); // この処理はhttpでなければならないか
     setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
     setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -131,10 +132,14 @@ public class Schedule extends ControllerBase {
     WebBean bean = getWebBean();
     UserInfoDao dao = (UserInfoDao) Sup.deserialize(bean.value("input_info"));
 
+    LoginInfo loginInfo = getLoginInfo();
+    
     bean.setValue("sort_key", "list_search"); /* 初回のソートキーを入れる */
     bean.setValue("sort_order", "asc");
-    bean.setValue("user_info_id", dao.getUserInfoId());
-    bean.setValue("main_user_name", dao.getFullName());
+    bean.setValue("user_info_id", getLoginUserId());
+    bean.setValue("main_user_name", loginInfo.getUserName());
+//    bean.setValue("user_info_id", dao.getUserInfoId());
+//    bean.setValue("main_user_name", dao.getFullName());
     bean.setValue("lineCount",
     SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "ViewUserList", "lineCount", "100"));
   }
