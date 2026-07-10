@@ -447,7 +447,7 @@ public class FileDao implements Serializable {
                 + "files.file_key as files___file_key, "
                 + "files.mime_type as files___mime_type, "
                 + "files.system_file_name as files___system_file_name, "
-                + "f.upload_user_id as files___upload_user_id, "
+                + "files.upload_user_id as files___upload_user_id, "
                 + "files.expiration_date as files___expiration_date "
                 + "FROM files "
                 + "WHERE file_id = ?";
@@ -554,11 +554,11 @@ public class FileDao implements Serializable {
     	}
     	dao.setUploadUserId(DbI.chara(uploadUserId != null ? uploadUserId : ""));
     	dao.setExpirationDate(DbI.chara(map.get("expiration_date") != null ? map.get("expiration_date") : ""));
-        dao.setUploaderFirstName(map.get("user_first_name"));
-        dao.setUploaderLastName(map.get("user_last_name"));
+        //dao.setUploaderFirstName(map.get("first_name"));
+        //dao.setUploaderLastName(map.get("last_name"));
         dao.setUploadUserName(map.get("upload_user_name"));
         dao.setSendUserName(
-        	    map.get("user_last_name") + " " + map.get("user_first_name")
+        	    map.get("last_name") + " " + map.get("first_name")
         	);
     }
 
@@ -734,18 +734,9 @@ public class FileDao implements Serializable {
                 + "LEFT JOIN user_info uploader ON f.upload_user_id = uploader.user_info_id "
                 + where + order
                 + " LIMIT " + limit + " OFFSET " + offset;
-
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 
         for (HashMap<String, String> map : rs) {
-        	
-        	System.out.println("===== DEBUG LIST =====");
-            System.out.println(map);
-            
-            System.out.println("upload_user_id=" + map.get("upload_user_id"));
-            System.out.println("user_last_name=" + map.get("user_last_name"));
-            System.out.println("user_first_name=" + map.get("user_first_name"));
-
             FileDao dao = new FileDao();
 
             // JOIN結果をそのまま詰める
@@ -757,8 +748,24 @@ public class FileDao implements Serializable {
         return resultList;
     }
 
-    
+    public static int dbSelectCount(FileDao myclass) throws AtareSysException {
 
+        String where = myclass.dbWhere();
+
+        String sql = "SELECT COUNT(*) AS cnt "
+                + "FROM files f "
+                + "JOIN user_info u ON f.user_info_id = u.user_info_id "
+                + "LEFT JOIN user_info uploader ON f.upload_user_id = uploader.user_info_id "
+                + where;
+
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+
+        if (rs.size() > 0) {
+            return Integer.parseInt(rs.get(0).get("cnt"));
+        }
+
+        return 0;
+    }
     /**
      * files ファイル情報テーブルの検索条件を設定する。.
      *
@@ -769,7 +776,7 @@ public class FileDao implements Serializable {
         StringBuffer where = new StringBuffer(1024);
         if (userIds != null && userIds.length > 0) {
             where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.user_info_id IN (");
+            where.append("f.user_info_id IN (");
 
             for (int i = 0; i < userIds.length; i++) {
                 where.append(DbS.chara(userIds[i]));
@@ -783,7 +790,7 @@ public class FileDao implements Serializable {
 
         if (getFileId() != null && getFileId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.file_id = " + DbS.chara(getFileId()));
+            where.append("f.file_id = " + DbS.chara(getFileId()));
         }
 
         if (getUserInfoId().length() > 0) {
@@ -800,7 +807,7 @@ public class FileDao implements Serializable {
 
         if (getSearchFileName().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.file_name LIKE " + DbS.chara("%" + getSearchFileName() + "%"));
+            where.append("f.file_name LIKE " + DbS.chara("%" + getSearchFileName() + "%"));
         }
 
         if (where.length() > 0) {

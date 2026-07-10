@@ -153,106 +153,70 @@ public class ContactList extends ControllerBase {
             return;
         }
 
-        // ★全件取得（ContactDao 側のメソッドを想定。なければ適宜修正）
-        ArrayList<ContactDao> allData;
-        try {
-            ContactDao dao = new ContactDao();
-            allData = dao.getAllContacts();
-        } catch (Exception ex) {
-            // 取得失敗時は空で返す
-            allData = new ArrayList<ContactDao>();
-            errors = new HashMap<>();
-            errors.put("system_error", "連絡先情報の取得に失敗しました。");
-            bean.setValue("errors", errors);
-        }
+        ContactDao dao = new ContactDao();
 
-        // ★検索条件の適用（氏名・氏名かな）
-        final String qName = bean.value("list_search_full_name");
-        final String qNameKana = bean.value("list_search_full_name_kana");
+        // ===== 検索条件 =====
+        String name = bean.value("list_search_full_name");
+        String kana = bean.value("list_search_full_name_kana");
 
-        ArrayList<ContactDao> filtered = new ArrayList<>();
-        for (ContactDao c : allData) {
-            boolean ok = true;
-            if (qName != null && qName.length() > 0) {
-                // 姓 + 名 + ミドル で部分一致（大文字小文字はそのまま）
-                String full = n(c.getLastName()) + n(c.getFirstName()) + n(c.getMiddleName());
-                ok &= full.contains(qName);
-            }
-            if (ok && qNameKana != null && qNameKana.length() > 0) {
-                String fullKana = n(c.getLastNameKana()) + n(c.getFirstNameKana()) + n(c.getMiddleNameKana());
-                ok &= fullKana.contains(qNameKana);
-            }
-            if (ok)
-                filtered.add(c);
-        }
+        // ===== ページ情報 =====
+        int pageNo = parseOrDefault(bean.value("pageNo"), 1);
+        int lineCount = parseOrDefault(bean.value("lineCount"), 100);
 
-        // ★ソートの適用（JSPからの sort_key / sort_order を使用）
-        //   対応キー：last_name_kana / last_name / email / phone_number など最低限を用意
+        if (pageNo < 1) pageNo = 1;
+        if (lineCount < 1) lineCount = 100;
+
+        // ===== ★① COUNT取得（重要） =====
+        int totalCount = dao.countContacts(name, kana);
+
+        int maxPageNo = (int) Math.ceil((double) totalCount / (double) lineCount);
+        if (maxPageNo < 1) maxPageNo = 1;
+
+        if (pageNo > maxPageNo) pageNo = maxPageNo;
+
+        int start = (pageNo - 1) * lineCount;
+
+        // ===== ★② 一覧取得（LIMIT/OFFSET） =====
+        ArrayList<ContactDao> pageList =
+                dao.selectContacts(name, kana, start, lineCount);
+
+        // ===== ソート（DBではなくJavaでOK仕様ならそのまま） =====
         String sortKey = bean.value("sort_key");
         String sortKeyOld = bean.value("sort_key_old");
         String sortOrder = bean.value("sort_order");
 
-        // ▼UserInfo流：フリップフロップ（同じキーをクリックしたら昇⇄降を反転）
         if (sortKeyOld != null && sortKey != null && sortKey.length() > 0) {
             if (sortKey.equals(sortKeyOld)) {
                 sortOrder = "desc".equals(sortOrder) ? "asc" : "desc";
             } else {
-                // 新しいキーを選んだら asc から
                 sortOrder = "asc";
             }
             bean.setValue("sort_key_old", sortKey);
             bean.setValue("sort_order", sortOrder);
-            // 次の呼び出しまでは空に（UserInfo流の運用に合わせる）
             bean.setValue("sort_key", "");
         } else if (sortKeyOld == null || sortKeyOld.length() == 0) {
-            // 初回
-            bean.setValue("sort_key_old", (sortKey != null && sortKey.length() > 0) ? sortKey : "last_name_kana");
+            bean.setValue("sort_key_old",
+                    (sortKey != null && sortKey.length() > 0) ? sortKey : "last_name_kana");
             if (sortOrder == null || sortOrder.length() == 0)
                 bean.setValue("sort_order", "asc");
         }
-        final String effectiveKey = bean.value("sort_key_old"); // 実際に使うキー
-        final boolean asc = !"desc".equals(bean.value("sort_order"));
 
-        Comparator<ContactDao> comp = buildComparator(effectiveKey, asc);
-        Collections.sort(filtered, comp);
+        boolean asc = !"desc".equals(bean.value("sort_order"));
+        Comparator<ContactDao> comp =
+                buildComparator(bean.value("sort_key_old"), asc);
 
-        // ★ページング
-        int pageNo = parseOrDefault(bean.value("pageNo"), 1);
-        int lineCount = parseOrDefault(bean.value("lineCount"), 100);
-        if (pageNo < 1)
-            pageNo = 1;
-        if (lineCount < 1)
-            lineCount = 100;
+        Collections.sort(pageList, comp);
 
-        int totalCount = filtered.size();
-        int maxPageNo = (int) Math.ceil((double) totalCount / (double) lineCount);
-        if (maxPageNo < 1)
-            maxPageNo = 1;
-        if (pageNo > maxPageNo)
-            pageNo = maxPageNo;
-
-        int startIndex = (pageNo - 1) * lineCount;
-        int endIndex = Math.min(startIndex + lineCount, totalCount);
-
-        ArrayList<ContactDao> page = new ArrayList<>();
-        if (startIndex < totalCount) {
-            for (int i = startIndex; i < endIndex; i++) {
-                page.add(filtered.get(i));
-            }
-        }
-
-        // ★JSPが参照する項目名をUserInfo流に合わせてセット
-        bean.setValue("lineCount", lineCount);
+        // ===== JSPへ返却 =====
         bean.setValue("pageNo", pageNo);
-        
-        bean.setValue("recordCount", totalCount); // 総件数
+        bean.setValue("lineCount", lineCount);
+        bean.setValue("recordCount", totalCount);
         bean.setValue("maxPageNo", maxPageNo);
-        bean.setValue("list", page);
+        bean.setValue("list", pageList);
 
-        // ★検索条件を保存（詳細→戻る で復元するため）
+        // 検索条件保存
         bean.getWebValues().remove("search_info");
-        String search_info = Sup.serialize(bean);
-        bean.setValue("search_info", search_info);
+        bean.setValue("search_info", Sup.serialize(bean));
     }
 
     // ===== ユーティリティ =======================================================

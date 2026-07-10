@@ -51,6 +51,8 @@ public class ContactDao implements Serializable {
 
     // ====== アクセサ ============================================================
 
+    private String contactId;
+    
     public int getId() {
         return id;
     }
@@ -171,6 +173,74 @@ public class ContactDao implements Serializable {
         this.loginEnableTo = n(loginEnableTo);
     }
 
+    public int countContacts(String name, String kana) throws AtareSysException {
+
+        String sql = "SELECT COUNT(*) as count FROM user_contact_info WHERE 1=1 ";
+
+        if (name != null && name.length() > 0) {
+            sql += " AND (last_name LIKE '%" + name + "%' "
+                 + " OR first_name LIKE '%" + name + "%') ";
+        }
+        if (kana != null && kana.length() > 0) {
+            sql += " AND (last_name_kana LIKE '%" + kana + "%' "
+                 + " OR first_name_kana LIKE '%" + kana + "%') ";
+        }
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+
+        if (rs.size() == 0) return 0;
+
+        return Integer.parseInt(rs.get(0).get("count"));
+    }
+
+    /**
+     * 一覧取得（ページング）
+     */
+    public ArrayList<ContactDao> selectContacts(
+            String name, String kana,
+            int start, int limit
+    ) throws AtareSysException {
+
+        String sql = "SELECT * FROM user_contact_info WHERE 1=1 ";
+
+        if (name != null && name.length() > 0) {
+            sql += " AND (last_name LIKE '%" + name + "%' "
+                 + " OR first_name LIKE '%" + name + "%') ";
+        }
+
+        if (kana != null && kana.length() > 0) {
+            sql += " AND (last_name_kana LIKE '%" + kana + "%' "
+                 + " OR first_name_kana LIKE '%" + kana + "%') ";
+        }
+
+        sql += " ORDER BY id ";
+        sql += " LIMIT " + limit + " OFFSET " + start;
+
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+
+        ArrayList<ContactDao> list = new ArrayList<>();
+
+        for (HashMap<String, String> map : rs) {
+            ContactDao dao = new ContactDao();
+            dao.setContactFromMap(map);
+            list.add(dao);
+        }
+
+        return list;
+    }
+    
+    public void setContactFromMap(HashMap<String, String> map) {
+
+        this.id = Integer.parseInt(map.get("id"));
+        this.lastName = map.get("last_name");
+        this.middleName = map.get("middle_name");
+        this.firstName = map.get("first_name");
+        this.lastNameKana = map.get("last_name_kana");
+        this.middleNameKana = map.get("middle_name_kana");
+        this.firstNameKana = map.get("first_name_kana");
+        this.phoneNumber = map.get("phone_number");
+        this.email = map.get("email");
+    }
+    
     // ====== 互換用のユーティリティ（既存JSP/コードの呼び方に合わせるため） ========
 
     /** 氏名を連結して返す（空は無視して結合） */

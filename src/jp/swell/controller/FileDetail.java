@@ -116,9 +116,22 @@ public class FileDetail extends ControllerBase {
                         return;
 
                     } else if ("download".equals(requestCmd)) {
-                        dao.dbSelect(mainKey);
-                        downloadFileWrite(dao);
 
+                        if (!dao.dbSelect(mainKey)) {
+                            bean.setError("データの取得に失敗しました");
+                            forward("FileList.jsp");
+                            return;
+                        }
+
+                        // ログインユーザーと送信先ユーザーを比較
+                        if (!login.getUserInfoId().equals(dao.getUserInfoId())) {
+                            bean.setError("このファイルをダウンロードする権限がありません。");
+                            searchList();
+                            forward("FileList.jsp");
+                            return;
+                        }
+
+                        downloadFileWrite(dao);
                     } else if ("deletef".equals(requestCmd)) {
 
                         if (!dao.dbSelect(mainKey)) {
@@ -131,7 +144,7 @@ public class FileDetail extends ControllerBase {
                         bean.setMessage("このファイルを削除します。よろしいですか？");
                         bean.setValue("file_name", fileName);
 
-                        forward("/WEB-INF/FileDetail_2.jsp");
+                        forward("WEB-INF/FileDetail_2.jsp");
                         return;
                     }
                 }
@@ -196,56 +209,45 @@ public class FileDetail extends ControllerBase {
         fileDao.setFileName(bean.value("file_name"));
 
         DaoPageInfo daoPageInfo = new DaoPageInfo();
+
         if (!Validate.isInteger(bean.value("lineCount"))) {
             bean.setValue("lineCount", "20");
         }
+
         daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
-        SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
+        SystemUserInfoValue.setUserInfoValue(
+                getLoginUserId(),
+                "FileList",
+                "lineCount",
+                bean.value("lineCount"));
+
         if (!Validate.isInteger(bean.value("pageNo"))) {
             daoPageInfo.setPageNo(1);
         } else {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
 
+        // 一覧取得
         ArrayList<FileDao> fileList = FileDao.dbSelectList(fileDao, sortKey, daoPageInfo);
-        bean.setValue("lineCount", daoPageInfo.getLineCount());
-        bean.setValue("pageNo", daoPageInfo.getPageNo());
-        bean.setValue("recordCount", fileList.size()); // ファイルリストのサイズ
-        bean.setValue("maxPageNo", (fileList.size() / Integer.parseInt(bean.value("lineCount")) + 1));
 
-        // ルーム情報の取得とセット
-        ArrayList<FileDao> files = fileDao.getAllFiles();
+     // 総件数取得
+     int recordCount = FileDao.dbSelectCount(fileDao);
 
-        List<UserInfoDao> allUsers = new UserInfoDao().getAllUsers();
+     bean.setValue("lineCount", daoPageInfo.getLineCount());
+     bean.setValue("pageNo", daoPageInfo.getPageNo());
+     bean.setValue("recordCount", recordCount);
 
-        // ページ番号取得（デフォルト 1）
-        int pageNo = 1;
-        try {
-            pageNo = Integer.parseInt(bean.value("pageNo"));
-        } catch (Exception ignored) {
-        }
+     int maxPageNo =
+             (recordCount + daoPageInfo.getLineCount() - 1)
+             / daoPageInfo.getLineCount();
+     bean.setValue("maxPageNo", maxPageNo);
 
-        // １ページあたり件数
-        final int pageSize = 10;
-        int total = allUsers.size();
-        int maxPage = (total + pageSize - 1) / pageSize;
+     // 検索条件保存
+     bean.getWebValues().remove("search_info");
+     String search_info = Sup.serialize(bean);
+     bean.setValue("search_info", search_info);
 
-        // 切り出し位置を計算
-        int from = Math.min((pageNo - 1) * pageSize, total);
-        int to = Math.min(from + pageSize, total);
-        ArrayList<UserInfoDao> pageUsers = new ArrayList<>(allUsers.subList(from, to));
-
-        // WebBean にセット
-        bean.setValue("user_data", pageUsers);
-        bean.setValue("pageNo", String.valueOf(pageNo));
-        bean.setValue("maxPageNo", String.valueOf(maxPage));
-
-        // 既存の他の値はそのまま残す
-        bean.getWebValues().remove("search_info");
-        String search_info = Sup.serialize(bean);
-        bean.setValue("search_info", search_info);
-        bean.setValue("files", files);
-        bean.setValue("list", fileList);
+     bean.setValue("list", fileList);
     }
 
     /**

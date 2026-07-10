@@ -521,7 +521,12 @@ public class RoomDao implements Serializable
         + " from room "
         + myclass.dbWhere();
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        if(0==rs.size())   return array;
+        
+        if (rs.isEmpty()) {
+            daoPageInfo.setRecordCount(0);
+            return array;
+        }
+        
         HashMap<String, String> map = rs.get(0);
         int len = Integer.parseInt(map.get("count"));
         daoPageInfo.setRecordCount(len);

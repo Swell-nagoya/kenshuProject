@@ -198,8 +198,13 @@ public class FileList extends ControllerBase {
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         // 受信件数だけでは recordCount が正確に反映されない可能性があるため、明示的に再セット
-        bean.setValue("recordCount", rs.get(0).get("cnt"));
-        bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
+        int recordCount = Integer.parseInt(rs.get(0).get("cnt"));
+
+        bean.setValue("recordCount", recordCount);
+
+        bean.setValue("maxPageNo",
+                Math.max(1,
+                    (int)Math.ceil((double)recordCount / daoPageInfo.getLineCount())));
 
         SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
 
