@@ -639,7 +639,7 @@ function submitSelection(actionCmd, main_key) {
           </div>
           <table class="list_table">
             <tr class="list_title">
-              <td class="list_label"><a href="javaScript:go_sort_request('last_name_kana')">閲覧可能にするユーザーを選択してください</a>
+              <td class="list_label"><a href="javaScript:go_sort_request('last_name')">閲覧可能にするユーザーを選択してください</a>
               </td>
             </tr>
             <tr class="list_tr">
