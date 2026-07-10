@@ -860,12 +860,13 @@ public class ShiftDAO implements Serializable {
     * @param dao  UserInfoDaoこのテーブルのインスタンス
     */
     public void setEmployeeShift(HashMap<String, String> map, ShiftDAO dao) throws AtareSysException {
-        dao.setId(DbI.chara(map.get("employee_shifts___id")));
-        dao.setName(DbI.chara(map.get("employee_shifts___name")));
-        dao.setEmail(DbI.chara(map.get("employee_shifts___email")));
+    	System.out.println(map);
+        dao.setId(DbI.chara(map.get("id")));
+        dao.setName(DbI.chara(map.get("name")));
+        dao.setEmail(DbI.chara(map.get("email")));
         dao.setStartTime(DbI.chara(map.get("employee_shifts___start_time")));
         dao.setEndTime(DbI.chara(map.get("employee_shifts___end_time")));
-        dao.setWorkPlace(DbI.chara(map.get("employee_shifts___work_place")));
+        dao.setWorkPlace(DbI.chara(map.get("work_place")));
     }
 
     /** 
@@ -1063,6 +1064,7 @@ public class ShiftDAO implements Serializable {
         String sql = "select * "
                 + " FROM employee_shifts ";
         rs = DbBase.dbSelect(sql);
+        System.out.println(sql);
         int cnt = rs.size();
         if (cnt < 1)
             return array;
@@ -1124,6 +1126,7 @@ public class ShiftDAO implements Serializable {
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
 
         rs = DbBase.dbSelect(sql);
+        System.out.println(sql);
         int cnt = rs.size();
         if (cnt < 1)
             return array;
