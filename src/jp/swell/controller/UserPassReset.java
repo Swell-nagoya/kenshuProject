@@ -1,7 +1,6 @@
 package jp.swell.controller;
 
 import java.security.SecureRandom;
-import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,6 +9,7 @@ import jp.patasys.common.db.DbBase;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
+import jp.swell.common.util.Validator;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.user.UserLoginInfo;
 
@@ -89,7 +89,7 @@ public class UserPassReset extends ControllerBase
         bean.rtrimAllItem();
         UserInfoDao dao = setWeb2Dao2InputInfo();
         String mainKey = bean.value("main_key");
-        if (inputCheck(dao))
+        if (inputCheck())
         {
             try {
                 DbBase.dbBeginTran();
@@ -127,20 +127,11 @@ public class UserPassReset extends ControllerBase
      * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
      * @throws AtareSysException
      */
-    private boolean inputCheck(UserInfoDao dao) throws AtareSysException
+    private boolean inputCheck() throws AtareSysException
     {
-        WebBean bean = getWebBean();
-        HashMap<String, String> errors = bean.getItemErrors();
-        if (bean.value("new_password").length() == 0)
-        {
-            errors.put("new_password", "新しいパスワードを入力してください。");
-        } 
-                
-        if (errors.size() > 0)
-        {
-            return false;
-        }
-        return true;
+        Validator validator = new Validator(getWebBean());
+        validator.checkRequired("new_password", "新しいパスワード");
+        return !validator.hasErrors();
     }
    
     /**

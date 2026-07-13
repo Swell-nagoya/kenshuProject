@@ -15,13 +15,12 @@
  */
 package jp.swell.controller;
 
-import java.util.HashMap;
-
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DbBase;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
+import jp.swell.common.util.Validator;
 import jp.swell.dao.RoomDao;
 
 /**
@@ -192,8 +191,8 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         bean.rtrimAllItem();
-        RoomDao dao = setWeb2Dao2InputInfo();
-        if (inputCheck(dao))
+        setWeb2Dao2InputInfo();
+        if (inputCheck())
         {
             if(signUp())
             {
@@ -221,7 +220,7 @@ public class RoomDetail extends ControllerBase
         bean.rtrimAllItem();
         RoomDao dao = setWeb2Dao2InputInfo();
         String mainKey = bean.value("main_key");//RoomIdの取得
-        if (inputCheck(dao))
+        if (inputCheck())
         {
             try {
                 DbBase.dbBeginTran();
@@ -295,23 +294,20 @@ public class RoomDetail extends ControllerBase
      * 入力チェックを行う。.
      *
      * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
-     * @throws AtareSysException
      */
-    private boolean inputCheck(RoomDao pRoomDao) throws AtareSysException
+    private boolean inputCheck()
     {
         WebBean bean = getWebBean();
-        HashMap<String, String> errors = bean.getItemErrors();
-        String roomName = bean.value("room_name").trim();
-        String beforeName = bean.value("before_name").trim(); // ← hidden から来る
-
-        if (roomName.length() == 0) {
-            errors.put("room_name_empty", "部屋名を入力してください。");
-        }
-        else if (roomName.equalsIgnoreCase(beforeName)) {
-            errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
-        }
-
-        return errors.isEmpty();
+        Validator validator = new Validator(bean);
+        validator.checkRequired("room_name", "room_name_empty", "部屋名");
+        validator.checkValueChanged(
+        	"room_name",
+        	"bofore_name",
+        	"room_name_duplicate",
+        	"部屋名が以前と同じです。別の名前を入力してください。"
+        );
+        
+        return !validator.hasErrors();
     }
    
    

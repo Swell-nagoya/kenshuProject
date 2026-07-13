@@ -3,8 +3,6 @@ package jp.swell.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
@@ -15,6 +13,7 @@ import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
+import jp.swell.common.util.Validator;
 import jp.swell.dao.ShiftDAO;
 
 /**
@@ -254,18 +253,10 @@ public class Shift extends ControllerBase {
      */
     private HashMap<String, String> inputCheck() {
         WebBean bean = getWebBean();
-        HashMap<String, String> errors = bean.getItemErrors();
-        if (bean.value("list_search_full_name").length() > 0) {
-            if (100 < bean.value("list_search_full_name").length()) {
-                errors.put("list_search_full_name", "氏名の入力内容が長すぎます。");
-            }
-        }
-        if (bean.value("list_search_full_name_kana").length() > 0) {
-            if (100 < bean.value("list_search_full_name_kana").length()) {
-                errors.put("list_search_full_name_kana", "氏名よみの入力内容が長すぎます。");
-            }
-        }
-        return errors;
+        Validator validator = new Validator(bean);
+        validator.checkMaxLength("list_search_full_name", "氏名", 100);
+        validator.checkMaxLength("list_search_full_name_kana","氏名よみ", 100);
+        return validator.getErrors();
     }
 
     /**
@@ -393,93 +384,35 @@ public class Shift extends ControllerBase {
     private boolean inputCheck(ShiftDAO ShiftDao) throws AtareSysException
     {
         WebBean bean = getWebBean();
-        HashMap<String, String> errors = bean.getItemErrors();
-       
-        if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd"))) 
-        {
-            String nameRegex = "^^[ぁ-んァ-ヶーa-zA-Z"+
-                               "\\u30a0-\\u30ff\\u3040-\\u309f\\u3005-\\u3006\\u30e0-\\u9fcf]*$";
-            Pattern pattern = Pattern.compile(nameRegex);
-            Matcher matcher = pattern.matcher(bean.value("name"));
-            if (bean.value("name").length() == 0 )
-            {
-                errors.put("name", "氏名を入力してください。");
-            } 
-            if (bean.value("name").length() > 20 )
-            {
-                errors.put("name", "氏名が長すぎます。");
-            }
-            else if (!matcher.matches()) // 数字が含まれているかチェック
-            {  
-                errors.put("name", "正しい氏名を入力してください。");
-            }
-            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-            Pattern epattern = Pattern.compile(emailRegex);
-            Matcher ematcher = epattern.matcher(bean.value("email"));
-            if (bean.value("email").length() == 0)
-            {
-                errors.put("email", "メールアドレスを入力してください。");
-            }
-            else if (!ematcher.matches()) // メアドに使用できる半角英数記号以外のチェック
-            {  
-                errors.put("email", "正しいメールアドレスを入力してください。");
-            }
-            }
-            else if (bean.value("start_time").length() == 0)
-            {
-                errors.put("start_time", "始業時間を入力してください。");
-            }
-        
-            if (bean.value("end_time").length() == 0)
-            {
-                errors.put("start_time", "終業時間を入力してください。");            
-                }
-            String workRegex = "^^[ぁ-んァ-ヶーa-zA-Z0-9"+
-                               "\\u30a0-\\u30ff\\u3040-\\u309f\\u3005-\\u3006\\u30e0-\\u9fcf]*$";
-            Pattern wpattern = Pattern.compile(workRegex);
-            Matcher wmatcher = wpattern.matcher(bean.value("work_place"));
-            if (bean.value("work_place").length() == 0)
-            {
-                errors.put("work_place", "配属先を入力してください");
-            }
-            else if (!wmatcher.matches()) // 全角数字が含まれているかチェック
-            {  
-                errors.put("work_place", "数字を半角にしてください。");
-            }
-            else if ("update".equals(bean.value("request_cmd"))) 
-            {
-                if (ShiftDao.isEmailExists(bean.value("email"), bean.value("main_key")))
-                {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("email", "このメールアドレスは既に登録されています。");
-                }
-            }
-                if (ShiftDao.isIdExists(bean.value("id"), bean.value("main_key"))) 
-                {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("id", "このＩＤは既に登録されています。");
-                }
-                else if ("ins".equals(bean.value("request_cmd"))) 
-                {
-                    if (ShiftDao.isEmailExists(bean.value("email"), bean.value("main_key")))
-                    {
-                        // 重複している場合のエラーメッセージ設定
-                        errors.put("email", "このメールアドレスは既に登録されています。");
-                    }
-                }
-                    if (ShiftDao.isIdExists(bean.value("id"), bean.value("main_key"))) 
-                    {
-                        // 重複している場合のエラーメッセージ設定
-                        errors.put("id", "このＩＤは既に登録されています。");
-                    }
-                
-            
-        if (errors.size() > 0)
-        {
-            return false;
+        Validator validator = new Validator(bean);
+        if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd"))) {
+        	// 氏名
+        	validator.checkRequired("name", "氏名");
+        	validator.checkMaxLength("name", "氏名", 20);
+        	validator.checkNameFormat("name");
+        	
+        	// メールアドレス
+        	validator.checkRequired("email", "メールアドレス");
+        	validator.checkEmailFormat("email");
+        	validator.checkEmailDuplicated("email", ShiftDao, bean.value("main_key"));
+        	
+        	// 始業時間
+        	validator.checkRequired("start_time", "始業時間");
+        	
+        	// 終業時間
+        	validator.checkRequired("end_time", "終業時間");
+        	
+        	// 配属先
+        	validator.checkRequired("work_place", "配属先");
+        	validator.checkWorkPlaceFormat("work_place");
+        	
+        	// ID
+        	validator.checkIdDuplicated("id", ShiftDao, bean.value("main_key"));
+        	
         }
-        return true;
+        return !validator.hasErrors();
     }
+    
     private boolean insUserid() throws AtareSysException
     {
         WebBean bean = getWebBean();

@@ -4,14 +4,13 @@ package jp.swell.controller;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DbBase;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
+import jp.swell.common.util.Validator;
 import jp.swell.dao.ContactDao;
 
 /**
@@ -349,78 +348,33 @@ public class ContactListDetail extends ControllerBase {
      */
     private HashMap<String, String> inputCheck(ContactDao pContactDao) throws AtareSysException {
         WebBean bean = getWebBean();
-        HashMap<String, String> errors = bean.getItemErrors();
-        errors.clear();
-
+        Validator validator = new Validator(bean);
         // 新規/修正時のチェック
         if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd"))) {
             // 氏名
-            if (bean.value("last_name").length() == 0 && bean.value("first_name").length() == 0) {
-                errors.put("last_name", "氏名を入力してください。");
-                errors.put("first_name", "");
-            } else if (bean.value("last_name").length() == 0) {
-                errors.put("last_name", "名字を入力してください。");
-            } else if (bean.value("first_name").length() == 0) {
-                errors.put("first_name", "名前を入力してください。");
-            }
+        	validator.checkRequiredPair("last_name", "名字", "first_name", "名前", "氏名");
 
             // 氏名よみ
-            if (bean.value("last_name_kana").length() == 0 && bean.value("first_name_kana").length() == 0) {
-                errors.put("last_name_kana", "氏名のよみを入力してください。");
-                errors.put("first_name_kana", "");
-            } else if (bean.value("last_name_kana").length() == 0) {
-                errors.put("last_name_kana", "名字のよみを入力してください。");
-            } else if (bean.value("first_name_kana").length() == 0) {
-                errors.put("first_name_kana", "名前のよみを入力してください。");
-            }
-            if (bean.value("last_name_kana").length() > 0 || bean.value("first_name_kana").length() > 0) {
-                if (!isHiragana(bean.value("last_name_kana")) && !isHiragana(bean.value("first_name_kana"))) {
-                    errors.put("last_name_kana", "氏名のよみはひらがなで入力してください。");
-                } else if (!isHiragana(bean.value("last_name_kana"))) {
-                    errors.put("last_name_kana", "名字のよみはひらがなで入力してください。");
-                } else if (!isHiragana(bean.value("first_name_kana"))) {
-                    errors.put("first_name_kana", "名前のよみはひらがなで入力してください。");
-                }
-            }
+        	validator.checkRequiredPair("last_name_kana", "名字よみ", "first_name_kana", "名前よみ", "氏名よみ");
+        	validator.checkHiraganaPair("last_name_kana", "名字よみ", "first_name_kana", "名前よみ", "氏名よみ");
 
             // ミドルネームよみ（任意だが入力があればよみ必須）
             if (bean.value("middle_name").length() != 0) {
-                if (bean.value("middle_name_kana").length() == 0) {
-                    errors.put("middle_name_kana", "ミドルネームよみを入力してください。");
-                } else if (!isHiragana(bean.value("middle_name_kana"))) {
-                    errors.put("middle_name_kana", "ミドルネームよみはひらがなで入力してください。");
-                }
+            	validator.checkRequired("middle_name_kana", "ミドルネームよみ");
+            	validator.checkHiragana("middle_name_kana", "ミドルネームよみ");
             }
 
             // 電話番号
-            if (bean.value("phone_number").length() == 0) {
-                errors.put("phone_number", "電話番号を入力してください。");
-            } else if (!bean.value("phone_number").matches("^0\\d{1,4}-\\d{1,4}-\\d{3,4}$")) {
-                errors.put("phone_number", "正しい電話番号を入力してください。");
-            }
+            validator.checkRequired("phone_number", "電話番号");
+            validator.checkPhoneNumberFormat("phone_number");
 
             // メールアドレス
-            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-            Pattern pattern = Pattern.compile(emailRegex);
-            Matcher matcher = pattern.matcher(bean.value("email"));
-            if (bean.value("email").length() == 0) {
-                errors.put("email", "メールアドレスを入力してください。");
-            } else if (!matcher.matches()) {
-                errors.put("email", "正しいメールアドレスを入力してください。");
-            } else if ("ins".equals(bean.value("request_cmd"))) {
-                // 新規時のみメール重複チェック（更新時は別メソッドがある仕様なら条件分岐で追加）
-                if (pContactDao.isEmailExists(bean.value("email"))) {
-                    errors.put("email", "このメールアドレスは既に登録されています。");
-                }
-            }
+            validator.checkRequired("email", "メールアドレス");
+            validator.checkEmailFormat("email");
+            validator.checkEmailDuplicated("email", pContactDao, bean.value("main_key"));
         }
 
-        return errors;
-    }
-
-    /** ひらがな判定（ーを許容） */
-    private boolean isHiragana(String input) {
-        return input != null && input.matches("^[\\u3040-\\u309Fー]+$");
+        return validator.getErrors();
     }
 
     /** 新規登録（エラーは WebBean に詰め返して false） */

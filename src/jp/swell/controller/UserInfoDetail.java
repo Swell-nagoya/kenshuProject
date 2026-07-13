@@ -16,13 +16,6 @@
 package jp.swell.controller;
 
 import java.security.SecureRandom;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +26,7 @@ import jp.patasys.common.db.GetNumber;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
+import jp.swell.common.util.Validator;
 import jp.swell.dao.ScheduleDao;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.user.UserLoginInfo;
@@ -356,218 +350,56 @@ public class UserInfoDetail extends ControllerBase
     private boolean inputCheck(UserInfoDao pUserInfoDao) throws AtareSysException
     {
         WebBean bean = getWebBean();
-        HashMap<String, String> errors = bean.getItemErrors();
+        Validator validator = new Validator(bean);
        
         if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd"))) 
         {
-            if (bean.value("last_name").length() == 0 && bean.value("first_name").length() == 0)
-            {
-                errors.put("last_name", "氏名を入力してください。");
-                errors.put("first_name", "");
-            } 
-            else if (bean.value("last_name").length() == 0)
-            {
-                errors.put("last_name", "名字を入力してください。");
-            }
-            else if (bean.value("first_name").length() == 0)
-            {
-                errors.put("first_name", "名前を入力してください。");
-            }
-        
-            if (bean.value("last_name_kana").length() == 0 && bean.value("first_name_kana").length() == 0)
-            {
-                errors.put("last_name_kana", "氏名のよみを入力してください。");
-                errors.put("first_name_kana", "");
-            }
-            else  if (bean.value("last_name_kana").length() == 0)
-            {
-                errors.put("last_name_kana", "名字のよみを入力してください。");
-            }
-            else if (bean.value("first_name_kana").length() == 0)
-            {
-                errors.put("first_name_kana", "名前のよみを入力してください。");
-            }
-        
-            if (bean.value("last_name_kana").length() > 0 || bean.value("first_name_kana").length() > 0)
-            {
-                if (!isHiragana(bean.value("last_name_kana")) && !isHiragana(bean.value("first_name_kana"))) 
-                {
-                    errors.put("last_name_kana", "氏名のよみはひらがなで入力してください。");
-                }
-                else if (!isHiragana(bean.value("last_name_kana"))) 
-                {
-                    errors.put("last_name_kana", "名字のよみはひらがなで入力してください。");
-                }
-                else if (!isHiragana(bean.value("first_name_kana"))) 
-                {
-                    errors.put("first_name_kana", "名前のよみはひらがなで入力してください。");
-                }
-            }    
-        
+        	// 氏名
+        	validator.checkRequiredPair("last_name", "名字", "first_name", "名前", "氏名");
+        	
+        	// 氏名よみ
+            validator.checkRequiredPair("last_name_kana", "名字のよみ", "first_name_kana", "名前のよみ", "氏名のよみ");
+            validator.checkHiraganaPair("last_name_kana", "名字のよみ", "first_name_kana", "名前のよみ", "氏名のよみ");
+            
+            // ミドルネームよみ（任意だが入力があればよみ必須）
             if (bean.value("middle_name").length() != 0)
             {
-                if (bean.value("middle_name_kana").length() == 0)
-                {
-                    errors.put("middle_name_kana", "ミドルネームよみを入力してください。");
-                }
-                else if (!isHiragana(bean.value("middle_name_kana"))) 
-                {
-                    errors.put("middle_name_kana", "ミドルネームよみはひらがなで入力してください。");
-                }
+            	validator.checkRequired("middle_name_kana", "ミドルネームよみ");
+                validator.checkHiragana("middle_name_kana", "ミドルネームよみ");
             }
-        
+            
+            // 旧姓よみ（任意だが入力があればよみ必須）
             if (bean.value("maiden_name").length() != 0)
             {
-                if (bean.value("maiden_name_kana").length() == 0)
-                {
-                    errors.put("maiden_name_kana", "旧姓よみを入力してください。");
-                }
-                else if (!isHiragana(bean.value("maiden_name_kana"))) 
-                {
-                    errors.put("maiden_name_kana", "旧姓よみはひらがなで入力してください。");
-                }
+            	validator.checkRequired("maiden_name_kana", "旧姓よみ");
+            	validator.checkHiragana("maiden_name_kana", "旧姓よみ");
             }
             
-            if (bean.value("admin").length() == 0)
-            {
-                errors.put("admin", "ユーザー区分を選択してください。");
-            }
+            // ユーザー区分
+            validator.checkRequired("admin", "ユーザー区分");
             
-            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-            Pattern pattern = Pattern.compile(emailRegex);
-            Matcher matcher = pattern.matcher(bean.value("memail"));
-            if (bean.value("memail").length() == 0)
-            {
-                errors.put("memail", "メールアドレスを入力してください。");
-            }
-            else if (!matcher.matches()) // メアドに使用できる半角英数記号以外のチェック
-            {  
-                errors.put("memail", "正しいメールアドレスを入力してください。");
-            }
-            else if ("ins".equals(bean.value("request_cmd"))) 
-            {
-                if (pUserInfoDao.isEmailExists(bean.value("memail")))
-                {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("memail", "このメールアドレスは既に登録されています。");
-                }
-            }
-            else if ("update".equals(bean.value("request_cmd"))) 
-            {
-                if (pUserInfoDao.isEmailExists(bean.value("memail"), bean.value("main_key")))
-                {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("memail", "このメールアドレスは既に登録されています。");
-                }
-            }
- 
+            // メールアドレス
+            validator.checkRequired("memail", "メールアドレス");
+            validator.checkEmailFormat("memail");
+            validator.checkEmailDuplicated("memail", pUserInfoDao, bean.value("main_key"));
+            
+            // ユーザーID
             if (bean.value("insert_user_id").length() != 0)
             {
-                if (bean.value("insert_user_id").length() < 6 || bean.value("insert_user_id").length() > 12)
-                {
-                    errors.put("insert_user_id", "ＩＤは６文字以上１２文字以下で入力してください。");
-                }
-                else if (!bean.value("insert_user_id").matches("^[a-zA-Z0-9]+$")) // メアドに使用できる半角英数記号以外のチェック
-                {  
-                    errors.put("insert_user_id", "ＩＤは半角英数で入力してください。");
-                }
-                else if ("ins".equals(bean.value("request_cmd"))) 
-                {
-                    if (pUserInfoDao.isIdExists(bean.value("insert_user_id"))) 
-                    {
-                        // 重複している場合のエラーメッセージ設定
-                        errors.put("insert_user_id", "このＩＤは既に登録されています。");
-                    }
-                }
-                else if ("update".equals(bean.value("request_cmd"))) 
-                {
-                    if (pUserInfoDao.isIdExists(bean.value("insert_user_id"), bean.value("main_key"))) 
-                    {
-                        // 重複している場合のエラーメッセージ設定
-                        errors.put("insert_user_id", "このＩＤは既に登録されています。");
-                    }
-                }
+            	validator.checkLength("insert_user_id", "ＩＤ", 6, 12);
+            	validator.checkHalfAlphanumeric("insert_user_id", "ＩＤ");
+                validator.checkIdDuplicated("insert_user_id", pUserInfoDao, bean.value("main_key"));
             }
         }
         else if ("delete".equals(bean.value("request_cmd"))) 
         {
-            // 日付フォーマットの指定
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-            String leaveDateStr = bean.value("leave_date");
-
-            // `leave_date` が数字でない場合
-            if (!isDateFormat(leaveDateStr))
-            {
-                errors.put("leave_date", "8桁の数字(ex: 20270101)を入力してください");
-            }
-            else 
-            {
-                try 
-                {
-                    // `leave_date` が空文字でないかチェック
-                    if (leaveDateStr == null || leaveDateStr.trim().isEmpty()) {
-                        // 空文字の場合はエラーメッセージを設定せずに `true` を返す
-                        return true;
-                    } else {
-                        // `leave_date` を Date 型に変換
-                        Date leaveDate = dateFormat.parse(leaveDateStr);
-
-                        // カレンダーを使用して昨日の日付を取得
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.add(Calendar.DATE, -1); // 昨日の日付に設定
-                        Date yesterday = calendar.getTime(); // 昨日の日付を取得
-
-                        // `leave_date` が昨日以前の日付である場合
-                        if (leaveDate.before(yesterday)) {
-                            errors.put("leave_date", "本日以降の日付を入力してください");
-                        }
-                    }
-                } 
-                catch (ParseException e) 
-                {
-                    // `leave_date` の解析に失敗した場合
-                    errors.put("leave_date", "日付の形式が不正です");
-                }
-            }
+        	// 退職予定日
+        	validator.checkDateFormat("leave_date");
+        	validator.checkFutureDate("leave_date");
         }
 
-            
-        if (errors.size() > 0)
-        {
-            return false;
-        }
-        return true;
+        return !validator.hasErrors();
     }
-    
-    /**
-     * 文字列が「yyyymmdd」にフォーマットされているかをチェックするメソッド.
-     * 
-     * @param value チェック対象の文字列
-     * @return 文字列が日付フォーマットされている場合true,それ以外はfalse
-     */
-    private boolean isDateFormat(String value) {
-    		if (value == null || value.length() != 8) return false;
-    		else {
-    			try {
-    				Integer.parseInt(value);
-    			} catch (NumberFormatException e) {
-    				return false;
-    			}
-    			
-    			return true;
-    		}
-    }
-    
-    /**
-     * 文字列がひらがなで構成されているかをチェックするメソッド.
-     *
-     * @param input チェック対象の文字列
-     * @return 文字列がひらがなで構成されている場合はtrue、それ以外はfalse
-     */
-    private boolean isHiragana(String input) {
-        return input.matches("^[\\u3040-\\u309Fー]+$");
-    }
-    
 
     /**
      * データベース処理を行う。.

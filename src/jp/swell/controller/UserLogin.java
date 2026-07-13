@@ -3,6 +3,7 @@ package jp.swell.controller;
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.http.WebBean;
 import jp.swell.common.ControllerBase;
+import jp.swell.common.util.Validator;
 import jp.swell.user.UserLoginInfo;
 
 /**
@@ -81,14 +82,12 @@ public class UserLogin extends ControllerBase {
     private boolean inputCheck() throws AtareSysException {
 
         WebBean bean = getWebBean();
-        if (bean.value("ac").length() == 0) {
-            bean.setError("ac", "未入力");
-            return false;
-        }
-        if (bean.value("ko").length() == 0) {
-            bean.setError("ko", "未入力");
-            return false;
-        }
+        Validator validator = new Validator(bean);
+        
+        // 未入力チェック
+        validator.checkRequired("ac", "username");
+        validator.checkRequired("ko", "password");
+        if (validator.hasErrors()) return false;
 
         UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
         if (userLoginInfo == null) {

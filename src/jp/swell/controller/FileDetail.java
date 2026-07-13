@@ -6,7 +6,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -32,6 +31,7 @@ import jp.patasys.common.util.FileUtil;
 import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
+import jp.swell.common.util.Validator;
 import jp.swell.dao.FileDao;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.user.UserLoginInfo;
@@ -426,20 +426,12 @@ public class FileDetail extends ControllerBase {
     }
     
     private boolean inputCheck() {
-    		WebBean bean = getWebBean();
-    		HashMap<String, String> errors = bean.getItemErrors();
-    		if (bean.value("input_name").trim().length() == 0) {
-    			errors.put("file_name", "ファイル名を入力してください");
-    		} else if (bean.value("input_name").trim().length() > 100) {
-    			errors.put("file_name", "ファイル名が長すぎます");
-    		}
-    		if (((byte[]) bean.object("file")).length == 0) {
-    			errors.put("file_link", "ファイルを選択してください");
-    		}
-    		if (bean.value("destination_user_info_id").trim().length() == 0) {
-    			errors.put("destination_user_info_id", "送信先ユーザーを選択してください");
-    		}
-    		return errors.isEmpty();
+		Validator validator = new Validator(getWebBean());
+		validator.checkRequired("input_name", "file_name", "ファイル名");
+		validator.checkMaxLength("input_name", "file_name", "ファイル名", 100);
+		validator.checkFileRequired("file", "file_link", "ファイル");
+		validator.checkRequired("destination_user_info_id", "送信先ユーザー");
+		return !validator.hasErrors();
     }
 
     /**

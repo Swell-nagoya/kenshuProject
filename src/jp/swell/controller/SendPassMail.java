@@ -1,8 +1,6 @@
 package jp.swell.controller;
 
 
-import java.util.HashMap;
-
 import javax.servlet.annotation.WebServlet;
 
 import jp.patasys.common.AtareSysException;
@@ -10,6 +8,7 @@ import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
 import jp.swell.common.SendMailCommon;
+import jp.swell.common.util.Validator;
 import jp.swell.dao.UserInfoDao;
 
 @WebServlet("/SendRecoveryEmailServlet")
@@ -127,23 +126,11 @@ public class SendPassMail extends ControllerBase
      */
     private boolean inputCheck(UserInfoDao pUserInfoDao) throws AtareSysException
     {
-        WebBean bean = getWebBean();
-        HashMap<String, String> errors = bean.getItemErrors();
-       
-        if (bean.value("memail").length() == 0)
-        {
-            errors.put("memail", "メールアドレスを入力してください。");
-        }
-        else if (!(pUserInfoDao.isEmailExists(bean.value("memail")))) 
-        {
-            // メールアドレス登録されていない場合のエラーメッセージ設定
-            errors.put("memail", "このメールアドレスは登録されていません。");
-        }
-        if (errors.size() > 0)
-        {
-            return false;
-        }
-        return true;
+    	Validator validator = new Validator(getWebBean());
+		validator.checkRequired("memail", "メールアドレス");
+		validator.checkEmailRegistered("memail", pUserInfoDao);
+		return !validator.hasErrors();
+    		
     }
     
     private UserInfoDao setWeb2Dao2InputInfo() throws AtareSysException {

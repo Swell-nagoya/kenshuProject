@@ -27,6 +27,7 @@ import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
+import jp.swell.common.util.Validator;
 import jp.swell.dao.RoomDao;
 
 /**
@@ -157,16 +158,9 @@ public class RoomList extends ControllerBase
      */
     private HashMap<String, String> inputCheck()
     {
-        WebBean bean = getWebBean();
-        HashMap<String, String> errors = bean.getItemErrors();
-        if (bean.value("list_search_room_name").length() > 0)
-        {
-            if (100 < bean.value("list_search_room_name").length())
-            {
-                errors.put("list_search_room_name", "部屋名の入力内容が長すぎます。");
-            }
-        }
-        return errors;
+    		Validator validator = new Validator(getWebBean());
+    		validator.checkMaxLength("list_search_room_name", "部屋名", 100);
+    		return validator.getErrors();
     }
 
     /**
