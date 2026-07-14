@@ -80,7 +80,7 @@ public class UserMenuReserve extends ControllerBase {
           {
               forward("UserMenuReserve.jsp");
               return; // メソッドを終了
-          }
+          }else
           {
               searchList();
           }

@@ -79,7 +79,7 @@ public class ReserveList extends ControllerBase {
                 bean.setValue("pageNo", "1");
                 searchReserve();
 
-            }
+            }else
             {
                 searchReserve();
             }

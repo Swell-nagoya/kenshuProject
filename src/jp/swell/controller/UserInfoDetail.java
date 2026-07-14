@@ -85,7 +85,7 @@ public class UserInfoDetail extends ControllerBase
                       {
                           bean.setError("データの取得に失敗しました");
                           forward("ViewUserList.jsp");
-                      } 
+                      }
                       else 
                       {
                           bean.setValue("request_name", "修正");
@@ -99,7 +99,7 @@ public class UserInfoDetail extends ControllerBase
                           bean.setError("データの取得に失敗しました");
                           forward("ViewUserList.jsp");
                       } 
-                      else 
+                      else
                       {
                           bean.setValue("request_name", "削除");
                           bean.setMessage("退職予定日を入力してください。");

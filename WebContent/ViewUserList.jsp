@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF8" ?>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-  pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="jp.swell.dao.UserInfoDao"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
 <%@ page import="jp.patasys.common.http.HtmlParts"%>
 <%@ page import="jp.swell.constant.UserInfoState"%>
 <%@ page import="java.util.ArrayList"%>
-<jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean"
-  scope="request" />
+<jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
@@ -120,9 +118,11 @@ td {
 }
 
 .list_label {
+  padding: 3px 7px;
   background: #00bcd4;
   color: #fff;
   text-align: center;
+  font-weight: normal;
 }
 
 .list_label a {
@@ -174,11 +174,31 @@ input[type="button"]:hover {
 footer {
   width: 100%;
 }
+/* Table ソート用のスタイル */
+.js-table_sort_label {
+  padding: 0;
+  background-position: right;
+  background-repeat: no-repeat;
+}
+.js-table_sort_label > a {
+  display: block;
+  padding: 3px 30px 3px 30px;
+}
+
+.js-table_sort_label {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAkElEQVQ4T73UMQ6AIAyF4Z/E0dHRIzh4/1M4eARHR0cH0wQMMdBC0sgMH4VXCDiP4OzRAg7AEjfegVsrwgIFW4ExIhewaagGfrFUmIrWwBpmoiXQwlS0BEoAU2P6JyBBvaMEzp3gYYGNxZWnWW3Tjf9yZPdQ3NtG7s1Cq6/lt6eX0nX9HHLU7fty6cNuJF/wAAIWJBX1VHH6AAAAAElFTkSuQmCC);
+}
+.js-table_sort_label.is-asc {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAgUlEQVQ4T+3SsQ2AIBCF4Z/eMdxCx3ARB7ByABdxDN3CMRzAkKCFHneQUFhwNXxc3sNReFxhjxSwAebw8ASc2hIW6LEFaANyAKOGauAbuxdT0RgYw0xUAi1MRSXQF9Antr8BvqhnJHAAukRwB1YLTLTkY9a3ycYrmB3Z50LN8IcZXsnkEhVNjPJpAAAAAElFTkSuQmCC);
+}
+.js-table_sort_label.is-desc {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAfUlEQVQ4T2NkoDJgpLJ5DKMGUh6io2E4RMIwhIGBwZpItx5lYGBYg6wWWyw3MzAw2BBp4BEGBoZaQgbyMDAw9DMwMKgQMPQOAwNDIQMDwxdCBoLkCRmK1TCQRnwJG5ehOA0jZCA2l+I1jBgDYYaCIgoEQBGAEmbo4Tz48zIAQNgSFR9+d5MAAAAASUVORK5CYII=);
+}
+
 </style>
-  <script type="text/javascript">
-    
-  <%--検索条件入力でenterキーが押された場合の処理--%>
-    jQuery(function($) {
+<script type="text/javascript">
+  jQuery(function($) {
+      <%--検索条件入力でenterキーが押された場合の処理--%>
       $(".select_table input").keydown(function(e) {
         if (e.which == 13) {
           go_submit('search');
@@ -189,7 +209,37 @@ footer {
           go_submit('jump');
         }
       });
+
+      new TableSort();
+
+
     });
+    <%--テーブルの順番入れ替え時のクラス付け替え--%>
+    class TableSort {
+
+      constructor(x, y) {
+        // ソート順番（昇順、降順）
+        this.sort_order = $("#sort_order").val();
+        // ソート時のkey取得
+        this.sort_key_old = $("#sort_key_old").val();
+        // ソートの対象となるクラス
+        this.table_sort_labelClassName = "js-table_sort_label";
+        // ソートの対象となる個別のID名
+        this.table_sortIdName = "js-table_sort-";
+        this.init();
+      }
+      init(){
+        this.sort();
+      }
+      sort(){
+        let $table_sort = $("#" + this.table_sortIdName + this.sort_key_old);
+        if($table_sort.length > 0){
+          // 昇順、降順の状態判定用のクラスを付与
+          $table_sort.addClass("is-" + this.sort_order);
+        }
+      }
+        
+    }
   <%--テーブルを一行ごとにいろを変える--%>
     $(document).ready(function() {
       $('table.list_table tr:even').addClass('even');
@@ -227,10 +277,12 @@ footer {
 
       navigator.clipboard.writeText(str)
     }
-  </script>
-</head>
+</script>
+</head> 
+
+  
 <body>
-    <div class="container">
+  <div class="container">
     <div class="new-btn">
       <input type="button" value="新規登録" onclick="go_detail('go_next','ins')" />
       <input type="button" value="　戻る　" onclick="go_submit('return')" />
@@ -311,20 +363,21 @@ footer {
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('last_name')">氏名</a></td>
-            <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('last_name_kana')">氏名よみ（かな）</a></td>
-            <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('memail')">メールアドレス</a></td>
-            <td class="list_label" style="width: 25%"></td>
-          </tr>
+            <th id="js-table_sort-last_name" class="list_label js-table_sort_label" style="width: 25%">
+              <a href="javaScript:go_sort_request('last_name')">氏名</a>
+            </th>
+            <th id="js-table_sort-last_name_kana" class="list_label js-table_sort_label" style="width: 25%">
+              <a href="javaScript:go_sort_request('last_name_kana')">氏名よみ（かな）</a>
+            </th>
+            <th id="js-table_sort-memail" class="list_label js-table_sort_label" style="width: 25%">
+              <a href="javaScript:go_sort_request('memail')">メールアドレス</a>
+            </th>
+            <th class="list_label" style="width: 25%"></th>
+          </tr> 
           <%
           for (Object item : webBean.arrayList("list")) {
               UserInfoDao dao = (UserInfoDao) item;
-
           %>
-         
           <tr class="list_tr">
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
             </td>
