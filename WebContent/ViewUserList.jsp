@@ -228,15 +228,15 @@ footer {
       navigator.clipboard.writeText(str)
     }
     function showSortIcon() {
-	    	const sortKeyOldValue = document.getElementById("sort_key_old").value;
-	    	const sortOrderValue = document.getElementById("sort_order").value;
-	    	if (sortKeyOldValue && sortOrderValue) {
-	    		const target = document.getElementById(sortKeyOldValue);
-	    		if (target) {
-	    			const icon = (sortOrderValue === 'asc') ? '▲' : '▼';
-	    			target.innerHTML += icon;
-	    		}
-	    	}
+      const sortKeyOldValue = document.getElementById("sort_key_old").value;
+      const sortOrderValue = document.getElementById("sort_order").value;
+      if (sortKeyOldValue && sortOrderValue) {
+        const target = document.getElementById('sort_' + sortKeyOldValue);
+      	if (target) {
+          const icon = (sortOrderValue === 'asc') ? '▲' : '▼';
+      	  target.innerHTML += icon;
+      	}
+      }
     }
     function handleCheckboxChange(event) {
       const selectedUsers = document.getElementById('selected_users');
@@ -369,9 +369,9 @@ footer {
             <td class="list_label" style="width: 24%">
             <a href="javaScript:go_sort_request('last_name_kana')">氏名</a></td>
             <td class="list_label" style="width: 24%">
-            <a href="javaScript:go_sort_request('last_name_kana')" id="last_name_kana">氏名よみ（かな）</a></td>
+            <a href="javaScript:go_sort_request('last_name_kana')" id="sort_last_name_kana">氏名よみ（かな）</a></td>
             <td class="list_label" style="width: 24%">
-            <a href="javaScript:go_sort_request('memail')" id="memail">メールアドレス</a></td>
+            <a href="javaScript:go_sort_request('memail')" id="sort_memail">メールアドレス</a></td>
             <td class="list_label" style="width: 24%">
             <% if (webBean.checkValue("admin", "1")) { %>
              <input type="button" id="update_permissions" value="一括権限更新" onclick="go_submit('bulk_update')"/>

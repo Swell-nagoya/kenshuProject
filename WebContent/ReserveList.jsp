@@ -365,6 +365,21 @@ a:hover {
       alert("削除がキャンセルされました");
     }
   }
+  function showSortIcon() {
+  	const sortKeyOldValue = document.getElementById("sort_key_old").value;
+  	const sortOrderValue = document.getElementById("sort_order").value;
+  	if (sortKeyOldValue && sortOrderValue) {
+  	  const target = document.getElementById('sort_' + sortKeyOldValue);
+  	  if (target) {
+  	    const icon = (sortOrderValue === 'asc') ? '▲' : '▼';
+  	    target.innerHTML += icon;
+  	  }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    showSortIcon();
+  });
 </script>
 </head>
 <body>
@@ -424,10 +439,10 @@ a:hover {
             <thead>
               <tr>
                 <th id="dateHeader" class="list_label">
-                <a href="javaScript:go_sort_request('reservation_date')">日付</a></th>
-                <th id="timeHeader" class="list_label"><a href="javaScript:go_sort_request('checkin_time')">時間</a></th>
-                <th id="memberHeader" class="list_label"><a href="javaScript:go_sort_request('last_name')">利用者名</a></th>
-                <th id="roomHeader" class="list_label"><a href="javaScript:go_sort_request('room_name')">部屋名</a></th>
+                <a href="javaScript:go_sort_request('reservation_date')" id="sort_reservation_date">日付</a></th>
+                <th id="timeHeader" class="list_label"><a href="javaScript:go_sort_request('checkin_time')" id="sort_checkin_time">時間</a></th>
+                <th id="memberHeader" class="list_label"><a href="javaScript:go_sort_request('last_name')" id="sort_last_name">利用者名</a></th>
+                <th id="roomHeader" class="list_label"><a href="javaScript:go_sort_request('room_name')" id=sort_room_name>部屋名</a></th>
                 <th>操作</th>
               </tr>
             </thead>

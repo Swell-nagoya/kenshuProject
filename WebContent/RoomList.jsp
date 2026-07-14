@@ -232,6 +232,21 @@ jQuery(function($)
     document.getElementById('request_cmd').value=request_cmd;
     document.getElementById('main_form').submit();
   }
+  function showSortIcon() {
+  	const sortKeyOldValue = document.getElementById("sort_key_old").value;
+  	const sortOrderValue = document.getElementById("sort_order").value;
+  	if (sortKeyOldValue && sortOrderValue) {
+  	  const target = document.getElementById('sort_' + sortKeyOldValue);
+  	  if (target) {
+  	    const icon = (sortOrderValue === 'asc') ? '▲' : '▼';
+  	    target.innerHTML += icon;
+  	  }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    showSortIcon();
+  });
 </script>
 </head>
 <body>
@@ -300,7 +315,7 @@ jQuery(function($)
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 70%"><a href="javaScript:go_sort_request('full_name')">部屋名</a></td>
+            <td class="list_label" style="width: 70%"><a href="javaScript:go_sort_request('room_name')" id="sort_room_name">部屋名</a></td>
             <td class="list_label" style="width: 30%"></td>
           </tr>
           <%
