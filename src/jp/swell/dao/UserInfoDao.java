@@ -1312,102 +1312,99 @@ public class UserInfoDao implements Serializable {
      * @throws AtareSysException フレームワーク共通例外
      */
     String dbWhere() throws AtareSysException {
-        StringBuffer where = new StringBuffer(1024);
+//        StringBuffer where = new StringBuffer(1024);
 
         // 本日の日付を取得
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date today = new Date();
         String todayStr = dateFormat.format(today);
+        List<String> conditions = new ArrayList<>();
 
         if (getUserInfoId().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("user_info.user_info_id = " + DbS.chara(getUserInfoId()));
+            conditions.add("user_info.user_info_id = " + DbS.chara(getUserInfoId()));
         }
 
         if (getLastName().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("user_info.last_name = " + DbS.chara(getLastName()));
+            conditions.add("user_info.last_name = " + DbS.chara(getLastName()));
         }
 
         if (getMiddleName().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("user_info.middle_name = " + DbS.chara(getMiddleName()));
+            conditions.add("user_info.middle_name = " + DbS.chara(getMiddleName()));
         }
 
         if (getFirstName().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("user_info.first_name = " + DbS.chara(getFirstName()));
+            conditions.add("user_info.first_name = " + DbS.chara(getFirstName()));
         }
 
         if (getMaidenName().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("user_info.maiden_name = " + DbS.chara(getMaidenName()));
+            conditions.add("user_info.maiden_name = " + DbS.chara(getMaidenName()));
         }
         if (getSearchFullName().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
+            conditions.add("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
                     + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, '')" + ") LIKE "
                     + DbS.chara("%" + getSearchFullName() + "%"));
         }
 
         if (getLastNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("user_info.last_name_kana = " + DbS.chara(getLastNameKana()));
+            conditions.add("user_info.last_name_kana = " + DbS.chara(getLastNameKana()));
         }
 
         if (getMiddleNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("user_info.middle_name_kana = " + DbS.chara(getMiddleNameKana()));
+            conditions.add("user_info.middle_name_kana = " + DbS.chara(getMiddleNameKana()));
         }
 
         if (getFirstNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("user_info.first_name_kana = " + DbS.chara(getFirstNameKana()));
+            conditions.add("user_info.first_name_kana = " + DbS.chara(getFirstNameKana()));
         }
 
         if (getMaidenNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("user_info.maiden_name_kana = " + DbS.chara(getMaidenNameKana()));
+            conditions.add("user_info.maiden_name_kana = " + DbS.chara(getMaidenNameKana()));
         }
         if (getSearchFullNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append(
+            conditions.add(
                     "CONCAT(" + "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
                             + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')"
                             + ") LIKE " + DbS.chara("%" + getSearchFullNameKana() + "%"));
         }
         if (getSearchName().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
+            conditions.add("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
                     + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, ''), " +
                     "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
                     + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')" + ") LIKE "
                     + DbS.chara("%" + getSearchName() + "%"));
         }
         if (getSearchMemail().length() > 0) {
-            where.append(where.length() > 0 ? " " + getSearchOperator() + " " : "");
-            where.append("user_info.memail LIKE" + DbS.chara("%" + getSearchMemail() + "%"));
+            conditions.add("user_info.memail LIKE " + DbS.chara("%" + getSearchMemail() + "%"));
         }
+        
+        StringBuffer where = new StringBuffer(1024);
+        if (!conditions.isEmpty()) {
+        	String joinedConditions = String.join(" " + getSearchOperator() + " ", conditions);
+        	where.append("(").append(joinedConditions).append(")");
+        }
+        
         if (userIds != null && userIds.length > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
-            where.append("user_info.user_info_id IN (");
+        	where.append(where.length() > 0 ? " AND " : "");
+        	
+            StringBuffer ids = new StringBuffer(1024);
+            ids.append("user_info.user_info_id IN (");
 
             // userIdsArrayに含まれる各IDをSQLのIN句に追加する
             for (int i = 0; i < userIds.length; i++) {
-                where.append(DbS.chara(userIds[i]));
+                ids.append(DbS.chara(userIds[i]));
                 if (i < userIds.length - 1) {
-                    where.append(", ");
+                    ids.append(", ");
                 }
             }
-            where.append(")");
+            ids.append(")");
+            
+            where.append(ids.toString());
         }
+        
         where.append(where.length() > 0 ? " AND " : "");
         where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
-
-        if (where.length() > 0) {
-            return "where " + where.toString();
-        }
-        return "";
+        
+        return "where " + where.toString();
     }
 
     /**
