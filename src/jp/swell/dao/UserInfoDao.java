@@ -1232,6 +1232,8 @@ public class UserInfoDao implements Serializable {
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
 
         rs = DbBase.dbSelect(sql);
+        System.out.println(sql);
+        
         int cnt = rs.size();
         if (cnt < 1)
             return array;
@@ -1324,6 +1326,13 @@ public class UserInfoDao implements Serializable {
                     + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')" + ") LIKE "
                     + DbS.chara("%" + getSearchName() + "%"));
         }
+
+        if (getMemail().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.memail LIKE " + DbS.chara("%" + getMemail() + "%"));
+        }
+        
+        
         if (userIds != null && userIds.length > 0) {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("user_info.user_info_id IN (");

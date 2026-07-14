@@ -142,6 +142,7 @@ public class ViewUserList extends ControllerBase
         WebBean bean = getWebBean();
         bean.setValue("list_search_full_name", "");
         bean.setValue("list_search_full_name_kana", "");
+        bean.setValue("list_search_email", "");
         bean.setValue("lineCount", "");
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
@@ -190,7 +191,8 @@ public class ViewUserList extends ControllerBase
         LinkedHashMap<String, String> sortKey = sortKey();
         UserInfoDao dao = new UserInfoDao();
         dao.setSearchName(bean.value("list_search_full_name"));
-
+        dao.setMemail(bean.value("list_search_email"));
+        
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount")))
         {

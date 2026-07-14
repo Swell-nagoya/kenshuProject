@@ -6,13 +6,10 @@
 <%@ page import="jp.swell.constant.UserInfoState"%>
 <%@ page import="java.util.ArrayList"%>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<meta http-equiv="Content-Script-Type" content="text/javascript" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
 <link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
 <link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
 <link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
@@ -88,9 +85,11 @@ td {
 }
 
 .search_label {
+  padding: 2px 4px;
   background: #00bcd4;
   color: #fff;
   text-align: center;
+  font-weight: normal;
 }
 
 .search_text, .search_line, .list_btn {
@@ -293,7 +292,6 @@ footer {
         </h1>
     </header>
     <form id="main_form" method="post" action="">
-    
       <input type="hidden" name="form_name" id="form_name"    value="ViewUserList" /> 
       <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
       <input type="hidden" name="request_cmd" id="request_cmd" value="" /> 
@@ -312,13 +310,17 @@ footer {
         </div>
         <table class="select_table">
           <tr>
-            <td class="search_label center" style="width: 50%">氏名</td>
-            <td class="search_label center" style="width: 20%">表示件数</td>
-            <td class="search_label center" style="width: 30%"></td>
+            <th class="search_label center" style="width: 30%">氏名</th>
+            <th class="search_label center" style="width: 30%">メールアドレス</th>
+            <th class="search_label center" style="width: 20%">表示件数</th>
+            <th class="search_label center" style="width: 20%"></th>
           </tr>
           <tr>
             <td class="search_text center">
               <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>" class="ime_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
+            </td>
+            <td class="search_text center">
+              <input type="email" name="list_search_email" id="list_search_email" size="30" maxlength="100" value="<%=webBean.txt("list_search_email")%>" class="ime_active <%=webBean.dispErrorCSS("list_search_email")%>"/> <%=webBean.dispError("list_search_email")%>
             </td>
             <td class="search_line center">
               <input type="text" name="lineCount" id="lineCount" size="2" maxlength="5" value="<%=webBean.txt("lineCount")%>" class="right ime_disabled" />件
