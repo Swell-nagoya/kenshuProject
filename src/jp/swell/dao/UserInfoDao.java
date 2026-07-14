@@ -1198,6 +1198,7 @@ public class UserInfoDao implements Serializable {
         HashMap<String, String> map = rs.get(0);
         int len = Integer.parseInt(map.get("count"));
         daoPageInfo.setRecordCount(len);
+
         if (len == 0)
             return array;
         if (-1 == daoPageInfo.getLineCount())

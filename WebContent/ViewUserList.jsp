@@ -19,6 +19,7 @@
 <script type="text/javascript" src="js/common.js"></script>
 <title>ユーザー情報一覧</title>
 <style type="text/css">
+
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f9f9f9;
@@ -70,11 +71,18 @@ h1 a:hover {
   margin: 0 auto;
 }
 
+table,
+.table-wrap {
+  margin-top: 20px;
+}
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
 }
+table:first-child {
+  margin-top: 0;
+}
+
 th {
   background-color: #f2f2f2;
   padding: 10px;
@@ -82,6 +90,33 @@ th {
 td {
   padding: 10px;
   border-bottom: 1px solid #ddd;
+}
+.table-wrap {
+  overflow: auto;
+  max-height: 500px;
+  border-top: 1px #a0a0a0 solid;
+  border-bottom: 1px #a0a0a0 solid;
+}
+.table-wrap > table {
+  width: 100%;
+  min-width: 800px;
+}
+
+.select_table th,
+.select_table td,
+.list_table th,
+.list_table td {
+  border: 1px #a0a0a0 solid;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+.select_table tr,
+.list_table tr {
+  padding: 0;
+}
+.select_table th,
+.select_table td {
+  padding: 2px;
 }
 
 .search_label {
@@ -110,29 +145,15 @@ td {
   margin-bottom: 10px;
 }
 
-.select_table td {
-  border-collapse: collapse;
-  border: 1px #a0a0a0 solid;
-  padding: 2px;
-}
-
-.list_label {
-  padding: 3px 7px;
-  background: #00bcd4;
-  color: #fff;
-  text-align: center;
-  font-weight: normal;
-}
-
-.list_label a {
-  color: #fff;
-  text-decoration: none;
-}
-
+.list_table th,
 .list_table td {
-  border-collapse: collapse;
-  border: 1px #a0a0a0 solid;
-  padding: 2px;
+  padding: 0;
+}
+.table-wrap .list_table > thead > tr > th {
+  border-top: none;
+}
+.table-wrap .list_table > tbody > tr:last-child td {
+  border-bottom: none;
 }
 
 #pageNo {
@@ -141,12 +162,9 @@ td {
 }
 
 
-.list_tr:nth-child(odd) {
-  background: #efefef;
-}
-
 /* ボタンの共通スタイル */
 input[type="button"] {
+  margin: 2px;
   border-radius: 10px; /* 角を丸くする */
   color: #fff; /* 文字色 */
   cursor: pointer; /* カーソルをポインタにする */
@@ -173,27 +191,77 @@ input[type="button"]:hover {
 footer {
   width: 100%;
 }
+
+
+/*./list_table*/
+.list_table .fixed {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.list_table thead > tr > .statas,
+.list_table tbody > tr > .statas {
+  width: 6em;
+}
+.list_table thead > tr > .full_name,
+.list_table tbody > tr > .full_name {
+  width: calc( 25% - 6em );
+}
+.list_table thead > tr > .full_name_kana,
+.list_table tbody > tr > .full_name_kana {
+  width: calc( 25% - 6em );
+}
+.list_table thead > tr > .memail,
+.list_table tbody > tr > .memail {
+  width: calc( 25% - 6em );
+}
+.list_table thead > tr > .search_button,
+.list_table tbody > tr > .search_button {
+  width: calc( 25% - 6em );
+}
+.list_title  {
+  border-left: 1px #a0a0a0 solid;
+  border-right: 1px #a0a0a0 solid;
+}
+
+.list_label {
+  padding: 3px 7px;
+  background: #00bcd4;
+  color: #fff;
+  text-align: center;
+  font-weight: normal;
+}
+
+.list_label a {
+  color: #fff;
+  text-decoration: none;
+}
+.list_tr:nth-child(odd) {
+  background: #efefef;
+}
+
+.list_tr:nth-child(even) {
+  background: #fff;
+}
 /* Table ソート用のスタイル */
-.js-table_sort_label {
-  padding: 0;
+.js-table_sort_label > a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3px 25px 3px 25px;
   background-position: right;
   background-repeat: no-repeat;
-}
-.js-table_sort_label > a {
-  display: block;
-  padding: 3px 30px 3px 30px;
-}
-
-.js-table_sort_label {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAkElEQVQ4T73UMQ6AIAyF4Z/E0dHRIzh4/1M4eARHR0cH0wQMMdBC0sgMH4VXCDiP4OzRAg7AEjfegVsrwgIFW4ExIhewaagGfrFUmIrWwBpmoiXQwlS0BEoAU2P6JyBBvaMEzp3gYYGNxZWnWW3Tjf9yZPdQ3NtG7s1Cq6/lt6eX0nX9HHLU7fty6cNuJF/wAAIWJBX1VHH6AAAAAElFTkSuQmCC);
 }
-.js-table_sort_label.is-asc {
+.js-table_sort_label > a:hover {
+  background-color: #6acfc9;
+}
+.js-table_sort_label.is-asc > a {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAgUlEQVQ4T+3SsQ2AIBCF4Z/eMdxCx3ARB7ByABdxDN3CMRzAkKCFHneQUFhwNXxc3sNReFxhjxSwAebw8ASc2hIW6LEFaANyAKOGauAbuxdT0RgYw0xUAi1MRSXQF9Antr8BvqhnJHAAukRwB1YLTLTkY9a3ycYrmB3Z50LN8IcZXsnkEhVNjPJpAAAAAElFTkSuQmCC);
 }
-.js-table_sort_label.is-desc {
+.js-table_sort_label.is-desc > a {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAfUlEQVQ4T2NkoDJgpLJ5DKMGUh6io2E4RMIwhIGBwZpItx5lYGBYg6wWWyw3MzAw2BBp4BEGBoZaQgbyMDAw9DMwMKgQMPQOAwNDIQMDwxdCBoLkCRmK1TCQRnwJG5ehOA0jZCA2l+I1jBgDYYaCIgoEQBGAEmbo4Tz48zIAQNgSFR9+d5MAAAAASUVORK5CYII=);
 }
-
 </style>
 <script type="text/javascript">
   jQuery(function($) {
@@ -228,15 +296,43 @@ footer {
         this.init();
       }
       init(){
+        this.sort_label_height();
         this.sort();
+        $(window).resize(() => {
+          this.sort_label_height();
+        });
       }
+
+      // 並び替えリンクの高さ調整
+      sort_label_height(){
+
+       if( $("." + this.table_sort_labelClassName + " > a").length > 0 ){
+         $("." + this.table_sort_labelClassName + " > a").css({
+               'height': ''
+         });
+         Promise.resolve().then(() => {
+           let sort_label_h = $("." + this.table_sort_labelClassName).height();
+
+           $("." + this.table_sort_labelClassName + " > a").css({
+              'height': sort_label_h
+           });
+         });
+
+        	
+        }
+      }
+
+      // 並び替えのアクティブ状態を付与
       sort(){
         let $table_sort = $("#" + this.table_sortIdName + this.sort_key_old);
         if($table_sort.length > 0){
           // 昇順、降順の状態判定用のクラスを付与
           $table_sort.addClass("is-" + this.sort_order);
         }
+
+
       }
+
         
     }
   <%--テーブルを一行ごとにいろを変える--%>
@@ -310,22 +406,26 @@ footer {
         </div>
         <table class="select_table">
           <tr>
-            <th class="search_label center" style="width: 30%">氏名</th>
-            <th class="search_label center" style="width: 30%">メールアドレス</th>
-            <th class="search_label center" style="width: 20%">表示件数</th>
+            <th class="search_label center statas" style="width: 10%">状態</th>
+            <th class="search_label center full_name" style="width: 30%">氏名</th>
+            <th class="search_label center memail" style="width: 30%">メールアドレス</th>
+            <th class="search_label center items_displayed" style="width: 10%">表示件数</th>
             <th class="search_label center" style="width: 20%"></th>
           </tr>
           <tr>
-            <td class="search_text center">
-              <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>" class="ime_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
+            <td class="search_text center statas">
+              <input type="checkbox" name="list_search_state" id="list_search_state" value="<%=webBean.txt("list_search_state")%>" class="search_active <%=webBean.dispErrorCSS("list_search_state")%>" /> <%=webBean.dispError("list_search_state")%>
             </td>
-            <td class="search_text center">
-              <input type="email" name="list_search_email" id="list_search_email" size="30" maxlength="100" value="<%=webBean.txt("list_search_email")%>" class="ime_active <%=webBean.dispErrorCSS("list_search_email")%>"/> <%=webBean.dispError("list_search_email")%>
+            <td class="search_text center full_name">
+              <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>" class="full_name_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
             </td>
-            <td class="search_line center">
+            <td class="search_text center memail">
+              <input type="email" name="list_search_memail" id="list_search_memail" size="30" maxlength="100" value="<%=webBean.txt("list_search_memail")%>" class="memail_active <%=webBean.dispErrorCSS("list_search_memail")%>"/> <%=webBean.dispError("list_search_memail")%>
+            </td>
+            <td class="search_line center items_displayed">
               <input type="text" name="lineCount" id="lineCount" size="2" maxlength="5" value="<%=webBean.txt("lineCount")%>" class="right ime_disabled" />件
             </td>
-            <td class="search_text center">
+            <td class="search_text center search_button">
               <input type="button" value="検索" onclick="go_submit('search')" /> 
               <input type="button" value="クリア" onclick="go_submit('clear')" /></td>
           </tr>
@@ -363,40 +463,55 @@ footer {
           }
           %>
         </div>
-        <table class="list_table">
-          <tr class="list_title">
-            <th id="js-table_sort-last_name" class="list_label js-table_sort_label" style="width: 25%">
-              <a href="javaScript:go_sort_request('last_name')">氏名</a>
-            </th>
-            <th id="js-table_sort-last_name_kana" class="list_label js-table_sort_label" style="width: 25%">
-              <a href="javaScript:go_sort_request('last_name_kana')">氏名よみ（かな）</a>
-            </th>
-            <th id="js-table_sort-memail" class="list_label js-table_sort_label" style="width: 25%">
-              <a href="javaScript:go_sort_request('memail')">メールアドレス</a>
-            </th>
-            <th class="list_label" style="width: 25%"></th>
-          </tr> 
-          <%
-          for (Object item : webBean.arrayList("list")) {
-              UserInfoDao dao = (UserInfoDao) item;
-          %>
-          <tr class="list_tr">
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
-            </td>
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
-            </td>
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
-            <td class="list_btn">
-              <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-              <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-              <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-              <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-            </td>
-          </tr>
-          <%
-          }
-          %>
-        </table>
+        <div class="table-wrap">
+          <table class="list_table">
+            <thead>
+              <tr class="list_title">
+                <th id="js-table_sort-state" class="list_label fixed statas js-table_sort_label">
+                  <a href="javaScript:go_sort_request('state_flg')">状態</a>
+                </th>
+                <th id="js-table_sort-last_name" class="list_label fixed full_name js-table_sort_label">
+                  <a href="javaScript:go_sort_request('last_name')">氏名</a>
+                </th>
+                <th id="js-table_sort-last_name_kana" class="list_label fixed full_name_kana js-table_sort_label" >
+                  <a href="javaScript:go_sort_request('last_name_kana')">氏名よみ（かな）</a>
+                </th>
+                <th id="js-table_sort-memail" class="list_label fixed memail js-table_sort_label">
+                  <a href="javaScript:go_sort_request('memail')">メールアドレス</a>
+                </th>
+                <th class="list_label search_button fixed"></th>
+              </tr>
+            </thead>
+            <tbody>
+            <%
+            for (Object item : webBean.arrayList("list")) {
+                UserInfoDao dao = (UserInfoDao) item;
+            %>
+            <tr class="list_tr">
+              <td class="list_input statas"><input type="checkbox" value=""  /></td>
+              <td class="list_text full_name"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
+              </td>
+              <td class="list_text full_name_kana"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
+              </td>
+              <td class="list_text memail"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
+              <td class="list_btn search_button">
+                <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+              </td>
+            </tr>
+            <%
+            }
+            %>
+            </tbody>
+          </table>
+        </div>
+        <!-- ./table-wrap -->
+        <%
+        } else {
+        %>
+          <p>該当するデータはありません。</p>
         <%
         }
         %>
