@@ -171,6 +171,30 @@ input[type="button"] {
   background: #90a0b0; /* デフォルトの背景色 */
 }
 
+.button_send_all,
+input[type="button"].button_send_all {
+
+    
+  display: inline-block;
+  margin-top: 20px;
+  padding: 5px 25px;
+  border-radius: 18px;
+  color: #000;
+  cursor: pointer;
+  background: #fff;
+  font-weight: 500;
+  font-size: 14px;
+  border: 2px solid #ff7f50;
+  transition: background 0.3s ease-in-out;
+  
+}
+
+.button_send_all:hover,
+input[type="button"].button_send_all:hover {
+  background-color: #ff7f50;
+  color: #fff;
+}
+
 .new-btn {
   position: absolute;
   right: 10px; /* 右端に10pxの余白を取る */
@@ -277,6 +301,8 @@ footer {
         }
       });
 
+      new SearchCheackAll();
+
       // 検索チェック時：value値の操作
       const list_search_cheack = new ListSearchCheack();
       list_search_cheack.event(); 
@@ -287,6 +313,53 @@ footer {
 
 
     });
+    <%--利用停止チェックボックスの状態判定(すべて）をinput(state_flg_all)に代入--%>
+    class SearchCheackAll {
+  	  constructor(x, y) {
+  	    // ソート順番（昇順、降順）
+  	    this.state_flg_name = "state_flg_";
+  	    this.init();
+      }
+      init(){
+          let items = [];
+    	  $('[id^="' +this.state_flg_name+'"]').each(function() {
+    		  items.push($(this).attr('id'));
+    	  })
+    	  const result = items.filter(item => item !== "state_flg_all");;
+    	  console.log(result);
+
+    	  
+      }
+      
+    }
+
+    <%--利用停止チェックボックスの状態判定、value適応--%>
+    class ListSearchCheack {
+    	  constructor(x, y) {
+    	    // ソート順番（昇順、降順）
+    	    this.list_search_state = "#list_search_state";
+    	    this.$list_search_state = $(this.list_search_state);
+    	  }
+    	  event() {
+    		if (this.$list_search_state.length === 0) return;
+    	    // 変更イベントを監視
+    	    this.$list_search_state.on('change', (e) => {
+    	    	this.chackFun(e.currentTarget);
+    	    });
+    	 }
+         getListSearchState(){
+             return this.list_search_state;
+         }
+     	 chackFun(target){
+         	 console.log(target)
+   	      let check = $(target).prop("checked");
+   	      if (check === true) {
+	        this.$list_search_state.val("8");
+	      } else {
+	        this.$list_search_state.val("1");
+	      }
+         }
+    }
     <%--テーブルの順番入れ替え時のクラス付け替え--%>
     class TableSort {
 
@@ -340,35 +413,6 @@ footer {
           $table_sort.addClass("is-" + this.sort_order);
         }
       }
-    }
-
-    // 利用停止チェックボックスの状態判定、value適応
-    class ListSearchCheack {
-    	  constructor(x, y) {
-    	    // ソート順番（昇順、降順）
-    	    this.list_search_state = "#list_search_state";
-    	    this.$list_search_state = $(this.list_search_state);
-    	  }
-    	  event() {
-    		if (this.$list_search_state.length === 0) return;
-    	    // 変更イベントを監視
-    	    this.$list_search_state.on('change', (e) => {
-    	    	this.chackFun(e.currentTarget);
-    	    });
-    	 }
-         getListSearchState(){
-         	 console.log(this.list_search_state)
-             return this.list_search_state;
-         }
-     	 chackFun(target){
-         	 console.log(target)
-   	      let check = $(target).prop("checked");
-   	      if (check === true) {
-	        this.$list_search_state.val("8");
-	      } else {
-	        this.$list_search_state.val("1");
-	      }
-         }
     }
     
   <%--テーブルを一行ごとにいろを変える--%>
@@ -441,7 +485,7 @@ footer {
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" /> 
       <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
       <input type="hidden" name="state_flg" id="state_flg" value="">
-      <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
+      <input type="hidden" name="state_flg_all" id="state_flg_all" value="">
       <div class="left">
         <div class="messages">
           <%=webBean.dispMessages()%>
@@ -550,7 +594,7 @@ footer {
               </td>
               <td class="list_text memail"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
               <td class="list_btn search_button">
-                <input type="button" value="保存" onclick="go_detail_1('go_next','stateUpdate','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <input type="button" value="登録" onclick="go_detail_1('go_next','stateUpdate','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
                 <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
                 <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
                 <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
@@ -562,8 +606,10 @@ footer {
             %>
             </tbody>
           </table>
+          
         </div>
         <!-- ./table-wrap -->
+        <input type="button" value="一括登録" class="button_send_all" onclick="go_submit('go_next','stateUpdateAll');" />
         <%
         } else {
         %>

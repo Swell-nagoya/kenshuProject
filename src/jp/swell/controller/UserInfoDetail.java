@@ -136,6 +136,10 @@ public class UserInfoDetail extends ControllerBase
                   {
                       dbStateEdit();
                   }
+                  else if ("stateUpdateAll".equals(bean.value("request_cmd"))) 
+                  {
+                      dbStateEdit();
+                  }
                   else 
                   {
                       forward("ViewUserList.jsp");
