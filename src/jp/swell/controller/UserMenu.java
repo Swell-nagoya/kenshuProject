@@ -285,7 +285,7 @@ private void searchList() throws AtareSysException
 
     // ユーザー情報の取得とセット
     UserInfoDao userInfoDao = new UserInfoDao();
-    ArrayList<UserInfoDao> users = userInfoDao.getAllUsers();
+    ArrayList<UserInfoDao> users = userInfoDao.getAllUsers(); //koko
     
     // ユーザセレクトの一覧を取得とセット
     ScheduleDao scheduleDao = new ScheduleDao();

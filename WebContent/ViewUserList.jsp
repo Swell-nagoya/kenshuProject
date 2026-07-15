@@ -201,23 +201,23 @@ footer {
 }
 .list_table thead > tr > .statas,
 .list_table tbody > tr > .statas {
-  width: 6em;
+  width: 12%;
 }
 .list_table thead > tr > .full_name,
 .list_table tbody > tr > .full_name {
-  width: calc( 25% - 6em );
+  width: 22%;
 }
 .list_table thead > tr > .full_name_kana,
 .list_table tbody > tr > .full_name_kana {
-  width: calc( 25% - 6em );
+  width: 22%;
 }
 .list_table thead > tr > .memail,
 .list_table tbody > tr > .memail {
-  width: calc( 25% - 6em );
+  width: 22%;
 }
 .list_table thead > tr > .search_button,
 .list_table tbody > tr > .search_button {
-  width: calc( 25% - 6em );
+  width: 22%;
 }
 .list_title  {
   border-left: 1px #a0a0a0 solid;
@@ -277,6 +277,9 @@ footer {
         }
       });
 
+      // 検索チェック時のvalue切り替え
+      new ListSearchCheack();
+      // テーブルのheadタグ内 ソート用のリンク表示設定
       new TableSort();
 
 
@@ -295,14 +298,19 @@ footer {
         this.table_sortIdName = "js-table_sort-";
         this.init();
       }
+
       init(){
         this.sort_label_height();
+        this.event();
+      }
+
+      event(){
         this.sort();
         $(window).resize(() => {
           this.sort_label_height();
         });
       }
-
+      
       // 並び替えリンクの高さ調整
       sort_label_height(){
 
@@ -318,7 +326,6 @@ footer {
            });
          });
 
-        	
         }
       }
 
@@ -329,12 +336,44 @@ footer {
           // 昇順、降順の状態判定用のクラスを付与
           $table_sort.addClass("is-" + this.sort_order);
         }
-
-
       }
-
-        
     }
+
+
+    class ListSearchCheack {
+
+    	  constructor(x, y) {
+    	    // ソート順番（昇順、降順）
+    	    this.$list_search_state = $("#list_search_state");
+    	    console.log(this.$list_search_state); // $ を追加
+    	    this.init();
+    	  }
+
+    	  init() {
+    	    // jQueryオブジェクトが画面に存在するかどうかは .length で判定します
+    	    if (this.$list_search_state.length > 0) {
+    	      this.event();
+    	    }
+    	  }
+
+    	  event() {
+    	    // 変更イベントを監視
+    	    this.$list_search_state.on('change', (e) => {
+    	      // アロー関数内では $(this) ではなく e.currentTarget を使うと安全です
+    	      let check = $(e.currentTarget).prop("checked");
+    	      
+    	      if (check === true) {
+    	        this.$list_search_state.val("8");
+    	      } else {
+    	        this.$list_search_state.val("");
+    	      }
+    	      
+    	      // 値が変わったことを確認するためにログ出力（必要に応じて消してください）
+    	      console.log("現在のval:", this.$list_search_state.val());
+    	    });
+    	  }
+    }
+    
   <%--テーブルを一行ごとにいろを変える--%>
     $(document).ready(function() {
       $('table.list_table tr:even').addClass('even');
@@ -360,7 +399,15 @@ footer {
       document.getElementById('action_cmd').value = action_cmd;
       document.getElementById('request_cmd').value = request_cmd;
       document.getElementById('main_key').value = main_key;
-      document.getElementById('main_form').submit();
+      document.getElementById('state_flg').value = main_key;
+      if( document.getElementById('state_flg_' + main_key) ){
+        if(document.getElementById('state_flg_' + main_key).checked){
+          document.getElementById('state_flg').value = '8';
+        } else {
+          document.getElementById('state_flg').value = '1';
+        }
+        document.getElementById('main_form').submit();
+      }
     }
     function go_detail(action_cmd, request_cmd) {
       document.getElementById('main_form').action = 'UserInfoDetail.do';
@@ -369,7 +416,6 @@ footer {
       document.getElementById('main_form').submit();
     }
     function copyToClipboard(str) {
-
       navigator.clipboard.writeText(str)
     }
 </script>
@@ -388,7 +434,7 @@ footer {
         </h1>
     </header>
     <form id="main_form" method="post" action="">
-      <input type="hidden" name="form_name" id="form_name"    value="ViewUserList" /> 
+      <input type="hidden" name="form_name" id="form_name" value="ViewUserList" /> 
       <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
       <input type="hidden" name="request_cmd" id="request_cmd" value="" /> 
       <input type="hidden" name="main_key" id="main_key" value="" /> 
@@ -397,6 +443,7 @@ footer {
       <input type="hidden" name="sort_order" id="sort_order"value="<%=webBean.txt("sort_order")%>" />
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" /> 
       <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
+      <input type="hidden" name="state_flg" id="state_flg" value="">
       <div class="left">
         <div class="messages">
           <%=webBean.dispMessages()%>
@@ -406,11 +453,11 @@ footer {
         </div>
         <table class="select_table">
           <tr>
-            <th class="search_label center statas" style="width: 10%">状態</th>
-            <th class="search_label center full_name" style="width: 30%">氏名</th>
-            <th class="search_label center memail" style="width: 30%">メールアドレス</th>
+            <th class="search_label center statas" style="width: 6%">利用<br>停止</th>
+            <th class="search_label center full_name" style="width: 31%">氏名</th>
+            <th class="search_label center memail" style="width: 31%">メールアドレス</th>
             <th class="search_label center items_displayed" style="width: 10%">表示件数</th>
-            <th class="search_label center" style="width: 20%"></th>
+            <th class="search_label center" style="width: 18%"></th>
           </tr>
           <tr>
             <td class="search_text center statas">
@@ -468,7 +515,7 @@ footer {
             <thead>
               <tr class="list_title">
                 <th id="js-table_sort-state" class="list_label fixed statas js-table_sort_label">
-                  <a href="javaScript:go_sort_request('state_flg')">状態</a>
+                  <a href="javaScript:go_sort_request('state_flg')">利用<br>停止</a>
                 </th>
                 <th id="js-table_sort-last_name" class="list_label fixed full_name js-table_sort_label">
                   <a href="javaScript:go_sort_request('last_name')">氏名</a>
@@ -488,13 +535,18 @@ footer {
                 UserInfoDao dao = (UserInfoDao) item;
             %>
             <tr class="list_tr">
-              <td class="list_input statas"><input type="checkbox" value=""  /></td>
-              <td class="list_text full_name"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
+              <td class="list_input statas">
+                <input type="checkbox" name="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" <% if(dao.getStateFlg() == 8){ %> checked<%}%>>
+               
+              </td>
+              <td class="list_text full_name">
+            <%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
               </td>
               <td class="list_text full_name_kana"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
               </td>
               <td class="list_text memail"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
               <td class="list_btn search_button">
+                <input type="button" value="保存" onclick="go_detail_1('go_next','stateUpdate','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
                 <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
                 <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
                 <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />

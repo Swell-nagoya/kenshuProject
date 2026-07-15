@@ -807,6 +807,7 @@ public class UserInfoDao implements Serializable {
      */
     public UserInfoDao() {
         fieldsArray.put("user_info_id", "user_info.user_info_id");
+        fieldsArray.put("state_flg", "user_info.state_flg");
         fieldsArray.put("password", "user_info.password");
         fieldsArray.put("last_name", "user_info.last_name");
         fieldsArray.put("middle_name", "user_info.middle_name");
@@ -897,7 +898,7 @@ public class UserInfoDao implements Serializable {
      * @param dao  UserInfoDaoこのテーブルのインスタンス
      */
     public void setUserInfoDao(HashMap<String, String> map, UserInfoDao dao) throws AtareSysException {
-        dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
+       	dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
         dao.setPassword(DbI.chara(map.get("password")));
         dao.setLastName(DbI.chara(map.get("last_name")));
         dao.setMiddleName(DbI.chara(map.get("middle_name")));
@@ -918,7 +919,10 @@ public class UserInfoDao implements Serializable {
      * @param dao  UserInfoDaoこのテーブルのインスタンス
      */
     public void setUserInfoDaoForJoin(HashMap<String, String> map, UserInfoDao dao) throws AtareSysException {
-        dao.setUserInfoId(DbI.chara(map.getOrDefault("user_info_id", "")));
+    	
+
+        dao.setStateFlg(Integer.parseInt(DbI.chara(map.getOrDefault("state_flg", ""))));
+       	dao.setUserInfoId(DbI.chara(map.getOrDefault("user_info_id", "")));
         dao.setPassword(DbI.chara(map.getOrDefault("password", "")));
         dao.setLastName(DbI.chara(map.getOrDefault("last_name", "")));
         dao.setMiddleName(DbI.chara(map.getOrDefault("middle_name", "")));
@@ -932,6 +936,8 @@ public class UserInfoDao implements Serializable {
         dao.setMemail(DbI.chara(map.getOrDefault("memail", "")));
         dao.setAdmin(DbI.chara(map.getOrDefault("admin", "")));
         dao.setLeaveDate(DbI.chara(map.getOrDefault("leave_date", "")));
+        
+        System.out.println("dao.getStateFlg" + dao.getStateFlg());
     }
 
     /** 
@@ -1015,6 +1021,25 @@ public class UserInfoDao implements Serializable {
                 + " where user_info_id = " + DbS.chara(userInfoId)
                 + "";
         int ret = DbBase.dbExec(sql);
+        if (ret != 1)
+            throw new AtareSysException("dbUpdate number or record exception.");
+        return true;
+    }
+
+    /**
+     * user_info ユーザ情報テーブルのデータを更新する。(ステータスを更新).
+     *
+     * @return true:成功 false:失敗
+     * @throws AtareSysException フレームワーク共通例外
+     */
+    public boolean dbUpdateStateFlg(String userInfoId, String stateFlag) throws AtareSysException {
+        String sql = "update user_info set "
+                + " state_flg = " + DbO.chara(stateFlag)
+                + " where user_info_id = " + DbS.chara(userInfoId)
+                + "";
+        int ret = DbBase.dbExec(sql);
+        
+        System.out.println("sql:" + sql);
         if (ret != 1)
             throw new AtareSysException("dbUpdate number or record exception.");
         return true;
@@ -1169,6 +1194,7 @@ public class UserInfoDao implements Serializable {
         for (int i = 0; i < cnt; i++) {
             UserInfoDao dao = new UserInfoDao();
             map = rs.get(i);
+            System.out.println("map"+map);
             dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
@@ -1185,7 +1211,7 @@ public class UserInfoDao implements Serializable {
      * @throws AtareSysException エラー
      */
     static public ArrayList<UserInfoDao> dbSelectList(UserInfoDao myclass, LinkedHashMap<String, String> sortKey,
-            DaoPageInfo daoPageInfo) throws AtareSysException {
+        DaoPageInfo daoPageInfo) throws AtareSysException {
         ArrayList<UserInfoDao> array = new ArrayList<UserInfoDao>();
 
         // レコードの総件数を求める*/
@@ -1211,6 +1237,7 @@ public class UserInfoDao implements Serializable {
         int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql = "select "
                 + "user_info.user_info_id as user_info___user_info_id"
+                + ",user_info.state_flg as user_info___state_flg"
                 + ",user_info.password as user_info___password"
                 + ",user_info.last_name as user_info___last_name"
                 + ",user_info.middle_name as user_info___middle_name"
@@ -1233,7 +1260,7 @@ public class UserInfoDao implements Serializable {
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
 
         rs = DbBase.dbSelect(sql);
-        System.out.println(sql);
+        //System.out.println("sql:" + sql);
         
         int cnt = rs.size();
         if (cnt < 1)
@@ -1242,6 +1269,7 @@ public class UserInfoDao implements Serializable {
         for (int i = 0; i < cnt; i++) {
             map = rs.get(i);
             UserInfoDao dao = new UserInfoDao();
+        //    System.out.println("map:" + map);
             dao.setUserInfoDaoForJoin(map, dao);
             array.add(dao);
         }
@@ -1444,6 +1472,7 @@ public class UserInfoDao implements Serializable {
             if (isStateFlgNine && isLeaveDateBeforeToday) {
                 continue;
             }
+            
             // ユーザーDAOのインスタンスにデータを設定
             user.setUserInfoId(map.get("user_info_id"));
             user.setStateFlg(Integer.parseInt(stateFlg));
