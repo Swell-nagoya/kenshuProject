@@ -193,9 +193,8 @@ public class ViewUserList extends ControllerBase
         UserInfoDao dao = new UserInfoDao();
         dao.setSearchName(bean.value("list_search_full_name"));
         dao.setMemail(bean.value("list_search_memail"));
-        System.out.println("hit:");
-        System.out.println(bean.value("list_search_state"));
-      //  dao.setStateFlg(Integer.parseInt(bean.value("list_search_state")));
+        String stateStr = bean.value("list_search_state");
+        dao.setStateFlg((stateStr == null || stateStr.isEmpty()) ? 1 : Integer.parseInt(stateStr));
         
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount")))
@@ -212,7 +211,6 @@ public class ViewUserList extends ControllerBase
         {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
-        //ここで取得
         
         ArrayList<UserInfoDao> listData = UserInfoDao.dbSelectList(dao, sortKey, daoPageInfo);
         bean.setValue("lineCount", daoPageInfo.getLineCount());

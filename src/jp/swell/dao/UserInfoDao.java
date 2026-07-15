@@ -937,7 +937,6 @@ public class UserInfoDao implements Serializable {
         dao.setAdmin(DbI.chara(map.getOrDefault("admin", "")));
         dao.setLeaveDate(DbI.chara(map.getOrDefault("leave_date", "")));
         
-        System.out.println("dao.getStateFlg" + dao.getStateFlg());
     }
 
     /** 
@@ -1039,7 +1038,6 @@ public class UserInfoDao implements Serializable {
                 + "";
         int ret = DbBase.dbExec(sql);
         
-        System.out.println("sql:" + sql);
         if (ret != 1)
             throw new AtareSysException("dbUpdate number or record exception.");
         return true;
@@ -1194,7 +1192,6 @@ public class UserInfoDao implements Serializable {
         for (int i = 0; i < cnt; i++) {
             UserInfoDao dao = new UserInfoDao();
             map = rs.get(i);
-            System.out.println("map"+map);
             dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
@@ -1260,7 +1257,7 @@ public class UserInfoDao implements Serializable {
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
 
         rs = DbBase.dbSelect(sql);
-        //System.out.println("sql:" + sql);
+        
         
         int cnt = rs.size();
         if (cnt < 1)
@@ -1269,7 +1266,6 @@ public class UserInfoDao implements Serializable {
         for (int i = 0; i < cnt; i++) {
             map = rs.get(i);
             UserInfoDao dao = new UserInfoDao();
-        //    System.out.println("map:" + map);
             dao.setUserInfoDaoForJoin(map, dao);
             array.add(dao);
         }
@@ -1293,6 +1289,11 @@ public class UserInfoDao implements Serializable {
         if (getUserInfoId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("user_info.user_info_id = " + DbS.chara(getUserInfoId()));
+        }
+        
+        if (getStateFlg() != 1) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("user_info.state_flg = " + DbS.chara(getStateFlg()));
         }
 
         if (getLastName().length() > 0) {

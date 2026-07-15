@@ -73,17 +73,14 @@ public class UserInfoDetail extends ControllerBase
           {
               if ("go_next".equals(bean.value("action_cmd"))) 
               {
-               System.out.println("hitdesu1111");
                   if ("ins".equals(bean.value("request_cmd"))) 
                   {
-                   System.out.println("hitdesu11");
                       bean.setValue("input_info", Sup.serialize(new UserInfoDao()));
                       bean.setValue("request_name", "登録");
                       forward("UserInfoDetail.jsp");
                   } 
                   else if ("update".equals(bean.value("request_cmd"))) 
                   {
-                   System.out.println("hitdesu11");
                       if (!setDb2Web()) 
                       {
                           bean.setError("データの取得に失敗しました");
@@ -97,7 +94,6 @@ public class UserInfoDetail extends ControllerBase
                   }
                   else if ("delete".equals(bean.value("request_cmd"))) 
                   {
-                   System.out.println("hitdesu11");
                       if (!setDb2Web()) 
                       {
                           bean.setError("データの取得に失敗しました");
@@ -112,7 +108,6 @@ public class UserInfoDetail extends ControllerBase
                   }
                   else if ("check".equals(bean.value("request_cmd"))) 
                   {
-                   System.out.println("hitdesu11");
                       if (!setDb2Web()) 
                       {
                           bean.setError("データの取得に失敗しました");
@@ -126,7 +121,6 @@ public class UserInfoDetail extends ControllerBase
                   }
                   else if ("access".equals(bean.value("request_cmd"))) 
                   {
-                   System.out.println("hitdesu11");
                       if (!setDb2Web()) 
                       {
                           bean.setError("データの取得に失敗しました");
@@ -140,20 +134,7 @@ public class UserInfoDetail extends ControllerBase
                   }
                   else if ("stateUpdate".equals(bean.value("request_cmd"))) 
                   {
-                 //  if (checkDataMatching())
-                 //  {
-                  //     setInputInfo2Dao2Web();
-                       setWeb2DaoViewUserList();
-                       dbStateEdit();
-           /*        }
-                   else 
-                   {
-                    System.out.println("hitdesu2");
-                       bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
-                       setDb2Web();
-                       forward("UserInfoDetail.jsp");
-                   }
-               */  	
+                      dbStateEdit();
                   }
                   else 
                   {
@@ -638,19 +619,6 @@ public class UserInfoDetail extends ControllerBase
      
      
     }
-    private UserInfoDao setWeb2DaoViewUserList() throws AtareSysException {
-
-     WebBean bean = getWebBean();
-     UserInfoDao dao = new UserInfoDao();
-
-     dao.setUserInfoId(bean.value("user_info_id"));
-     System.out.println("state_flgTest:" + Integer.parseInt(bean.value("state_flg")));
-     dao.setStateFlg(Integer.parseInt(bean.value("state_flg")));
-     
-     bean.setValue("input_info", Sup.serialize(dao));  // DAOオブジェクトをシリアライズしてWebBeanに保存
-     return dao;
-    }
-    
     
     
     /**

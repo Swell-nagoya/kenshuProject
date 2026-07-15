@@ -277,8 +277,11 @@ footer {
         }
       });
 
-      // 検索チェック時のvalue切り替え
-      new ListSearchCheack();
+      // 検索チェック時：value値の操作
+      const list_search_cheack = new ListSearchCheack();
+      list_search_cheack.event(); 
+      list_search_cheack.chackFun(list_search_cheack.getListSearchState());
+
       // テーブルのheadタグ内 ソート用のリンク表示設定
       new TableSort();
 
@@ -339,39 +342,33 @@ footer {
       }
     }
 
-
+    // 利用停止チェックボックスの状態判定、value適応
     class ListSearchCheack {
-
     	  constructor(x, y) {
     	    // ソート順番（昇順、降順）
-    	    this.$list_search_state = $("#list_search_state");
-    	    console.log(this.$list_search_state); // $ を追加
-    	    this.init();
+    	    this.list_search_state = "#list_search_state";
+    	    this.$list_search_state = $(this.list_search_state);
     	  }
-
-    	  init() {
-    	    // jQueryオブジェクトが画面に存在するかどうかは .length で判定します
-    	    if (this.$list_search_state.length > 0) {
-    	      this.event();
-    	    }
-    	  }
-
     	  event() {
+    		if (this.$list_search_state.length === 0) return;
     	    // 変更イベントを監視
     	    this.$list_search_state.on('change', (e) => {
-    	      // アロー関数内では $(this) ではなく e.currentTarget を使うと安全です
-    	      let check = $(e.currentTarget).prop("checked");
-    	      
-    	      if (check === true) {
-    	        this.$list_search_state.val("8");
-    	      } else {
-    	        this.$list_search_state.val("");
-    	      }
-    	      
-    	      // 値が変わったことを確認するためにログ出力（必要に応じて消してください）
-    	      console.log("現在のval:", this.$list_search_state.val());
+    	    	this.chackFun(e.currentTarget);
     	    });
-    	  }
+    	 }
+         getListSearchState(){
+         	 console.log(this.list_search_state)
+             return this.list_search_state;
+         }
+     	 chackFun(target){
+         	 console.log(target)
+   	      let check = $(target).prop("checked");
+   	      if (check === true) {
+	        this.$list_search_state.val("8");
+	      } else {
+	        this.$list_search_state.val("1");
+	      }
+         }
     }
     
   <%--テーブルを一行ごとにいろを変える--%>
@@ -444,6 +441,7 @@ footer {
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" /> 
       <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
       <input type="hidden" name="state_flg" id="state_flg" value="">
+      <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
       <div class="left">
         <div class="messages">
           <%=webBean.dispMessages()%>
@@ -460,9 +458,15 @@ footer {
             <th class="search_label center" style="width: 18%"></th>
           </tr>
           <tr>
-            <td class="search_text center statas">
-              <input type="checkbox" name="list_search_state" id="list_search_state" value="<%=webBean.txt("list_search_state")%>" class="search_active <%=webBean.dispErrorCSS("list_search_state")%>" /> <%=webBean.dispError("list_search_state")%>
-            </td>
+          <td class="search_text center statas">
+  <input type="checkbox" 
+         name="list_search_state" 
+         id="list_search_state" 
+         value="8" 
+         class="search_active <%=webBean.dispErrorCSS("list_search_state")%>" 
+         <% if("8".equals(webBean.txt("list_search_state"))) { %> checked<% } %> /> 
+  <%=webBean.dispError("list_search_state")%>
+</td>
             <td class="search_text center full_name">
               <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>" class="full_name_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
             </td>
