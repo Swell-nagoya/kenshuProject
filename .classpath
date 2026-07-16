@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib"/>
+	<classpathentry kind="lib" path="test-lib/byte-buddy-1.12.19.jar"/>
+	<classpathentry kind="lib" path="test-lib/byte-buddy-agent-1.12.19.jar"/>
+	<classpathentry kind="lib" path="test-lib/mockito-core-4.11.0.jar"/>
+	<classpathentry kind="lib" path="test-lib/mockito-inline-4.11.0.jar"/>
+	<classpathentry kind="lib" path="test-lib/objenesis-3.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="module" value="true"/>

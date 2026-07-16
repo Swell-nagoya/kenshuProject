@@ -17,7 +17,7 @@ package jp.swell.controller;
 
 import java.security.SecureRandom;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.patasys.common.AtareSysException;
@@ -559,27 +559,38 @@ public class UserInfoDetail extends ControllerBase
     
     public void dbBulkUpdate() throws AtareSysException
     {
-    		WebBean bean = getWebBean();
-    		UserInfoDao dao = new UserInfoDao();
-    		dao.setAdmin(bean.value("target_role"));
-    		ObjectMapper mapper = new ObjectMapper();
-		try {
-			String [][] usersArray = mapper.readValue(bean.value("selected_users"), String[][].class);
-			DbBase.dbBeginTran();
-			for (String[] user : usersArray) {
-				String userInfoId = user[0];
-				dao.dbUpdateAdmin(userInfoId);
-			}
-			DbBase.dbCommitTran();
-			forward("ViewUserList.do");
-		} catch (JsonMappingException e) {
-			bean.setError("error", "JSONデータの処理中にエラーが発生しました。");
-			forward("ErrorPage.jsp");
-		} catch (Exception e) {
-			DbBase.dbRollbackTran();
-			bean.setError("transaction_error", "データベースの更新中にエラーが発生したためロールバックしました。");
-			forward("UserInfoDetail_4.jsp");
-		}
+	    	WebBean bean = getWebBean();
+	    	String selectedUsersJson = bean.value("selected_users");
+	    	if (selectedUsersJson == null || selectedUsersJson.trim().isEmpty()) {
+	    		bean.setError("error", "更新対象のユーザー情報がありません。");
+	    		forward("UserInfoDetail_4.jsp");
+	    		return;
+	    	}
+	    	try {
+		    	ObjectMapper mapper = new ObjectMapper();
+	    		String [][] usersArray = mapper.readValue(selectedUsersJson , String[][].class);
+	    		if (usersArray == null || usersArray.length == 0) {
+	    			bean.setError("error", "更新対象のユーザー情報がありません。");
+	    			forward("UserInfoDetail_4.jsp");
+	    			return;
+	    		}
+	    		DbBase.dbBeginTran();
+		    	UserInfoDao dao = new UserInfoDao();
+		    	dao.setAdmin(bean.value("target_role"));
+	    		for (String[] user : usersArray) {
+	    			String userInfoId = user[0];
+	    			dao.dbUpdateAdmin(userInfoId);
+	    		}
+	    		DbBase.dbCommitTran();
+	    		forward("ViewUserList.do");
+	    	} catch (JsonProcessingException e) {
+	    		bean.setError("error", "JSONデータの処理中にエラーが発生しました。");
+	    		forward("UserInfoDetail_4.jsp");
+	    	} catch (Exception e) {
+	    		DbBase.dbRollbackTran();
+	    		bean.setError("transaction_error", "データベースの更新中にエラーが発生したためロールバックしました。");
+	    		forward("UserInfoDetail_4.jsp");
+	    	}
 
     }
     

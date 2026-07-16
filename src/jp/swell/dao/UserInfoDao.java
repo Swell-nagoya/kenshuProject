@@ -1312,8 +1312,6 @@ public class UserInfoDao implements Serializable {
      * @throws AtareSysException フレームワーク共通例外
      */
     String dbWhere() throws AtareSysException {
-//        StringBuffer where = new StringBuffer(1024);
-
         // 本日の日付を取得
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date today = new Date();
