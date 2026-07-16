@@ -301,7 +301,6 @@ footer {
         }
       });
 
-      new SearchCheackAll();
 
       // 検索チェック時：value値の操作
       const list_search_cheack = new ListSearchCheack();
@@ -313,26 +312,6 @@ footer {
 
 
     });
-    <%--利用停止チェックボックスの状態判定(すべて）をinput(state_flg_all)に代入--%>
-    class SearchCheackAll {
-  	  constructor(x, y) {
-  	    // ソート順番（昇順、降順）
-  	    this.state_flg_name = "state_flg_";
-  	    this.init();
-      }
-      init(){
-          let items = [];
-    	  $('[id^="' +this.state_flg_name+'"]').each(function() {
-    		  items.push($(this).attr('id'));
-    	  })
-    	  const result = items.filter(item => item !== "state_flg_all");;
-    	  console.log(result);
-
-    	  
-      }
-      
-    }
-
     <%--利用停止チェックボックスの状態判定、value適応--%>
     class ListSearchCheack {
     	  constructor(x, y) {
@@ -351,7 +330,6 @@ footer {
              return this.list_search_state;
          }
      	 chackFun(target){
-         	 console.log(target)
    	      let check = $(target).prop("checked");
    	      if (check === true) {
 	        this.$list_search_state.val("8");
@@ -485,7 +463,8 @@ footer {
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" /> 
       <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
       <input type="hidden" name="state_flg" id="state_flg" value="">
-      <input type="hidden" name="state_flg_all" id="state_flg_all" value="">
+      <input type="hidden" name="state_flg_all" id="state_flg_all" value="<%=webBean.txt("state_flg_all")%>">
+     
       <div class="left">
         <div class="messages">
           <%=webBean.dispMessages()%>
@@ -503,14 +482,10 @@ footer {
           </tr>
           <tr>
           <td class="search_text center statas">
-  <input type="checkbox" 
-         name="list_search_state" 
-         id="list_search_state" 
-         value="8" 
-         class="search_active <%=webBean.dispErrorCSS("list_search_state")%>" 
+          <input type="checkbox"  name="list_search_state"  id="list_search_state" value="8" class="search_active <%=webBean.dispErrorCSS("list_search_state")%>" 
          <% if("8".equals(webBean.txt("list_search_state"))) { %> checked<% } %> /> 
-  <%=webBean.dispError("list_search_state")%>
-</td>
+           <%=webBean.dispError("list_search_state")%>
+           </td>
             <td class="search_text center full_name">
               <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>" class="full_name_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
             </td>
@@ -579,14 +554,23 @@ footer {
             </thead>
             <tbody>
             <%
+              // 【追記】サーブレットから送信されたチェック済みのID配列を取得
+              String[] listStateFlgs = (String[]) request.getAttribute("checkedFlgs");
+              java.util.List<String> checkedList = listStateFlgs != null ? java.util.Arrays.asList(listStateFlgs) : new java.util.ArrayList<>();
+            %>
+            <%
             for (Object item : webBean.arrayList("list")) {
                 UserInfoDao dao = (UserInfoDao) item;
             %>
             <tr class="list_tr">
               <td class="list_input statas">
-                <input type="checkbox" name="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" <% if(dao.getStateFlg() == 8){ %> checked<%}%>>
-               
-              </td>
+                <!-- input type="checkbox" name="list_state_flg" id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" <% if(dao.getStateFlg() == 8){ %> checked<%}%> -->
+<input type="checkbox" 
+       name="list_state_flg" 
+       id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" 
+       value="<%=WebUtil.txtEscape(dao.getUserInfoId())%>"
+       <% if(dao.getStateFlg() == 8){ %> checked<%}%>>
+       
               <td class="list_text full_name">
             <%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
               </td>
@@ -609,7 +593,7 @@ footer {
           
         </div>
         <!-- ./table-wrap -->
-        <input type="button" value="一括登録" class="button_send_all" onclick="go_submit('go_next','stateUpdateAll');" />
+        <input type="button" value="一括登録" class="button_send_all" onclick="go_detail('go_next','stateUpdateAll');" />
         <%
         } else {
         %>

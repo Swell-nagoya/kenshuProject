@@ -64,6 +64,7 @@ public class ViewUserList extends ControllerBase
     public void doActionProcess() throws AtareSysException
     {
         WebBean bean = getWebBean();
+        
         if ("ViewUserList".equals(bean.value("form_name")))
         {
             bean.trimAllItem();
@@ -88,7 +89,7 @@ public class ViewUserList extends ControllerBase
             }
             else if ("sort".equals(bean.value("action_cmd")))
             {
-                searchList();
+             searchList();
             }
             else if ("clear".equals(bean.value("action_cmd")))
             {
@@ -120,6 +121,7 @@ public class ViewUserList extends ControllerBase
             forward("ViewUserList.jsp");
         }
     }
+
 
     /**
      * 最初の画面を表示する。.
@@ -213,6 +215,23 @@ public class ViewUserList extends ControllerBase
         }
         
         ArrayList<UserInfoDao> listData = UserInfoDao.dbSelectList(dao, sortKey, daoPageInfo);
+
+        ArrayList<String> hitUserIds = new ArrayList<String>();
+        if (listData != null) {
+	
+         for (UserInfoDao rowDao : listData) {
+            if (rowDao.getUserInfoId() != null) {
+              hitUserIds.add(rowDao.getUserInfoId());
+            }
+          }
+        }
+
+         String joinedIds = String.join(",", hitUserIds);
+
+         bean.setValue("state_flg_all",joinedIds);
+
+
+
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         bean.setValue("recordCount", daoPageInfo.getRecordCount());

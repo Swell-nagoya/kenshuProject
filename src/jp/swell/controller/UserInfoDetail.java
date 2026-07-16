@@ -67,6 +67,7 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doActionProcess() throws AtareSysException {
       WebBean bean = getWebBean();
+      
 
       try {
           if ("ViewUserList".equals(bean.value("form_name"))) 
@@ -138,7 +139,7 @@ public class UserInfoDetail extends ControllerBase
                   }
                   else if ("stateUpdateAll".equals(bean.value("request_cmd"))) 
                   {
-                      dbStateEdit();
+                  	    dbStateEdit();
                   }
                   else 
                   {
@@ -296,7 +297,7 @@ public class UserInfoDetail extends ControllerBase
               bean.setMessage("以下の項目を修正してください。");
               forward("UserInfoDetail.jsp");
           }
-      } 
+      }
       catch (Exception e) 
       {
           bean.setError("処理中にエラーが発生しました: " + e.getMessage());
@@ -694,9 +695,49 @@ public class UserInfoDetail extends ControllerBase
     }
 
     /**
-     * ステータス保存の場合
+     * ステータス保存の場合(利用停止)
      * @throws AtareSysException
      */
+    public void dbStateEdit() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        bean.rtrimAllItem();
+        UserInfoDao dao = setWeb2Dao2InputInfo();
+        
+        
+        String[] listStateFlgs = getRequest().getParameterValues("list_state_flg");
+        getRequest().setAttribute("checkedFlgs", listStateFlgs);
+        
+        String state_flg_all_text = bean.value("state_flg_all");
+        String[] state_flg_all_array = state_flg_all_text.split(",");
+        System.out.println("array:" + state_flg_all_array);
+        try {
+            DbBase.dbBeginTran();
+            
+            // 画面表示されている利用停止の値をすべてリセット「1」.
+            if (state_flg_all_array != null) {
+               for (int z = 0; z < state_flg_all_array.length; z++) {
+                String userInfoId = state_flg_all_array[z]; // 1つずつ値を取り出す
+                dao.dbUpdateStateFlg(userInfoId,"1");
+               }
+            }
+            // 画面表示されている利用停止の値でチェックが入っているものは「8」.
+            if (listStateFlgs != null) {
+               for (int i = 0; i < listStateFlgs.length; i++) {
+                 String userInfoId = listStateFlgs[i]; // 1つずつ値を取り出す
+                 dao.dbUpdateStateFlg(userInfoId,"8");
+                 
+               }
+             }
+            DbBase.dbCommitTran();
+            redirect("ViewUserList.do");
+        } catch (Exception e) {
+            DbBase.dbRollbackTran();
+            forward("ViewUserList.jsp");
+        }
+        
+    }
+    /*
     public void dbStateEdit() throws AtareSysException
     {
         WebBean bean = getWebBean();
@@ -709,8 +750,8 @@ public class UserInfoDetail extends ControllerBase
            
         try {
             DbBase.dbBeginTran();
-            dao.dbUpdateStateFlg(userInfoId,stateFlg);
-            DbBase.dbCommitTran();
+       //     dao.dbUpdateStateFlg(userInfoId,stateFlg);
+          //  DbBase.dbCommitTran();
             redirect("ViewUserList.do");
         } catch (Exception e) {
             DbBase.dbRollbackTran();
@@ -718,7 +759,7 @@ public class UserInfoDetail extends ControllerBase
         }
         
     }
-    
+    */
     /**
      * 削除の場合
      * @throws AtareSysException
@@ -858,4 +899,6 @@ public class UserInfoDetail extends ControllerBase
         return false;
       }
     }
+    
+    
 }

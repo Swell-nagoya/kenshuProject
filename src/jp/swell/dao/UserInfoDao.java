@@ -1020,6 +1020,7 @@ public class UserInfoDao implements Serializable {
                 + " where user_info_id = " + DbS.chara(userInfoId)
                 + "";
         int ret = DbBase.dbExec(sql);
+        
         if (ret != 1)
             throw new AtareSysException("dbUpdate number or record exception.");
         return true;
@@ -1255,20 +1256,22 @@ public class UserInfoDao implements Serializable {
         sql += where;
         sql += order;
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
-
         rs = DbBase.dbSelect(sql);
-        
+
         
         int cnt = rs.size();
         if (cnt < 1)
             return array;
-
+        
         for (int i = 0; i < cnt; i++) {
             map = rs.get(i);
+
             UserInfoDao dao = new UserInfoDao();
             dao.setUserInfoDaoForJoin(map, dao);
             array.add(dao);
         }
+
+
         return array;
     }
 
@@ -1687,5 +1690,7 @@ public class UserInfoDao implements Serializable {
         // TODO 自動生成されたメソッド・スタブ
         return null;
     }
+    
+    
 
 }
