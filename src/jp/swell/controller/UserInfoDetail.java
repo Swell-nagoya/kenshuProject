@@ -254,7 +254,6 @@ public class UserInfoDetail extends ControllerBase
               }
               else if ("return".equals(bean.value("action_cmd"))) 
               {
-
                if ("insConfirm".equals(bean.value("request_cmd"))) 
                {
                    bean.setValue("request_cmd", "ins");

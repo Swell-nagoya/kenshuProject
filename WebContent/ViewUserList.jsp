@@ -453,9 +453,9 @@ footer {
         </h1>
     </header>
     <form id="main_form" method="post" action="">
-      <input type="hidden" name="form_name" id="form_name" value="ViewUserList" /> 
+      <input type="hidden" name="form_name" id="form_name" value="ViewUserList" />
       <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
-      <input type="hidden" name="request_cmd" id="request_cmd" value="" /> 
+      <input type="hidden" name="request_cmd" id="request_cmd" value="" />
       <input type="hidden" name="main_key" id="main_key" value="" /> 
       <input type="hidden" name="sort_key_old" id="sort_key_old" value="<%=webBean.txt("sort_key_old")%>" /> 
       <input type="hidden" name="sort_key" id="sort_key" value="" /> 
@@ -564,13 +564,7 @@ footer {
             %>
             <tr class="list_tr">
               <td class="list_input statas">
-                <!-- input type="checkbox" name="list_state_flg" id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" <% if(dao.getStateFlg() == 8){ %> checked<%}%> -->
-<input type="checkbox" 
-       name="list_state_flg" 
-       id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" 
-       value="<%=WebUtil.txtEscape(dao.getUserInfoId())%>"
-       <% if(dao.getStateFlg() == 8){ %> checked<%}%>>
-       
+              <input type="checkbox" name="list_state_flg" id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" value="<%=WebUtil.txtEscape(dao.getUserInfoId())%>" <% if(dao.getStateFlg() == 8){ %> checked<%}%>>
               <td class="list_text full_name">
             <%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
               </td>
@@ -578,9 +572,15 @@ footer {
               </td>
               <td class="list_text memail"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
               <td class="list_btn search_button">
+                 <% //管理者
+                if( "1".equals(webBean.txt("admin")) ) { %>
                 <input type="button" value="登録" onclick="go_detail_1('go_next','stateUpdate','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <% } %>
                 <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <% //管理者
+                if( "1".equals(webBean.txt("admin")) ) { %>
                 <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <% } %>
                 <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
                 <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
               </td>

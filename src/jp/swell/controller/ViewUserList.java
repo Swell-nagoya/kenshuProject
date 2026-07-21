@@ -28,6 +28,7 @@ import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.UserInfoDao;
+import jp.swell.user.UserLoginInfo;
 
 /**
  * ：user_info ユーザ情報テーブルデータをLIST表示するためのコントローラクラス
@@ -64,10 +65,11 @@ public class ViewUserList extends ControllerBase
     public void doActionProcess() throws AtareSysException
     {
         WebBean bean = getWebBean();
-        
         if ("ViewUserList".equals(bean.value("form_name")))
         {
+            bean.setValue("user_info_id", getLoginUserId());
             bean.trimAllItem();
+            adminSet();
             if ("search".equals(bean.value("action_cmd")))
             {
                 bean.setValue("pageNo", "1");
@@ -109,13 +111,13 @@ public class ViewUserList extends ControllerBase
         }
         else if ("UserInfoDetail".equals(bean.value("form_name")))
         {
-            setWebBeanFromSerialize(bean.value("search_info"));
-            bean = getWebBean();
+            adminSet();
             searchList();
             forward("ViewUserList.jsp");
         }
         else
         {
+           	adminSet();
             formInit();
             searchList();
             forward("ViewUserList.jsp");
@@ -123,6 +125,23 @@ public class ViewUserList extends ControllerBase
     }
 
 
+    /**
+     * 最初の画面を表示する。.
+     *
+     * @throws AtareSysException
+     */
+    private void adminSet() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+
+        if (userLoginInfo != null && userLoginInfo.isSystemManager()) {
+            bean.setValue("admin", "1");
+        } else {
+            bean.setValue("admin", "0");
+        }
+        
+    }
     /**
      * 最初の画面を表示する。.
      *
@@ -226,9 +245,9 @@ public class ViewUserList extends ControllerBase
           }
         }
 
-         String joinedIds = String.join(",", hitUserIds);
+        String joinedIds = String.join(",", hitUserIds);
 
-         bean.setValue("state_flg_all",joinedIds);
+        bean.setValue("state_flg_all",joinedIds);
 
 
 

@@ -69,7 +69,7 @@ public class UserLogin extends ControllerBase {
                 UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
                 // 管理メニューへ
                 if (userLoginInfo != null && userLoginInfo.isSystemManager()) {
-                    redirect("MenuAdmin.do"); 
+                    redirect("MenuAdmin.do");
                 // 一般ユーザー
                 } else {
                     redirect("UserMenu.do");
