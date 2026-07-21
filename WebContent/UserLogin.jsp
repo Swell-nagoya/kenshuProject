@@ -48,14 +48,12 @@
   margin: 0;
  }
  
+
  .main__form {
   border: 1px solid black;
   border-radius: 10px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
   width: 400px;
+  margin: 20px auto 0 auto;
  }
  
  .ime_disabled {
@@ -101,7 +99,15 @@
    position: absolute;
    bottom: 0%; 
  }
-    </style>
+ 
+ .error {
+   color: #d32f2f;
+   font-size: 14px;
+   display: block;
+   margin-top: 5px;
+   font-weight: bold;
+ }
+</style>
 <script type="text/javascript">
   //
   jQuery(function($) {
@@ -131,6 +137,8 @@
              <h1>LOGIN</h1>
              <div class="main__text">
                  <p>usernameとpasswordを入力してください</p>
+                 <span id="error_ac" class="error"><%= webBean.dispError("ac") %> </span>
+                 <span id="error_ko" class="error"><%= webBean.dispError("ko") %> </span>
              </div>
             <form method="post" id="main_form" action="" class="main__form">
                 <input type="hidden" name="form_name" id="form_name" value="UserLogin" />
@@ -149,8 +157,6 @@
                   <a href="#" id="reissue" onclick="go_submit_1('repassword')" class="link-btn">パスワード再発行</a>
                 </div>
             </form>
-              <%=webBean.getErrors().getOrDefault("ac", "")%>
-              <%=webBean.getErrors().getOrDefault("ko", "")%>
             <div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
         </div>
     </div>
