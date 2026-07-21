@@ -1296,8 +1296,7 @@ public class UserInfoDao implements Serializable {
             where.append("user_info.user_info_id = " + DbS.chara(getUserInfoId()));
         }
 
-        System.out.println("getStateFlg:" + getStateFlg());
-        if ( getStateFlg() == 8) {
+        if (getStateFlg() == 8) {
 
             where.append(where.length() > 0 ? " AND " : "");
             where.append("user_info.state_flg = " + DbS.chara(getStateFlg()));

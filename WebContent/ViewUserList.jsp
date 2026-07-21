@@ -572,10 +572,7 @@ footer {
               </td>
               <td class="list_text memail"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
               <td class="list_btn search_button">
-                 <% //管理者
-                if( "1".equals(webBean.txt("admin")) ) { %>
-                <input type="button" value="登録" onclick="go_detail_1('go_next','stateUpdate','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-                <% } %>
+               
                 <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
                 <% //管理者
                 if( "1".equals(webBean.txt("admin")) ) { %>
@@ -583,6 +580,10 @@ footer {
                 <% } %>
                 <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
                 <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <% //管理者
+                 if( "1".equals(webBean.txt("admin")) ) { %>
+                 <input type="button" value="利用停止登録" onclick="go_detail_1('go_next','stateUpdate','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <% } %>
               </td>
             </tr>
             <%
