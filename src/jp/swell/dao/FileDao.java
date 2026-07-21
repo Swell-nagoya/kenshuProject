@@ -459,7 +459,6 @@ public class FileDao implements Serializable {
                 map.put("files___system_file_name", rs.getString("files___system_file_name"));
                 map.put("files___upload_user_id", rs.getString("files___upload_user_id"));
                 map.put("files___expiration_date", rs.getString("files___expiration_date"));
-
                 setFileDaoForJoin(map, this);
                 return true;
             } catch (SQLException e) {
@@ -687,7 +686,6 @@ public class FileDao implements Serializable {
 
         int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         int limit = daoPageInfo.getLineCount();
-
         String sql = "SELECT "
                 + "files.file_id AS files___file_id, "
                 + "files.user_info_id AS files___user_info_id, "
@@ -708,17 +706,20 @@ public class FileDao implements Serializable {
                 + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
                 + where + order
                 + " LIMIT " + limit + " OFFSET " + offset;
-
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
-            dao.setFileDaoForJoin(map, dao);
-            dao.setFirstName(map.get("user_first_name"));
-            dao.setLastName(map.get("user_last_name"));
+            UserInfoDao user = new UserInfoDao();
+            dao.setFileDao(map, dao);
+            user.dbSelect(map.get("upload_user_id"));
+            dao.setUploaderFirstName(user.getFirstName());
+            dao.setUploaderLastName(user.getLastName());
+            dao.setFirstName(map.get("first_name"));
+            dao.setLastName(map.get("last_name"));
             resultList.add(dao);
         }
-
+        System.out.println(resultList);
         return resultList;
     }
 

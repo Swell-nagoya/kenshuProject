@@ -344,7 +344,7 @@ th {
 					/
 					<%=webBean.html("maxPageNo")%>
 					ページ〚全
-					<%=webBean.html("recordCount")%>件〛<br />
+					<%=webBean.html("recordCount")%>件〛<br/>
 					<%
 					if (!"1".equals(webBean.value("pageNo"))) {
 					%>
