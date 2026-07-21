@@ -169,6 +169,7 @@ public class FileList extends ControllerBase {
         sentDao.setSearchFileName(bean.value("list_search_file_name"));
         List<FileDao> sentFiles = FileDao.dbSelectList(sentDao, sortKey, daoPageInfo);
         for (FileDao file : sentFiles) {
+        	
             file.setFileType("sent");
         }
 
@@ -185,8 +186,8 @@ public class FileList extends ControllerBase {
         ArrayList<FileDao> fileList = new ArrayList<>();
         fileList.addAll(receivedFiles);
         fileList.addAll(sentFiles);
-
         bean.setValue("list", fileList);
+        
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         // 受信件数だけでは recordCount が正確に反映されない可能性があるため、明示的に再セット
