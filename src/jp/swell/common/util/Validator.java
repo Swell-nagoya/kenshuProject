@@ -44,14 +44,19 @@ public class Validator {
 	 * 必須入力チェックを行うメソッド。
 	 * 
 	 * @param fieldName チェック対象のフィールド名
+	 */
+	public void checkRequired(String fieldName) {
+		checkRequired(fieldName, fieldName);
+	}
+	
+	/**
+	 * 必須入力チェックを行うメソッド。
+	 * 
+	 * @param fieldName チェック対象のフィールド名
 	 * @param itemName エラーメッセージに表示する項目名
 	 */
 	public void checkRequired(String fieldName, String itemName) {
-		if (errors.containsKey(fieldName)) return;
-		String value = bean.value(fieldName);
-		if (value.trim().isEmpty()) {
-			errors.put(fieldName, itemName + "を入力してください。");
-		}
+		checkRequired(fieldName, fieldName, itemName);
 	}
 	
 	/**
@@ -88,8 +93,8 @@ public class Validator {
 			errors.put(fieldName1, pairItemName + "を入力してください。");
 			errors.put(fieldName2, "");
 		}
-		this.checkRequired(fieldName1, itemName1);
-		this.checkRequired(fieldName2, itemName2);
+		checkRequired(fieldName1, itemName1);
+		checkRequired(fieldName2, itemName2);
 	}
 	
 	/**
