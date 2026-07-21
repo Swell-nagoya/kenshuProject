@@ -302,7 +302,7 @@ public class RoomDetail extends ControllerBase
         validator.checkRequired("room_name", "room_name_empty", "部屋名");
         validator.checkValueChanged(
         	"room_name",
-        	"bofore_name",
+        	"before_name",
         	"room_name_duplicate",
         	"部屋名が以前と同じです。別の名前を入力してください。"
         );
