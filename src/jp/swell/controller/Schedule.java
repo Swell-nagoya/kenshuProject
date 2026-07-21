@@ -208,6 +208,8 @@ public class Schedule extends ControllerBase {
       daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
     }
     ArrayList<UserInfoDao> listData = UserInfoDao.dbSelectList(dao, sortKey, daoPageInfo);
+
+
     bean.setValue("lineCount", daoPageInfo.getLineCount());
     bean.setValue("pageNo", daoPageInfo.getPageNo());
     bean.setValue("recordCount", daoPageInfo.getRecordCount());
@@ -225,12 +227,13 @@ public class Schedule extends ControllerBase {
     ScheduleDao scheduleDao = new ScheduleDao();
     ArrayList<ScheduleDao> scheduleDaos = ScheduleDao.dbSelectList(scheduleDao, scheduleSortKey, daoPageInfo);
 
+    bean.setValue("list", listData);
     bean.getWebValues().remove("search_info");
     String search_info = Sup.serialize(bean);
     bean.setValue("search_info", search_info);
     bean.setValue("users", users);
     bean.setValue("userReserves", userReserves);
-    bean.setValue("list", listData);
+    
     bean.setValue("scheduleDaos", scheduleDaos);
   }
 

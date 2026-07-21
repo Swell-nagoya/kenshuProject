@@ -1216,6 +1216,7 @@ public class UserInfoDao implements Serializable {
         String sql = "select count(*) as count"
                 + " from user_info "
                 + myclass.dbWhere();
+
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         if (0 == rs.size())
             return array;
@@ -1257,21 +1258,22 @@ public class UserInfoDao implements Serializable {
         sql += order;
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs = DbBase.dbSelect(sql);
+        
 
         
         int cnt = rs.size();
+
         if (cnt < 1)
             return array;
         
         for (int i = 0; i < cnt; i++) {
-            map = rs.get(i);
+         map = rs.get(i);
 
-            UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
-            array.add(dao);
-        }
-
-
+         UserInfoDao dao = new UserInfoDao();
+         dao.setUserInfoDaoForJoin(map, dao);
+         array.add(dao);
+     }
+        
         return array;
     }
 
@@ -1293,8 +1295,10 @@ public class UserInfoDao implements Serializable {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("user_info.user_info_id = " + DbS.chara(getUserInfoId()));
         }
-        
-        if (getStateFlg() != 1) {
+
+        System.out.println("getStateFlg:" + getStateFlg());
+        if ( getStateFlg() == 8) {
+
             where.append(where.length() > 0 ? " AND " : "");
             where.append("user_info.state_flg = " + DbS.chara(getStateFlg()));
         }
