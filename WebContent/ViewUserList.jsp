@@ -537,7 +537,7 @@ footer {
           <table class="list_table">
             <thead>
               <tr class="list_title">
-                <th id="js-table_sort-state" class="list_label fixed statas js-table_sort_label">
+                <th id="js-table_sort-state_flg" class="list_label fixed statas js-table_sort_label">
                   <a href="javaScript:go_sort_request('state_flg')">利用<br>停止</a>
                 </th>
                 <th id="js-table_sort-last_name" class="list_label fixed full_name js-table_sort_label">
