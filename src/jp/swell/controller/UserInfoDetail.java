@@ -222,7 +222,6 @@ public class UserInfoDetail extends ControllerBase
                   {
                       setInputInfo2Dao2Web();
                       insert2Db();
-                      redirect("ViewUserList.do");
                   }
                   else if ("update".equals(bean.value("request_cmd"))) 
                   {
@@ -592,9 +591,11 @@ public class UserInfoDetail extends ControllerBase
 	    		signUp();
 	    		scheduleInsert();
 	    		DbBase.dbCommitTran();
+            redirect("ViewUserList.do");
 	    	} catch (Exception e) {
 	    		DbBase.dbRollbackTran();
 	    		bean.setError("transaction_error", "データベースの更新中にエラーが発生したためロールバックしました。");
+	    		forward("UserInfoDetail_3.jsp");
 	    	}
     }
     

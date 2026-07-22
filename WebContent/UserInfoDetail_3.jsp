@@ -211,6 +211,7 @@ table {
         <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
 
         <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
+        	<div class="errors"><%=webBean.dispErrorMessages()%></div>
 
         <div class="left">
           <table class="input-table">
