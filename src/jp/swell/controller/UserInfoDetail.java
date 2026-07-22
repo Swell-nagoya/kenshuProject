@@ -338,7 +338,10 @@ public class UserInfoDetail extends ControllerBase
         bean.setValue("input_info", Sup.serialize(dao));
         return true;
     }
-
+    
+     boolean test(){
+    	return true;
+    }
     /**
      * 入力チェックを行う。.
      *
@@ -383,7 +386,7 @@ public class UserInfoDetail extends ControllerBase
      *
      * @return errorSet HashMapにエラーフィールドをキーとしてエラーメッセージを返す
      */
-     private HashMap<String, String> nameCheck(WebBean bean)
+     HashMap<String, String> nameCheck(WebBean bean)
      {
        HashMap<String, String> errorSet = new HashMap<>();
 
@@ -408,7 +411,7 @@ public class UserInfoDetail extends ControllerBase
       *
       * @return errorSet HashMapにエラーフィールドをキーとしてエラーメッセージを返す
       */
-     private HashMap<String, String> nameKanaCheck(WebBean bean)
+     HashMap<String, String> nameKanaCheck(WebBean bean)
      {
        HashMap<String, String> errorSet = new HashMap<>();
        String lastNameKana = bean.value("last_name_kana");
@@ -422,8 +425,9 @@ public class UserInfoDetail extends ControllerBase
            errorSet.put("first_name_kana", "");
            return errorSet;
        }
-       
        if (lastNameKana.length() == 0) {
+
+        System.out.println("set");
            errorSet.put("last_name_kana", "名字のよみを入力してください。");
        }
         if (firstNameKana.length() == 0) {
@@ -433,15 +437,16 @@ public class UserInfoDetail extends ControllerBase
        
        if (lastNameKana.length() > 0 || firstNameKana.length() > 0) {
            if (!isHiragana(lastNameKana) && !isHiragana(firstNameKana)) {
-               errorSet.put("last_name_kana", "氏名のよみはひらがなで入力してください。");
+               errorSet.putIfAbsent("last_name_kana", "氏名のよみはひらがなで入力してください。");
            }
            if (!isHiragana(lastNameKana) ) {
-              	errorSet.put("last_name_kana", "名字のよみはひらがなで入力してください。");
+              	errorSet.putIfAbsent("last_name_kana", "名字のよみはひらがなで入力してください。");
            }
            if (!isHiragana(firstNameKana)) {
-               errorSet.put("first_name_kana", "名前のよみはひらがなで入力してください。");
+               errorSet.putIfAbsent("first_name_kana", "名前のよみはひらがなで入力してください。");
            }
        }
+       System.out.println(errorSet);
        return errorSet;
        
      }
@@ -562,16 +567,11 @@ public class UserInfoDetail extends ControllerBase
       *
       */
      private void checkDuplicateForInsert(String userId, UserInfoDao pUserInfoDao, HashMap<String, String> errorSet) throws AtareSysException {
-       /*if (pUserInfoDao.isIdExists(userId)) {
-         errorSet.put("insert_user_id", "このＩＤは既に登録されています。");
-       }
-       */
        checkDuplicateForInsert(userId, "", pUserInfoDao, errorSet); 
     }
 
      private void checkDuplicateForInsert(String userId, String mainKey, UserInfoDao pUserInfoDao, HashMap<String, String> errorSet) throws AtareSysException {
       if (pUserInfoDao.isIdExists(userId, mainKey)) {
-      	System.out.println("hithithit");
           errorSet.put("insert_user_id", "このＩＤは既に登録されています。");
       }
      }

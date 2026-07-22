@@ -177,9 +177,9 @@
           <tr>
             <td class="style_head3 style_head_size" style="width: 30%">氏名よみ<span> ※</span></td>
             <td class="input-text" style="width: 70%">
-              <input type="text" name="last_name_kana" id="last_name_kana" maxlength="100" value="<%=webBean.txt("last_name_kana")%>" class="ime_active <%=webBean.dispErrorCSS("last_name_kana")%>" autocomplete="family_name" placeholder="しぶや" />
-              <input type="text" name="first_name_kana" id="first_name_kana" maxlength="100" value="<%=webBean.txt("first_name_kana")%>" class="ime_active <%=webBean.dispErrorCSS("first_name_kana")%>" autocomplete="given_name" placeholder="はなこ" />
-                <br /> <span id="error_last_name_kana" class="error"><%=webBean.dispError("last_name_kana")%></span>
+              <input type="text" name="first_name_kana" id="first_name_kana" maxlength="100" value="<%=webBean.txt("first_name_kana")%>" class="ime_active <%=webBean.dispErrorCSS("first_name_kana")%>" autocomplete="given_name" placeholder="しぶや" />
+              <input type="text" name="last_name_kana" id="last_name_kana" maxlength="100" value="<%=webBean.txt("last_name_kana")%>" class="ime_active <%=webBean.dispErrorCSS("last_name_kana")%>" autocomplete="family_name" placeholder="はなこ" />
+              <br /> <span id="error_last_name_kana" class="error"><%=webBean.dispError("last_name_kana")%></span>
                        <span id="error_first_name_kana" class="error"><%=webBean.dispError("first_name_kana")%></span>
             </td>
           </tr>

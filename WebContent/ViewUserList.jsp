@@ -734,25 +734,27 @@ footer {
             %>
             <tr class="list_tr">
               <td class="list_input statas">
-              <input type="checkbox" name="list_state_flg" id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" class="js-state_flg_check" value="<%=WebUtil.txtEscape(dao.getUserInfoId())%>" <% if(dao.getStateFlg() == 8){ %> checked<%}%>>
+                <input type="checkbox" name="list_state_flg" id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" class="js-state_flg_check" value="<%=WebUtil.txtEscape(dao.getUserInfoId())%>" <% if(dao.getStateFlg() == 8){ %> checked<%}%><% if(!"1".equals(webBean.txt("admin")) ) { %> disabled<% } %>>
+              
+              </td>
               <td class="list_text full_name">
-            <%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
+                <%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
               </td>
               <td class="list_text full_name_kana"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
               </td>
               <td class="list_text memail"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
               <td class="list_btn search_button">
                
-                <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
                 <% //管理者
                 if( "1".equals(webBean.txt("admin")) ) { %>
-                <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
                 <% } %>
-                <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-                <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
+                <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
                 <% //管理者
                  if( "1".equals(webBean.txt("admin")) ) { %>
-                 <input type="button" value="利用停止登録" onclick="go_detail_1('go_next','stateUpdate','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+                 <input type="button" value="利用停止登録" onclick="go_detail_1('go_next','stateUpdate','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
                 <% } %>
               </td>
             </tr>
