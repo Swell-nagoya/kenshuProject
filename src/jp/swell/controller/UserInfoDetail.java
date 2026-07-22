@@ -492,18 +492,10 @@ public class UserInfoDetail extends ControllerBase
   }
 
     
-    private boolean signUp() throws AtareSysException {
+    private void signUp() throws AtareSysException {
       UserInfoDao dao = setWeb2Dao2InputInfo();
-
-      try {
-        // 入力内容をデータベースに保存
-        dao.dbInsert();
-        
-        return true;
-        
-      } catch (Exception e) {
-        return false;
-      }
+      // 入力内容をデータベースに保存
+      dao.dbInsert();
     }
     
     /**
@@ -593,7 +585,7 @@ public class UserInfoDetail extends ControllerBase
 
     }
     
-    public void insert2Db() throws AtareSysException {
+    private void insert2Db() throws AtareSysException {
     		WebBean bean = getWebBean();
 	    	try {
 	    		DbBase.dbBeginTran();
@@ -706,17 +698,9 @@ public class UserInfoDetail extends ControllerBase
       return scheduledao;
     }
     
-    private boolean scheduleInsert() throws AtareSysException {
+    private void scheduleInsert() throws AtareSysException {
       ScheduleDao scheduledao = setWeb2Dao2();
-
-      try {
-        // 入力内容をデータベースに保存
-        scheduledao.dbInsert();
-        
-        return true;
-        
-      } catch (Exception e) {
-        return false;
-      }
+      // 入力内容をデータベースに保存
+      scheduledao.dbInsert();
     }
 }
