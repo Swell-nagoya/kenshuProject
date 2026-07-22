@@ -118,6 +118,9 @@ td {
 .select_table td {
   padding: 2px;
 }
+.select_table input[type="checkbox"]  {
+  cursor: pointer;
+}
 
 .search_label {
   padding: 2px 4px;
@@ -155,6 +158,9 @@ td {
 .table-wrap .list_table > tbody > tr:last-child td {
   border-bottom: none;
 }
+.list_table input[type="checkbox"] {
+  cursor: pointer;
+}
 
 #pageNo {
   text-align: center;
@@ -171,10 +177,14 @@ input[type="button"] {
   background: #90a0b0; /* デフォルトの背景色 */
 }
 
-.button_send_all,
-input[type="button"].button_send_all {
-
-    
+.button_area {
+  margin-top: 20px;
+}
+.button_area > [class^="button_"] {
+  margin: 10px 10px 0 10px!important;
+}
+.button_send,
+input[type="button"].button_send {
   display: inline-block;
   margin-top: 20px;
   padding: 5px 25px;
@@ -189,12 +199,33 @@ input[type="button"].button_send_all {
   
 }
 
-.button_send_all:hover,
-input[type="button"].button_send_all:hover {
+.button_send:hover,
+input[type="button"].button_send:hover {
   background-color: #ff7f50;
   color: #fff;
 }
 
+.button_select_all,
+input[type="button"].button_select_all {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 5px 25px;
+  border-radius: 18px;
+  color: #113c4d;
+  cursor: pointer;
+  background: #ffd956;
+  font-weight: 500;
+  font-size: 14px;
+  border: 2px solid #113c4d;
+  transition: background 0.3s ease-in-out;
+  
+}
+
+.button_select_all:hover,
+input[type="button"].button_select_all:hover {
+  background-color: #113c4d;
+  color: #ffd956;
+}
 .new-btn {
   position: absolute;
   right: 10px; /* 右端に10pxの余白を取る */
@@ -310,11 +341,19 @@ footer {
       // テーブルのheadタグ内 ソート用のリンク表示設定
       new TableSort();
 
+      new StateFlgCheckAll();
+
 
     });
+    /*
+    $(document).ready(function() {
+      $('table.list_table tr:even').addClass('even');
+      $('table.list_table tr:odd').addClass('odd');
+    });
+    */
     <%--利用停止チェックボックスの状態判定、value適応--%>
     class ListSearchCheack {
-    	  constructor(x, y) {
+    	  constructor() {
     	    // ソート順番（昇順、降順）
     	    this.list_search_state = "#list_search_state";
     	    this.$list_search_state = $(this.list_search_state);
@@ -341,7 +380,7 @@ footer {
     <%--テーブルの順番入れ替え時のクラス付け替え--%>
     class TableSort {
 
-      constructor(x, y) {
+      constructor() {
         // ソート順番（昇順、降順）
         this.sort_order = $("#sort_order").val();
         // ソート時のkey取得
@@ -392,12 +431,70 @@ footer {
         }
       }
     }
-    
-  <%--テーブルを一行ごとにいろを変える--%>
-    $(document).ready(function() {
-      $('table.list_table tr:even').addClass('even');
-      $('table.list_table tr:odd').addClass('odd');
-    });
+    class StateFlgCheckAll {
+        constructor() {
+            this.$elements = $(".js-state_flg_check_all");
+            this.elementsLen = $(".js-state_flg_check_all").length;
+            this.dataTarget = "target";
+            this.select_all = "利用停止全選択";
+            this.full_release = "利用停止全解除";
+            this.init();
+        }
+        init(){
+
+            for(var i = 0; i < this.elementsLen; i++ ){
+              let $element = $(this.$elements[i]);
+              if($element.data("target") !== undefined){
+            	  let targetClassName = $element.data(this.dataTarget);
+            	  let $dataTarget = $("." + targetClassName);
+            	  let targetFlag = true;
+                  for(let z = 0; z < $dataTarget.length; z++ ){
+                    if($dataTarget[z].checked === false ){
+                      targetFlag = false;
+                    }
+                  }
+
+
+                  if (targetFlag === true){
+                      this.selectorAll($element,$dataTarget);
+                  }else{
+                      this.fullRelease($element,$dataTarget);
+                  }
+              }
+              
+            }
+
+            this.event();
+            
+        }
+        event(){
+
+        	this.$elements.on("click",(element) =>{
+            	let $element = $(element.currentTarget);
+                let $dataTarget = $("." + $element.data(this.dataTarget));
+                if( $element[0].value === this.select_all){
+                    this.selectorAll($element,$dataTarget);
+                } else {
+                    this.fullRelease($element,$dataTarget);
+                }
+            });
+        }
+        selectorAll($element, $target){
+            for(var i = 0; i < $target.length; i++ ){
+                const current = $target[i];
+                current.checked = true;
+            }
+            $element[0].value = this.full_release;
+        }
+        fullRelease($element, $target){
+            for(var i = 0; i < $target.length; i++ ){
+                const current = $target[i];
+                current.checked = false;
+            }
+            $element[0].value = this.select_all;
+        }
+    }
+    <%--テーブルを一行ごとにいろを変える--%>
     function go_submit(action_cmd) {
       document.getElementById('main_form').action = 'ViewUserList.do';
       document.getElementById('action_cmd').value = action_cmd;
@@ -435,7 +532,7 @@ footer {
       document.getElementById('main_form').submit();
     }
     function copyToClipboard(str) {
-      navigator.clipboard.writeText(str)
+      navigator.clipboard.writeText(str);
     }
 </script>
 </head> 
@@ -449,7 +546,7 @@ footer {
     </div>
     <header>
         <h1>
-            <a href="javascript:void(0)" value="" onclick="go_menu('top')">ユーザー情報一覧</a>
+            <a href="javascript:void(0)" onclick="go_menu('top')">ユーザー情報一覧</a>
         </h1>
     </header>
     <form id="main_form" method="post" action="">
@@ -564,7 +661,7 @@ footer {
             %>
             <tr class="list_tr">
               <td class="list_input statas">
-              <input type="checkbox" name="list_state_flg" id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" value="<%=WebUtil.txtEscape(dao.getUserInfoId())%>" <% if(dao.getStateFlg() == 8){ %> checked<%}%>>
+              <input type="checkbox" name="list_state_flg" id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" class="js-state_flg_check" value="<%=WebUtil.txtEscape(dao.getUserInfoId())%>" <% if(dao.getStateFlg() == 8){ %> checked<%}%>>
               <td class="list_text full_name">
             <%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
               </td>
@@ -594,8 +691,13 @@ footer {
           
         </div>
         <!-- ./table-wrap -->
-        <input type="button" value="一括登録" class="button_send_all" onclick="go_detail('go_next','stateUpdateAll');" />
-        <%
+        <div class="button_area">
+        <input type="button" value="利用停止全選択" class="button_select_all js-state_flg_check_all" data-target="js-state_flg_check" />
+        <input type="button" value="一括登録" class="button_send" onclick="go_detail('go_next','stateUpdateAll');" />
+        
+        
+        </div>
+        <!-- ./button_area --><%
         } else {
         %>
           <p>ユーザー情報がありません</p>
