@@ -139,7 +139,7 @@ public class UserInfoDetail extends ControllerBase
                   }
                   else if ("stateUpdateAll".equals(bean.value("request_cmd"))) 
                   {
-                  	    dbStateEdit();
+                      dbStateEdit();
                   }
                   else 
                   {
@@ -340,6 +340,45 @@ public class UserInfoDetail extends ControllerBase
     }
 
     /**
+     * 入力チェックを行う。.
+     *
+     * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
+     * @throws AtareSysException
+     */
+    private boolean inputCheck(UserInfoDao pUserInfoDao) throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        HashMap<String, String> errors = bean.getItemErrors();
+       
+        if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd"))) 
+        {
+        	   // 氏名  エラーチェック
+            errors.putAll(nameCheck(bean));
+        	   // 氏名 （かな）エラーチェック
+            errors.putAll(nameKanaCheck(bean));
+            // ミドルネーム エラーチェック
+            errors.putAll(middleNameCheck(bean));
+            // ユーザー区分チェック
+            errors.putAll(adminCheck(bean));
+            // メールアドレスエラーチェック
+            errors.putAll(memailCheck(bean,pUserInfoDao));
+            // 任意ID エラーチェック
+            errors.putAll(insertUserIdCheck(bean,pUserInfoDao));
+        }
+        else if ("delete".equals(bean.value("request_cmd"))) 
+        {
+            // 退職予定日 エラーチェック
+            errors.putAll(leaveDateCheck(bean));
+        }
+            
+        if (errors.size() > 0)
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
      * 氏名 入力チェックを行う。.
      *
      * @return errorSet HashMapにエラーフィールドをキーとしてエラーメッセージを返す
@@ -372,38 +411,35 @@ public class UserInfoDetail extends ControllerBase
      private HashMap<String, String> nameKanaCheck(WebBean bean)
      {
        HashMap<String, String> errorSet = new HashMap<>();
+       String lastNameKana = bean.value("last_name_kana");
+       String firstNameKana = bean.value("first_name_kana");
 
 
-       
 
-       if (bean.value("last_name_kana").length() == 0 && bean.value("first_name_kana").length() == 0)
+       if (lastNameKana.length() == 0 && firstNameKana.length() == 0)
        {
           	errorSet.put("last_name_kana", "氏名のよみを入力してください。");
            errorSet.put("first_name_kana", "");
+           return errorSet;
        }
-       else  if (bean.value("last_name_kana").length() == 0)
-       {
+       
+       if (lastNameKana.length() == 0) {
            errorSet.put("last_name_kana", "名字のよみを入力してください。");
        }
-       else if (bean.value("first_name_kana").length() == 0)
-       {
-       	   errorSet.put("first_name_kana", "名前のよみを入力してください。");
+        if (firstNameKana.length() == 0) {
+           errorSet.put("first_name_kana", "名前のよみを入力してください。");
        }
        
        
-       if (bean.value("last_name_kana").length() > 0 || bean.value("first_name_kana").length() > 0)
-       {
-           if (!isHiragana(bean.value("last_name_kana")) && !isHiragana(bean.value("first_name_kana"))) 
-           {
-           	   errorSet.put("last_name_kana", "氏名のよみはひらがなで入力してください。");
+       if (lastNameKana.length() > 0 || firstNameKana.length() > 0) {
+           if (!isHiragana(lastNameKana) && !isHiragana(firstNameKana)) {
+               errorSet.put("last_name_kana", "氏名のよみはひらがなで入力してください。");
            }
-           else if (!isHiragana(bean.value("last_name_kana"))) 
-           {
+           if (!isHiragana(lastNameKana) ) {
               	errorSet.put("last_name_kana", "名字のよみはひらがなで入力してください。");
            }
-           else if (!isHiragana(bean.value("first_name_kana"))) 
-           {
-           	   errorSet.put("first_name_kana", "名前のよみはひらがなで入力してください。");
+           if (!isHiragana(firstNameKana)) {
+               errorSet.put("first_name_kana", "名前のよみはひらがなで入力してください。");
            }
        }
        return errorSet;
@@ -504,42 +540,76 @@ public class UserInfoDetail extends ControllerBase
       return errorSet;
      }
 
-     // 任意ID エラーチェック
-     private HashMap<String, String> insertUserIdCheck(WebBean bean, UserInfoDao pUserInfoDao) throws AtareSysException
-     {
+     /**
+      * 入力値の文字数と形式チェックを行う。.
+      *
+      * @return true, false
+      */
+     private boolean isValidIdFormat(String userId, HashMap<String, String> errorSet) {
+     	   if (userId.length() < 6 || userId.length() > 12) {
+             errorSet.put("insert_user_id", "ＩＤは６文字以上１２文字以下で入力してください。");
+             return false;
+         }
+     	   if (!userId.matches("^[a-zA-Z0-9]+$")) {
+             errorSet.put("insert_user_id", "ＩＤは半角英数で入力してください。");
+             return false;
+         }
+         return true;
+     }
 
-      HashMap<String, String> errorSet = new HashMap<>();
-      
+     /**
+      * insert_user_idの重複チェックを行う。.
+      *
+      */
+     private void checkDuplicateForInsert(String userId, UserInfoDao pUserInfoDao, HashMap<String, String> errorSet) throws AtareSysException {
+       /*if (pUserInfoDao.isIdExists(userId)) {
+         errorSet.put("insert_user_id", "このＩＤは既に登録されています。");
+       }
+       */
+       checkDuplicateForInsert(userId, "", pUserInfoDao, errorSet); 
+    }
 
-      if (bean.value("insert_user_id").length() != 0)
-      {
-          if (bean.value("insert_user_id").length() < 6 || bean.value("insert_user_id").length() > 12)
-          {
-          	   errorSet.put("insert_user_id", "ＩＤは６文字以上１２文字以下で入力してください。");
-          }
-          else if (!bean.value("insert_user_id").matches("^[a-zA-Z0-9]+$")) // メアドに使用できる半角英数記号以外のチェック
-          {
-          	   errorSet.put("insert_user_id", "ＩＤは半角英数で入力してください。");
-          }
-          else if ("ins".equals(bean.value("request_cmd"))) 
-          {
-              if (pUserInfoDao.isIdExists(bean.value("insert_user_id"))) 
-              {
-                  // 重複している場合のエラーメッセージ設定
-              	  errorSet.put("insert_user_id", "このＩＤは既に登録されています。");
-              }
-          }
-          else if ("update".equals(bean.value("request_cmd"))) 
-          {
-              if (pUserInfoDao.isIdExists(bean.value("insert_user_id"), bean.value("main_key"))) 
-              {
-                  // 重複している場合のエラーメッセージ設定
-              	   errorSet.put("insert_user_id", "このＩＤは既に登録されています。");
-              }
-          }
+     private void checkDuplicateForInsert(String userId, String mainKey, UserInfoDao pUserInfoDao, HashMap<String, String> errorSet) throws AtareSysException {
+      if (pUserInfoDao.isIdExists(userId, mainKey)) {
+      	System.out.println("hithithit");
+          errorSet.put("insert_user_id", "このＩＤは既に登録されています。");
       }
-      
-      return errorSet;
+     }
+  
+  
+      /**
+       *  任意ID エラーチェックを行う。.
+       *
+       * @return errorSet
+       */
+     private HashMap<String, String> insertUserIdCheck(WebBean bean, UserInfoDao pUserInfoDao) throws AtareSysException {
+         HashMap<String, String> errorSet = new HashMap<>();
+         
+         String insert_user_id = bean.value("insert_user_id");
+         String request_cmd = bean.value("request_cmd");
+
+         // 未入力時
+         if (insert_user_id.length() == 0) {
+             return errorSet;
+         }
+
+         // 入力値の文字数と形式チェック
+         boolean isFormatOk = isValidIdFormat(insert_user_id, errorSet);
+
+         // insert_user_idの重複チェック
+         if (isFormatOk) {
+         	   // 新規登録画面
+             if ("ins".equals(request_cmd)) {
+              checkDuplicateForInsert(insert_user_id, pUserInfoDao, errorSet);
+
+             // 編集画面
+             } else if ("update".equals(request_cmd)) {
+                 String mainKey = bean.value("main_key");
+                 checkDuplicateForInsert(insert_user_id, mainKey, pUserInfoDao, errorSet);
+             }
+         }
+
+         return errorSet;
      }
 
 
@@ -592,44 +662,6 @@ public class UserInfoDetail extends ControllerBase
       return errorSet;
      }
      
-    /**
-     * 入力チェックを行う。.
-     *
-     * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
-     * @throws AtareSysException
-     */
-    private boolean inputCheck(UserInfoDao pUserInfoDao) throws AtareSysException
-    {
-        WebBean bean = getWebBean();
-        HashMap<String, String> errors = bean.getItemErrors();
-       
-        if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd"))) 
-        {
-        	   // 氏名  エラーチェック
-            errors.putAll(nameCheck(bean));
-        	   // 氏名 （かな）エラーチェック
-            errors.putAll(nameKanaCheck(bean));
-            // ミドルネーム エラーチェック
-            errors.putAll(middleNameCheck(bean));
-            // ユーザー区分チェック
-            errors.putAll(adminCheck(bean));
-            // メールアドレスエラーチェック
-            errors.putAll(memailCheck(bean,pUserInfoDao));
-            // 任意ID エラーチェック
-            errors.putAll(insertUserIdCheck(bean,pUserInfoDao));
-        }
-        else if ("delete".equals(bean.value("request_cmd"))) 
-        {
-            // 退職予定日 エラーチェック
-            errors.putAll(leaveDateCheck(bean));
-        }
-            
-        if (errors.size() > 0)
-        {
-            return false;
-        }
-        return true;
-    }
     
     /**
      * 文字列が数字で構成されているかをチェックするメソッド.
@@ -808,8 +840,8 @@ public class UserInfoDetail extends ControllerBase
         getRequest().setAttribute("checkedFlgs", listStateFlgs);
         
         String state_flg_all_text = bean.value("state_flg_all");
+        state_flg_all_text = (String) Sup.deserialize(state_flg_all_text);
         String[] state_flg_all_array = state_flg_all_text.split(",");
-        System.out.println("array:" + state_flg_all_array);
         try {
             DbBase.dbBeginTran();
             

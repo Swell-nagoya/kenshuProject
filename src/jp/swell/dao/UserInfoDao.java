@@ -820,7 +820,6 @@ public class UserInfoDao implements Serializable {
         fieldsArray.put("insert_user_id", "user_info.insert_user_id");
         fieldsArray.put("memail", "user_info.memail"); 
         fieldsArray.put("admin", "user_info.admin");
-        
     }
 
     /**

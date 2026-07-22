@@ -205,26 +205,36 @@ input[type="button"].button_send:hover {
   color: #fff;
 }
 
-.button_select_all,
-input[type="button"].button_select_all {
+.button_state_flg_check_all,
+input[type="button"].button_state_flg_check_all {
   display: inline-block;
   margin-top: 20px;
   padding: 5px 25px;
   border-radius: 18px;
   color: #113c4d;
-  cursor: pointer;
   background: #ffd956;
   font-weight: 500;
   font-size: 14px;
   border: 2px solid #113c4d;
-  transition: background 0.3s ease-in-out;
-  
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, color 0.1s ease-in-out;
 }
 
-.button_select_all:hover,
-input[type="button"].button_select_all:hover {
-  background-color: #113c4d;
+.button_state_flg_check_all:hover,
+input[type="button"].button_state_flg_check_all:hover {
   color: #ffd956;
+  background-color: #113c4d;
+}
+.button_state_flg_check_all.is-full_release,
+input[type="button"].button_state_flg_check_all.is-full_release {
+  color: #fff;
+  background-color: #ffa753;
+  border-color: #ff7f50;
+}
+.button_state_flg_check_all.is-full_release:hover,
+input[type="button"].button_state_flg_check_all.is-full_release:hover {
+  color: #ffa753;
+  background-color: #fff;
 }
 .new-btn {
   position: absolute;
@@ -438,8 +448,9 @@ footer {
             this.$elements = $(".js-state_flg_check_all");
             this.elementsLen = $(".js-state_flg_check_all").length;
             this.dataTarget = "target";
-            this.select_all = "利用停止全選択"; // ボタンテキスト(利用停止全選択)
-            this.full_release = "利用停止全解除"; // ボタンテキスト(利用停止全解除)
+            this.is_fullReleaseClassName = "is-full_release";
+            this.selectAll = "利用停止全選択"; // ボタンテキスト(利用停止全選択)
+            this.fullRelease = "利用停止全解除"; // ボタンテキスト(利用停止全解除)
             this.init();
         }
         init(){
@@ -461,10 +472,10 @@ footer {
                 }
                 // 全選択を適応
                 if (targetFlag === true){
-                  this.selectorAll($element,$dataTarget);
+                    this.selectorAllFun($element);
                 // 全解除を適応
                 }else{
-                  this.fullRelease($element,$dataTarget);
+                    this.fullReleaseFun($element);
                 }
 
                 // ターゲットのcheckboxのチェックあり or なし　変動があった場合
@@ -480,8 +491,8 @@ footer {
 
                     // 全選択の文言に変更
                     for(var i = 0; i < $dataTarget.length; i++ ){
-                      if( $dataTarget[i].value !== this.select_all){
-                          $dataTarget[i].value = this.select_all;
+                      if( $dataTarget[i].value !== this.selectAll){
+                          this.fullReleaseFun($($dataTarget[i]));
                       }
                     }
 
@@ -500,8 +511,8 @@ footer {
                         if (targetFlag === true){
 
                           for(var i = 0; i < $dataTarget.length; i++ ){
-                           if( $dataTarget[i].value !== this.full_release){
-                              $dataTarget[i].value = this.full_release;
+                           if( $dataTarget[i].value !== this.fullRelease){
+                               this.selectorAllFun($($dataTarget[i]));
                            }
                         }
                      }
@@ -518,36 +529,42 @@ footer {
           this.$elements.on("click",(element) => {
             let $element = $(element.currentTarget);
             let $dataTarget = $("." + $element.data(this.dataTarget));
-            if( $element[0].value === this.select_all){
-                this.selectorAll($element,$dataTarget);
+            if( $element[0].value === this.selectAll){
+                for(var i = 0; i < $dataTarget.length; i++ ){
+                    const current = $dataTarget[i];
+                    // チェックなしの時はtrueを代入
+                    if( current.checked === false ){
+                        current.checked = true;
+                    }
+                }
+                this.selectorAllFun($element);
             } else {
-                this.fullRelease($element,$dataTarget);
+                for(var i = 0; i < $dataTarget.length; i++ ){
+                    const current = $dataTarget[i];
+                    // チェックありの時はfalseを代入
+                    if( current.checked === true ){
+                        current.checked = false;
+                    }
+                }
+                this.fullReleaseFun($element);
            }
           });
 
           
         }
         // ターゲットのcheckboxをチェックありに変更
-        selectorAll($element, $target){
-            for(var i = 0; i < $target.length; i++ ){
-                const current = $target[i];
-                // チェックなしの時はtrueを代入
-                if( current.checked === false ){
-                    current.checked = true;
-                }
+        selectorAllFun($element){
+            if( !$element.hasClass(this.is_fullReleaseClassName) ){
+              $element.addClass(this.is_fullReleaseClassName);
             }
-            $element[0].value = this.full_release;
+            $element[0].value = this.fullRelease;
         }
         // ターゲットのcheckboxをチェックなしに変更
-        fullRelease($element, $target){
-            for(var i = 0; i < $target.length; i++ ){
-                const current = $target[i];
-                // チェックありの時はfalseを代入
-                if( current.checked === true ){
-                    current.checked = false;
-                }
+        fullReleaseFun($element){
+            if( $element.hasClass(this.is_fullReleaseClassName) ){
+                $element.removeClass(this.is_fullReleaseClassName);
             }
-            $element[0].value = this.select_all;
+            $element[0].value = this.selectAll;
         }
     }
     <%--テーブルを一行ごとにいろを変える--%>
@@ -748,7 +765,7 @@ footer {
         </div>
         <!-- ./table-wrap -->
         <div class="button_area">
-        <input type="button" value="利用停止全選択" class="button_select_all js-state_flg_check_all" data-target="js-state_flg_check" />
+        <input type="button" value="利用停止全選択" class="button_state_flg_check_all js-state_flg_check_all" data-target="js-state_flg_check" />
         <input type="button" value="一括登録" class="button_send" onclick="go_detail('go_next','stateUpdateAll');" />
         
         

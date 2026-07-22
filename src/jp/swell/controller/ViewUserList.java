@@ -246,8 +246,10 @@ public class ViewUserList extends ControllerBase
         }
 
         String joinedIds = String.join(",", hitUserIds);
+        String serializedData  = Sup.serialize(joinedIds);
 
-        bean.setValue("state_flg_all",joinedIds);
+        //bean.setValue("state_flg_all",joinedIds);
+        bean.setValue("state_flg_all", serializedData);
 
 
 
