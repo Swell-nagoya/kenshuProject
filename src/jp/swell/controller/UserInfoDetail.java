@@ -221,8 +221,7 @@ public class UserInfoDetail extends ControllerBase
                   if ("ins".equals(bean.value("request_cmd"))) 
                   {
                       setInputInfo2Dao2Web();
-                      signUp();
-                      scheduleInsert();
+                      insert2Db();
                       redirect("ViewUserList.do");
                   }
                   else if ("update".equals(bean.value("request_cmd"))) 
@@ -592,6 +591,19 @@ public class UserInfoDetail extends ControllerBase
 	    		forward("UserInfoDetail_4.jsp");
 	    	}
 
+    }
+    
+    public void insert2Db() throws AtareSysException {
+    		WebBean bean = getWebBean();
+	    	try {
+	    		DbBase.dbBeginTran();
+	    		signUp();
+	    		scheduleInsert();
+	    		DbBase.dbCommitTran();
+	    	} catch (Exception e) {
+	    		DbBase.dbRollbackTran();
+	    		bean.setError("transaction_error", "データベースの更新中にエラーが発生したためロールバックしました。");
+	    	}
     }
     
     /**

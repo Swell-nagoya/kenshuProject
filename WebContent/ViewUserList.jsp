@@ -367,7 +367,7 @@ footer {
           <tr class="list_title">
             <td class="list_label" style="width: 4%"></td>
             <td class="list_label" style="width: 24%">
-            <a href="javaScript:go_sort_request('last_name_kana')">氏名</a></td>
+            <a href="javaScript:go_sort_request('last_name')" id="sort_last_name">氏名</a></td>
             <td class="list_label" style="width: 24%">
             <a href="javaScript:go_sort_request('last_name_kana')" id="sort_last_name_kana">氏名よみ（かな）</a></td>
             <td class="list_label" style="width: 24%">
