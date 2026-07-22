@@ -370,8 +370,10 @@ footer {
          }
      	 chackFun(target){
    	      let check = $(target).prop("checked");
+   	      // アカウント利用停止中
    	      if (check === true) {
 	        this.$list_search_state.val("8");
+	      // アカウント利用中
 	      } else {
 	        this.$list_search_state.val("1");
 	      }
@@ -436,60 +438,114 @@ footer {
             this.$elements = $(".js-state_flg_check_all");
             this.elementsLen = $(".js-state_flg_check_all").length;
             this.dataTarget = "target";
-            this.select_all = "利用停止全選択";
-            this.full_release = "利用停止全解除";
+            this.select_all = "利用停止全選択"; // ボタンテキスト(利用停止全選択)
+            this.full_release = "利用停止全解除"; // ボタンテキスト(利用停止全解除)
             this.init();
         }
         init(){
 
+            //　
             for(var i = 0; i < this.elementsLen; i++ ){
               let $element = $(this.$elements[i]);
+              // inputのdata-targetがある場合は、画面内のチェックが入っているか判定.
+              // inputを「全選択」or「全解除」の表記に変更
               if($element.data("target") !== undefined){
-            	  let targetClassName = $element.data(this.dataTarget);
-            	  let $dataTarget = $("." + targetClassName);
-            	  let targetFlag = true;
-                  for(let z = 0; z < $dataTarget.length; z++ ){
-                    if($dataTarget[z].checked === false ){
-                      targetFlag = false;
+                let targetClassName = $element.data(this.dataTarget);
+                let $dataTarget = $("." + targetClassName);
+
+                let targetFlag = true; //全選択の場合はtrue
+                for(let z = 0; z < $dataTarget.length; z++ ){
+                  if($dataTarget[z].checked === false ){
+                    targetFlag = false;
+                  }
+                }
+                // 全選択を適応
+                if (targetFlag === true){
+                  this.selectorAll($element,$dataTarget);
+                // 全解除を適応
+                }else{
+                  this.fullRelease($element,$dataTarget);
+                }
+
+                // ターゲットのcheckboxのチェックあり or なし　変動があった場合
+                $dataTarget.on("change",(elements) => {
+                  let $element = $(elements.currentTarget);
+
+                  let elementClassName = $element.attr('class');
+                  let $elementAll = $("." + elementClassName);
+                  let $dataTarget = $('[data-' + this.dataTarget + '="' + elementClassName + '"]');
+
+                  // チェックなしの場合、「全選択」用のボタンに変更
+                  if($element[0].checked === false){
+
+                    // 全選択の文言に変更
+                    for(var i = 0; i < $dataTarget.length; i++ ){
+                      if( $dataTarget[i].value !== this.select_all){
+                          $dataTarget[i].value = this.select_all;
+                      }
                     }
-                  }
 
-
-                  if (targetFlag === true){
-                      this.selectorAll($element,$dataTarget);
+                  // チェックありの場合、全てチェック済みの場合は「全解除」用のボタンに変更
                   }else{
-                      this.fullRelease($element,$dataTarget);
+
+                      let targetFlag = true; //全選択の場合はtrue
+                      for(var i = 0; i < $elementAll.length; i++ ){
+                        // チェックなしの時はtrueを代入
+                        if( $elementAll[i].checked === false ){
+                          targetFlag = false;
+
+                        }
+                      }
+                        // 全解除の文言に変更
+                        if (targetFlag === true){
+
+                          for(var i = 0; i < $dataTarget.length; i++ ){
+                           if( $dataTarget[i].value !== this.full_release){
+                              $dataTarget[i].value = this.full_release;
+                           }
+                        }
+                     }
                   }
+                });
               }
-              
             }
 
             this.event();
             
         }
+        
         event(){
+          this.$elements.on("click",(element) => {
+            let $element = $(element.currentTarget);
+            let $dataTarget = $("." + $element.data(this.dataTarget));
+            if( $element[0].value === this.select_all){
+                this.selectorAll($element,$dataTarget);
+            } else {
+                this.fullRelease($element,$dataTarget);
+           }
+          });
 
-        	this.$elements.on("click",(element) =>{
-            	let $element = $(element.currentTarget);
-                let $dataTarget = $("." + $element.data(this.dataTarget));
-                if( $element[0].value === this.select_all){
-                    this.selectorAll($element,$dataTarget);
-                } else {
-                    this.fullRelease($element,$dataTarget);
-                }
-            });
+          
         }
+        // ターゲットのcheckboxをチェックありに変更
         selectorAll($element, $target){
             for(var i = 0; i < $target.length; i++ ){
                 const current = $target[i];
-                current.checked = true;
+                // チェックなしの時はtrueを代入
+                if( current.checked === false ){
+                    current.checked = true;
+                }
             }
             $element[0].value = this.full_release;
         }
+        // ターゲットのcheckboxをチェックなしに変更
         fullRelease($element, $target){
             for(var i = 0; i < $target.length; i++ ){
                 const current = $target[i];
-                current.checked = false;
+                // チェックありの時はfalseを代入
+                if( current.checked === true ){
+                    current.checked = false;
+                }
             }
             $element[0].value = this.select_all;
         }
