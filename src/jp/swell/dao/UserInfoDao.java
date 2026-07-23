@@ -1161,7 +1161,6 @@ public class UserInfoDao implements Serializable {
                 + "WHERE insert_user_id = " + DbS.chara(id)
                 + "and user_info_id NOT IN (" + DbS.chara(pUserInfoId) + ")";
         
-        System.out.println(sql);
         // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 

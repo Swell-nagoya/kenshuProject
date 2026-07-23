@@ -17,6 +17,8 @@
 <script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/common-page.js"></script>
+<link rel="stylesheet" type="text/css" href="css/common-page.css">
 <title>ユーザー情報一覧</title>
 <style type="text/css">
 
@@ -102,6 +104,10 @@ td {
   min-width: 800px;
 }
 
+.select_table tr,
+.list_table tr {
+  padding: 0;
+}
 .select_table th,
 .select_table td,
 .list_table th,
@@ -110,23 +116,16 @@ td {
   border-collapse: collapse;
   border-spacing: 0;
 }
-.select_table tr,
-.list_table tr {
-  padding: 0;
-}
-.select_table th,
-.select_table td {
-  padding: 2px;
-}
 .select_table input[type="checkbox"]  {
   cursor: pointer;
 }
 
 .search_label {
-  padding: 2px 4px;
+  padding: 4px 10px;
   background: #00bcd4;
   color: #fff;
   text-align: center;
+  font-size: 16px;
   font-weight: normal;
 }
 
@@ -146,20 +145,6 @@ td {
 
 .pagenation, .select_table {
   margin-bottom: 10px;
-}
-
-.list_table th,
-.list_table td {
-  padding: 0;
-}
-.table-wrap .list_table > thead > tr > th {
-  border-top: none;
-}
-.table-wrap .list_table > tbody > tr:last-child td {
-  border-bottom: none;
-}
-.list_table input[type="checkbox"] {
-  cursor: pointer;
 }
 
 #pageNo {
@@ -258,12 +243,34 @@ footer {
 }
 
 
-/*./list_table*/
+/*.list_table*/
 .list_table .fixed {
   position: sticky;
   top: 0;
   z-index: 1;
 }
+.list_table th {
+  padding: 0;
+}
+.list_table td {
+  padding: 5px 10px;
+}
+.list_table > thead > tr > th {
+  font-size: 16px;
+}
+.table-wrap .list_table > thead > tr > th {
+  border-top: none;
+}
+.table-wrap .list_table > tbody > tr:last-child td {
+  border-bottom: none;
+}
+.list_table input[type="checkbox"] {
+  cursor: pointer;
+}
+.list_table input[type="button"] {
+  margin: 3px 2px;
+}
+
 .list_table thead > tr > .statas,
 .list_table tbody > tr > .statas {
   width: 12%;
@@ -284,6 +291,7 @@ footer {
 .list_table tbody > tr > .search_button {
   width: 22%;
 }
+
 .list_title  {
   border-left: 1px #a0a0a0 solid;
   border-right: 1px #a0a0a0 solid;
@@ -308,25 +316,6 @@ footer {
 .list_tr:nth-child(even) {
   background: #fff;
 }
-/* Table ソート用のスタイル */
-.js-table_sort_label > a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 3px 25px 3px 25px;
-  background-position: right;
-  background-repeat: no-repeat;
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAkElEQVQ4T73UMQ6AIAyF4Z/E0dHRIzh4/1M4eARHR0cH0wQMMdBC0sgMH4VXCDiP4OzRAg7AEjfegVsrwgIFW4ExIhewaagGfrFUmIrWwBpmoiXQwlS0BEoAU2P6JyBBvaMEzp3gYYGNxZWnWW3Tjf9yZPdQ3NtG7s1Cq6/lt6eX0nX9HHLU7fty6cNuJF/wAAIWJBX1VHH6AAAAAElFTkSuQmCC);
-}
-.js-table_sort_label > a:hover {
-  background-color: #6acfc9;
-}
-.js-table_sort_label.is-asc > a {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAgUlEQVQ4T+3SsQ2AIBCF4Z/eMdxCx3ARB7ByABdxDN3CMRzAkKCFHneQUFhwNXxc3sNReFxhjxSwAebw8ASc2hIW6LEFaANyAKOGauAbuxdT0RgYw0xUAi1MRSXQF9Antr8BvqhnJHAAukRwB1YLTLTkY9a3ycYrmB3Z50LN8IcZXsnkEhVNjPJpAAAAAElFTkSuQmCC);
-}
-.js-table_sort_label.is-desc > a {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAfUlEQVQ4T2NkoDJgpLJ5DKMGUh6io2E4RMIwhIGBwZpItx5lYGBYg6wWWyw3MzAw2BBp4BEGBoZaQgbyMDAw9DMwMKgQMPQOAwNDIQMDwxdCBoLkCRmK1TCQRnwJG5ehOA0jZCA2l+I1jBgDYYaCIgoEQBGAEmbo4Tz48zIAQNgSFR9+d5MAAAAASUVORK5CYII=);
-}
 </style>
 <script type="text/javascript">
   jQuery(function($) {
@@ -347,13 +336,6 @@ footer {
       const list_search_cheack = new ListSearchCheack();
       list_search_cheack.event(); 
       list_search_cheack.chackFun(list_search_cheack.getListSearchState());
-
-      // テーブルのheadタグ内 ソート用のリンク表示設定
-      new TableSort();
-
-      new StateFlgCheckAll();
-
-
     });
     /*
     $(document).ready(function() {
@@ -388,184 +370,6 @@ footer {
 	        this.$list_search_state.val("1");
 	      }
          }
-    }
-    <%--テーブルの順番入れ替え時のクラス付け替え--%>
-    class TableSort {
-
-      constructor() {
-        // ソート順番（昇順、降順）
-        this.sort_order = $("#sort_order").val();
-        // ソート時のkey取得
-        this.sort_key_old = $("#sort_key_old").val();
-        // ソートの対象となるクラス
-        this.table_sort_labelClassName = "js-table_sort_label";
-        // ソートの対象となる個別のID名
-        this.table_sortIdName = "js-table_sort-";
-        this.init();
-      }
-
-      init(){
-        this.sort_label_height();
-        this.event();
-      }
-
-      event(){
-        this.sort();
-        $(window).resize(() => {
-          this.sort_label_height();
-        });
-      }
-      
-      // 並び替えリンクの高さ調整
-      sort_label_height(){
-
-       if( $("." + this.table_sort_labelClassName + " > a").length > 0 ){
-         $("." + this.table_sort_labelClassName + " > a").css({
-               'height': ''
-         });
-         Promise.resolve().then(() => {
-           let sort_label_h = $("." + this.table_sort_labelClassName).height();
-
-           $("." + this.table_sort_labelClassName + " > a").css({
-              'height': sort_label_h
-           });
-         });
-
-        }
-      }
-
-      // 並び替えのアクティブ状態を付与
-      sort(){
-        let $table_sort = $("#" + this.table_sortIdName + this.sort_key_old);
-        if($table_sort.length > 0){
-          // 昇順、降順の状態判定用のクラスを付与
-          $table_sort.addClass("is-" + this.sort_order);
-        }
-      }
-    }
-    class StateFlgCheckAll {
-        constructor() {
-            this.$elements = $(".js-state_flg_check_all");
-            this.elementsLen = $(".js-state_flg_check_all").length;
-            this.dataTarget = "target";
-            this.is_fullReleaseClassName = "is-full_release";
-            this.selectAll = "利用停止全選択"; // ボタンテキスト(利用停止全選択)
-            this.fullRelease = "利用停止全解除"; // ボタンテキスト(利用停止全解除)
-            this.init();
-        }
-        init(){
-
-            //　
-            for(var i = 0; i < this.elementsLen; i++ ){
-              let $element = $(this.$elements[i]);
-              // inputのdata-targetがある場合は、画面内のチェックが入っているか判定.
-              // inputを「全選択」or「全解除」の表記に変更
-              if($element.data("target") !== undefined){
-                let targetClassName = $element.data(this.dataTarget);
-                let $dataTarget = $("." + targetClassName);
-
-                let targetFlag = true; //全選択の場合はtrue
-                for(let z = 0; z < $dataTarget.length; z++ ){
-                  if($dataTarget[z].checked === false ){
-                    targetFlag = false;
-                  }
-                }
-                // 全選択を適応
-                if (targetFlag === true){
-                    this.selectorAllFun($element);
-                // 全解除を適応
-                }else{
-                    this.fullReleaseFun($element);
-                }
-
-                // ターゲットのcheckboxのチェックあり or なし　変動があった場合
-                $dataTarget.on("change",(elements) => {
-                  let $element = $(elements.currentTarget);
-
-                  let elementClassName = $element.attr('class');
-                  let $elementAll = $("." + elementClassName);
-                  let $dataTarget = $('[data-' + this.dataTarget + '="' + elementClassName + '"]');
-
-                  // チェックなしの場合、「全選択」用のボタンに変更
-                  if($element[0].checked === false){
-
-                    // 全選択の文言に変更
-                    for(var i = 0; i < $dataTarget.length; i++ ){
-                      if( $dataTarget[i].value !== this.selectAll){
-                          this.fullReleaseFun($($dataTarget[i]));
-                      }
-                    }
-
-                  // チェックありの場合、全てチェック済みの場合は「全解除」用のボタンに変更
-                  }else{
-
-                      let targetFlag = true; //全選択の場合はtrue
-                      for(var i = 0; i < $elementAll.length; i++ ){
-                        // チェックなしの時はtrueを代入
-                        if( $elementAll[i].checked === false ){
-                          targetFlag = false;
-
-                        }
-                      }
-                        // 全解除の文言に変更
-                        if (targetFlag === true){
-
-                          for(var i = 0; i < $dataTarget.length; i++ ){
-                           if( $dataTarget[i].value !== this.fullRelease){
-                               this.selectorAllFun($($dataTarget[i]));
-                           }
-                        }
-                     }
-                  }
-                });
-              }
-            }
-
-            this.event();
-            
-        }
-        
-        event(){
-          this.$elements.on("click",(element) => {
-            let $element = $(element.currentTarget);
-            let $dataTarget = $("." + $element.data(this.dataTarget));
-            if( $element[0].value === this.selectAll){
-                for(var i = 0; i < $dataTarget.length; i++ ){
-                    const current = $dataTarget[i];
-                    // チェックなしの時はtrueを代入
-                    if( current.checked === false ){
-                        current.checked = true;
-                    }
-                }
-                this.selectorAllFun($element);
-            } else {
-                for(var i = 0; i < $dataTarget.length; i++ ){
-                    const current = $dataTarget[i];
-                    // チェックありの時はfalseを代入
-                    if( current.checked === true ){
-                        current.checked = false;
-                    }
-                }
-                this.fullReleaseFun($element);
-           }
-          });
-
-          
-        }
-        // ターゲットのcheckboxをチェックありに変更
-        selectorAllFun($element){
-            if( !$element.hasClass(this.is_fullReleaseClassName) ){
-              $element.addClass(this.is_fullReleaseClassName);
-            }
-            $element[0].value = this.fullRelease;
-        }
-        // ターゲットのcheckboxをチェックなしに変更
-        fullReleaseFun($element){
-            if( $element.hasClass(this.is_fullReleaseClassName) ){
-                $element.removeClass(this.is_fullReleaseClassName);
-            }
-            $element[0].value = this.selectAll;
-        }
     }
     <%--テーブルを一行ごとにいろを変える--%>
     function go_submit(action_cmd) {

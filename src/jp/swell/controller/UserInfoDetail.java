@@ -429,7 +429,6 @@ public class UserInfoDetail extends ControllerBase
        }
        if (lastNameKana.length() == 0) {
 
-        System.out.println("set");
            errorSet.put("last_name_kana", "名字のよみを入力してください。");
        }
         if (firstNameKana.length() == 0) {
@@ -448,7 +447,7 @@ public class UserInfoDetail extends ControllerBase
                errorSet.putIfAbsent("first_name_kana", "名前のよみはひらがなで入力してください。");
            }
        }
-       System.out.println(errorSet);
+
        return errorSet;
        
      }
@@ -634,8 +633,6 @@ public class UserInfoDetail extends ControllerBase
 
       private void checkDuplicateForInsert(String userId, String mainKey, UserInfoDao pUserInfoDao, HashMap<String, String> errorSet) throws AtareSysException {
 
-      	System.out.println(userId);
-      	System.out.println(pUserInfoDao.isIdExists(userId, mainKey));
       	if (pUserInfoDao.isIdExists(userId, mainKey)) {
           errorSet.put("insert_user_id", "このＩＤは既に登録されています。");
         }
