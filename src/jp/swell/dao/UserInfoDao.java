@@ -1134,6 +1134,7 @@ public class UserInfoDao implements Serializable {
         // ＩＤが存在するかのカウントを行う
         String sql = "SELECT COUNT(*) FROM user_info "
                 + "WHERE insert_user_id = " + DbS.chara(id);
+        
 
         // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
@@ -1155,10 +1156,12 @@ public class UserInfoDao implements Serializable {
      */
     public boolean isIdExists(String id, String pUserInfoId) throws AtareSysException {
         // ＩＤが存在するかのカウントを行う
-        String sql = "SELECT COUNT(*) FROM user_info "
+        String sql = "SELECT COUNT(*) "
+              		+ "FROM user_info "
                 + "WHERE insert_user_id = " + DbS.chara(id)
                 + "and user_info_id NOT IN (" + DbS.chara(pUserInfoId) + ")";
-
+        
+        System.out.println(sql);
         // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 

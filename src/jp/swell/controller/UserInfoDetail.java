@@ -361,12 +361,14 @@ public class UserInfoDetail extends ControllerBase
             errors.putAll(nameKanaCheck(bean));
             // ミドルネーム エラーチェック
             errors.putAll(middleNameCheck(bean));
-            // ユーザー区分チェック
-            errors.putAll(adminCheck(bean));
-            // メールアドレスエラーチェック
-            errors.putAll(memailCheck(bean,pUserInfoDao));
+            // 旧姓 エラーチェック
+            errors.putAll(maidenNameCheck(bean));
             // 任意ID エラーチェック
             errors.putAll(insertUserIdCheck(bean,pUserInfoDao));
+            // メールアドレスエラーチェック
+            errors.putAll(memailCheck(bean,pUserInfoDao));
+            // ユーザー区分チェック
+            errors.putAll(adminCheck(bean));
         }
         else if ("delete".equals(bean.value("request_cmd"))) 
         {
@@ -456,7 +458,7 @@ public class UserInfoDetail extends ControllerBase
       *
       * @return errorSet HashMapにエラーフィールドをキーとしてエラーメッセージを返す
       */
-     private HashMap<String, String> middleNameCheck(WebBean bean)
+     HashMap<String, String> middleNameCheck(WebBean bean)
      {
        HashMap<String, String> errorSet = new HashMap<>();
       
@@ -464,43 +466,50 @@ public class UserInfoDetail extends ControllerBase
        {
           if (bean.value("middle_name_kana").length() == 0)
           {
-          	   errorSet.put("middle_name_kana", "ミドルネームよみを入力してください。");
+          	   errorSet.put("middle_name_kana", "ミドルネームのよみを入力してください。");
           }
           else if (!isHiragana(bean.value("middle_name_kana"))) 
           {
-              errorSet.put("middle_name_kana", "ミドルネームよみはひらがなで入力してください。");
+              errorSet.put("middle_name_kana", "ミドルネームのよみはひらがなで入力してください。");
+          }
+       } else {
+          if (bean.value("middle_name_kana").length() != 0)
+          {
+    	         errorSet.put("middle_name", "ミドルネームを入力してください。");
           }
        }
+  
+       return errorSet;
+     }
+     
+
+     /**
+      * 旧姓 入力チェックを行う。.
+      *
+      * @return errorSet HashMapにエラーフィールドをキーとしてエラーメッセージを返す
+      */
+     HashMap<String, String> maidenNameCheck(WebBean bean)
+     {
+       HashMap<String, String> errorSet = new HashMap<>();
+      
   
        if (bean.value("maiden_name").length() != 0)
        {
           if (bean.value("maiden_name_kana").length() == 0)
           {
-             	errorSet.put("maiden_name_kana", "旧姓よみを入力してください。");
+             	errorSet.put("maiden_name_kana", "旧姓のよみを入力してください。");
           }
           else if (!isHiragana(bean.value("maiden_name_kana"))) 
           {
-             	errorSet.put("maiden_name_kana", "旧姓よみはひらがなで入力してください。");
+             	errorSet.put("maiden_name_kana", "旧姓のよみはひらがなで入力してください。");
+          }
+       } else {
+          if (bean.value("maiden_name_kana").length() != 0)
+          {
+              errorSet.put("maiden_name", "旧姓を入力してください。");
           }
        }
        return errorSet;
-     }
-     
-     /**
-      * ユーザー区分 入力チェックを行う。.
-      *
-      * @return errorSet HashMapにエラーフィールドをキーとしてエラーメッセージを返す
-      */
-     private HashMap<String, String> adminCheck(WebBean bean)
-     {
-
-        HashMap<String, String> errorSet = new HashMap<>();
-      
-        if (bean.value("admin").length() == 0)
-        {
-      	     errorSet.put("admin", "ユーザー区分を選択してください。");
-        }
-        return errorSet;
      }
 
      /**
@@ -509,7 +518,7 @@ public class UserInfoDetail extends ControllerBase
       * @return errorSet HashMapにエラーフィールドをキーとしてエラーメッセージを返す
       * @throws AtareSysException
       */
-     private HashMap<String, String> memailCheck(WebBean bean, UserInfoDao pUserInfoDao) throws AtareSysException
+    HashMap<String, String> memailCheck(WebBean bean, UserInfoDao pUserInfoDao) throws AtareSysException
      {
 
       HashMap<String, String> errorSet = new HashMap<>();
@@ -546,43 +555,29 @@ public class UserInfoDetail extends ControllerBase
      }
 
      /**
-      * 入力値の文字数と形式チェックを行う。.
+      * ユーザー区分 入力チェックを行う。.
       *
-      * @return true, false
+      * @return errorSet HashMapにエラーフィールドをキーとしてエラーメッセージを返す
       */
-     private boolean isValidIdFormat(String userId, HashMap<String, String> errorSet) {
-     	   if (userId.length() < 6 || userId.length() > 12) {
-             errorSet.put("insert_user_id", "ＩＤは６文字以上１２文字以下で入力してください。");
-             return false;
-         }
-     	   if (!userId.matches("^[a-zA-Z0-9]+$")) {
-             errorSet.put("insert_user_id", "ＩＤは半角英数で入力してください。");
-             return false;
-         }
-         return true;
+    HashMap<String, String> adminCheck(WebBean bean)
+     {
+
+        HashMap<String, String> errorSet = new HashMap<>();
+      
+        if (bean.value("admin").length() == 0)
+        {
+      	     errorSet.put("admin", "ユーザー区分を選択してください。");
+        }
+        return errorSet;
      }
+
 
      /**
-      * insert_user_idの重複チェックを行う。.
-      *
-      */
-     private void checkDuplicateForInsert(String userId, UserInfoDao pUserInfoDao, HashMap<String, String> errorSet) throws AtareSysException {
-       checkDuplicateForInsert(userId, "", pUserInfoDao, errorSet); 
-    }
-
-     private void checkDuplicateForInsert(String userId, String mainKey, UserInfoDao pUserInfoDao, HashMap<String, String> errorSet) throws AtareSysException {
-      if (pUserInfoDao.isIdExists(userId, mainKey)) {
-          errorSet.put("insert_user_id", "このＩＤは既に登録されています。");
-      }
-     }
-  
-  
-      /**
        *  任意ID エラーチェックを行う。.
        *
        * @return errorSet
        */
-     private HashMap<String, String> insertUserIdCheck(WebBean bean, UserInfoDao pUserInfoDao) throws AtareSysException {
+     HashMap<String, String> insertUserIdCheck(WebBean bean, UserInfoDao pUserInfoDao) throws AtareSysException {
          HashMap<String, String> errorSet = new HashMap<>();
          
          String insert_user_id = bean.value("insert_user_id");
@@ -612,6 +607,39 @@ public class UserInfoDetail extends ControllerBase
          return errorSet;
      }
 
+     /**
+      * 入力値の文字数と形式チェックを行う。.
+      *
+      * @return true, false
+      */
+     boolean isValidIdFormat(String userId, HashMap<String, String> errorSet) {
+     	   if (userId.length() < 6 || userId.length() > 12) {
+             errorSet.put("insert_user_id", "ＩＤは６文字以上１２文字以下で入力してください。");
+             return false;
+         }
+     	   if (!userId.matches("^[a-zA-Z0-9]+$")) {
+             errorSet.put("insert_user_id", "ＩＤは半角英数で入力してください。");
+             return false;
+         }
+         return true;
+     }
+
+     /**
+      * insert_user_idの重複チェックを行う。.
+      *
+      */
+      private void checkDuplicateForInsert(String userId, UserInfoDao pUserInfoDao, HashMap<String, String> errorSet) throws AtareSysException {
+       checkDuplicateForInsert(userId, "", pUserInfoDao, errorSet); 
+      }
+
+      private void checkDuplicateForInsert(String userId, String mainKey, UserInfoDao pUserInfoDao, HashMap<String, String> errorSet) throws AtareSysException {
+
+      	System.out.println(userId);
+      	System.out.println(pUserInfoDao.isIdExists(userId, mainKey));
+      	if (pUserInfoDao.isIdExists(userId, mainKey)) {
+          errorSet.put("insert_user_id", "このＩＤは既に登録されています。");
+        }
+      }
 
      private HashMap<String, String> leaveDateCheck(WebBean bean)
      {
