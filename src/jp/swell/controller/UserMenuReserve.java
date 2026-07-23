@@ -128,20 +128,8 @@ public class UserMenuReserve extends ControllerBase {
   {
       WebBean bean = getWebBean();
       HashMap<String, String> errors = bean.getItemErrors();
-      if (bean.value("list_search_full_name").length() > 0)
-      {
-          if (100 < bean.value("list_search_full_name").length())
-          {
-              errors.put("list_search_full_name", "氏名の入力内容が長すぎます。");
-          }
-      }
-      if (bean.value("list_search_full_name_kana").length() > 0)
-      {
-          if (100 < bean.value("list_search_full_name_kana").length())
-          {
-              errors.put("list_search_full_name_kana", "氏名よみの入力内容が長すぎます。");
-          }
-      }
+      CommonDoActionProcess.checkMaxLength(errors, "list_search_full_name", bean.value("list_search_full_name"), 100, "氏名");
+      CommonDoActionProcess.checkMaxLength(errors, "list_search_full_name_kana", bean.value("list_search_full_name_kana"), 100, "氏名よみ");
       return errors;
   }
 

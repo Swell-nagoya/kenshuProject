@@ -49,7 +49,7 @@ public class ViewUserList extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -142,6 +142,11 @@ public class ViewUserList extends ControllerBase
         WebBean bean = getWebBean();
         bean.setValue("list_search_full_name", "");
         bean.setValue("list_search_full_name_kana", "");
+        bean.setValue("list_search_memail", "");
+        bean.setValue("list_search_admin", "");
+        bean.setValue("list_search_status", "");
+        bean.setValue("sort_key", "full_name_kana"); /* 初回のソートキーを入れる */
+        bean.setValue("sort_order", "asc");
         bean.setValue("lineCount", "");
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
@@ -156,20 +161,8 @@ public class ViewUserList extends ControllerBase
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
-        if (bean.value("list_search_full_name").length() > 0)
-        {
-            if (100 < bean.value("list_search_full_name").length())
-            {
-                errors.put("list_search_full_name", "氏名の入力内容が長すぎます。");
-            }
-        }
-        if (bean.value("list_search_full_name_kana").length() > 0)
-        {
-            if (100 < bean.value("list_search_full_name_kana").length())
-            {
-                errors.put("list_search_full_name_kana", "氏名よみの入力内容が長すぎます。");
-            }
-        }
+        CommonDoActionProcess.checkMaxLength(errors, "list_search_full_name", bean.value("list_search_full_name"), 100, "氏名");
+        CommonDoActionProcess.checkMaxLength(errors, "list_search_full_name_kana", bean.value("list_search_full_name_kana"), 100, "氏名よみ");
         return errors;
     }
 
@@ -190,7 +183,10 @@ public class ViewUserList extends ControllerBase
         LinkedHashMap<String, String> sortKey = sortKey();
         UserInfoDao dao = new UserInfoDao();
         dao.setSearchName(bean.value("list_search_full_name"));
-
+        dao.setSearchMemail(bean.value("list_search_memail"));
+        dao.setSearchAdmin(bean.value("list_search_admin"));
+        dao.setSearchStatus(bean.value("list_search_status"));
+        
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount")))
         {
@@ -283,6 +279,26 @@ public class ViewUserList extends ControllerBase
         bean.setValue("sort_key", "");
         bean.setValue("sort_key_old", key);
         bean.setValue("sort_order", sort_key.get(key));
+        if("last_name_kana".equals(bean.value("sort_key_old"))) {
+        	if("asc".equals(bean.value("sort_order"))) {
+        		bean.setValue("last_name_kana_order", "▲");
+        	}else {
+        		bean.setValue("last_name_kana_order", "▼");
+        	}
+        	bean.setValue("memail_order", "");
+        	
+        }else if("memail".equals(bean.value("sort_key_old"))) {
+        	if("asc".equals(bean.value("sort_order"))) {
+        		bean.setValue("memail_order", "▲");
+        	}else {
+        		bean.setValue("memail_order", "▼");
+        	}
+        	bean.setValue("last_name_kana_order", "");
+        	
+        }else {
+        	bean.setValue("last_name_kana_order", "");
+        	bean.setValue("memail_order", "");
+        }
         return sort_key;
     }
 

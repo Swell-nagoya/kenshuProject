@@ -18,11 +18,10 @@ package jp.swell.controller;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DbBase;
@@ -54,7 +53,7 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -105,6 +104,36 @@ public class UserInfoDetail extends ControllerBase
                           forward("UserInfoDetail_2.jsp");
                       }
                   }
+                  else if ("bulk_delete".equals(bean.value("request_cmd")))
+                  {
+                      if (getSelectedUserInfoIds().length == 0)
+                      {
+                          bean.setError("対象ユーザーを選択してください。");
+                          forward("ViewUserList.jsp");
+                      }
+                      else
+                      {
+                          bean.setValue("request_name", "一括削除");
+                          bean.setMessage("選択したユーザーを1名ずつ確認し、退職予定日を入力してください。");
+                          initBulkOperation();
+                          forward("UserInfoDetail_2.jsp");
+                      }
+                  }
+                  else if ("bulk_update".equals(bean.value("request_cmd")))
+                  {
+                      if (getSelectedUserInfoIds().length == 0)
+                      {
+                          bean.setError("対象ユーザーを選択してください。");
+                          forward("ViewUserList.jsp");
+                      }
+                      else
+                      {
+                          bean.setValue("request_name", "一括修正");
+                          bean.setMessage("選択したユーザーを1名ずつ修正してください。");
+                          initBulkOperation();
+                          forward("UserInfoDetail_1.jsp");
+                      }
+                  }
                   else if ("check".equals(bean.value("request_cmd"))) 
                   {
                       if (!setDb2Web()) 
@@ -144,6 +173,11 @@ public class UserInfoDetail extends ControllerBase
           
           else if ("UserInfoDetail_1".equals(bean.value("form_name"))) 
           {
+              if ("bulk_update".equals(bean.value("request_cmd")) && isBulkPagingAction(bean.value("action_cmd")))
+              {
+                  handleBulkUpdatePaging();
+                  return;
+              }
               if ("go_next".equals(bean.value("action_cmd"))) 
               {
                   
@@ -182,6 +216,11 @@ public class UserInfoDetail extends ControllerBase
                         forward("UserInfoDetail_1.jsp");
                       }
                   }
+                  else if ("bulk_update".equals(bean.value("request_cmd")))
+                  {
+                      handleBulkUpdatePaging();
+                      return;
+                  }
               } 
               else if ("return".equals(bean.value("action_cmd"))) 
               {
@@ -191,6 +230,11 @@ public class UserInfoDetail extends ControllerBase
           
           else if ("UserInfoDetail_2".equals(bean.value("form_name")))  
           {  
+              if ("bulk_delete".equals(bean.value("request_cmd")) && isBulkPagingAction(bean.value("action_cmd")))
+              {
+                  handleBulkDeletePaging();
+                  return;
+              }
               if ("go_next".equals(bean.value("action_cmd"))) 
               {
                   if ("delete".equals(bean.value("request_cmd"))) 
@@ -210,6 +254,11 @@ public class UserInfoDetail extends ControllerBase
                           forward("UserInfoDetail_2.jsp"); 
                       }
                   }
+                  else if ("bulk_delete".equals(bean.value("request_cmd")))
+                  {
+                      handleBulkDeletePaging();
+                      return;
+                  }
               }
               else if ("return".equals(bean.value("action_cmd"))) 
               {
@@ -219,6 +268,12 @@ public class UserInfoDetail extends ControllerBase
           
           else if ("UserInfoDetail_3".equals(bean.value("form_name"))) 
           {
+              if (("bulk_update".equals(bean.value("request_cmd")) || "bulk_delete".equals(bean.value("request_cmd")))
+                      && isBulkPreviewAction(bean.value("action_cmd")))
+              {
+                  handleBulkPreviewPaging();
+                  return;
+              }
               if ("go_next".equals(bean.value("action_cmd"))) 
               {
                   if ("ins".equals(bean.value("request_cmd"))) 
@@ -256,6 +311,14 @@ public class UserInfoDetail extends ControllerBase
                           forward("UserInfoDetail_1.jsp");
                       }
                   }
+                  else if ("bulk_delete".equals(bean.value("request_cmd")))
+                  {
+                	    bulkDelete();
+                	}
+                	else if ("bulk_update".equals(bean.value("request_cmd")))
+                	{
+                	    bulkUpdate();
+                	}
               }
               
               else if ("return".equals(bean.value("action_cmd"))) 
@@ -279,6 +342,18 @@ public class UserInfoDetail extends ControllerBase
                       setInputInfo2Dao2Web();
                       setWeb2Dao2InputInfo();
                       forward("UserInfoDetail_2.jsp");
+                  }
+                  else if ("bulk_delete".equals(bean.value("request_cmd")))
+                  {
+                      bean.setValue("request_name", "一括削除");
+                      loadCurrentBulkUserInfo();
+                      forward("UserInfoDetail_2.jsp");
+                  }
+                  else if ("bulk_update".equals(bean.value("request_cmd")))
+                  {
+                      bean.setValue("request_name", "一括修正");
+                      loadCurrentBulkUserInfo();
+                      forward("UserInfoDetail_1.jsp");
                   }
                   else if ("send".equals(bean.value("request_cmd"))) 
                   {
@@ -351,109 +426,43 @@ public class UserInfoDetail extends ControllerBase
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
        
-        if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd"))) 
+        if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd")) || "bulk_update".equals(bean.value("request_cmd"))) 
         {
-            if (bean.value("last_name").length() == 0 && bean.value("first_name").length() == 0)
-            {
-                errors.put("last_name", "氏名を入力してください。");
-                errors.put("first_name", "");
-            } 
-            else if (bean.value("last_name").length() == 0)
-            {
-                errors.put("last_name", "名字を入力してください。");
-            }
-            else if (bean.value("first_name").length() == 0)
-            {
-                errors.put("first_name", "名前を入力してください。");
-            }
-        
-            if (bean.value("last_name_kana").length() == 0 && bean.value("first_name_kana").length() == 0)
-            {
-                errors.put("last_name_kana", "氏名のよみを入力してください。");
-                errors.put("first_name_kana", "");
-            }
-            else  if (bean.value("last_name_kana").length() == 0)
-            {
-                errors.put("last_name_kana", "名字のよみを入力してください。");
-            }
-            else if (bean.value("first_name_kana").length() == 0)
-            {
-                errors.put("first_name_kana", "名前のよみを入力してください。");
-            }
-        
-            if (bean.value("last_name_kana").length() > 0 || bean.value("first_name_kana").length() > 0)
-            {
-                if (!isHiragana(bean.value("last_name_kana")) && !isHiragana(bean.value("first_name_kana"))) 
-                {
-                    errors.put("last_name_kana", "氏名のよみはひらがなで入力してください。");
-                }
-                else if (!isHiragana(bean.value("last_name_kana"))) 
-                {
-                    errors.put("last_name_kana", "名字のよみはひらがなで入力してください。");
-                }
-                else if (!isHiragana(bean.value("first_name_kana"))) 
-                {
-                    errors.put("first_name_kana", "名前のよみはひらがなで入力してください。");
-                }
-            }    
-        
-            if (bean.value("middle_name").length() != 0)
-            {
-                if (bean.value("middle_name_kana").length() == 0)
-                {
-                    errors.put("middle_name_kana", "ミドルネームよみを入力してください。");
-                }
-                else if (!isHiragana(bean.value("middle_name_kana"))) 
-                {
-                    errors.put("middle_name_kana", "ミドルネームよみはひらがなで入力してください。");
-                }
-            }
-        
-            if (bean.value("maiden_name").length() != 0)
-            {
-                if (bean.value("maiden_name_kana").length() == 0)
-                {
-                    errors.put("maiden_name_kana", "旧姓よみを入力してください。");
-                }
-                else if (!isHiragana(bean.value("maiden_name_kana"))) 
-                {
-                    errors.put("maiden_name_kana", "旧姓よみはひらがなで入力してください。");
-                }
-            }
-            
+            CommonDoActionProcess.checkNameAndKana(errors,
+                    bean.value("last_name"), bean.value("first_name"),
+                    bean.value("last_name_kana"), bean.value("first_name_kana"));
+
+            CommonDoActionProcess.checkOptionalKana(errors, "middle_name_kana",
+                    bean.value("middle_name"), bean.value("middle_name_kana"), "ミドルネーム");
+
+            CommonDoActionProcess.checkOptionalKana(errors, "maiden_name_kana",
+                    bean.value("maiden_name"), bean.value("maiden_name_kana"), "旧姓");
+
             if (bean.value("admin").length() == 0)
             {
                 errors.put("admin", "ユーザー区分を選択してください。");
             }
             
-            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-            Pattern pattern = Pattern.compile(emailRegex);
-            Matcher matcher = pattern.matcher(bean.value("memail"));
-            if (bean.value("memail").length() == 0)
+            if (!CommonDoActionProcess.checkEmailFormat(errors, "memail", bean.value("memail")))
             {
-                errors.put("memail", "メールアドレスを入力してください。");
-            }
-            else if (!matcher.matches()) // メアドに使用できる半角英数記号以外のチェック
-            {  
-                errors.put("memail", "正しいメールアドレスを入力してください。");
-            }
-            else if ("ins".equals(bean.value("request_cmd"))) 
-            {
-                if (pUserInfoDao.isEmailExists(bean.value("memail")))
+                if ("ins".equals(bean.value("request_cmd")))
                 {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("memail", "このメールアドレスは既に登録されています。");
+                    if (pUserInfoDao.isEmailExists(bean.value("memail")))
+                    {
+                        // 重複している場合のエラーメッセージ設定
+                        errors.put("memail", "このメールアドレスは既に登録されています。");
+                    }
+                }
+                else if ("update".equals(bean.value("request_cmd")) || "bulk_update".equals(bean.value("request_cmd")))
+                {
+                    if (pUserInfoDao.isEmailExists(bean.value("memail"), bean.value("main_key")))
+                    {
+                        // 重複している場合のエラーメッセージ設定
+                        errors.put("memail", "このメールアドレスは既に登録されています。");
+                    }
                 }
             }
-            else if ("update".equals(bean.value("request_cmd"))) 
-            {
-                if (pUserInfoDao.isEmailExists(bean.value("memail"), bean.value("main_key")))
-                {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("memail", "このメールアドレスは既に登録されています。");
-                }
-            }
- 
+
             if (bean.value("insert_user_id").length() != 0)
             {
                 if (bean.value("insert_user_id").length() < 6 || bean.value("insert_user_id").length() > 12)
@@ -472,7 +481,7 @@ public class UserInfoDetail extends ControllerBase
                         errors.put("insert_user_id", "このＩＤは既に登録されています。");
                     }
                 }
-                else if ("update".equals(bean.value("request_cmd"))) 
+                else if ("update".equals(bean.value("request_cmd")) || "bulk_update".equals(bean.value("request_cmd"))) 
                 {
                     if (pUserInfoDao.isIdExists(bean.value("insert_user_id"), bean.value("main_key"))) 
                     {
@@ -482,7 +491,7 @@ public class UserInfoDetail extends ControllerBase
                 }
             }
         }
-        else if ("delete".equals(bean.value("request_cmd"))) 
+        else if ("delete".equals(bean.value("request_cmd")) || "bulk_delete".equals(bean.value("request_cmd"))) 
         {
             // 日付フォーマットの指定
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -549,17 +558,6 @@ public class UserInfoDetail extends ControllerBase
         return true;
     }
     
-    /**
-     * 文字列がひらがなで構成されているかをチェックするメソッド.
-     *
-     * @param input チェック対象の文字列
-     * @return 文字列がひらがなで構成されている場合はtrue、それ以外はfalse
-     */
-    private boolean isHiragana(String input) {
-        return input.matches("^[\\u3040-\\u309Fー]+$");
-    }
-    
-
     /**
      * データベース処理を行う。.
      *
@@ -630,6 +628,11 @@ public class UserInfoDetail extends ControllerBase
     private UserInfoDao setWeb2Dao2InputInfo() throws AtareSysException {
       WebBean bean = getWebBean();
       UserInfoDao dao = new UserInfoDao();
+      
+      // 新規登録以外
+      if (!"ins".equals(bean.value("request_cmd"))) {
+          bean.setValue("user_info_id", bean.value("main_key")); 
+      }
 
       dao.setUserInfoId(bean.value("user_info_id"));
       dao.setLastName(bean.value("last_name"));
@@ -688,6 +691,62 @@ public class UserInfoDetail extends ControllerBase
         }
         
     }
+    /**
+     * 一括修正の場合
+     * bulk_input_info に保存したユーザーごとの入力内容を1件ずつ反映する。
+     * @throws AtareSysException
+     */
+    public void bulkUpdate() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String[] userInfoIds = getSelectedUserInfoIds();
+
+        if (userInfoIds.length == 0)
+        {
+            bean.setError("対象ユーザーを選択してください。");
+            forward("ViewUserList.jsp");
+            return;
+        }
+
+        HashMap<String, UserInfoDao> bulkMap = getBulkInputInfo();
+
+        try
+        {
+            DbBase.dbBeginTran();
+
+            for (int i = 0; i < userInfoIds.length; i++)
+            {
+                String userInfoId = userInfoIds[i].trim();
+
+                if (userInfoId.length() == 0)
+                {
+                    continue;
+                }
+
+                UserInfoDao dao = bulkMap.get(userInfoId);
+
+                if (dao == null)
+                {
+                    dao = new UserInfoDao();
+                    if (!dao.dbSelect(userInfoId))
+                    {
+                        continue;
+                    }
+                }
+
+                dao.dbUpdate(userInfoId);
+            }
+
+            DbBase.dbCommitTran();
+            redirect("ViewUserList.do");
+        }
+        catch (Exception e)
+        {
+            DbBase.dbRollbackTran();
+            bean.setError("ユーザーデータの一括修正に失敗しました。");
+            forward("ViewUserList.jsp");
+        }
+    }
    
     
     /**
@@ -712,10 +771,457 @@ public class UserInfoDetail extends ControllerBase
             redirect("ViewUserList.do");
           }
         }catch (Exception e) {
-          forward("ViewUserList.do");
+        	bean.setError("ユーザーデータの削除に失敗しました。");
+        	forward("ViewUserList.jsp");
         }
     }
     
+    /**
+     * 一括処理用のページングアクションかどうかを判定する。
+     */
+    private boolean isBulkPagingAction(String actionCmd)
+    {
+        return "bulk_next".equals(actionCmd) || "bulk_prior".equals(actionCmd) || "bulk_confirm".equals(actionCmd)
+                || "go_next".equals(actionCmd);
+    }
+
+    /**
+     * 選択されたユーザーID配列を取得する。
+     */
+    private String[] getSelectedUserInfoIds()
+    {
+        WebBean bean = getWebBean();
+        String selectedIds = bean.value("select_user_info_ids");
+
+        if (selectedIds == null || selectedIds.trim().length() == 0)
+        {
+            return new String[0];
+        }
+
+        String[] rawIds = selectedIds.split(",");
+        ArrayList<String> idList = new ArrayList<String>();
+
+        for (int i = 0; i < rawIds.length; i++)
+        {
+            String id = rawIds[i].trim();
+            if (id.length() > 0 && !idList.contains(id))
+            {
+                idList.add(id);
+            }
+        }
+
+        return idList.toArray(new String[idList.size()]);
+    }
+
+    /**
+     * 一括処理の初期表示を準備する。
+     */
+    private void initBulkOperation() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String[] userInfoIds = getSelectedUserInfoIds();
+
+        bean.setValue("bulk_index", "0");
+        bean.setValue("bulk_count", String.valueOf(userInfoIds.length));
+        bean.setValue("bulk_input_info", Sup.serialize(new HashMap<String, UserInfoDao>()));
+
+        loadCurrentBulkUserInfo();
+    }
+
+    /**
+     * 現在の一括ページ番号を取得する。
+     */
+    private int getBulkIndex()
+    {
+        WebBean bean = getWebBean();
+        try
+        {
+            return Integer.parseInt(bean.value("bulk_index"));
+        }
+        catch (Exception e)
+        {
+            return 0;
+        }
+    }
+
+    /**
+     * 現在の一括ページ番号を設定する。
+     */
+    private void setBulkIndex(int index)
+    {
+        WebBean bean = getWebBean();
+        String[] userInfoIds = getSelectedUserInfoIds();
+
+        if (index < 0)
+        {
+            index = 0;
+        }
+        if (userInfoIds.length > 0 && index >= userInfoIds.length)
+        {
+            index = userInfoIds.length - 1;
+        }
+
+        bean.setValue("bulk_index", String.valueOf(index));
+        bean.setValue("bulk_count", String.valueOf(userInfoIds.length));
+    }
+
+    /**
+     * 現在ページのユーザーIDを取得する。
+     */
+    private String getCurrentBulkUserInfoId()
+    {
+        String[] userInfoIds = getSelectedUserInfoIds();
+        if (userInfoIds.length == 0)
+        {
+            return "";
+        }
+
+        int index = getBulkIndex();
+        if (index < 0)
+        {
+            index = 0;
+        }
+        if (index >= userInfoIds.length)
+        {
+            index = userInfoIds.length - 1;
+        }
+
+        return userInfoIds[index].trim();
+    }
+
+    /**
+     * 一括編集・削除で入力済みのユーザー情報を取得する。
+     */
+    @SuppressWarnings("unchecked")
+    private HashMap<String, UserInfoDao> getBulkInputInfo()
+    {
+        WebBean bean = getWebBean();
+        String bulkInputInfo = bean.value("bulk_input_info");
+
+        if (bulkInputInfo == null || bulkInputInfo.trim().length() == 0)
+        {
+            return new HashMap<String, UserInfoDao>();
+        }
+
+        try
+        {
+            Object obj = Sup.deserialize(bulkInputInfo);
+            if (obj instanceof HashMap)
+            {
+                return (HashMap<String, UserInfoDao>) obj;
+            }
+        }
+        catch (Exception e)
+        {
+            // 不正なシリアライズ値の場合は新規で作り直す
+        }
+
+        return new HashMap<String, UserInfoDao>();
+    }
+
+    /**
+     * 一括編集・削除の入力済み情報を保存する。
+     */
+    private void setBulkInputInfo(HashMap<String, UserInfoDao> bulkMap) throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        bean.setValue("bulk_input_info", Sup.serialize(bulkMap));
+    }
+
+    /**
+     * DAOの値を画面表示用のWebBeanに反映する。
+     */
+    private void setDao2Web(UserInfoDao dao) throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+
+        bean.setValue("main_key", dao.getUserInfoId());
+        bean.setValue("user_info_id", dao.getUserInfoId());
+        bean.setValue("state_flg", dao.getStateFlg());
+        bean.setValue("last_name", dao.getLastName());
+        bean.setValue("middle_name", dao.getMiddleName());
+        bean.setValue("first_name", dao.getFirstName());
+        bean.setValue("maiden_name", dao.getMaidenName());
+        bean.setValue("last_name_kana", dao.getLastNameKana());
+        bean.setValue("middle_name_kana", dao.getMiddleNameKana());
+        bean.setValue("first_name_kana", dao.getFirstNameKana());
+        bean.setValue("maiden_name_kana", dao.getMaidenNameKana());
+        bean.setValue("insert_user_id", dao.getInsertUserId());
+        bean.setValue("memail", dao.getMemail());
+        bean.setValue("password_user", dao.getPasswordUser());
+        bean.setValue("password", dao.getPassword());
+        bean.setValue("admin", dao.getAdmin());
+        bean.setValue("leave_date", dao.getLeaveDate());
+        bean.setValue("input_info", Sup.serialize(dao));
+        bean.setValue("select_info", Sup.serialize(dao));
+    }
+
+    /**
+     * 現在ページのユーザー情報をDBまたは一時保存済み情報から読み込む。
+     */
+    private boolean loadCurrentBulkUserInfo() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String userInfoId = getCurrentBulkUserInfoId();
+
+        if (userInfoId.length() == 0)
+        {
+            bean.setError("対象ユーザーを選択してください。");
+            return false;
+        }
+
+        HashMap<String, UserInfoDao> bulkMap = getBulkInputInfo();
+        UserInfoDao dao = bulkMap.get(userInfoId);
+
+        if (dao == null)
+        {
+            dao = new UserInfoDao();
+            if (!dao.dbSelect(userInfoId))
+            {
+                bean.setError("データの取得に失敗しました");
+                return false;
+            }
+        }
+
+        setDao2Web(dao);
+        bean.setValue("bulk_count", String.valueOf(getSelectedUserInfoIds().length));
+        return true;
+    }
+
+    /**
+     * 現在ページの一括修正入力内容を保存する。
+     */
+    private boolean saveCurrentBulkUpdateUser() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        bean.rtrimAllItem();
+
+        UserInfoDao dao = setWeb2Dao2InputInfo();
+        if (!inputCheck(dao))
+        {
+            return false;
+        }
+
+        HashMap<String, UserInfoDao> bulkMap = getBulkInputInfo();
+        bulkMap.put(bean.value("user_info_id"), dao);
+        setBulkInputInfo(bulkMap);
+        return true;
+    }
+
+    /**
+     * 現在ページの一括削除入力内容を保存する。
+     */
+    private boolean saveCurrentBulkDeleteUser() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        bean.rtrimAllItem();
+
+        UserInfoDao checkDao = new UserInfoDao();
+        if (!inputCheck(checkDao))
+        {
+            return false;
+        }
+
+        String userInfoId = bean.value("user_info_id");
+        if (userInfoId.length() == 0)
+        {
+            userInfoId = getCurrentBulkUserInfoId();
+        }
+
+        UserInfoDao dao = new UserInfoDao();
+        if (!dao.dbSelect(userInfoId))
+        {
+            bean.setError("データの取得に失敗しました");
+            return false;
+        }
+        dao.setLeaveDate(bean.value("leave_date"));
+
+        HashMap<String, UserInfoDao> bulkMap = getBulkInputInfo();
+        bulkMap.put(userInfoId, dao);
+        setBulkInputInfo(bulkMap);
+        return true;
+    }
+
+    /**
+     * 一括確認画面のプレビュー操作かどうかを判定する。
+     */
+    private boolean isBulkPreviewAction(String actionCmd)
+    {
+        return "bulk_preview_next".equals(actionCmd) || "bulk_preview_prior".equals(actionCmd);
+    }
+
+    /**
+     * UserInfoDetail_3.jsp で対象者を1名ずつプレビューする。
+     * 確定処理は行わず、bulk_index だけを移動して現在対象者を読み直す。
+     */
+    private void handleBulkPreviewPaging() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String actionCmd = bean.value("action_cmd");
+
+        if ("bulk_preview_next".equals(actionCmd))
+        {
+            setBulkIndex(getBulkIndex() + 1);
+        }
+        else if ("bulk_preview_prior".equals(actionCmd))
+        {
+            setBulkIndex(getBulkIndex() - 1);
+        }
+
+        if ("bulk_update".equals(bean.value("request_cmd")))
+        {
+            bean.setValue("request_name", "一括修正");
+            bean.setMessage("選択したユーザーを1名ずつプレビューしています。問題なければ確定してください。");
+        }
+        else if ("bulk_delete".equals(bean.value("request_cmd")))
+        {
+            bean.setValue("request_name", "一括削除");
+            bean.setMessage("選択したユーザーの退職予定日を1名ずつプレビューしています。問題なければ確定してください。");
+        }
+
+        loadCurrentBulkUserInfo();
+        forward("UserInfoDetail_3.jsp");
+    }
+
+    /**
+     * 一括修正のページング操作。
+     */
+    private void handleBulkUpdatePaging() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String actionCmd = bean.value("action_cmd");
+
+        if (!saveCurrentBulkUpdateUser())
+        {
+            bean.setError("入力内容に誤りがあります");
+            forward("UserInfoDetail_1.jsp");
+            return;
+        }
+
+        if ("bulk_confirm".equals(actionCmd) || "go_next".equals(actionCmd))
+        {
+            bean.setMessage("選択したユーザーを一括修正します。よろしいですか？");
+            bean.setValue("request_name", "一括修正");
+            bean.setValue("bulk_count", String.valueOf(getSelectedUserInfoIds().length));
+            forward("UserInfoDetail_3.jsp");
+            return;
+        }
+
+        if ("bulk_next".equals(actionCmd))
+        {
+            setBulkIndex(getBulkIndex() + 1);
+        }
+        else if ("bulk_prior".equals(actionCmd))
+        {
+            setBulkIndex(getBulkIndex() - 1);
+        }
+
+        loadCurrentBulkUserInfo();
+        forward("UserInfoDetail_1.jsp");
+    }
+
+    /**
+     * 一括削除のページング操作。
+     */
+    private void handleBulkDeletePaging() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String actionCmd = bean.value("action_cmd");
+
+        if (!saveCurrentBulkDeleteUser())
+        {
+            bean.setError("入力内容に誤りがあります");
+            forward("UserInfoDetail_2.jsp");
+            return;
+        }
+
+        if ("bulk_confirm".equals(actionCmd) || "go_next".equals(actionCmd))
+        {
+            bean.setMessage("選択したユーザーの退職予定日を確定します。よろしいですか？");
+            bean.setValue("request_name", "一括削除");
+            bean.setValue("bulk_count", String.valueOf(getSelectedUserInfoIds().length));
+            forward("UserInfoDetail_3.jsp");
+            return;
+        }
+
+        if ("bulk_next".equals(actionCmd))
+        {
+            setBulkIndex(getBulkIndex() + 1);
+        }
+        else if ("bulk_prior".equals(actionCmd))
+        {
+            setBulkIndex(getBulkIndex() - 1);
+        }
+
+        loadCurrentBulkUserInfo();
+        forward("UserInfoDetail_2.jsp");
+    }
+
+    /**
+     * 一括削除の場合。
+     * bulk_input_info に保存したユーザーごとの退職予定日を1件ずつ反映する。
+     * @throws AtareSysException
+     */
+    public void bulkDelete() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String[] userInfoIds = getSelectedUserInfoIds();
+
+        if (userInfoIds.length == 0)
+        {
+            bean.setError("対象ユーザーを選択してください。");
+            forward("ViewUserList.jsp");
+            return;
+        }
+
+        HashMap<String, UserInfoDao> bulkMap = getBulkInputInfo();
+
+        try
+        {
+            DbBase.dbBeginTran();
+
+            for (int i = 0; i < userInfoIds.length; i++)
+            {
+                String userInfoId = userInfoIds[i].trim();
+                if (userInfoId.length() == 0)
+                {
+                    continue;
+                }
+
+                UserInfoDao dao = bulkMap.get(userInfoId);
+                if (dao == null)
+                {
+                    dao = new UserInfoDao();
+                    if (!dao.dbSelect(userInfoId))
+                    {
+                        continue;
+                    }
+                }
+
+                String leaveDate = dao.getLeaveDate();
+                dao.dbUpdate(userInfoId);
+
+                if (leaveDate == null || leaveDate.trim().length() == 0)
+                {
+                    dao.dbCancelDelete(userInfoId);
+                }
+                else
+                {
+                    dao.dbDelete(userInfoId);
+                }
+            }
+
+            DbBase.dbCommitTran();
+            redirect("ViewUserList.do");
+        }
+        catch (Exception e)
+        {
+            DbBase.dbRollbackTran();
+            bean.setError("ユーザーデータの一括削除に失敗しました。");
+            forward("ViewUserList.jsp");
+        }
+    }
+
     /**
      * input_infoフィールドからクラスを取り出し、画面の項目に値を設定する
      *

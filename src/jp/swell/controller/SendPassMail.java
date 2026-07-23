@@ -42,43 +42,35 @@ public class SendPassMail extends ControllerBase
     public void doActionProcess() throws AtareSysException
     {
         WebBean bean = getWebBean();
-        
-        if ("UserLogin".equals(bean.value("form_name")))
-        {
+        System.out.println(bean.value("form_name"));
+        if ("UserLogin".equals(bean.value("form_name"))){
             if("repassword".equals(bean.value("action_cmd"))) {
-              
-        }
-        bean.setMessage("登録したメールアドレスを入力してください");
-        forward("SendPassMail.jsp");
-        }
-       
-        else if ("SendPassMail".equals(bean.value("form_name")))
-        {
-            if("go_next".equals(bean.value("action_cmd"))) 
-            {
+                bean.setMessage("登録したメールアドレスを入力してください");
+                forward("SendPassMail.jsp");            
+            }
+            
+        }else if ("SendPassMail".equals(bean.value("form_name"))){
+            if("go_next".equals(bean.value("action_cmd"))) {
                 UserInfoDao dao = setWeb2Dao2InputInfo();
-                if (inputCheck(dao)) 
-                {
+                if (inputCheck(dao)) {
                     SendMailCommon mailCommon = new SendMailCommon();
                     String userEmail = bean.value("memail"); // 送信先のメールアドレス
-
+                    System.out.println("memail:" + userEmail);
                     try {
                         mailCommon.sendPassMail(userEmail);
                     } catch (AtareSysException e) {
                         System.err.println("メール送信中にエラーが発生しました: " + e.getMessage());
                     }
+                    forward("UserLogin.jsp");
                 }
-            forward("UserLogin.jsp");
-            }
-            else if ("return".equals(bean.value("action_cmd"))) 
-            {
+            bean.setError("memail", "このメールアドレスは登録されていません。");
+            this.forward("SendPassMail.jsp");
+            }else if ("return".equals(bean.value("action_cmd"))) {
                 forward("UserLogin.jsp");
             }
         }
-        else if ("UserInfoDetail_3".equals(bean.value("form_name")))
-        {
-            if("go_next".equals(bean.value("action_cmd"))) 
-            {
+        else if ("UserInfoDetail_3".equals(bean.value("form_name"))){
+            if("go_next".equals(bean.value("action_cmd"))) {
                 setDb2Web();
                 SendMailCommon mailCommon = new SendMailCommon();
                 String userEmail = bean.value("memail"); // 送信先のメールアドレス
@@ -91,6 +83,7 @@ public class SendPassMail extends ControllerBase
             }
         forward("ViewUserList.do");
         }
+        this.forward("SendPassMail.jsp");
     }
     
     /**

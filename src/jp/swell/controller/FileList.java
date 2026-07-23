@@ -18,7 +18,6 @@ package jp.swell.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
@@ -131,11 +130,7 @@ public class FileList extends ControllerBase {
     private HashMap<String, String> inputCheck() {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
-        if (bean.value("list_search_file_name").length() > 0) {
-            if (100 < bean.value("list_search_file_name").length()) {
-                errors.put("list_search_file_name", "氏名の入力内容が長すぎます。");
-            }
-        }
+        CommonDoActionProcess.checkMaxLength(errors, "list_search_file_name", bean.value("list_search_file_name"), 100, "氏名");
         return errors;
     }
 
@@ -163,6 +158,14 @@ public class FileList extends ControllerBase {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
 
+        // ファイルリスト取得
+        FileDao dao = new FileDao();
+        dao.setUserInfoId(userLoginInfo.getUserInfoId());
+        dao.setUploadUserId(userLoginInfo.getUserInfoId());
+        dao.setSearchFileName(bean.value("list_search_file_name"));
+        ArrayList<FileDao> fileList = FileDao.dbSelectList(dao, sortKey, daoPageInfo);
+        
+        /*
         // 自分がアップロードしたファイル（送信）
         FileDao sentDao = new FileDao();
         sentDao.setUploadUserId(userLoginInfo.getUserInfoId());
@@ -185,14 +188,14 @@ public class FileList extends ControllerBase {
         ArrayList<FileDao> fileList = new ArrayList<>();
         fileList.addAll(receivedFiles);
         fileList.addAll(sentFiles);
+		*/
 
         bean.setValue("list", fileList);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
-        // 受信件数だけでは recordCount が正確に反映されない可能性があるため、明示的に再セット
-        bean.setValue("recordCount", fileList.size());
-        bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
-
+        bean.setValue("recordCount", daoPageInfo.getRecordCount());
+        // bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
+        bean.setValue("maxPageNo", daoPageInfo.getMaxPageNo());
         SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
 
         if (!Validate.isInteger(bean.value("lineCount"))) {
