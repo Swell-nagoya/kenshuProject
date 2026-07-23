@@ -4,8 +4,6 @@ package jp.swell.controller;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DbBase;
@@ -359,43 +357,14 @@ public class ContactListDetail extends ControllerBase {
 
         // 新規/修正時のチェック
         if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd"))) {
-            // 氏名
-            if (bean.value("last_name").length() == 0 && bean.value("first_name").length() == 0) {
-                errors.put("last_name", "氏名を入力してください。");
-                errors.put("first_name", "");
-            } else if (bean.value("last_name").length() == 0) {
-                errors.put("last_name", "名字を入力してください。");
-            } else if (bean.value("first_name").length() == 0) {
-                errors.put("first_name", "名前を入力してください。");
-            }
-
-            // 氏名よみ
-            if (bean.value("last_name_kana").length() == 0 && bean.value("first_name_kana").length() == 0) {
-                errors.put("last_name_kana", "氏名のよみを入力してください。");
-                errors.put("first_name_kana", "");
-            } else if (bean.value("last_name_kana").length() == 0) {
-                errors.put("last_name_kana", "名字のよみを入力してください。");
-            } else if (bean.value("first_name_kana").length() == 0) {
-                errors.put("first_name_kana", "名前のよみを入力してください。");
-            }
-            if (bean.value("last_name_kana").length() > 0 || bean.value("first_name_kana").length() > 0) {
-                if (!isHiragana(bean.value("last_name_kana")) && !isHiragana(bean.value("first_name_kana"))) {
-                    errors.put("last_name_kana", "氏名のよみはひらがなで入力してください。");
-                } else if (!isHiragana(bean.value("last_name_kana"))) {
-                    errors.put("last_name_kana", "名字のよみはひらがなで入力してください。");
-                } else if (!isHiragana(bean.value("first_name_kana"))) {
-                    errors.put("first_name_kana", "名前のよみはひらがなで入力してください。");
-                }
-            }
+            // 氏名・氏名よみ
+            CommonDoActionProcess.checkNameAndKana(errors,
+                    bean.value("last_name"), bean.value("first_name"),
+                    bean.value("last_name_kana"), bean.value("first_name_kana"));
 
             // ミドルネームよみ（任意だが入力があればよみ必須）
-            if (bean.value("middle_name").length() != 0) {
-                if (bean.value("middle_name_kana").length() == 0) {
-                    errors.put("middle_name_kana", "ミドルネームよみを入力してください。");
-                } else if (!isHiragana(bean.value("middle_name_kana"))) {
-                    errors.put("middle_name_kana", "ミドルネームよみはひらがなで入力してください。");
-                }
-            }
+            CommonDoActionProcess.checkOptionalKana(errors, "middle_name_kana",
+                    bean.value("middle_name"), bean.value("middle_name_kana"), "ミドルネーム");
 
             // 電話番号
             if (bean.value("phone_number").length() == 0) {
@@ -405,14 +374,8 @@ public class ContactListDetail extends ControllerBase {
             }
 
             // メールアドレス
-            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-            Pattern pattern = Pattern.compile(emailRegex);
-            Matcher matcher = pattern.matcher(bean.value("email"));
-            if (bean.value("email").length() == 0) {
-                errors.put("email", "メールアドレスを入力してください。");
-            } else if (!matcher.matches()) {
-                errors.put("email", "正しいメールアドレスを入力してください。");
-            } else if ("ins".equals(bean.value("request_cmd"))) {
+            if (!CommonDoActionProcess.checkEmailFormat(errors, "email", bean.value("email"))
+                    && "ins".equals(bean.value("request_cmd"))) {
                 // 新規時のみメール重複チェック（更新時は別メソッドがある仕様なら条件分岐で追加）
                 if (pContactDao.isEmailExists(bean.value("email"))) {
                     errors.put("email", "このメールアドレスは既に登録されています。");
@@ -421,11 +384,6 @@ public class ContactListDetail extends ControllerBase {
         }
 
         return errors;
-    }
-
-    /** ひらがな判定（ーを許容） */
-    private boolean isHiragana(String input) {
-        return input != null && input.matches("^[\\u3040-\\u309Fー]+$");
     }
 
     /** 新規登録（エラーは WebBean に詰め返して false） */

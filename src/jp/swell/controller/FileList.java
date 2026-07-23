@@ -130,11 +130,7 @@ public class FileList extends ControllerBase {
     private HashMap<String, String> inputCheck() {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
-        if (bean.value("list_search_file_name").length() > 0) {
-            if (100 < bean.value("list_search_file_name").length()) {
-                errors.put("list_search_file_name", "氏名の入力内容が長すぎます。");
-            }
-        }
+        CommonDoActionProcess.checkMaxLength(errors, "list_search_file_name", bean.value("list_search_file_name"), 100, "氏名");
         return errors;
     }
 

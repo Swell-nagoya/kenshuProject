@@ -130,6 +130,10 @@ td {
   text-decoration: none;
 }
 
+.list_label a:hover{
+  color: #808080;
+}
+
 .list_table td {
   border-collapse: collapse;
   border: 1px #a0a0a0 solid;
@@ -195,12 +199,25 @@ footer {
       $('table.list_table tr:even').addClass('even');
       $('table.list_table tr:odd').addClass('odd');
     });
+    
     function go_submit(action_cmd) {
-      document.getElementById('main_form').action = 'ViewUserList.do';
-      document.getElementById('action_cmd').value = action_cmd;
-      document.getElementById('main_form').submit();
+    	  var hidden = document.getElementById('select_user_info_ids');
+
+    	  if (hidden) {
+    	    if (action_cmd === 'search' || action_cmd === 'clear') {
+    	      hidden.value = '';
+    	    } else {
+    	      syncSelectedUserIds();
+    	    }
+    	  }
+
+    	  document.getElementById('main_form').action = 'ViewUserList.do';
+    	  document.getElementById('action_cmd').value = action_cmd;
+    	  document.getElementById('main_form').submit();
     }
     function go_sort_request(key) {
+      syncSelectedUserIds();
+      document.getElementById('main_form').action = 'ViewUserList.do';
       document.getElementById('sort_key').value = key;
       document.getElementById('action_cmd').value = 'sort';
       document.getElementById('main_form').submit();
@@ -211,6 +228,7 @@ footer {
       document.getElementById('main_form').submit();
     }
     function go_detail_1(action_cmd, request_cmd, main_key) {
+      syncSelectedUserIds();
       document.getElementById('main_form').action = 'UserInfoDetail.do';
       document.getElementById('action_cmd').value = action_cmd;
       document.getElementById('request_cmd').value = request_cmd;
@@ -218,6 +236,7 @@ footer {
       document.getElementById('main_form').submit();
     }
     function go_detail(action_cmd, request_cmd) {
+      syncSelectedUserIds();
       document.getElementById('main_form').action = 'UserInfoDetail.do';
       document.getElementById('action_cmd').value = action_cmd;
       document.getElementById('request_cmd').value = request_cmd;
@@ -227,6 +246,126 @@ footer {
 
       navigator.clipboard.writeText(str)
     }
+
+    function getSelectedUserIdMap() {
+    	  var selectedMap = {};
+    	  var hidden = document.getElementById('select_user_info_ids');
+
+    	  if (hidden && hidden.value.length > 0) {
+    	    var ids = hidden.value.split(',');
+    	    for (var i = 0; i < ids.length; i++) {
+    	      if (ids[i] !== '') {
+    	        selectedMap[ids[i]] = true;
+    	      }
+    	    }
+    	  }
+
+    	  return selectedMap;
+    	}
+
+    	function syncSelectedUserIds() {
+    	  var hidden = document.getElementById('select_user_info_ids');
+    	  if (!hidden) {
+    	    return;
+    	  }
+
+    	  var selectedMap = getSelectedUserIdMap();
+    	  var checks = document.getElementsByName('select_user_info_id');
+
+    	  for (var i = 0; i < checks.length; i++) {
+    	    if (checks[i].checked) {
+    	      selectedMap[checks[i].value] = true;
+    	    } else {
+    	      delete selectedMap[checks[i].value];
+    	    }
+    	  }
+
+    	  var ids = [];
+    	  for (var id in selectedMap) {
+    	    if (selectedMap.hasOwnProperty(id)) {
+    	      ids.push(id);
+    	    }
+    	  }
+
+    	  hidden.value = ids.join(',');
+    	  updateSelectAllCheckbox();
+    	}
+
+    	function restoreSelectedUserIds() {
+    	  var selectedMap = getSelectedUserIdMap();
+    	  var checks = document.getElementsByName('select_user_info_id');
+
+    	  for (var i = 0; i < checks.length; i++) {
+    	    checks[i].checked = !!selectedMap[checks[i].value];
+    	  }
+
+    	  updateSelectAllCheckbox();
+    	}
+
+    	function toggleUserCheckAll(source) {
+    	  var checks = document.getElementsByName('select_user_info_id');
+
+    	  for (var i = 0; i < checks.length; i++) {
+    	    checks[i].checked = source.checked;
+    	  }
+
+    	  syncSelectedUserIds();
+    	}
+
+    	function updateSelectAllCheckbox() {
+    	  var all = document.getElementById('select_user_info_id_all');
+    	  var checks = document.getElementsByName('select_user_info_id');
+
+    	  if (!all || checks.length === 0) {
+    	    return;
+    	  }
+
+    	  for (var i = 0; i < checks.length; i++) {
+    	    if (!checks[i].checked) {
+    	      all.checked = false;
+    	      return;
+    	    }
+    	  }
+
+    	  all.checked = true;
+    	}
+
+    	function go_bulk_edit() {
+    	  syncSelectedUserIds();
+
+    	  if (document.getElementById('select_user_info_ids').value === '') {
+    	    alert('対象ユーザーを選択してください。');
+    	    return;
+    	  }
+
+    	  document.getElementById('main_form').action = 'UserInfoDetail.do';
+    	  document.getElementById('action_cmd').value = 'go_next';
+    	  document.getElementById('request_cmd').value = 'bulk_update';
+    	  document.getElementById('main_form').submit();
+    	}
+
+    	function go_bulk_delete() {
+    	  syncSelectedUserIds();
+
+    	  if (document.getElementById('select_user_info_ids').value === '') {
+    	    alert('対象ユーザーを選択してください。');
+    	    return;
+    	  }
+
+    	  if (!confirm('選択したユーザーを一括削除します。よろしいですか？')) {
+    	    return;
+    	  }
+
+    	  document.getElementById('main_form').action = 'UserInfoDetail.do';
+    	  document.getElementById('action_cmd').value = 'go_next';
+    	  document.getElementById('request_cmd').value = 'bulk_delete';
+    	  document.getElementById('main_form').submit();
+    	}
+
+    	jQuery(function($) {
+    	  restoreSelectedUserIds();
+    	});
+    
   </script>
 </head>
 <body>
@@ -251,6 +390,7 @@ footer {
       <input type="hidden" name="sort_order" id="sort_order"value="<%=webBean.txt("sort_order")%>" />
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" /> 
       <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
+      <input type="hidden" name="select_user_info_ids" id="select_user_info_ids" value="<%=webBean.txt("select_user_info_ids")%>" />
       <div class="left">
         <div class="messages">
           <%=webBean.dispMessages()%>
@@ -260,17 +400,49 @@ footer {
         </div>
         <table class="select_table">
           <tr>
-            <td class="search_label center" style="width: 50%">氏名</td>
-            <td class="search_label center" style="width: 20%">表示件数</td>
-            <td class="search_label center" style="width: 30%"></td>
+            <td class="search_label center" style="width: 25%">氏名</td>
+            <td class="search_label center" style="width: 25%">メールアドレス</td>
+            <td class="search_label center" style="width: 10%">区分</td>
+            <td class="search_label center" style="width: 10%">ステータス</td>
+            <td class="search_label center" style="width: 10%">表示件数</td>
+            <td class="search_label center" style="width: 20%"></td>
           </tr>
           <tr>
+            <!-- 氏名 -->
             <td class="search_text center">
-              <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>" class="ime_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
+            <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>"
+               class="ime_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
             </td>
+            
+            <!-- メールアドレス -->
+            <td class="search_text center">
+              <input type="text" name="list_search_memail" id="list_search_memail" size="30" maxlength="100" value="<%=webBean.txt("list_search_memail")%>"
+               class="ime_active <%=webBean.dispErrorCSS("list_search_memail")%>" placeholder="検索"/> <%=webBean.dispError("list_search_memail")%>
+            </td>
+            <!-- 区分 -->
+            <td class="search_text center">
+              <select name="list_search_admin" id="list_search_admin" class="ime_active">
+                <option value="" <%= "".equals(webBean.value("list_search_admin")) ? "selected=\"selected\"" : "" %>></option>
+                <option value="general" <%= "general".equals(webBean.value("list_search_admin")) ? "selected=\"selected\"" : "" %>>一般</option>
+                <option value="admin" <%= "admin".equals(webBean.value("list_search_admin")) ? "selected=\"selected\"" : "" %>>管理者</option>
+              </select>
+            </td>
+            
+            <!-- ステータス -->
+            <td class="search_text center">
+              <select name="list_search_status" id="list_search_status" class="ime_active">
+                <option value="" <%= "".equals(webBean.value("list_search_status")) ? "selected=\"selected\"" : "" %>></option>
+                <option value="1" <%= "1".equals(webBean.value("list_search_status")) ? "selected=\"selected\"" : "" %>>在職中</option>
+                <option value="9" <%= "9".equals(webBean.value("list_search_status")) ? "selected=\"selected\"" : "" %>>退職者</option>
+              </select>
+            </td>
+            
+            <!-- 表示件数 -->
             <td class="search_line center">
               <input type="text" name="lineCount" id="lineCount" size="2" maxlength="5" value="<%=webBean.txt("lineCount")%>" class="right ime_disabled" />件
             </td>
+            
+            
             <td class="search_text center">
               <input type="button" value="検索" onclick="go_submit('search')" /> 
               <input type="button" value="クリア" onclick="go_submit('clear')" /></td>
@@ -311,19 +483,26 @@ footer {
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('last_name_kana')">氏名</a></td>
-            <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('last_name_kana')">氏名よみ（かな）</a></td>
-            <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('memail')">メールアドレス</a></td>
-            <td class="list_label" style="width: 25%"></td>
+            <td class="list_label" style="width: 5%">
+              <input type="checkbox" id="select_user_info_id_all" onclick="toggleUserCheckAll(this);" />
+            </td>
+            <td class="list_label" style="width: 23%">
+            <a href="javaScript:go_sort_request('last_name_kana')"><%=webBean.txt("last_name_kana_order") %> 氏名</a></td>
+            <td class="list_label" style="width: 23%">
+            <a href="javaScript:go_sort_request('last_name_kana')"><%=webBean.txt("last_name_kana_order") %> 氏名よみ（かな）</a></td>
+            <td class="list_label" style="width: 23%">
+            <a href="javaScript:go_sort_request('memail')"><%=webBean.txt("memail_order") %> メールアドレス</a></td>
+            <td class="list_label" style="width: 23%"></td>
           </tr>
           <%
           for (Object item : webBean.arrayList("list")) {
               UserInfoDao dao = (UserInfoDao) item;
           %>
           <tr class="list_tr">
+            <td class="list_check">
+              <input type="checkbox" name="select_user_info_id" value="<%=WebUtil.htmlEscape(dao.getUserInfoId())%>"
+               onclick="syncSelectedUserIds();" />
+            </td>
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・
             
             <%
@@ -362,6 +541,10 @@ footer {
         <%
         }
         %>
+      </div>
+      <div class="pagenation">
+        <input type="button" value="選択したユーザーを一括編集" onclick="go_bulk_edit();" />
+        <input type="button" value="選択したユーザーを一括削除" onclick="go_bulk_delete();" />
       </div>
     </form>
   </div>

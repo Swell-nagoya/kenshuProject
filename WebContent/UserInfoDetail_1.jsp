@@ -452,6 +452,13 @@ label.error {
 </script>
 </head>
 <body>
+<%
+boolean isBulkUpdate = "bulk_update".equals(webBean.txt("request_cmd"));
+int bulkIndex = 0;
+int bulkCount = 0;
+try { bulkIndex = Integer.parseInt(webBean.txt("bulk_index")); } catch (Exception e) { bulkIndex = 0; }
+try { bulkCount = Integer.parseInt(webBean.txt("bulk_count")); } catch (Exception e) { bulkCount = 0; }
+%>
   <div class="container">
     <div class="new-btn">
       <input type="button" value="　戻る　" onclick="go_list('return')" />
@@ -471,6 +478,11 @@ label.error {
         <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
         <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
         <input type="hidden" name="leave_date" id="leave_date" value="<%=webBean.txt("leave_date")%>" />
+        <input type="hidden" name="select_user_info_ids" id="select_user_info_ids" value="<%=webBean.txt("select_user_info_ids")%>" />
+        <input type="hidden" name="bulk_index" id="bulk_index" value="<%=webBean.txt("bulk_index")%>" />
+        <input type="hidden" name="bulk_count" id="bulk_count" value="<%=webBean.txt("bulk_count")%>" />
+        <input type="hidden" name="bulk_input_info" id="bulk_input_info" value="<%=webBean.txt("bulk_input_info")%>" />
+        <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" />
         
 
         <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
@@ -478,6 +490,16 @@ label.error {
 
         <div class="left">
           <table class="input-table">
+          <% if (isBulkUpdate) { %>
+          <tr>
+            <td class="style_head3 style_head_size" style="width: 30%">現在の対象</td>
+            <td class="input-text" style="width: 70%"><%=bulkIndex + 1%> / <%=bulkCount%> 件</td>
+          </tr>
+          <tr>
+            <td class="style_head3 style_head_size" style="width: 30%">ユーザーID</td>
+            <td class="input-text" style="width: 70%"><%=webBean.txt("user_info_id")%></td>
+          </tr>
+          <% } %>
           <tr>
             <td class="style_head3 style_head_size" style="width: 30%">氏名<span> ※</span></td>
             <td class="input-text" style="width: 70%">
@@ -536,9 +558,9 @@ label.error {
               <td class="email-container input-text" style="width: 70%">
                 <input type="email" name="memail" id="memail" maxlength="255" value="<%=webBean.txt("memail")%>" class="ime_active <%=webBean.dispErrorCSS("memail")%>" placeholder="example@example.com" /> 
                 <br /> <span id="error_memail" class="error"><%=webBean.dispError("memail")%></span>
-              </div>
             </td>
           </tr>
+          
           <tr>
             <td class="style_head3 style_head_size" style="width: 30%">確認用メールアドレス<span> ※</span></td>
             <td class="email-container input-text" style="width: 70%">
@@ -559,10 +581,21 @@ label.error {
         </table>
         </div>
       <div class="button">
-        <input type="button" id="submit_btn" value="<%=webBean.txt("request_name")%>する" onclick="go_submit('go_next','<%=webBean.txt("request_cmd")%>')" /> 
+        <% if (isBulkUpdate) { %>
+          <% if (bulkIndex > 0) { %>
+            <input type="button" value="前へ" onclick="go_submit('bulk_prior','<%=webBean.txt("request_cmd")%>')" />
+          <% } %>
+          <% if (bulkIndex < bulkCount - 1) { %>
+            <input type="button" value="次へ" onclick="go_submit('bulk_next','<%=webBean.txt("request_cmd")%>')" />
+          <% } %>
+          <% if (bulkIndex == bulkCount - 1) { %>
+            <input type="button" id="submit_btn" value="確認へ" onclick="go_submit('bulk_confirm','<%=webBean.txt("request_cmd")%>')" />
+          <% } %>
+        <% } else { %>
+          <input type="button" id="submit_btn" value="<%=webBean.txt("request_name")%>する" onclick="go_submit('go_next','<%=webBean.txt("request_cmd")%>')" />
+        <% } %>
       </div>
     </form>
   </div>
 </body>
 </html>
-

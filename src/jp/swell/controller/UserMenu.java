@@ -44,7 +44,7 @@ public class UserMenu extends ControllerBase
     {
         WebBean bean = getWebBean();
 
-        if ("UserMenuHome".equals(bean.value("form_name")))
+        if ("UserMenu".equals(bean.value("form_name")))
         {
             bean.trimAllItem();
             if("top".equals(bean.value("action_cmd"))) {
@@ -54,7 +54,7 @@ public class UserMenu extends ControllerBase
                 ReserveDao reserveDao = new ReserveDao();
                 ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
                 bean.setValue("reserves", reserves);
-                forward("UserMenuHome.jsp");
+                forward("UserMenu.jsp");
             }
 
             else if ("home".equals(bean.value("action_cmd")))
@@ -131,7 +131,7 @@ public class UserMenu extends ControllerBase
                 ReserveDao reserveDao = new ReserveDao();
                 ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
                 bean.setValue("reserves", reserves);
-                forward("UserMenuHome.jsp");
+                forward("UserMenu.jsp");
             }
             else if ("file".equals(bean.value("action_cmd")))
             {
@@ -148,7 +148,7 @@ public class UserMenu extends ControllerBase
                 ReserveDao reserveDao = new ReserveDao();
                 ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
                 bean.setValue("reserves", reserves);
-                forward("UserMenuHome.jsp");
+                forward("UserMenu.jsp");
             }
         }   
         else if ("UserInfoDetail_1".equals(bean.value("form_name")) || "UserInfoDetail_2".equals(bean.value("form_name")) || "UserInfoDetail_3".equals(bean.value("form_name")))
@@ -159,7 +159,7 @@ public class UserMenu extends ControllerBase
             ReserveDao reserveDao = new ReserveDao();
             ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
             bean.setValue("reserves", reserves);
-            forward("UserMenuHome.jsp");
+            forward("UserMenu.jsp");
         }
         else
         {

@@ -197,7 +197,7 @@ input.error {
       $("#leave_date_input").on("change",function() {
           var value = $(this).val();
           var value1 = value.replaceAll("-","");
-          $("#leave_date").val(value1);
+          $("#leave_date_input").val(value1);
       });
   });
 
@@ -224,6 +224,13 @@ input.error {
 </script>
 </head>
 <body>
+  <%
+    boolean isBulkDelete = "bulk_delete".equals(webBean.txt("request_cmd"));
+    int bulkIndex = 0;
+    int bulkCount = 0;
+    try { bulkIndex = Integer.parseInt(webBean.txt("bulk_index")); } catch (Exception e) { bulkIndex = 0; }
+    try { bulkCount = Integer.parseInt(webBean.txt("bulk_count")); } catch (Exception e) { bulkCount = 0; }
+  %>
   <div class="container">
     <div class="new-btn">
       <input type="button" value=" 戻る " onclick="go_list('return')" />
@@ -242,7 +249,11 @@ input.error {
         <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
         <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
         <input type="hidden" name="select_info" id="select_info" value="<%=webBean.txt("select_info")%>" />
-        <input type="hidden" name="leave_date" id="leave_date" value="<%=webBean.txt("leave_date")%>" />
+        <input type="hidden" name="select_user_info_ids" id="select_user_info_ids" value="<%=webBean.txt("select_user_info_ids")%>" />
+        <input type="hidden" name="bulk_index" id="bulk_index" value="<%=webBean.txt("bulk_index")%>" />
+        <input type="hidden" name="bulk_count" id="bulk_count" value="<%=webBean.txt("bulk_count")%>" />
+        <input type="hidden" name="bulk_input_info" id="bulk_input_info" value="<%=webBean.txt("bulk_input_info")%>" />
+        <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" />
         
 
         <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
@@ -250,6 +261,12 @@ input.error {
 
        <div class="left">
          <table class="input-table">
+         <% if (isBulkDelete) { %>
+          <tr>
+            <td class="style_head3 style_head_size" style="width: 30%">現在の対象</td>
+            <td class="input-text" style="width: 70%"><%=bulkIndex + 1%> / <%=bulkCount%> 件</td>
+          </tr>
+         <% } %>
          <tr>
             <td class="style_head3 style_head_size" style="width: 30%"> ユーザーID </td>
             <td class="input-text" style="width: 70%"> <%=webBean.txt("user_info_id")%> </td>
@@ -299,10 +316,23 @@ input.error {
                 <br /> <span id="error_leave_date" class="error"><%=webBean.dispError("leave_date")%> </span>
               </td>
           </tr>
+
           </table>
         </div>
         <div class="button">
-          <input type="button" id="submitButton" value=" 確定する " onclick="go_submit('go_next','delete','<%=webBean.txt("user_info_id")%>')" />
+          <% if (isBulkDelete) { %>
+            <% if (bulkIndex > 0) { %>
+              <input type="button" value="前へ" onclick="go_submit('bulk_prior','<%=webBean.txt("request_cmd")%>','<%=webBean.txt("user_info_id")%>')" />
+            <% } %>
+            <% if (bulkIndex < bulkCount - 1) { %>
+              <input type="button" value="次へ" onclick="go_submit('bulk_next','<%=webBean.txt("request_cmd")%>','<%=webBean.txt("user_info_id")%>')" />
+            <% } %>
+            <% if (bulkIndex == bulkCount - 1) { %>
+              <input type="button" id="submitButton" value="確認へ" onclick="go_submit('bulk_confirm','<%=webBean.txt("request_cmd")%>','<%=webBean.txt("user_info_id")%>')" />
+            <% } %>
+          <% } else { %>
+            <input type="button" id="submitButton" value=" 確定する " onclick="go_submit('go_next','<%=webBean.txt("request_cmd")%>','<%=webBean.txt("user_info_id")%>')" />
+          <% } %>
         </div>
     </form> 
   </div>

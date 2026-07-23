@@ -761,6 +761,65 @@ public class UserInfoDao implements Serializable {
     }
 
     /**
+     * searchMemail 検索メールアドレス
+     */
+    private String searchMemail;
+    
+    /**
+     * 検索メールアドレスを取得する
+     */
+    public String getSearchMemail() {
+    	return searchMemail;
+    }
+    
+    /**
+     * 検索メールアドレスをセットする
+     * @param searchMemail 検索メールアドレス
+     */
+    public void setSearchMemail(String searchMemail) {
+    	this.searchMemail = searchMemail;
+    }
+    
+    /**
+     * 検索区分
+     */
+    private String searchAdmin = "";
+    
+    /**
+     * 検索区分を取得する
+     */
+    public String getSearchAdmin() {
+    	return searchAdmin;
+    }
+    
+    /**
+     * 検索区分をセットする
+     * @param searchAdmin 検索区分
+     */
+    public void setSearchAdmin(String searchAdmin) {
+    	this.searchAdmin = searchAdmin;
+    }
+    
+    /**
+     * 検索ステータス
+     */
+    private String searchStatus = "";
+    
+    /**
+     * 検索ステータスを取得する
+     */
+    public String getSearchStatus() {
+    	return searchStatus;
+    }
+    
+    /**
+     * 検索ステータスを取得する
+     */
+    public void setSearchStatus(String searchStatus) {
+    	this.searchStatus = searchStatus;
+    }
+    
+    /**
      *  データアクセス権限のあるユーザリストを取得する。.
      */
     public ArrayList<String> getAuthorityUserList() {
@@ -818,6 +877,7 @@ public class UserInfoDao implements Serializable {
         fieldsArray.put("maiden_name_kana", "user_info.maiden_name_kana");
         fieldsArray.put("insert_user_id", "user_info.insert_user_id");
         fieldsArray.put("admin", "user_info.admin");
+        fieldsArray.put("memail", "user_info.memail");
     }
 
     /**
@@ -1192,6 +1252,7 @@ public class UserInfoDao implements Serializable {
         String sql = "select count(*) as count"
                 + " from user_info "
                 + myclass.dbWhere();
+        System.out.println(sql);
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         if (0 == rs.size())
             return array;
@@ -1339,9 +1400,31 @@ public class UserInfoDao implements Serializable {
             }
             where.append(")");
         }
-        where.append(where.length() > 0 ? " AND " : "");
+        if(getSearchMemail().length() > 0) {
+        	where.append(where.length() > 0 ? " AND " : "");
+        	where.append("user_info.memail LIKE " + DbS.chara("%" + getSearchMemail() + "%"));
+        }
+        if(getSearchAdmin().length() > 0) {
+        	String adminInfo1 = "1";
+        	String adminInfo2 = "admin";
+        	if("general".equals(getSearchAdmin())) {
+        		adminInfo1 = "0";
+        		adminInfo2 = "general";
+        	}
+        	
+        	where.append(where.length() > 0 ? " AND " : "");
+        	where.append("(user_info.admin LIKE " + DbS.chara("%" + adminInfo1 + "%") + "OR "
+        			+ "user_info.admin LIKE " + DbS.chara("%" + adminInfo2 + "%") + ")");
+        }
+        if(getSearchStatus().length() > 0) {
+        	where.append(where.length() > 0 ? " AND " : "");
+        	where.append("user_info.state_flg LIKE " + DbS.chara("%" + getSearchStatus() + "%"));
+        	
+        }
+        /*where.append(where.length() > 0 ? " AND " : "");
         // where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
         where.append("(state_flg != '9')");
+        */
         if (where.length() > 0) {
             return "where " + where.toString();
         }

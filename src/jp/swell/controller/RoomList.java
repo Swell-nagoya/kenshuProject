@@ -159,13 +159,7 @@ public class RoomList extends ControllerBase
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
-        if (bean.value("list_search_room_name").length() > 0)
-        {
-            if (100 < bean.value("list_search_room_name").length())
-            {
-                errors.put("list_search_room_name", "部屋名の入力内容が長すぎます。");
-            }
-        }
+        CommonDoActionProcess.checkMaxLength(errors, "list_search_room_name", bean.value("list_search_room_name"), 100, "部屋名");
         return errors;
     }
 
