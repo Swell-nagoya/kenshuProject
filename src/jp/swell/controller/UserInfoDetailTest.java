@@ -20,7 +20,8 @@ class UserInfoDetailTest {
      detail = new UserInfoDetail();
      pUserInfoDao = new UserInfoDao();
  }
- 
+
+	@Test
 	void testInputCheckName1() throws Exception {
 
   bean.setValue("last_name", ""); 
