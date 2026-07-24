@@ -116,7 +116,26 @@ td {
   border-collapse: collapse;
   border-spacing: 0;
 }
-.select_table input[type="checkbox"]  {
+
+.select_table input[type="radio"] {
+  margin: 3px 0 0 5px;
+}
+.select_table input[type="radio"] + label {
+  display: inline-block;
+  margin: 3px 0 0 0;
+  padding-left: 5px;
+}
+
+
+.select_table input[type="radio"] + label:has() {
+  letter-spacing: -.4em;
+}
+.select_table input[type="radio"] + label:has() > * {
+  letter-spacing: normal;
+}
+.select_table input[type="checkbox"],
+.select_table input[type="radio"],
+.select_table input[type="radio"] + label {
   cursor: pointer;
 }
 
@@ -131,6 +150,10 @@ td {
 
 .search_text, .search_line, .list_btn {
   text-align: center;
+}
+
+.search_line.search_conditions {
+  text-align: left;
 }
 
 .search_text input {
@@ -453,7 +476,8 @@ console.log(key)
             <th class="search_label center full_name" style="width: 31%">氏名</th>
             <th class="search_label center memail" style="width: 31%">メールアドレス</th>
             <th class="search_label center items_displayed" style="width: 10%">表示件数</th>
-            <th class="search_label center" style="width: 18%"></th>
+            <th class="search_label center items_displayed" style="width: 8%">検索条件</th>
+            <th class="search_label center" style="width: 10%"></th>
           </tr>
           <tr>
           <td class="search_text center statas">
@@ -469,6 +493,12 @@ console.log(key)
             </td>
             <td class="search_line center items_displayed">
               <input type="text" name="lineCount" id="lineCount" size="2" maxlength="5" value="<%=webBean.txt("lineCount")%>" class="right ime_disabled" />件
+            </td>
+            <td class="search_line center search_conditions">
+              <input type="radio" id="search_conditions_and" name="list_search_conditions" value="AND" <% if ( !"OR".equals(webBean.txt("list_search_conditions")) ) { %> checked<% } %>/>
+              <label for="search_conditions_and">AND</label>
+              <input type="radio" id="search_conditions_or" name="list_search_conditions" value="OR" <% if ( "OR".equals(webBean.txt("list_search_conditions")) ) { %> checked<% } %>/>
+              <label for="search_conditions_or">OR</label>
             </td>
             <td class="search_text center search_button">
               <input type="button" value="検索" onclick="go_submit('search')" /> 

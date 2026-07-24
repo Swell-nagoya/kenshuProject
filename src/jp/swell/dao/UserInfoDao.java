@@ -588,6 +588,7 @@ public class UserInfoDao implements Serializable {
         return memail;
     }
 
+
     /**
      * 携帯Eメールをセットする。.
      * @param memail 携帯Eメール
@@ -596,6 +597,26 @@ public class UserInfoDao implements Serializable {
         this.memail = memail;
     }
 
+    /**
+     * memail  検索条件（AND・OR）
+     */
+    private String search_conditions = "";
+    /**
+     * 検索条件を取得する。.
+     * @return  search_conditions 検索条件
+     */
+    public String getSearchConditions() {
+        return search_conditions;
+    }
+    /**
+     * 検索条件をセットする。.
+     * @param search_conditions 検索条件
+     */
+    public void setSearchConditions(String search_conditions) {
+        this.search_conditions = search_conditions;
+    }
+
+    
     /**
      * adminFlag　管理者権限
      */
@@ -1264,7 +1285,6 @@ public class UserInfoDao implements Serializable {
         rs = DbBase.dbSelect(sql);
         
         
-        
         int cnt = rs.size();
 
         if (cnt < 1)
@@ -1294,72 +1314,73 @@ public class UserInfoDao implements Serializable {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date today = new Date();
         String todayStr = dateFormat.format(today);
-
+        String searchConditions = getSearchConditions(); //	検索条件(AND/OR)
+        
         if (getUserInfoId().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.user_info_id = " + DbS.chara(getUserInfoId()));
         }
 
         if (getStateFlg() == 8) {
 
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.state_flg = " + DbS.chara(getStateFlg()));
         }
 
         if (getLastName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.last_name = " + DbS.chara(getLastName()));
         }
 
         if (getMiddleName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.middle_name = " + DbS.chara(getMiddleName()));
         }
 
         if (getFirstName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.first_name = " + DbS.chara(getFirstName()));
         }
 
         if (getMaidenName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.maiden_name = " + DbS.chara(getMaidenName()));
         }
         if (getSearchFullName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
                     + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, '')" + ") LIKE "
                     + DbS.chara("%" + getSearchFullName() + "%"));
         }
 
         if (getLastNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.last_name_kana = " + DbS.chara(getLastNameKana()));
         }
 
         if (getMiddleNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.middle_name_kana = " + DbS.chara(getMiddleNameKana()));
         }
 
         if (getFirstNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.first_name_kana = " + DbS.chara(getFirstNameKana()));
         }
 
         if (getMaidenNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.maiden_name_kana = " + DbS.chara(getMaidenNameKana()));
         }
         if (getSearchFullNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append(
                     "CONCAT(" + "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
                             + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')"
                             + ") LIKE " + DbS.chara("%" + getSearchFullNameKana() + "%"));
         }
         if (getSearchName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
                     + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, ''), " +
                     "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
@@ -1368,13 +1389,13 @@ public class UserInfoDao implements Serializable {
         }
 
         if (getMemail().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.memail LIKE " + DbS.chara("%" + getMemail() + "%"));
         }
         
         
         if (userIds != null && userIds.length > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.user_info_id IN (");
 
             // userIdsArrayに含まれる各IDをSQLのIN句に追加する

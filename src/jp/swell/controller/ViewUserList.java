@@ -72,6 +72,7 @@ public class ViewUserList extends ControllerBase
             adminSet();
             if ("search".equals(bean.value("action_cmd")))
             {
+            	
                 bean.setValue("pageNo", "1");
                 searchList();
             }
@@ -165,6 +166,7 @@ public class ViewUserList extends ControllerBase
         bean.setValue("list_search_full_name_kana", "");
         bean.setValue("list_search_memail", "");
         bean.setValue("list_search_state", "");
+        bean.setValue("list_search_conditions", "");
         bean.setValue("lineCount", "");
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
@@ -214,6 +216,8 @@ public class ViewUserList extends ControllerBase
         UserInfoDao dao = new UserInfoDao();
         dao.setSearchName(bean.value("list_search_full_name"));
         dao.setMemail(bean.value("list_search_memail"));
+        dao.setSearchConditions(bean.value("list_search_conditions"));
+        
         String stateStr = bean.value("list_search_state");
         dao.setStateFlg((stateStr == null || stateStr.isEmpty()) ? 1 : Integer.parseInt(stateStr));
         
@@ -275,6 +279,7 @@ public class ViewUserList extends ControllerBase
         String key = "";
         LinkedHashMap<String, String> sort_key = new LinkedHashMap<String, String>(); /* この配列にソートキーとソートオーダーを入れる */
         if (bean.value("sort_key").length() == 0 && bean.value("sort_key_old").length() == 0) return null;
+        
         if (bean.value("sort_key_old").length() > 0)
         {
             if (bean.value("sort_key").length() > 0)
