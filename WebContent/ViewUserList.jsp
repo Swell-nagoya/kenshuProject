@@ -380,7 +380,8 @@ footer {
     function go_sort_request(key) {
       document.getElementById('sort_key').value = key;
       document.getElementById('action_cmd').value = 'sort';
-      document.getElementById('main_form').submit();
+console.log(key)
+        document.getElementById('main_form').submit();
     }
     function go_menu(action_cmd) {
       document.getElementById('main_form').action = 'UserMenu.do';
@@ -511,16 +512,16 @@ footer {
           <table class="list_table">
             <thead>
               <tr class="list_title">
-                <th id="js-table_sort-state_flg" class="list_label fixed statas js-table_sort_label">
+                <th class="list_label fixed statas js-table_sort_label<%= "state_flg".equals(webBean.txt("sort_key_old")) ? ("desc".equals(webBean.txt("sort_order")) ? " is-desc" : " is-asc") : "" %>">
                   <a href="javaScript:go_sort_request('state_flg')">利用<br>停止</a>
                 </th>
-                <th id="js-table_sort-last_name" class="list_label fixed full_name js-table_sort_label">
-                  <a href="javaScript:go_sort_request('last_name')">氏名</a>
+                <th class="list_label fixed full_name js-table_sort_label<%= "full_name".equals(webBean.txt("sort_key_old")) ? ("desc".equals(webBean.txt("sort_order")) ? " is-desc" : " is-asc") : "" %>">
+                  <a href="javaScript:go_sort_request('full_name')">氏名</a>
                 </th>
-                <th id="js-table_sort-last_name_kana" class="list_label fixed full_name_kana js-table_sort_label" >
-                  <a href="javaScript:go_sort_request('last_name_kana')">氏名よみ（かな）</a>
+                <th class="list_label fixed full_name_kana js-table_sort_label<%= "full_name_kana".equals(webBean.txt("sort_key_old")) ? ("desc".equals(webBean.txt("sort_order")) ? " is-desc" : " is-asc") : "" %>" >
+                  <a href="javaScript:go_sort_request('full_name_kana')">氏名よみ（かな）</a>
                 </th>
-                <th id="js-table_sort-memail" class="list_label fixed memail js-table_sort_label">
+                <th class="list_label fixed memail js-table_sort_label<%= "memail".equals(webBean.txt("sort_key_old")) ? ("desc".equals(webBean.txt("sort_order")) ? " is-desc" : " is-asc") : "" %>">
                   <a href="javaScript:go_sort_request('memail')">メールアドレス</a>
                 </th>
                 <th class="list_label search_button fixed"></th>

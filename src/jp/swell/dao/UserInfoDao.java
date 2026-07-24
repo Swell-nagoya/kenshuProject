@@ -820,6 +820,9 @@ public class UserInfoDao implements Serializable {
         fieldsArray.put("insert_user_id", "user_info.insert_user_id");
         fieldsArray.put("memail", "user_info.memail"); 
         fieldsArray.put("admin", "user_info.admin");
+
+        fieldsArray.put("full_name", "user_info.first_name,user_info.last_name");
+        fieldsArray.put("full_name_kana", "user_info.first_name_kana,user_info.last_name_kana");
     }
 
     /**
@@ -1260,22 +1263,22 @@ public class UserInfoDao implements Serializable {
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs = DbBase.dbSelect(sql);
         
-
+        
         
         int cnt = rs.size();
 
         if (cnt < 1)
             return array;
         
-        for (int i = 0; i < cnt; i++) {
-         map = rs.get(i);
+          for (int i = 0; i < cnt; i++) {
+           map = rs.get(i);
 
-         UserInfoDao dao = new UserInfoDao();
-         dao.setUserInfoDaoForJoin(map, dao);
-         array.add(dao);
-     }
+           UserInfoDao dao = new UserInfoDao();
+           dao.setUserInfoDaoForJoin(map, dao);
+           array.add(dao);
+          }
         
-        return array;
+          return array;
     }
 
     /**
