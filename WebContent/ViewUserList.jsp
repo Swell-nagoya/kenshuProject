@@ -343,6 +343,7 @@ footer {
 <script type="text/javascript">
   jQuery(function($) {
       <%--検索条件入力でenterキーが押された場合の処理--%>
+      /*
       $(".select_table input").keydown(function(e) {
         if (e.which == 13) {
           go_submit('search');
@@ -353,7 +354,7 @@ footer {
           go_submit('jump');
         }
       });
-
+*/
 
       // 検索チェック時：value値の操作
       const list_search_cheack = new ListSearchCheack();
@@ -603,7 +604,7 @@ console.log(key)
         <!-- ./table-wrap -->
         <div class="button_area">
         <input type="button" value="利用停止全選択" class="button_state_flg_check_all js-state_flg_check_all" data-target="js-state_flg_check" />
-        <input type="button" value="一括登録" class="button_send" onclick="go_detail('go_next','stateUpdateAll');" />
+        <input type="button" value="一括登録" class="button_send" onclick="go_submit('stateUpdateAll');" />
         
         
         </div>

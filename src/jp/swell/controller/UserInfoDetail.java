@@ -132,7 +132,7 @@ public class UserInfoDetail extends ControllerBase
                           setWeb2Dao2InputInfo();
                           forward("Schedule.do");
                       }
-                  }
+                  }/*
                   else if ("stateUpdate".equals(bean.value("request_cmd"))) 
                   {
                       dbStateEdit();
@@ -140,7 +140,7 @@ public class UserInfoDetail extends ControllerBase
                   else if ("stateUpdateAll".equals(bean.value("request_cmd"))) 
                   {
                       dbStateEdit();
-                  }
+                  }*/
                   else 
                   {
                       forward("ViewUserList.jsp");
@@ -854,6 +854,7 @@ public class UserInfoDetail extends ControllerBase
      * ステータス保存の場合(利用停止)
      * @throws AtareSysException
      */
+    /*
     public void dbStateEdit() throws AtareSysException
     {
         WebBean bean = getWebBean();
@@ -893,6 +894,7 @@ public class UserInfoDetail extends ControllerBase
         }
         
     }
+    */
     /**
      * 削除の場合
      * @throws AtareSysException

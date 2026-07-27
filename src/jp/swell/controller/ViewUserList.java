@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
@@ -75,29 +76,35 @@ public class ViewUserList extends ControllerBase
             	
                 bean.setValue("pageNo", "1");
                 searchList();
+                forward("ViewUserList.jsp");
             }
             else if ("next".equals(bean.value("action_cmd")))
             {
                 bean.setValue("pageNo", calcPageNo(bean.value("pageNo"), 1));
                 searchList();
+                forward("ViewUserList.jsp");
             }
             else if ("jump".equals(bean.value("action_cmd")))
             {
                 searchList();
+                forward("ViewUserList.jsp");
             }
             else if ("prior".equals(bean.value("action_cmd")))
             {
                 bean.setValue("pageNo", calcPageNo(bean.value("pageNo"), -1));
                 searchList();
+                forward("ViewUserList.jsp");
             }
             else if ("sort".equals(bean.value("action_cmd")))
             {
              searchList();
+             forward("ViewUserList.jsp");
             }
             else if ("clear".equals(bean.value("action_cmd")))
             {
                 formClear();
                 searchList();
+                forward("ViewUserList.jsp");
             }
             else if ("return".equals(bean.value("action_cmd")))
             {
@@ -107,8 +114,8 @@ public class ViewUserList extends ControllerBase
             else
             {
                 searchList();
+                forward("ViewUserList.jsp");
             }
-            forward("ViewUserList.jsp");
         }
         else if ("UserInfoDetail".equals(bean.value("form_name")))
         {
@@ -251,6 +258,9 @@ public class ViewUserList extends ControllerBase
 
         String joinedIds = String.join(",", hitUserIds);
         String serializedData  = Sup.serialize(joinedIds);
+        
+     System.out.println(listData);
+     dbStateEdit();
 
         //bean.setValue("state_flg_all",joinedIds);
         bean.setValue("state_flg_all", serializedData);
@@ -268,6 +278,56 @@ public class ViewUserList extends ControllerBase
         bean.setValue("list", listData);
     }
 
+
+    public void dbStateEdit() throws AtareSysException
+    {
+
+    	WebBean bean = getWebBean();
+    	UserInfoDao dao = new UserInfoDao();
+
+    	String[] listStateFlgs = getRequest().getParameterValues("list_state_flg");
+    	getRequest().setAttribute("checkedFlgs", listStateFlgs);
+
+    	String state_flg_all_text = bean.value("state_flg_all");
+    	state_flg_all_text = (String) Sup.deserialize(state_flg_all_text);
+
+//    	 【修正点】ここで null で初期化しておきます
+    	String[] state_flg_all_array = null; 
+
+    	if (state_flg_all_text != null && !state_flg_all_text.equals("")) {
+    	    state_flg_all_array = state_flg_all_text.split(",");
+    	}
+
+    	System.out.println(state_flg_all_text);
+    	System.out.println(state_flg_all_array);
+    	try {
+    	    DbBase.dbBeginTran();
+    	    
+    	    // 画面表示されている利用停止の値をすべてリセット「1」.
+    	    if (state_flg_all_array != null) {
+    	       for (int z = 0; z < state_flg_all_array.length; z++) {
+    	        String userInfoId = state_flg_all_array[z];
+    	        
+    	        System.out.println(userInfoId);
+    	        dao.dbUpdateStateFlg(userInfoId,"1");
+    	       }
+    	    }
+    	    // 画面表示されている利用停止の値でチェックが入っているものは「8」.
+    	    if (listStateFlgs != null) {
+    	       for (int i = 0; i < listStateFlgs.length; i++) {
+    	         String userInfoId = listStateFlgs[i];
+    	         dao.dbUpdateStateFlg(userInfoId,"8");
+    	       }
+    	     }
+    	    DbBase.dbCommitTran();
+    	   // redirect("ViewUserList.do");
+    	} catch (Exception e) {
+    	    DbBase.dbRollbackTran();
+    	   // forward("ViewUserList.jsp");
+    	}
+        
+    }
+    
     /**
      * ソート順番を求める
      *

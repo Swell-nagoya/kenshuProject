@@ -1300,6 +1300,8 @@ public class UserInfoDao implements Serializable {
         
           return array;
     }
+    
+    
 
     /**
      * user_info ユーザ情報テーブルの検索条件を設定する。.
