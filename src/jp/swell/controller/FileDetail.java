@@ -511,6 +511,7 @@ public class FileDetail extends ControllerBase {
         WebBean bean = getWebBean();
         try {
         	if(!(bean.value("loginUserId").equals(uploadUserId) || bean.value("loginUserId").equals(userInfoId))) {
+        		bean.setError("このファイルを閲覧する権限がありません。");
         		return;
         	}
             // 期限チェック

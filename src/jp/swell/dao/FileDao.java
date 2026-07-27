@@ -707,7 +707,7 @@ public class FileDao implements Serializable {
                 + where + order
                 + " LIMIT " + limit + " OFFSET " + offset;
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-
+        	
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
             UserInfoDao user = new UserInfoDao();
@@ -719,7 +719,6 @@ public class FileDao implements Serializable {
             dao.setLastName(map.get("last_name"));
             resultList.add(dao);
         }
-        System.out.println(resultList);
         return resultList;
     }
 
