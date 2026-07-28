@@ -687,38 +687,48 @@ public class FileDao implements Serializable {
         int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         int limit = daoPageInfo.getLineCount();
         String sql = "SELECT "
-                + "files.file_id AS files___file_id, "
-                + "files.user_info_id AS files___user_info_id, "
-                + "files.file_name AS files___file_name, "
-                + "files.file_path AS files___file_path, "
-                + "files.upload_date AS files___upload_date, "
-                + "files.file_key AS files___file_key, "
-                + "files.mime_type AS files___mime_type, "
-                + "files.system_file_name AS files___system_file_name, "
-                + "files.upload_user_id AS files___upload_user_id, "
-                + "files.expiration_date AS files___expiration_date, "
-                + "uploader.first_name AS uploader_first_name, "
-                + "uploader.last_name AS uploader_last_name, "
-                + "user_info.first_name AS user_first_name, "
-                + "user_info.last_name AS user_last_name "
+                + "files.file_id as files___file_id, "
+                + "files.user_info_id as files___user_info_id, "
+                + "files.file_name as files___file_name, "
+                + "files.file_path as files___file_path, "
+                + "files.upload_date as files___upload_date, "
+                + "files.file_key as files___file_key, "
+                + "files.mime_type as files___mime_type, "
+                + "files.system_file_name as files___system_file_name, "
+                + "files.upload_user_id as files___upload_user_id, "
+                + "files.expiration_date as files___expiration_date, "
+                + "uploader.first_name as uploader_first_name, "
+                + "uploader.last_name as uploader_last_name, "
+                + "user_info.first_name as user_first_name, "
+                + "user_info.last_name as user_last_name "
                 + "FROM files "
                 + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
-                + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
+                + "JOIN user_info as uploader ON files.upload_user_id = uploader.user_info_id "
                 + where + order
                 + " LIMIT " + limit + " OFFSET " + offset;
-        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        	
-        for (HashMap<String, String> map : rs) {
-            FileDao dao = new FileDao();
-            UserInfoDao user = new UserInfoDao();
-            dao.setFileDao(map, dao);
-            user.dbSelect(map.get("upload_user_id"));
-            dao.setUploaderFirstName(user.getFirstName());
-            dao.setUploaderLastName(user.getLastName());
-            dao.setFirstName(map.get("first_name"));
-            dao.setLastName(map.get("last_name"));
-            resultList.add(dao);
-        }
+
+        try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql);
+        	     ResultSet rs = (ResultSet) pstmt.executeQuery()) {
+        	    while (rs.next()) {
+        	        FileDao dao = new FileDao();
+        	        
+        	        // ResultSetから直接エイリアス名で取得してDaoにセットする
+        	        dao.setFileId(DbI.chara(rs.getString("files___file_id")));
+        	        dao.setFileName(DbI.chara(rs.getString("files___file_name")));
+        	        dao.setFilePath(DbI.chara(rs.getString("files___file_path")));
+        	        dao.setUploadDate(DbI.chara(rs.getString("files___upload_date")));
+        	        dao.setFileKey(DbI.chara(rs.getString("files___file_key")));
+        	        // ... (他の files___ 項目も同様にセットしてください) ...
+        	        // 送信先ユーザーとアップロードユーザーもResultSetから直接取得
+        	        dao.setFirstName(rs.getString("user_first_name"));
+        	        dao.setLastName(rs.getString("user_last_name"));
+        	        dao.setUploaderFirstName(rs.getString("uploader_first_name"));
+        	        dao.setUploaderLastName(rs.getString("uploader_last_name"));
+        	        resultList.add(dao);
+        	    }
+        	} catch (SQLException e) {
+        	    throw new AtareSysException("データベースクエリの実行中にエラーが発生しました: " + e.getMessage(), e);
+        	}
         return resultList;
     }
 
