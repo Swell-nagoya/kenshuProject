@@ -33,6 +33,7 @@ import jp.swell.common.ControllerBase;
 import jp.swell.dao.ScheduleDao;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.user.UserLoginInfo;
+import jp.swell.validator.UserInfoValidator;
 
 /**
  * ：user_info ユーザ情報テーブルデータを登録・更新・削除するためのコントローラクラス
@@ -42,6 +43,7 @@ import jp.swell.user.UserLoginInfo;
  */
 public class UserInfoDetail extends ControllerBase
 {
+
     /**
      * jp.patasys.alumni.controller.HttpServlet のメソッドをオーバライドする。
      * オーバライドしない場合は、デフォルトが設定される。.
@@ -331,9 +333,6 @@ public class UserInfoDetail extends ControllerBase
         return true;
     }
     
-     boolean test(){
-    	return true;
-    }
     /**
      * 入力チェックを行う。.
      *
@@ -344,28 +343,30 @@ public class UserInfoDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
-       
+        UserInfoValidator validator = new UserInfoValidator();
+
+        
         if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd"))) 
         {
         	   // 氏名  エラーチェック
-            errors.putAll(nameCheck(bean));
+            errors.putAll(validator.nameCheck(bean));
         	   // 氏名 （かな）エラーチェック
-            errors.putAll(nameKanaCheck(bean));
+            errors.putAll(validator.nameKanaCheck(bean));
             // ミドルネーム エラーチェック
-            errors.putAll(middleNameCheck(bean));
+            errors.putAll(validator.middleNameCheck(bean));
             // 旧姓 エラーチェック
-            errors.putAll(maidenNameCheck(bean));
+            errors.putAll(validator.maidenNameCheck(bean));
             // 任意ID エラーチェック
-            errors.putAll(insertUserIdCheck(bean,pUserInfoDao));
+            errors.putAll(validator.insertUserIdCheck(bean,pUserInfoDao));
             // メールアドレスエラーチェック
-            errors.putAll(memailCheck(bean,pUserInfoDao));
+            errors.putAll(validator.memailCheck(bean,pUserInfoDao));
             // ユーザー区分チェック
-            errors.putAll(adminCheck(bean));
+            errors.putAll(validator.adminCheck(bean));
         }
         else if ("delete".equals(bean.value("request_cmd"))) 
         {
             // 退職予定日 エラーチェック
-            errors.putAll(leaveDateCheck(bean));
+            errors.putAll(validator.leaveDateCheck(bean));
         }
             
         if (errors.size() > 0)
