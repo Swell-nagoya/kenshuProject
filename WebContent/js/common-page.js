@@ -10,14 +10,9 @@ jQuery(function ($) {
 class TableSort {
 
   constructor() {
-    // ソート順番（昇順、降順）
-   // this.sort_order = $("#sort_order").val();
-    // ソート時のkey取得
-   // this.sort_key_old = $("#sort_key_old").val();
     // ソートの対象となるクラス
     this.table_sort_labelClassName = "js-table_sort_label";
     // ソートの対象となる個別のID名
-    //this.table_sortIdName = "js-table_sort-";
     this.init();
   }
 
@@ -51,15 +46,6 @@ class TableSort {
     }
   }
 
-  // 並び替えのアクティブ状態を付与
-  /*
-  sort() {
-    let $table_sort = $("#" + this.table_sortIdName + this.sort_key_old);
-    if ($table_sort.length > 0) {
-      // 昇順、降順の状態判定用のクラスを付与
-      $table_sort.addClass("is-" + this.sort_order);
-    }
-  }*/
 }
 
 

@@ -76,46 +76,45 @@ public class ViewUserList extends ControllerBase
             	
                 bean.setValue("pageNo", "1");
                 searchList();
-                forward("ViewUserList.jsp");
             }
             else if ("next".equals(bean.value("action_cmd")))
             {
                 bean.setValue("pageNo", calcPageNo(bean.value("pageNo"), 1));
                 searchList();
-                forward("ViewUserList.jsp");
             }
             else if ("jump".equals(bean.value("action_cmd")))
             {
                 searchList();
-                forward("ViewUserList.jsp");
             }
             else if ("prior".equals(bean.value("action_cmd")))
             {
                 bean.setValue("pageNo", calcPageNo(bean.value("pageNo"), -1));
                 searchList();
-                forward("ViewUserList.jsp");
             }
             else if ("sort".equals(bean.value("action_cmd")))
             {
              searchList();
-             forward("ViewUserList.jsp");
             }
             else if ("clear".equals(bean.value("action_cmd")))
             {
                 formClear();
                 searchList();
-                forward("ViewUserList.jsp");
             }
             else if ("return".equals(bean.value("action_cmd")))
             {
                 redirect("MenuAdmin.do");
                 return;
             }
+            else if ("stateFlgUpdateAll".equals(bean.value("action_cmd")))
+            {
+               	dbStateEdit();
+                searchList();
+            }
             else
             {
                 searchList();
-                forward("ViewUserList.jsp");
             }
+            forward("ViewUserList.jsp");
         }
         else if ("UserInfoDetail".equals(bean.value("form_name")))
         {
@@ -219,9 +218,7 @@ public class ViewUserList extends ControllerBase
             bean.setValue("errors", errors);
             return;
         }
-
-
-        dbStateEdit();
+        
 
         LinkedHashMap<String, String> sortKey = sortKey();
         UserInfoDao dao = new UserInfoDao();
@@ -278,46 +275,51 @@ public class ViewUserList extends ControllerBase
         bean.setValue("list", listData);
     }
 
+    /**
+     * 利用停止 チェックの有無で　一括登録.
+     * 1「利用中」 8「利用停止」
+     */
     public void dbStateEdit() throws AtareSysException
     {
         WebBean bean = getWebBean();
         UserInfoDao dao = new UserInfoDao();
-
+        // チェックが入った項目のみIDを代入.
         String[] listStateFlgs = getRequest().getParameterValues("list_state_flg");
-        getRequest().setAttribute("checkedFlgs", listStateFlgs);
+        	
 
-        String state_flg_all_text = bean.value("state_flg_all");
-        state_flg_all_text = (String) Sup.deserialize(state_flg_all_text);
-        
-        String[] state_flg_all_array = null; 
+         String state_flg_all_text = bean.value("state_flg_all");
+         state_flg_all_text = (String) Sup.deserialize(state_flg_all_text);
+         
+         String[] state_flg_all_array = null; 
 
 
-        if (state_flg_all_text != null && !state_flg_all_text.equals("")) {
-            state_flg_all_array = state_flg_all_text.split(",");
-        }
-
-        try {
-            DbBase.dbBeginTran();
-            
-            // 画面表示されている利用停止の値をすべてリセット「1」.
-            if (state_flg_all_array != null) {
-               for (int z = 0; z < state_flg_all_array.length; z++) {
-                String userInfoId = state_flg_all_array[z];
-                dao.dbUpdateStateFlg(userInfoId,"1");
-               }
-            }
-            // 画面表示されている利用停止の値でチェックが入っているものは「8」.
-            if (listStateFlgs != null) {
-               for (int i = 0; i < listStateFlgs.length; i++) {
-                 String userInfoId = listStateFlgs[i];
-                 dao.dbUpdateStateFlg(userInfoId,"8");
-               }
+         if (state_flg_all_text != null && !state_flg_all_text.equals("")) {
+             state_flg_all_array = state_flg_all_text.split(",");
+         }
+         try {
+          DbBase.dbBeginTran();
+          
+          // 画面表示されている利用停止の値をすべてリセット「1」.
+          if (state_flg_all_array != null) {
+             for (int z = 0; z < state_flg_all_array.length; z++) {
+              String userInfoIdState = state_flg_all_array[z];
+              dao.dbUpdateStateFlg(userInfoIdState,"1");
              }
-            DbBase.dbCommitTran();
+              
+            }
+          // 画面表示されている利用停止の値でチェックが入っているものは「8」.
+          if (listStateFlgs != null) {
+            for (int i = 0; i < listStateFlgs.length; i++) {
+              String userInfoId = listStateFlgs[i];
+              dao.dbUpdateStateFlg(userInfoId,"8");
+            }
+          }
+          DbBase.dbCommitTran();
         } catch (Exception e) {
             DbBase.dbRollbackTran();
             throw e;
         }
+      
     }
     /**
      * ソート順番を求める

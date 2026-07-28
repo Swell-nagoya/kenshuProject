@@ -132,15 +132,7 @@ public class UserInfoDetail extends ControllerBase
                           setWeb2Dao2InputInfo();
                           forward("Schedule.do");
                       }
-                  }/*
-                  else if ("stateUpdate".equals(bean.value("request_cmd"))) 
-                  {
-                      dbStateEdit();
                   }
-                  else if ("stateUpdateAll".equals(bean.value("request_cmd"))) 
-                  {
-                      dbStateEdit();
-                  }*/
                   else 
                   {
                       forward("ViewUserList.jsp");
@@ -850,51 +842,6 @@ public class UserInfoDetail extends ControllerBase
         
     }
 
-    /**
-     * ステータス保存の場合(利用停止)
-     * @throws AtareSysException
-     */
-    /*
-    public void dbStateEdit() throws AtareSysException
-    {
-        WebBean bean = getWebBean();
-        bean.rtrimAllItem();
-        UserInfoDao dao = setWeb2Dao2InputInfo();
-        
-        
-        String[] listStateFlgs = getRequest().getParameterValues("list_state_flg");
-        getRequest().setAttribute("checkedFlgs", listStateFlgs);
-        
-        String state_flg_all_text = bean.value("state_flg_all");
-        state_flg_all_text = (String) Sup.deserialize(state_flg_all_text);
-        String[] state_flg_all_array = state_flg_all_text.split(",");
-        try {
-            DbBase.dbBeginTran();
-            
-            // 画面表示されている利用停止の値をすべてリセット「1」.
-            if (state_flg_all_array != null) {
-               for (int z = 0; z < state_flg_all_array.length; z++) {
-                String userInfoId = state_flg_all_array[z]; // 1つずつ値を取り出す
-                dao.dbUpdateStateFlg(userInfoId,"1");
-               }
-            }
-            // 画面表示されている利用停止の値でチェックが入っているものは「8」.
-            if (listStateFlgs != null) {
-               for (int i = 0; i < listStateFlgs.length; i++) {
-                 String userInfoId = listStateFlgs[i]; // 1つずつ値を取り出す
-                 dao.dbUpdateStateFlg(userInfoId,"8");
-                 
-               }
-             }
-            DbBase.dbCommitTran();
-            redirect("ViewUserList.do");
-        } catch (Exception e) {
-            DbBase.dbRollbackTran();
-            forward("ViewUserList.jsp");
-        }
-        
-    }
-    */
     /**
      * 削除の場合
      * @throws AtareSysException

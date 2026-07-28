@@ -404,8 +404,7 @@ footer {
     function go_sort_request(key) {
       document.getElementById('sort_key').value = key;
       document.getElementById('action_cmd').value = 'sort';
-console.log(key)
-        document.getElementById('main_form').submit();
+      document.getElementById('main_form').submit();
     }
     function go_menu(action_cmd) {
       document.getElementById('main_form').action = 'UserMenu.do';
@@ -461,7 +460,6 @@ console.log(key)
       <input type="hidden" name="sort_order" id="sort_order"value="<%=webBean.txt("sort_order")%>" />
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" /> 
       <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
-      <input type="hidden" name="state_flg" id="state_flg" value="">
       <input type="hidden" name="state_flg_all" id="state_flg_all" value="<%=webBean.txt("state_flg_all")%>">
      
       <div class="left">
@@ -588,10 +586,6 @@ console.log(key)
                 <% } %>
                 <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
                 <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
-                <% //管理者
-                 if( "1".equals(webBean.txt("admin")) ) { %>
-                 <input type="button" value="利用停止登録" onclick="go_detail_1('go_next','stateUpdate','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
-                <% } %>
               </td>
             </tr>
             <%
@@ -604,7 +598,7 @@ console.log(key)
         <!-- ./table-wrap -->
         <div class="button_area">
         <input type="button" value="利用停止全選択" class="button_state_flg_check_all js-state_flg_check_all" data-target="js-state_flg_check" />
-        <input type="button" value="一括登録" class="button_send" onclick="go_submit('stateUpdateAll');" />
+        <input type="button" value="一括登録" class="button_send" onclick="go_submit('stateFlgUpdateAll');" />
         
         
         </div>
