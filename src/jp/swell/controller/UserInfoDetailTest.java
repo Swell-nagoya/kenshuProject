@@ -9,16 +9,17 @@ import org.junit.jupiter.api.Test;
 
 import jp.patasys.common.http.WebBean;
 import jp.swell.dao.UserInfoDao;
+import jp.swell.validator.UserInfoValidator;
 
 class UserInfoDetailTest {
  private WebBean bean;
- private UserInfoDetail detail;
  private UserInfoDao pUserInfoDao;
+ private UserInfoValidator validator;
  @BeforeEach
  void setUp() {
      bean = new WebBean();
-     detail = new UserInfoDetail();
      pUserInfoDao = new UserInfoDao();
+     validator = new UserInfoValidator();
  }
 
 	@Test
@@ -28,7 +29,7 @@ class UserInfoDetailTest {
   bean.setValue("first_name", "");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.nameCheck(bean);
+  HashMap<String, String> errorSet = validator.nameCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("氏名を入力してください。", errorSet.get("last_name"));
@@ -44,7 +45,7 @@ class UserInfoDetailTest {
   bean.setValue("first_name", "テスト");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.nameCheck(bean);
+  HashMap<String, String> errorSet = validator.nameCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("名字を入力してください。", errorSet.get("last_name"));
@@ -58,7 +59,7 @@ class UserInfoDetailTest {
   bean.setValue("first_name", "");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.nameCheck(bean);
+  HashMap<String, String> errorSet = validator.nameCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("名前を入力してください。", errorSet.get("first_name"));
@@ -72,7 +73,7 @@ class UserInfoDetailTest {
   bean.setValue("first_name_kana", "");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.nameKanaCheck(bean);
+  HashMap<String, String> errorSet = validator.nameKanaCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("氏名のよみを入力してください。", errorSet.get("last_name_kana"));
@@ -88,7 +89,7 @@ class UserInfoDetailTest {
   bean.setValue("first_name_kana", "てすと");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.nameKanaCheck(bean);
+  HashMap<String, String> errorSet = validator.nameKanaCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("名字のよみを入力してください。", errorSet.get("last_name_kana"));
@@ -102,7 +103,7 @@ class UserInfoDetailTest {
   bean.setValue("first_name_kana", "てすとA");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.nameKanaCheck(bean);
+  HashMap<String, String> errorSet = validator.nameKanaCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("名字のよみを入力してください。", errorSet.get("last_name_kana"));
@@ -118,7 +119,7 @@ class UserInfoDetailTest {
   bean.setValue("first_name_kana", "");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.nameKanaCheck(bean);
+  HashMap<String, String> errorSet = validator.nameKanaCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("名前のよみを入力してください。", errorSet.get("first_name_kana"));
@@ -132,7 +133,7 @@ class UserInfoDetailTest {
   bean.setValue("first_name_kana", "");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.nameKanaCheck(bean);
+  HashMap<String, String> errorSet = validator.nameKanaCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("氏名のよみはひらがなで入力してください。", errorSet.get("last_name_kana"));
@@ -148,7 +149,7 @@ class UserInfoDetailTest {
   bean.setValue("first_name_kana", "てすとA");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.nameKanaCheck(bean);
+  HashMap<String, String> errorSet = validator.nameKanaCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("氏名のよみはひらがなで入力してください。", errorSet.get("last_name_kana"));
@@ -164,7 +165,7 @@ class UserInfoDetailTest {
   bean.setValue("middle_name_kana", "");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.middleNameCheck(bean);
+  HashMap<String, String> errorSet = validator.middleNameCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("middle_name"));
@@ -180,7 +181,7 @@ class UserInfoDetailTest {
   bean.setValue("middle_name_kana", "てすとA");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.middleNameCheck(bean);
+  HashMap<String, String> errorSet = validator.middleNameCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("middle_name"));
@@ -196,7 +197,7 @@ class UserInfoDetailTest {
   bean.setValue("middle_name_kana", "てすと");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.middleNameCheck(bean);
+  HashMap<String, String> errorSet = validator.middleNameCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("ミドルネームを入力してください。", errorSet.get("middle_name"));
@@ -212,7 +213,7 @@ class UserInfoDetailTest {
   bean.setValue("middle_name_kana", "てすと");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.middleNameCheck(bean);
+  HashMap<String, String> errorSet = validator.middleNameCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("middle_name"));
@@ -228,7 +229,7 @@ class UserInfoDetailTest {
   bean.setValue("maiden_name_kana", "");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.maidenNameCheck(bean);
+  HashMap<String, String> errorSet = validator.maidenNameCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("maiden_name"));
@@ -244,7 +245,7 @@ class UserInfoDetailTest {
   bean.setValue("maiden_name_kana", "てすとA");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.maidenNameCheck(bean);
+  HashMap<String, String> errorSet = validator.maidenNameCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("maiden_name"));
@@ -260,7 +261,7 @@ class UserInfoDetailTest {
   bean.setValue("maiden_name_kana", "てすと");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.maidenNameCheck(bean);
+  HashMap<String, String> errorSet = validator.maidenNameCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("旧姓を入力してください。", errorSet.get("maiden_name"));
@@ -276,7 +277,7 @@ class UserInfoDetailTest {
   bean.setValue("maiden_name_kana", "てすと");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.maidenNameCheck(bean);
+  HashMap<String, String> errorSet = validator.maidenNameCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("maiden_name"));
@@ -292,7 +293,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "ins");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.memailCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.memailCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("メールアドレスを入力してください。", errorSet.get("memail"));
@@ -306,7 +307,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "ins");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.memailCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.memailCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("正しいメールアドレスを入力してください。", errorSet.get("memail"));
@@ -320,7 +321,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "ins");
   
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.memailCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.memailCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("このメールアドレスは既に登録されています。", errorSet.get("memail"));
@@ -334,7 +335,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "ins");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.memailCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.memailCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("memail"));
@@ -348,7 +349,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "update");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.memailCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.memailCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("メールアドレスを入力してください。", errorSet.get("memail"));
@@ -362,7 +363,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "update");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.memailCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.memailCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("正しいメールアドレスを入力してください。", errorSet.get("memail"));
@@ -376,7 +377,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "update");
   
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.memailCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.memailCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("このメールアドレスは既に登録されています。", errorSet.get("memail"));
@@ -390,7 +391,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "update");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.memailCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.memailCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("memail"));
@@ -403,7 +404,7 @@ class UserInfoDetailTest {
   bean.setValue("admin", "");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.adminCheck(bean);
+  HashMap<String, String> errorSet = validator.adminCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("ユーザー区分を選択してください。", errorSet.get("admin"));
@@ -416,7 +417,7 @@ class UserInfoDetailTest {
   bean.setValue("admin", "0");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.adminCheck(bean);
+  HashMap<String, String> errorSet = validator.adminCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("admin"));
@@ -429,7 +430,7 @@ class UserInfoDetailTest {
   bean.setValue("admin", "1");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.adminCheck(bean);
+  HashMap<String, String> errorSet = validator.adminCheck(bean);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("admin"));
@@ -443,7 +444,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "ins");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("insert_user_id"));
@@ -457,7 +458,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "ins");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("ＩＤは６文字以上１２文字以下で入力してください。", errorSet.get("insert_user_id"));
@@ -471,7 +472,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "ins");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("ＩＤは６文字以上１２文字以下で入力してください。", errorSet.get("insert_user_id"));
@@ -485,7 +486,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "ins");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("ＩＤは半角英数で入力してください。", errorSet.get("insert_user_id"));
@@ -499,7 +500,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "ins");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("insert_user_id"));
@@ -514,7 +515,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "ins");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("このＩＤは既に登録されています。", errorSet.get("insert_user_id"));
@@ -529,7 +530,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "update");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("insert_user_id"));
@@ -544,7 +545,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "update");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("ＩＤは６文字以上１２文字以下で入力してください。", errorSet.get("insert_user_id"));
@@ -559,7 +560,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "update");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("ＩＤは６文字以上１２文字以下で入力してください。", errorSet.get("insert_user_id"));
@@ -574,7 +575,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "update");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("ＩＤは半角英数で入力してください。", errorSet.get("insert_user_id"));
@@ -589,7 +590,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "update");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals(null, errorSet.get("insert_user_id"));
@@ -605,7 +606,7 @@ class UserInfoDetailTest {
   bean.setValue("request_cmd", "update");
 
   // テスト対象のそっどを実行。エラーメッセージを受け取る
-  HashMap<String, String> errorSet = detail.insertUserIdCheck(bean,pUserInfoDao);
+  HashMap<String, String> errorSet = validator.insertUserIdCheck(bean,pUserInfoDao);
 
   // エラーメッセージが返ってきているか検証（チェック）
   assertEquals("このＩＤは既に登録されています。", errorSet.get("insert_user_id"));

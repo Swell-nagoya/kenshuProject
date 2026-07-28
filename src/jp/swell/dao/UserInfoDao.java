@@ -844,6 +844,7 @@ public class UserInfoDao implements Serializable {
 
         fieldsArray.put("full_name", "user_info.first_name,user_info.last_name");
         fieldsArray.put("full_name_kana", "user_info.first_name_kana,user_info.last_name_kana");
+        
     }
 
     /**
