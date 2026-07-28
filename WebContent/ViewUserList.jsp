@@ -416,15 +416,7 @@ footer {
       document.getElementById('action_cmd').value = action_cmd;
       document.getElementById('request_cmd').value = request_cmd;
       document.getElementById('main_key').value = main_key;
-      document.getElementById('state_flg').value = main_key;
-      if( document.getElementById('state_flg_' + main_key) ){
-        if(document.getElementById('state_flg_' + main_key).checked){
-          document.getElementById('state_flg').value = '8';
-        } else {
-          document.getElementById('state_flg').value = '1';
-        }
-        document.getElementById('main_form').submit();
-      }
+      document.getElementById('main_form').submit();
     }
     function go_detail(action_cmd, request_cmd) {
       document.getElementById('main_form').action = 'UserInfoDetail.do';
@@ -442,7 +434,9 @@ footer {
 <body>
   <div class="container">
     <div class="new-btn">
-      <input type="button" value="新規登録" onclick="go_detail('go_next','ins')" />
+      <% //管理者 
+      if( "1".equals(webBean.txt("admin")) ) { %>
+      <input type="button" value="新規登録" onclick="go_detail('go_next','ins')" /><% } %>
       <input type="button" value="　戻る　" onclick="go_submit('return')" />
     </div>
     <header>
@@ -452,9 +446,9 @@ footer {
     </header>
     <form id="main_form" method="post" action="">
       <input type="hidden" name="form_name" id="form_name" value="ViewUserList" />
-      <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
+      <input type="hidden" name="action_cmd" id="action_cmd" value="" />
       <input type="hidden" name="request_cmd" id="request_cmd" value="" />
-      <input type="hidden" name="main_key" id="main_key" value="" /> 
+      <input type="hidden" name="main_key" id="main_key" value="" />
       <input type="hidden" name="sort_key_old" id="sort_key_old" value="<%=webBean.txt("sort_key_old")%>" /> 
       <input type="hidden" name="sort_key" id="sort_key" value="" /> 
       <input type="hidden" name="sort_order" id="sort_order"value="<%=webBean.txt("sort_order")%>" />
@@ -578,8 +572,10 @@ footer {
               </td>
               <td class="list_text memail"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
               <td class="list_btn search_button">
-               
+               <% //管理者
+                if( "1".equals(webBean.txt("admin")) ) { %>
                 <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
+                <% } %>
                 <% //管理者
                 if( "1".equals(webBean.txt("admin")) ) { %>
                 <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
@@ -596,12 +592,15 @@ footer {
           
         </div>
         <!-- ./table-wrap -->
+        <% //管理者
+          if( "1".equals(webBean.txt("admin")) ) { %>
         <div class="button_area">
-        <input type="button" value="利用停止全選択" class="button_state_flg_check_all js-state_flg_check_all" data-target="js-state_flg_check" />
-        <input type="button" value="一括登録" class="button_send" onclick="go_submit('stateFlgUpdateAll');" />
-        
-        
+          <input type="button" value="利用停止全選択" class="button_state_flg_check_all js-state_flg_check_all" data-target="js-state_flg_check" />
+          <input type="button" value="一括登録" class="button_send" onclick="go_submit('stateFlgUpdateAll');" />
         </div>
+        <%
+          }
+        %>
         <!-- ./button_area --><%
         } else {
         %>
