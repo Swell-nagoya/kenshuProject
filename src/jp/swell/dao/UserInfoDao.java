@@ -1285,7 +1285,8 @@ public class UserInfoDao implements Serializable {
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs = DbBase.dbSelect(sql);
         
-        
+             
+               
         int cnt = rs.size();
 
         if (cnt < 1)
@@ -1410,7 +1411,12 @@ public class UserInfoDao implements Serializable {
             }
             where.append(")");
         }
-        where.append(where.length() > 0 ? " AND " : "");
+       
+        if (where.length() > 0) {
+         where.insert(0, "(");
+         where.append(") AND ");
+        }        
+        
         where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
 
         if (where.length() > 0) {
