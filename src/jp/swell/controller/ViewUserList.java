@@ -219,6 +219,10 @@ public class ViewUserList extends ControllerBase
             bean.setValue("errors", errors);
             return;
         }
+
+
+        dbStateEdit();
+
         LinkedHashMap<String, String> sortKey = sortKey();
         UserInfoDao dao = new UserInfoDao();
         dao.setSearchName(bean.value("list_search_full_name"));
@@ -243,29 +247,25 @@ public class ViewUserList extends ControllerBase
         {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
-        
+
+
         ArrayList<UserInfoDao> listData = UserInfoDao.dbSelectList(dao, sortKey, daoPageInfo);
+
 
         ArrayList<String> hitUserIds = new ArrayList<String>();
         if (listData != null) {
-	
-         for (UserInfoDao rowDao : listData) {
-            if (rowDao.getUserInfoId() != null) {
-              hitUserIds.add(rowDao.getUserInfoId());
+            for (UserInfoDao rowDao : listData) {
+                if (rowDao.getUserInfoId() != null) {
+                    hitUserIds.add(rowDao.getUserInfoId());
+                }
             }
-          }
         }
 
+        // 次回ボタンを押したとき、今回の画面表示メンバーを「リセット対象」にするためシリアライズして保存
         String joinedIds = String.join(",", hitUserIds);
         String serializedData  = Sup.serialize(joinedIds);
         
-     System.out.println(listData);
-     dbStateEdit();
-
-        //bean.setValue("state_flg_all",joinedIds);
         bean.setValue("state_flg_all", serializedData);
-
-
 
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
@@ -278,56 +278,47 @@ public class ViewUserList extends ControllerBase
         bean.setValue("list", listData);
     }
 
-
     public void dbStateEdit() throws AtareSysException
     {
+        WebBean bean = getWebBean();
+        UserInfoDao dao = new UserInfoDao();
 
-    	WebBean bean = getWebBean();
-    	UserInfoDao dao = new UserInfoDao();
+        String[] listStateFlgs = getRequest().getParameterValues("list_state_flg");
+        getRequest().setAttribute("checkedFlgs", listStateFlgs);
 
-    	String[] listStateFlgs = getRequest().getParameterValues("list_state_flg");
-    	getRequest().setAttribute("checkedFlgs", listStateFlgs);
-
-    	String state_flg_all_text = bean.value("state_flg_all");
-    	state_flg_all_text = (String) Sup.deserialize(state_flg_all_text);
-
-//    	 【修正点】ここで null で初期化しておきます
-    	String[] state_flg_all_array = null; 
-
-    	if (state_flg_all_text != null && !state_flg_all_text.equals("")) {
-    	    state_flg_all_array = state_flg_all_text.split(",");
-    	}
-
-    	System.out.println(state_flg_all_text);
-    	System.out.println(state_flg_all_array);
-    	try {
-    	    DbBase.dbBeginTran();
-    	    
-    	    // 画面表示されている利用停止の値をすべてリセット「1」.
-    	    if (state_flg_all_array != null) {
-    	       for (int z = 0; z < state_flg_all_array.length; z++) {
-    	        String userInfoId = state_flg_all_array[z];
-    	        
-    	        System.out.println(userInfoId);
-    	        dao.dbUpdateStateFlg(userInfoId,"1");
-    	       }
-    	    }
-    	    // 画面表示されている利用停止の値でチェックが入っているものは「8」.
-    	    if (listStateFlgs != null) {
-    	       for (int i = 0; i < listStateFlgs.length; i++) {
-    	         String userInfoId = listStateFlgs[i];
-    	         dao.dbUpdateStateFlg(userInfoId,"8");
-    	       }
-    	     }
-    	    DbBase.dbCommitTran();
-    	   // redirect("ViewUserList.do");
-    	} catch (Exception e) {
-    	    DbBase.dbRollbackTran();
-    	   // forward("ViewUserList.jsp");
-    	}
+        String state_flg_all_text = bean.value("state_flg_all");
+        state_flg_all_text = (String) Sup.deserialize(state_flg_all_text);
         
+        String[] state_flg_all_array = null; 
+
+
+        if (state_flg_all_text != null && !state_flg_all_text.equals("")) {
+            state_flg_all_array = state_flg_all_text.split(",");
+        }
+
+        try {
+            DbBase.dbBeginTran();
+            
+            // 画面表示されている利用停止の値をすべてリセット「1」.
+            if (state_flg_all_array != null) {
+               for (int z = 0; z < state_flg_all_array.length; z++) {
+                String userInfoId = state_flg_all_array[z];
+                dao.dbUpdateStateFlg(userInfoId,"1");
+               }
+            }
+            // 画面表示されている利用停止の値でチェックが入っているものは「8」.
+            if (listStateFlgs != null) {
+               for (int i = 0; i < listStateFlgs.length; i++) {
+                 String userInfoId = listStateFlgs[i];
+                 dao.dbUpdateStateFlg(userInfoId,"8");
+               }
+             }
+            DbBase.dbCommitTran();
+        } catch (Exception e) {
+            DbBase.dbRollbackTran();
+            throw e;
+        }
     }
-    
     /**
      * ソート順番を求める
      *
