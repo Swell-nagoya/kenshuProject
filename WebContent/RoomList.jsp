@@ -207,13 +207,14 @@ jQuery(function($)
       document.getElementById('action_cmd').value = action_cmd;
       document.getElementById('main_form').submit();
     }
-  function go_detail_1(action_cmd,request_cmd,main_key,before_name)
+  function go_detail_1(action_cmd,request_cmd,main_key,before_name,before_status)
   {
     document.getElementById('main_form').action='RoomDetail.do';
     document.getElementById('action_cmd').value=action_cmd;
     document.getElementById('request_cmd').value=request_cmd;
     document.getElementById('main_key').value=main_key;
     document.getElementById('before_name').value=before_name;
+    document.getElementById('before_status').value=before_status;
     document.getElementById('main_form').submit();
   }
   function go_detail_2(action_cmd,request_cmd,main_key,room_name)
@@ -243,9 +244,50 @@ jQuery(function($)
   	  }
     }
   }
+  function getSelectedRooms() {
+  	const rooms_data = sessionStorage.getItem('selected_room_ids');
+  	return rooms_data ? JSON.parse(rooms_data) : [];
+  }
+  function handleCheckbox(event) {
+  	const checkbox = event.target;
+  	const roomId = checkbox.value;
+  	let rooms = getSelectedRooms();
+  	if (checkbox.checked) {
+  	  if (!rooms.includes(roomId)) rooms.push(roomId);
+  	}
+  	else {
+  	  rooms = rooms.filter(id => id !== roomId);
+  	}
+
+  	sessionStorage.setItem('selected_room_ids', JSON.stringify(rooms));
+  }
+  
+  function autoCheck() {
+  	const rooms = getSelectedRooms();
+  	const checkboxes = document.getElementsByName('checkboxes_room');
+  	checkboxes.forEach((checkbox) => {
+  	  if (rooms.includes(checkbox.value)) {
+  	    checkbox.checked = true;
+  	  }
+  	})
+  }
+  function go_bulk_maintenance() {
+  	const rooms = getSelectedRooms();
+  	if (rooms.length === 0) {
+  	  alert('メンテナンス中に変更する部屋が選択されていません。');
+  	  return;
+  	 }
+  	if (confirm(rooms.length + '件の部屋をメンテナンス中に変更します。\nよろしいですか？')) {
+  	  document.getElementById('checked_rooms').value = rooms.join(',');
+  	  document.getElementById('action_cmd').value = 'bulk_maintenance';
+  	  sessionStorage.removeItem('selected_room_ids');
+  	  document.getElementById('main_form').submit();
+  	}
+  }
 
   document.addEventListener('DOMContentLoaded', () => {
     showSortIcon();
+    autoCheck();
   });
 </script>
 </head>
@@ -266,13 +308,15 @@ jQuery(function($)
       <input type="hidden" name="action_cmd" id="action_cmd" value=""/>
       <input type="hidden" name="request_cmd" id="request_cmd" value=""/>
       <input type="hidden" name="main_key" id="main_key" value=""/>
-      <input type="hidden" name="room_name" id="room_name" value="<%=webBean.txt("room_name")%>" />
-      <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
+      <input type="hidden" name="room_name" id="room_name" value="" />
+      <input type="hidden" name="before_name" id="before_name" value="" />
+      <input type="hidden" name="before_status" id="before_status" value="" />
       <input type="hidden" name="sort_key_old" id="sort_key_old" value="<%=webBean.txt("sort_key_old")%>"/>
       <input type="hidden" name="sort_key" id="sort_key" value=""/>
       <input type="hidden" name="sort_order" id="sort_order" value="<%=webBean.txt("sort_order")%>"/>
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>"/>
       <input type="hidden" name="room_id" id="room_id" value="<%=webBean.txt("room_id")%>"/>
+      <input type="hidden" name="checked_rooms" id="checked_rooms" value=""/>
       <div class="left">
         <div class="messages">
           <%=webBean.dispMessages()%>
@@ -315,8 +359,11 @@ jQuery(function($)
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 70%"><a href="javaScript:go_sort_request('room_name')" id="sort_room_name">部屋名</a></td>
-            <td class="list_label" style="width: 30%"></td>
+            <td class="list_label" style="width: 3%"></td>
+            <td class="list_label" style="width: 67%"><a href="javaScript:go_sort_request('room_name')" id="sort_room_name">部屋名</a></td>
+            <td class="list_label" style="width: 30%">
+              <input type="button" value="一括メンテナンス更新" onclick="go_bulk_maintenance()" />
+            </td>
           </tr>
           <%
           for(Object item : webBean.arrayList("list"))
@@ -324,11 +371,15 @@ jQuery(function($)
               RoomDao dao = (RoomDao)item;
           %>
           <tr class="list_tr">
+            <td class="list_checkbox">
+              <input type="checkbox" name="checkboxes_room" value="<%=WebUtil.htmlEscape(dao.getRoomId())%>" onchange="handleCheckbox(event)">
+            </td>
             <td class="list_text">
               <%=WebUtil.htmlEscape(dao.getRoomName())%>
             </td>
             <td class="list_btn">
-              <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
+              <input type="button" value="予約確認" />
+              <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>', '<%=WebUtil.txtEscape(dao.getStatus()) %>');" />
               <input type="button" value="削除" onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
             </td>
           </tr>

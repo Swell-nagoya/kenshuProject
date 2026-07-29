@@ -64,10 +64,7 @@ public class RoomDetail extends ControllerBase
           String requestCmd = bean.value("request_cmd");
           String mainKey = bean.value("main_key");
           String roomName = bean.value("room_name");
-          String beforeName = bean.value("before_name");
-          RoomDao dao = setWeb2Dao2InputInfo();
-          bean.setValue("before_name", beforeName);
-          bean.setValue("room_name", roomName);
+//          RoomDao dao = setWeb2Dao2InputInfo();
           if ("RoomDetail".equals(formName))
           {
               if ("go_next".equals(actionCmd))
@@ -76,15 +73,12 @@ public class RoomDetail extends ControllerBase
                   {
                       bean.setMessage("この内容で登録します。よろしいですか？");
                       bean.setValue("request_name", "登録する");
-                      bean.setValue("room_name", roomName);
                       forward("RoomDetail_2.jsp");
                   }
                   else if ("update".equals(requestCmd))
                   {
                       bean.setMessage("この内容で修正します。よろしいですか？");
                       bean.setValue("request_name", "修正する");
-                      bean.setValue("before_name", beforeName);
-                      bean.setValue("room_name", roomName);
                       forward("RoomDetail_2.jsp");
                   }
               }
@@ -112,12 +106,12 @@ public class RoomDetail extends ControllerBase
                       else
                       {
                           bean.setValue("request_name", "修正する");
-                          bean.setValue("before_name", beforeName);
                           forward("RoomDetail.jsp");
                       }
                   } 
                   else if ("deletef".equals(requestCmd)) 
                   {
+                      RoomDao dao = new RoomDao();
                       if (!dao.dbSelect(mainKey))
                       {
                           bean.setError("データの取得に失敗しました");
@@ -191,8 +185,8 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         bean.rtrimAllItem();
-        setWeb2Dao2InputInfo();
-        if (inputCheck())
+        RoomDao dao = setWeb2Dao2InputInfo();
+        if (inputCheck(dao))
         {
             if(signUp())
             {
@@ -218,9 +212,9 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         bean.rtrimAllItem();
-        RoomDao dao = setWeb2Dao2InputInfo();
         String mainKey = bean.value("main_key");//RoomIdの取得
-        if (inputCheck())
+        RoomDao dao = setWeb2Dao2InputInfo();
+        if (inputCheck(dao))
         {
             try {
                 DbBase.dbBeginTran();
@@ -295,22 +289,25 @@ public class RoomDetail extends ControllerBase
      *
      * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
      */
-    private boolean inputCheck()
+    private boolean inputCheck(RoomDao dao) throws AtareSysException
     {
-        WebBean bean = getWebBean();
-        Validator validator = new Validator(bean);
-        validator.checkRequired("room_name", "room_name_empty", "部屋名");
-        validator.checkValueChanged(
-        	"room_name",
-        	"before_name",
-        	"room_name_duplicate",
-        	"部屋名が以前と同じです。別の名前を入力してください。"
-        );
-        
-        return !validator.hasErrors();
+    		WebBean bean = getWebBean();
+    		Validator validator = new Validator(bean);
+    		validator.checkRequired("room_name", "room_name_empty", "部屋名");
+    		validator.checkRoomNameDuplicated("room_name", dao, bean.value("main_key"));
+    		validator.checkRequired("room_status", "ステータス");
+    		validator.checkInteger("room_status", "ステータス");
+    		if ("updateEnter".equals(bean.value("request_cmd")))
+    		{
+    			validator.checkNoChange(
+    					new String[]{"room_name", "room_status"},
+    					new String[]{"before_name", "before_status"},
+    					"room_name_duplicate"
+    					);
+    		}
+    		return !validator.hasErrors();
     }
-   
-   
+
     /**
      * 画面の項目をDAOクラスに格納しそれをシリアライズして、input_infoフィールドに格納する
      *
@@ -322,6 +319,7 @@ public class RoomDetail extends ControllerBase
         WebBean bean = getWebBean();
         RoomDao dao = new RoomDao();
         dao.setRoomName(bean.value("room_name"));
+        dao.setStatus(bean.value("room_status"));
 
         bean.setValue("input_info", Sup.serialize(dao));
         return dao;

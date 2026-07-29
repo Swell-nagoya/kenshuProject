@@ -16,6 +16,7 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.time.LocalTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="jp.swell.constant.RoomState" %>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -74,12 +75,14 @@ h1 {
   margin-bottom: 20px;
   text-align: center;
   display: flex;
+  flex-direction: column;
   justify-content: center;  /* 横方向で中央に配置 */
   align-items: center;      /* 縦方向で中央に配置 */
 }
 
-.room__form--name{
+.room__form{
   width: 60%;
+  margin: 10px;
 }
 
 /* ボタンの共通スタイル */
@@ -163,7 +166,7 @@ window.onload = () => {
   <%
       String val = webBean.txt("request_name");
       String actionType = val.equals("修正する") ? "update" : "ins";
-      String header = val.equals("修正する") ? "部屋名修正" : "新規部屋登録";
+      String header = val.equals("修正する") ? "部屋情報修正" : "新規部屋登録";
   %>
   <div class="container">
     <div class="new-btn">
@@ -181,33 +184,38 @@ window.onload = () => {
             <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
             <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
             <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name")%>" />
+            <input type="hidden" name="before_status" id="before_status" value="<%=webBean.txt("before_status")%>" />
              
             <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
             <div class="errors"><%=webBean.dispErrorMessages()%></div>
-            <%
+			<%
               Map<String, String> itemErrors = webBean.getItemErrors();
-            %>
-            <%
-              if (itemErrors.containsKey("room_name_empty")) { 
-            %>
-             <div class="field-error"><%=itemErrors.get("room_name_empty")%></div>
-            <%
+              for (String errMsg: itemErrors.values()) {
+            	%>
+			<div class="field-error"><%=errMsg %></div>
+			<%  
               }
             %>
-            
-            <%
-              if (itemErrors.containsKey("room_name_duplicate")) {
-            %>
-              <div class="field-error"><%=itemErrors.get("room_name_duplicate")%></div>
-            <%
-              }
-            %>
-        
-            </div>
     
             <div class="left">
-              <div class="room__form--name">
-                <input type="text" id="room_name" name="room_name" class="ime_disabled" value="<%=webBean.txt("room_name")%>" placeholder="RoomName" size="25" maxlength="255" />
+              <div class="room__form">
+                <input type="text" id="room_name" name="room_name" class="ime_disabled" value="<%=webBean.txt("before_name")%>" placeholder="RoomName" size="25" maxlength="255" />
+              </div>
+              <div class="room__form">
+                <select name="room_status" id="room_status" required>
+                  <option value="">ステータス選択</option>
+                  <%
+                  String targetStatus = webBean.value("before_status");
+                  ArrayList<RoomState> stateList = RoomState.getList();
+                  for (RoomState roomState: stateList) {
+                	  	String stateValue = roomState.getState();
+                	  	String selected = !targetStatus.isEmpty() && targetStatus.equals(stateValue) ? "selected" : "";
+                	  %>
+                	  	<option value="<%=WebUtil.txtEscape(stateValue)%>" <%=selected %>><%=WebUtil.htmlEscape(roomState.getStateName()) %></option>
+                	 <%
+                  }
+                  %>
+                </select>
               </div>
             </div>
             <div class="button">

@@ -70,6 +70,10 @@ public class RoomDao implements Serializable
      */
     private String updateUserId = "";
     /**
+     * status
+     */
+    private String status = "";
+    /**
      * 予約用id
      */
     private String reserveId = "";
@@ -208,6 +212,15 @@ public class RoomDao implements Serializable
      */
     public void setUpdateUserId(String updateUserId) {
         this.updateUserId = updateUserId;
+    }
+    /**
+     * @return status
+     */
+    public String getStatus() {
+    		return status;
+    }
+    public void setStatus(String status) {
+    		this.status = status;
     }
     /**
      * @return reserveId
@@ -420,7 +433,59 @@ public class RoomDao implements Serializable
         dao.setInsertUserId(DbI.chara(map.get("insert_user_id") != null ? map.get("insert_user_id") : ""));
         dao.setUpdateDate(DbI.chara(map.get("update_date") != null ? map.get("update_date") : ""));
         dao.setUpdateUserId(DbI.chara(map.get("update_user_id") != null ? map.get("update_user_id") : ""));
+        dao.setStatus(DbI.chara(map.get("status") != null ? map.get("status") : ""));
     }
+    
+    /**
+     * 部屋名の重複チェックを行うメソッド。(新規登録時)
+     * @param roomName 確認する部屋名
+     * @return 部屋名が重複していれば true, そうでなければ false
+     * @throws AtareSysException
+     */
+    public boolean isRoomNameExists(String roomName) throws AtareSysException {
+        // 部屋名が存在するかのカウントを行う
+        String sql = "SELECT COUNT(*) FROM room "
+                + "WHERE room_name = " + DbS.chara(roomName)
+                + "and is_deleted = 0";
+
+        // SQL 実行して結果を取得する
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+
+        // 結果が空でなければ部屋名が存在するか確認
+        if (rs.isEmpty()) {
+            return false;
+        }
+
+        // カウントが1以上なら重複しているとみなす
+        return Integer.parseInt(rs.get(0).get("COUNT(*)")) > 0;
+    }
+    
+    /**
+     * 部屋名の重複チェックを行うメソッド。(更新時)
+     * @param roomName 確認する部屋名
+     * @param roomId 更新対象のID
+     * @return 部屋名が重複していれば true, そうでなければ false
+     * @throws AtareSysException
+     */
+    public boolean isRoomNameExists(String roomName, String roomId) throws AtareSysException {
+        // 部屋名が存在するかのカウントを行う
+        String sql = "SELECT COUNT(*) FROM room "
+                + "WHERE room_name = " + DbS.chara(roomName)
+                + "and room_id NOT IN (" + DbS.chara(roomId) + ") "
+                + "and is_deleted = 0";
+
+        // SQL 実行して結果を取得する
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+
+        // 結果が空でなければ部屋名が存在するか確認
+        if (rs.isEmpty()) {
+            return false;
+        }
+
+        // カウントが1以上なら重複しているとみなす
+        return Integer.parseInt(rs.get(0).get("COUNT(*)")) > 0;
+    }
+    
     /**
      * room 部屋テーブルにデータを挿入する
      *
@@ -437,6 +502,7 @@ public class RoomDao implements Serializable
         + ",insert_user_id"
         + ",update_date"
         + ",update_user_id"
+        + ",status"
         + " ) values ( "
         + DbO.chara(getRoomId())
         + "," + DbO.chara(getRoomName())
@@ -444,6 +510,7 @@ public class RoomDao implements Serializable
         + "," + (getInsertUserId().isEmpty() ? "null" : DbO.chara(getInsertUserId()))
         + "," + (getUpdateDate().isEmpty() ? "null" : DbO.chara(getUpdateDate()))
         + "," + (getUpdateUserId().isEmpty() ? "null" : DbO.chara(getUpdateUserId()))
+        + "," + (getStatus().isEmpty() ? "null" : DbO.chara(getStatus()))
         + " )";
         int ret = DbBase.dbExec(sql);
         if(ret!=1) throw new AtareSysException("dbInsert number or record exception.") ;
@@ -461,11 +528,22 @@ public class RoomDao implements Serializable
     {
         String sql = "update room set "
         + " room_name = " + DbO.chara(getRoomName())
+        + " ,status = " + DbO.chara(getStatus())
         + " where room_id = " + DbS.chara(pRoomId)
         + "";
         int ret =DbBase.dbExec(sql);
         if (ret != 1) throw new AtareSysException("dbupdate number or record exception");
         return true;
+    }
+    
+    public boolean dbUpdateStatus(String roomId) throws AtareSysException
+    {
+    		String sql = "update room set "
+    				+ "status = " + DbO.chara(getStatus())
+    				+ " where room_id = " + DbS.chara(roomId);
+    		int ret = DbBase.dbExec(sql);
+    		if (ret != 1) throw new AtareSysException("dbupdate number or record exception");
+    		return true;
     }
 
     /**
@@ -537,6 +615,7 @@ public class RoomDao implements Serializable
                 + ",insert_user_id"
                 + ",update_date"
                 + ",update_user_id"
+                + ",status"
                 + " from room ";
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);

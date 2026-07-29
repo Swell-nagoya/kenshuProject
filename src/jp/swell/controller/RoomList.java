@@ -22,12 +22,14 @@ import java.util.LinkedHashMap;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.common.util.Validator;
+import jp.swell.constant.RoomState;
 import jp.swell.dao.RoomDao;
 
 /**
@@ -105,6 +107,12 @@ public class RoomList extends ControllerBase
             else if ("return".equals(bean.value("action_cmd")))
             {
                 redirect("MenuAdmin.do");
+            }
+            else if ("bulk_maintenance".equals(bean.value("action_cmd"))) 
+            {
+            	    dbBulkUpdate();
+            	    searchList();
+            	    forward("RoomList.jsp");
             }
             else
             {
@@ -303,5 +311,31 @@ public class RoomList extends ControllerBase
         ret = Integer.parseInt(pageNo);
         ret += add;
         return String.valueOf(ret);
+    }
+    
+    private void dbBulkUpdate() throws AtareSysException
+    {
+    		WebBean bean = getWebBean();
+    		String checkedRoomsString = bean.value("checked_rooms");
+    		if (checkedRoomsString == null || checkedRoomsString.trim().isEmpty()) {
+    			bean.setError("error", "更新対象の部屋がありません。");
+    			return;
+    		}
+    		String[] roomIds = checkedRoomsString.split(",");
+	    	try {
+		    
+	    		DbBase.dbBeginTran();
+		    	RoomDao dao = new RoomDao();
+		    	dao.setStatus(RoomState.UNDER_MAINTENANCE);
+	    		for (String roomId : roomIds) {
+	    			String cleanId = roomId.trim();
+	    			if (!cleanId.isEmpty()) dao.dbUpdateStatus(cleanId);
+	    		}
+	    		DbBase.dbCommitTran();
+	    		bean.setMessage(roomIds.length + "件の部屋をメンテナンス中に変更しました。");
+	    	} catch (Exception e) {
+	    		DbBase.dbRollbackTran();
+	    		bean.setError("transaction_error", "データベースの更新中にエラーが発生したためロールバックしました。");
+	    	}
     }
 }

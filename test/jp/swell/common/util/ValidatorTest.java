@@ -1,151 +1,3 @@
-//package jp.swell.common.util;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.Mockito.*;
-//
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.params.ParameterizedTest;
-//import org.junit.jupiter.params.provider.ValueSource;
-//
-//import jp.patasys.common.http.WebBean;
-//
-//class ValidatorTest {
-//	private Validator target;
-//	private WebBean mockWebBean;
-//	
-//	@BeforeEach
-//	void setUp() throws Exception {
-//		mockWebBean = mock(WebBean.class);
-//		target = new Validator(mockWebBean);
-//	}
-//	
-//	@Test
-//	@DisplayName("値が入力されている場合、必須入力チェックを通過すること")
-//	void checkRequired_success() {
-//		when(mockWebBean.value("testField")).thenReturn("testValue");
-//		target.checkRequired("testField", "項目名");
-//		assertFalse(target.hasErrors());
-//	}
-//	
-//	@ParameterizedTest
-//	@ValueSource (strings = {"", " "})
-//	@DisplayName("未入力・または空白の場合、必須チェックでエラーになること(1引数)")
-//	void checkRequired_error_1arg(String input) {
-//		when(mockWebBean.value("testField")).thenReturn(input);
-//		target.checkRequired("testField");
-//		assertTrue(target.hasErrors());
-//		assertEquals(1, target.getErrors().size());
-//		assertEquals("testFieldを入力してください。", target.getErrors().get("testField"));
-//	}
-//	
-//	@Test
-//	@DisplayName("未入力の場合、必須チェックでエラーになること(2引数)")
-//	void checkRequired_error_2args() {
-//		when(mockWebBean.value("testField")).thenReturn("");
-//		target.checkRequired("testField", "項目名");
-//		assertTrue(target.hasErrors());
-//		assertEquals(1, target.getErrors().size());
-//		assertEquals("項目名を入力してください。", target.getErrors().get("testField"));
-//	}
-//	
-//	@Test
-//	@DisplayName("未入力の場合、指定したエラーキーでエラーが登録されること(3引数)")
-//	void checkRequired_error_3args() {
-//		when(mockWebBean.value("testField")).thenReturn("");
-//		target.checkRequired("testField", "errKey", "項目名");
-//		assertTrue(target.hasErrors());
-//		assertEquals(1, target.getErrors().size());
-//		assertEquals("項目名を入力してください。", target.getErrors().get("errKey"));
-//	}
-//	
-//	@Test
-//	@DisplayName("すでにerrKeyにエラーが存在する場合、チェックがスキップされること")
-//	void checkRequired_skip() {
-//		target.getErrors().put("errKey", "既存のエラー");
-//		when(mockWebBean.value("fieldName")).thenReturn("");
-//		target.checkRequired("fieldName", "errKey", "項目名");
-//		assertTrue(target.hasErrors());
-//		assertEquals(1, target.getErrors().size());
-//		assertEquals("既存のエラー", target.getErrors().get("errKey"));
-//		
-//	}
-//	
-//	@Test
-//	@DisplayName("両方の項目が入力されている場合、エラーにならないこと")
-//	void checkRequiredPair_success() {
-//		when(mockWebBean.value("lastName")).thenReturn("山田");
-//		when(mockWebBean.value("firstName")).thenReturn("太郎");
-//		
-//		target.checkRequiredPair("lastName", "名字", "firstName", "名前", "氏名");
-//		
-//		assertFalse(target.hasErrors());
-//	}
-//	
-//	@Test
-//	@DisplayName("両方の項目が未入力・空白の場合、統合項目名でのエラーメッセージがセットされること")
-//	void checkRequiredPair_both_empty() {
-//		when(mockWebBean.value("lastName")).thenReturn("");
-//		when(mockWebBean.value("firstName")).thenReturn(" "); 
-//		
-//		target.checkRequiredPair("lastName", "名字", "firstName", "名前", "氏名");
-//		
-//		assertTrue(target.hasErrors());
-//		assertEquals(2, target.getErrors().size());
-//		assertEquals("氏名を入力してください。", target.getErrors().get("lastName"));
-//		assertEquals("", target.getErrors().get("firstName"));
-//	}
-//	
-//	@Test
-//	@DisplayName("項目1のみ未入力の場合、項目1の単独エラーメッセージがセットされること")
-//	void checkRequiredPair_only_field1_empty() {
-//		when(mockWebBean.value("lastName")).thenReturn("");
-//		when(mockWebBean.value("firstName")).thenReturn("太郎");
-//		
-//		target.checkRequiredPair("lastName", "名字", "firstName", "名前", "氏名");
-//		
-//		assertTrue(target.hasErrors());
-//		assertEquals(1, target.getErrors().size());
-//		assertEquals("名字を入力してください。", target.getErrors().get("lastName"));
-//		assertNull(target.getErrors().get("firstName"));
-//	}
-//	
-//	@Test
-//	@DisplayName("項目2のみ未入力の場合、項目2の単独エラーメッセージがセットされること")
-//	void checkRequiredPair_only_field2_empty() {
-//		when(mockWebBean.value("lastName")).thenReturn("山田");
-//		when(mockWebBean.value("firstName")).thenReturn("");
-//		
-//		target.checkRequiredPair("lastName", "名字", "firstName", "名前", "氏名");
-//		
-//		assertTrue(target.hasErrors());
-//		assertEquals(1, target.getErrors().size());
-//		assertNull(target.getErrors().get("lastName"));
-//		assertEquals("名前を入力してください。", target.getErrors().get("firstName"));
-//	}
-//	
-//	@ParameterizedTest
-//	@ValueSource (strings = {"1", "12345"})
-//	@DisplayName("指定した文字数の範囲内の場合、文字数制限チェックを通過すること")
-//	void checkLength_success(String input) {
-//		when(mockWebBean.value("testField")).thenReturn(input);
-//		target.checkLength("testField", "項目名", 1, 5);
-//		assertFalse(target.hasErrors());
-//	}
-//	
-//	@ParameterizedTest
-//	@ValueSource (strings = {"", "123456"})
-//	@DisplayName("指定した文字数の範囲外の場合、文字数制限チェックでエラーになること")
-//	void checkLength_error(String input) {
-//		when(mockWebBean.value("testField")).thenReturn(input);
-//		target.checkLength("testField", "項目名", 1, 5);
-//		assertTrue(target.hasErrors());
-//		assertEquals("項目名は1文字以上5文字以下で入力してください。", target.getErrors().get("testField"));
-//	}
-//
-//}
-
 package jp.swell.common.util;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -155,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import jp.patasys.common.AtareSysException;
@@ -740,22 +593,25 @@ class ValidatorTest {
 		assertEquals("正しい電話番号を入力してください。", target.getErrors().get("testField"));
 	}
 
-	@Test
+	@ParameterizedTest
+	@CsvSource({"newData1, oldaData2", "oladData1, newData2", "newData1, newData2"})
 	@DisplayName("値が変更されている場合、変更チェックを通過すること")
-	void checkValueChanged_success() {
-		when(mockWebBean.value("newField")).thenReturn("newData");
-		when(mockWebBean.value("beforeField")).thenReturn("oldData");
-		target.checkValueChanged("newField", "beforeField", "errKey", "変更されていません。");
+	void checkNoChange_success(String input1, String input2) {
+		when(mockWebBean.value("newField1")).thenReturn(input1);
+		when(mockWebBean.value("newField2")).thenReturn(input2);
+		when(mockWebBean.value("beforeField1")).thenReturn("oldData1");
+		when(mockWebBean.value("beforaField2")).thenReturn("oldData2");
+		target.checkNoChange(new String[]{"newField1", "newField2"}, new String[] {"beforeField1", "beforeField2"}, "errKey");
 		assertFalse(target.hasErrors());
 	}
 
 	@Test
 	@DisplayName("値が変更されていない場合、変更チェックでエラーになること")
-	void checkValueChanged_error() {
+	void checkNoChange_error() {
 		when(mockWebBean.value("newField")).thenReturn("sameData");
-		when(mockWebBean.value("beforeField")).thenReturn("SAMEDATA");
-		target.checkValueChanged("newField", "beforeField", "errKey", "変更されていません。");
+		when(mockWebBean.value("beforeField")).thenReturn("sameData");
+		target.checkNoChange(new String[] {"newField"},new String[] {"beforeField"}, "errKey");
 		assertTrue(target.hasErrors());
-		assertEquals("変更されていません。", target.getErrors().get("errKey"));
+		assertEquals("変更内容がありません。少なくとも1つの項目を変更してください。", target.getErrors().get("errKey"));
 	}
 }

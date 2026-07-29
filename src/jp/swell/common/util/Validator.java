@@ -9,6 +9,7 @@ import java.util.HashMap;
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.http.WebBean;
 import jp.swell.dao.ContactDao;
+import jp.swell.dao.RoomDao;
 import jp.swell.dao.ShiftDAO;
 import jp.swell.dao.UserInfoDao;
 
@@ -393,6 +394,43 @@ public class Validator {
 	}
 	
 	/**
+	 * 部屋情報の新規登録時に部屋名の重複チェックを行うメソッド。
+	 * 
+	 * @param fieldName チェック対象のフィールド名
+	 * @param dao データベースへのアクセスを行うRoomDao
+	 * @throws AtareSysException エラー
+	 */
+	public void checkRoomNameDuplicated(String fieldName, RoomDao dao) throws AtareSysException {
+		if (errors.containsKey(fieldName)) return;
+		String value = bean.value(fieldName);
+		if (dao.isRoomNameExists(value)) {
+			errors.put(fieldName, "この部屋名はすでに登録されています。");
+		}
+	}
+	
+	/**
+	 * 部屋情報の更新時に部屋名の重複チェックを行うメソッド。
+	 * 
+	 * @param fieldName チェック対象のフィールド名
+	 * @param dao データベースへのアクセスを行うRoomDao
+	 * @param mainKey 更新対象の部屋ID
+	 * @throws AtareSysException エラー
+	 */
+	public void checkRoomNameDuplicated(String fieldName, RoomDao dao, String mainKey) throws AtareSysException {
+		if (errors.containsKey(fieldName)) return;
+		if (mainKey.isEmpty()) {
+			this.checkRoomNameDuplicated(fieldName, dao);
+			return;
+		}
+		String value = bean.value(fieldName);
+		if (value.isEmpty()) return;
+		
+		if (dao.isRoomNameExists(value, mainKey)) {
+			errors.put(fieldName, "この部屋名はすでに登録されています。");
+		}
+	}
+	
+	/**
 	 * ひらがな形式チェックを行うメソッド。
 	 * 
 	 * @param fieldName チェック対象のフィールド名
@@ -443,6 +481,24 @@ public class Validator {
 		String value = bean.value(fieldName);
 		if (!value.isEmpty() && !value.matches("^[a-zA-Z0-9]+$")) {
 			errors.put(fieldName, itemName + "は半角英数字で入力してください。");
+		}
+	}
+	
+	/**
+	 * 値が整数(int)に変換できるかチェックするメソッド。
+	 * 
+	 * @param fieldName チェック対象のフィールド名
+	 * @param itemName エラーメッセージに表示する項目名
+	 */
+	public void checkInteger(String fieldName, String itemName) {
+		if (errors.containsKey(fieldName)) return;
+		String value = bean.value(fieldName);
+		if (!value.isEmpty()) {
+			try {
+				Integer.parseInt(value);
+			} catch (NumberFormatException e) {
+				errors.put(fieldName, itemName + "は整数で入力してください。");
+			}
 		}
 	}
 	
@@ -543,25 +599,29 @@ public class Validator {
 		}
 	}
 	
+	
 	/**
 	 * 入力値が変更されているかをチェックするメソッド。
 	 * 大文字・小文字を区別せずに比較する。
 	 * 
-	 * @param fieldName チェック対象のフィールド名（新しい値）
-	 * @param beforeFieldName 比較対象のフィールド名（以前の値）
+	 * @param fieldName チェック対象のフィールド名（新しい値）の配列
+	 * @param beforeFieldName 比較対象のフィールド名（以前の値）の配列
 	 * @param errKey エラーマップに登録する際のキー名
 	 * @param errorMessage
 	 */
-	public void checkValueChanged(String fieldName, String beforeFieldName, String errKey, String errorMessage) {
+	public void checkNoChange(String[] fieldNames, String[] beforeFieldNames, String errKey) {
 		if (errors.containsKey(errKey)) return;
-		
-		String newValue = bean.value(fieldName);
-		String beforeValue = bean.value(beforeFieldName);
-		
-		if (newValue.isEmpty()) return;
-		
-		if (newValue.equalsIgnoreCase(beforeValue)) {
-			errors.put(errKey, errorMessage);
+		boolean isChanged = false;
+		for (int i = 0; i < fieldNames.length; i++) {
+			String newValue = bean.value(fieldNames[i]);
+			String beforeValue = bean.value(beforeFieldNames[i]);
+			if (!newValue.equals(beforeValue)) {
+				isChanged = true;
+				break;
+			}
+		}
+		if (!isChanged) {
+			errors.put(errKey, "変更内容がありません。少なくとも1つの項目を変更してください。");
 		}
 	}
 }

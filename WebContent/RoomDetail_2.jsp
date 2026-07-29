@@ -15,6 +15,7 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.time.LocalTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="jp.swell.constant.RoomState" %>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -149,6 +150,16 @@ td
   border: 1px #a0a0a0 solid;
   padding : 2px;
 }
+th
+{
+  height:1.8em;
+  border-collapse: collapse;
+  border: 1px #a0a0a0 solid;
+  padding : 2px;
+  backGround: #00bcd4;
+  color: #fff;
+  text-align: center;
+}
 .table-header
 {
   background: #00bcd4;
@@ -216,6 +227,8 @@ function go_list(action_cmd)
        <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
        <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
        <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name") %>" />
+       <input type="hidden" name="room_status" id="room_status" value="<%=webBean.txt("room_status") %>" />
+       <input type="hidden" name="before_status" id="before_status" value="<%=webBean.txt("before_status") %>" />
        
        <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
        <div class="errors"><%=webBean.dispErrorMessages()%></div>
@@ -224,21 +237,30 @@ function go_list(action_cmd)
          <% if ("修正する".equals(val)) { %>
          <table class="room__form--name">
            <tr class="table-header">
-             <td>修正前</td>
-             <td>修正後</td>
+             <td/>
+             <th>修正前</th>
+             <th>修正後</th>
            </tr>
            <tr class="table-date">
+             <th>部屋名</th>
              <td><%=webBean.txt("before_name")%></td>
              <td><%=webBean.txt("room_name")%></td>
+           </tr>
+           <tr class="table-date">
+             <th>ステータス</th>
+             <td><%=WebUtil.htmlEscape(RoomState.getStateName(webBean.txt("before_status"))) %></td>
+             <td><%=WebUtil.htmlEscape(RoomState.getStateName(webBean.txt("room_status"))) %>
            </tr>
          </table>
          <% } else if ("登録する".equals(val)) {%>
          <table class="room__form--name">
            <tr class="table-header">
              <td>部屋名</td>
+             <td>ステータス</td>
            </tr>
            <tr class="table-date">
              <td><%=webBean.txt("room_name")%></td>
+             <td><%=WebUtil.htmlEscape(RoomState.getStateName(webBean.txt("room_status"))) %></td>
            </tr>
           </table>
           <%} else if ("削除する".equals(val)) {%> <%--削除する追加--%>
