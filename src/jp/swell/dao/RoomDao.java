@@ -358,7 +358,6 @@ public class RoomDao implements Serializable
              + "room.update_user_id AS room___update_user_id "
              + "FROM room "
              + "WHERE room.room_id = ?"; // テーブル名も明示して確実に指定
-
      try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
          pstmt.setString(1, pRoomId);
 
@@ -435,7 +434,9 @@ public class RoomDao implements Serializable
      */
     public void setRoomDaoForJoin(HashMap<String, String> map,RoomDao dao)  throws AtareSysException
     {
-        dao.setStatus(Integer.parseInt(DbI.chara(map.get("status") != null ? map.get("status") : "")));
+    	   if( map.get("status") != null ) {
+          dao.setStatus(Integer.parseInt(DbI.chara(map.get("status"))));
+    	   }
         dao.setRoomId(DbI.chara(map.get("room_id") != null ? map.get("room_id") : ""));
         dao.setRoomName(DbI.chara(map.get("room_name") != null ? map.get("room_name") : ""));
         dao.setInsertDate(DbI.chara(map.get("insert_date") != null ? map.get("insert_date") : ""));
@@ -530,6 +531,8 @@ public class RoomDao implements Serializable
         	throw new AtareSysException("dbDelete number or record exception");
         return true;
     }
+
+    
     /**
      * データベースからルーム名を取得するメソッド
      * @return UserMenuに返す

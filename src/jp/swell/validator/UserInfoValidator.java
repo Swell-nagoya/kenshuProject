@@ -27,7 +27,7 @@ import jp.patasys.common.http.WebBean;
 import jp.swell.dao.UserInfoDao;
 
 /**
- * ：user_info ユーザ情報テーブルデータを登録・更新・削除するためのコントローラクラス
+ * ：user_info ユーザ情報テーブルデータをvalidationするためのvalidatorクラス
  *
  * @author PATAPATA
  * @version 1.0
