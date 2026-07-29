@@ -19,9 +19,12 @@ package jp.swell.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
@@ -104,6 +107,12 @@ public class RoomList extends ControllerBase
             else if ("return".equals(bean.value("action_cmd")))
             {
                 redirect("MenuAdmin.do");
+            }
+            else if ("statusUpdateAll".equals(bean.value("action_cmd")))
+            {
+               	dbStatusEdit();
+                searchList();
+                forward("RoomList.jsp");
             }
             else
             {
@@ -203,6 +212,10 @@ public class RoomList extends ControllerBase
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
         ArrayList<RoomDao> listData = RoomDao.dbSelectList(dao, sortKey, daoPageInfo);
+        
+
+
+        
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         bean.setValue("recordCount", daoPageInfo.getRecordCount());
@@ -282,6 +295,53 @@ public class RoomList extends ControllerBase
         return sort_key;
     }
 
+    /**
+     * 利用ステータス　一括登録.
+     * 1「利用可能」 8「メンテナンス中」
+     */
+    public void dbStatusEdit() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        RoomDao dao = new RoomDao();
+        // チェックが入った項目のみIDを代入.
+        String[] listStatusFlgs = getRequest().getParameterValues("list_status");
+
+         try {
+          DbBase.dbBeginTran();
+
+          // 画面表示されている利用停止の値でチェックが入っているものは「8」.
+          if (listStatusFlgs != null) {
+            for (int i = 0; i < listStatusFlgs.length; i++) {
+              
+            	String roomInfoId = listStatusFlgs[i];
+
+              // 末尾の「_数字」の手前にあるすべての文字（room_id）を取得します。
+             Pattern patternRoomId = Pattern.compile("^(.*)(_\\d+)$");
+             Matcher matcherRoomId = patternRoomId.matcher(roomInfoId);
+             String roomId = "";
+             if (matcherRoomId.find()) {
+             	  roomId = matcherRoomId.group(1);
+             }
+             
+             
+              // 後ろの文字「_数字」を取得し、「_」を除去。「数字」はroom.statusのvalueとして、代入します。
+              Pattern patternRoomStatus = Pattern.compile("_(\\d+)$");
+              Matcher matcherRoomStatus = patternRoomStatus.matcher(roomInfoId);
+              String roomStatus = "";
+              if (matcherRoomStatus.find()) {
+                 	roomStatus = matcherRoomStatus.group(1);
+              }
+
+              dao.dbUpdateStatus(roomId,roomStatus);
+            }
+          }
+          DbBase.dbCommitTran();
+        } catch (Exception e) {
+          DbBase.dbRollbackTran();
+          throw e;
+        }
+      
+    }
     /**
      * ページ番号を加算減算する
      *

@@ -157,17 +157,54 @@ td {
   border-radius: 5px;
 }
 
+
+.list_tr:nth-child(even) {
+  background: #fff;
+}
+
 .list_tr:nth-child(odd) {
   background: #efefef;
 }
 
 footer {
-width: 100%;
+  width: 100%;
 }
-
+.button_area {
+  margin-top: 20px;
+}
+.button_area > [class^="button_"] {
+  margin: 10px 10px 0 10px !important;
+}
+input[type="button"] {
+    margin: 2px;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    background: #90a0b0;
+}
+.button_send,
+input[type="button"].button_send {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 5px 25px;
+  border-radius: 18px;
+  color: #000;
+  cursor: pointer;
+  background: #fff;
+  font-weight: 500;
+  font-size: 14px;
+  border: 2px solid #ff7f50;
+  transition: background 0.3s ease-in-out;
+}
+.button_send:hover,
+input[type="button"].button_send:hover {
+    background-color: #ff7f50;
+    color: #fff;
+}
 </style>
 <script type="text/javascript">
 <%--検索条件入力でenterキーが押された場合の処理--%>
+/*
 jQuery(function($)
 {
   $(".select_table input").keydown(function (e)
@@ -185,11 +222,14 @@ jQuery(function($)
     }
   });
 });
+*/
 <%--テーブルを一行ごとにいろを変える--%>
+ /*
   $(document).ready(function(){
         $('table.list_table tr:even').addClass('even');
         $('table.list_table tr:odd').addClass('odd');
   });
+  */
   function go_submit(action_cmd)
   {
     document.getElementById('main_form').action='RoomList.do';
@@ -300,8 +340,9 @@ jQuery(function($)
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 70%"><a href="javaScript:go_sort_request('room_name')">部屋名</a></td>
-            <td class="list_label" style="width: 30%"></td>
+            <td class="list_label" style="width: 60%"><a href="javaScript:go_sort_request('room_name')">部屋名</a></td>
+            <td class="list_label" style="width: 20%">利用ステータス</td>
+            <td class="list_label" style="width: 20%"></td>
           </tr>
           <%
           for(Object item : webBean.arrayList("list"))
@@ -312,6 +353,12 @@ jQuery(function($)
             <td class="list_text">
               <%=WebUtil.htmlEscape(dao.getRoomName())%>
             </td>
+            <td class="list_text">
+              <select name="list_status" id="status_flg_<%=WebUtil.txtEscape(dao.getRoomId())%>">
+                <option value="<%=WebUtil.txtEscape(dao.getRoomId())%>_1" <% if(dao.getStatus() == 1){ %> selected<%}%>>利用可能</option>
+                <option value="<%=WebUtil.txtEscape(dao.getRoomId())%>_8" <% if(dao.getStatus() == 8){ %> selected<%}%>>メンテナンス中</option>
+              </select>
+            </td>
             <td class="list_btn">
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
               <input type="button" value="削除" onclick="go_detail_2('go_next','delete','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
@@ -319,7 +366,12 @@ jQuery(function($)
           </tr>
           <%}%>
         </table>
-        <%}%>
+        <div class="button_area">
+          <input type="button" value="一括登録" class="button_send" onclick="go_submit('statusUpdateAll');" />
+        </div>
+        <%} else { %>
+          <p>ユーザー情報がありません</p>
+        <%} %>
       </div>
     </form>
   </div>

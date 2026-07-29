@@ -50,6 +50,10 @@ public class RoomDao implements Serializable
      */
     private String roomId = "";
     /**
+     * status  利用ステータス
+     */
+    private int status;
+    /**
      * roomName
      */
     private String roomName = "";
@@ -143,6 +147,23 @@ public class RoomDao implements Serializable
      */
     public void setRoomId(String roomId) {
         this.roomId = roomId;
+    }
+
+
+    /**
+     * 利用ステータスを取得する。
+     * @return  status 利用ステータス
+     */
+    public int getStatus() {
+        return status;
+    }
+
+    /**
+     * 利用ステータスをセットする。.
+     * @param status 利用ステータス
+     */
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     /**
@@ -414,6 +435,7 @@ public class RoomDao implements Serializable
      */
     public void setRoomDaoForJoin(HashMap<String, String> map,RoomDao dao)  throws AtareSysException
     {
+        dao.setStatus(Integer.parseInt(DbI.chara(map.get("status") != null ? map.get("status") : "")));
         dao.setRoomId(DbI.chara(map.get("room_id") != null ? map.get("room_id") : ""));
         dao.setRoomName(DbI.chara(map.get("room_name") != null ? map.get("room_name") : ""));
         dao.setInsertDate(DbI.chara(map.get("insert_date") != null ? map.get("insert_date") : ""));
@@ -467,6 +489,24 @@ public class RoomDao implements Serializable
         + "";
         int ret =DbBase.dbExec(sql);
         if (ret != 1) throw new AtareSysException("dbupdate number or record exception");
+        return true;
+    }
+
+    /**
+     * user_info ユーザ情報テーブルのデータを更新する。(ステータスを更新).
+     *
+     * @return true:成功 false:失敗
+     * @throws AtareSysException フレームワーク共通例外
+     */
+    public boolean dbUpdateStatus(String roomId, String status) throws AtareSysException {
+        String sql = "update room set "
+                + " status = " + DbO.chara(status)
+                + " where room_id = " + DbS.chara(roomId)
+                + "";
+        int ret = DbBase.dbExec(sql);
+        
+        if (ret != 1)
+            throw new AtareSysException("dbUpdate number or record exception.");
         return true;
     }
 
@@ -535,6 +575,7 @@ public class RoomDao implements Serializable
         int start  =   (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql =  "select "
                 + " room.room_id room___room_id"
+                + ",room.status as room___status"
                 + ",room.room_name room___room_name"
                 + ",room.insert_date as room___insert_date"
                 + ",room.insert_user_id as room___insert_user_id"
