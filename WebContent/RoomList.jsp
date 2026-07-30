@@ -272,6 +272,81 @@ jQuery(function($)
     document.getElementById('request_cmd').value=request_cmd;
     document.getElementById('main_form').submit();
   }
+
+
+
+
+  // サブ画面処理
+  function openUserWindow(action_cmd, room_id) {
+      const selectedUserIds = room_id;
+      // コントローラー設定
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'RoomYoyakuList.do';
+      form.target = 'Reserve_Room';
+      // form_name設定
+      const formNameInput = document.createElement('input');
+      formNameInput.type = 'hidden';
+      formNameInput.name = 'form_name';
+      formNameInput.value = 'RoomYoyakuList';
+      form.appendChild(formNameInput);
+      // アクションコマンド設定
+      const actionCmdInput = document.createElement('input');
+      actionCmdInput.type = 'hidden';
+      actionCmdInput.name = 'action_cmd';
+      actionCmdInput.value = action_cmd;
+      form.appendChild(actionCmdInput);
+      // ユーザー情報
+      const selectedUsersInput = document.createElement('input');
+      selectedUsersInput.type = 'hidden';
+      selectedUsersInput.name = 'selected_user_ids';
+      selectedUsersInput.value = selectedUserIds;
+      form.appendChild(selectedUsersInput);
+
+      document.body.appendChild(form);
+      // サブ画面表示処理
+      window.open('', 'Reserve_Room', 'width=400,height=500');
+      form.submit();
+
+      document.body.removeChild(form);
+  }
+
+/*
+  // サブ画面処理
+  function openUserWindow(action_cmd, room_id) {
+      const selectedUserIds = room_id;
+      // コントローラー設定
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'UserYoyakuDetail.do';
+      form.target = 'Reserve_User';
+      // form_name設定
+      const formNameInput = document.createElement('input');
+      formNameInput.type = 'hidden';
+      formNameInput.name = 'form_name';
+      formNameInput.value = 'UserYoyakuDetail';
+      form.appendChild(formNameInput);
+      // アクションコマンド設定
+      const actionCmdInput = document.createElement('input');
+      actionCmdInput.type = 'hidden';
+      actionCmdInput.name = 'action_cmd';
+      actionCmdInput.value = action_cmd;
+      form.appendChild(actionCmdInput);
+      // ユーザー情報
+      const selectedUsersInput = document.createElement('input');
+      selectedUsersInput.type = 'hidden';
+      selectedUsersInput.name = 'selected_user_ids';
+      selectedUsersInput.value = selectedUserIds;
+      form.appendChild(selectedUsersInput);
+
+      document.body.appendChild(form);
+      // サブ画面表示処理
+      window.open('', 'Reserve_User', 'width=400,height=500');
+      form.submit();
+
+      document.body.removeChild(form);
+  }
+*/
 </script>
 </head>
 <body>
@@ -361,6 +436,7 @@ jQuery(function($)
             </td>
             <td class="list_btn">
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
+              <input type="button" value="予約確認" onclick="openUserWindow('sub', '<%=WebUtil.txtEscape(dao.getRoomId())%>')" />
               <input type="button" value="削除" onclick="go_detail_2('go_next','delete','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
             </td>
           </tr>

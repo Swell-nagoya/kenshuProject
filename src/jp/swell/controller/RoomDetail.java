@@ -108,7 +108,26 @@ public class RoomDetail extends ControllerBase
                           forward("RoomDetail.jsp");
                           return;
                       }
-                  } 
+                  }
+                  else if ("roomReservation".equals(requestCmd)) 
+                  {
+                      setRoom();
+                      bean.rtrimAllItem();
+                    
+                      if (!setDb2Web())
+                      {
+                          bean.setError("データの取得に失敗しました");
+                          forward("RoomList.jsp");
+                          return;
+                      }
+                      else
+                      {
+                          bean.setValue("request_name", "修正");
+                          bean.setValue("before_name", beforeName);
+                          forward("RoomDetail.jsp");
+                          return;
+                      }
+                  }
                   else if ("delete".equals(requestCmd)) 
                   {
                    if (!setDb2Web()) 
