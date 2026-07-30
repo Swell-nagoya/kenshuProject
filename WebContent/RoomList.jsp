@@ -273,9 +273,6 @@ jQuery(function($)
     document.getElementById('main_form').submit();
   }
 
-
-
-
   // サブ画面処理
   function openUserWindow(action_cmd, room_id) {
       const selectedUserIds = room_id;
@@ -297,11 +294,11 @@ jQuery(function($)
       actionCmdInput.value = action_cmd;
       form.appendChild(actionCmdInput);
       // ユーザー情報
-      const selectedUsersInput = document.createElement('input');
-      selectedUsersInput.type = 'hidden';
-      selectedUsersInput.name = 'selected_user_ids';
-      selectedUsersInput.value = selectedUserIds;
-      form.appendChild(selectedUsersInput);
+      const roomIdInput = document.createElement('input');
+      roomIdInput.type = 'hidden';
+      roomIdInput.name = 'room_id';
+      roomIdInput.value = selectedUserIds;
+      form.appendChild(roomIdInput);
 
       document.body.appendChild(form);
       // サブ画面表示処理
@@ -310,43 +307,6 @@ jQuery(function($)
 
       document.body.removeChild(form);
   }
-
-/*
-  // サブ画面処理
-  function openUserWindow(action_cmd, room_id) {
-      const selectedUserIds = room_id;
-      // コントローラー設定
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = 'UserYoyakuDetail.do';
-      form.target = 'Reserve_User';
-      // form_name設定
-      const formNameInput = document.createElement('input');
-      formNameInput.type = 'hidden';
-      formNameInput.name = 'form_name';
-      formNameInput.value = 'UserYoyakuDetail';
-      form.appendChild(formNameInput);
-      // アクションコマンド設定
-      const actionCmdInput = document.createElement('input');
-      actionCmdInput.type = 'hidden';
-      actionCmdInput.name = 'action_cmd';
-      actionCmdInput.value = action_cmd;
-      form.appendChild(actionCmdInput);
-      // ユーザー情報
-      const selectedUsersInput = document.createElement('input');
-      selectedUsersInput.type = 'hidden';
-      selectedUsersInput.name = 'selected_user_ids';
-      selectedUsersInput.value = selectedUserIds;
-      form.appendChild(selectedUsersInput);
-
-      document.body.appendChild(form);
-      // サブ画面表示処理
-      window.open('', 'Reserve_User', 'width=400,height=500');
-      form.submit();
-
-      document.body.removeChild(form);
-  }
-*/
 </script>
 </head>
 <body>

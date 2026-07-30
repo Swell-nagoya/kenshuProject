@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="jp.swell.dao.UserInfoDao"%>
+<%@ page import="jp.swell.dao.RoomDao"%>
 <%@ page import="jp.patasys.common.http.WebBean"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
@@ -18,7 +18,7 @@
 <script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
-<title>ユーザー選択</title>
+<title>部屋予約状況</title>
 <style>
 body
 {
@@ -126,21 +126,21 @@ window.onload = function() {
 <body>
 <div class="container">
   <form id="user_select_form">
-        <h1>テスト</h1>
+        <h1>部屋予約状況</h1>
         <table>
           <% // データベースの users が空でないかの確認
             if (webBean.arrayList("list") != null && !webBean.arrayList("list").isEmpty()) { %>
               <% // ユーザー情報を取るためのループ処理
               for (Object item : webBean.arrayList("list")) {
-                UserInfoDao user = (UserInfoDao) item;
+                RoomDao room = (RoomDao) item;
               %>
           <tr>
             <td style="text-align: left;">
-              <input type="checkbox" name="user_info_id" value="<%= WebUtil.htmlEscape(user.getUserInfoId()) %>" data-user-name="<%= WebUtil.htmlEscape(user.getLastName()) %> <%= WebUtil.htmlEscape(user.getMiddleName()) %> <%= WebUtil.htmlEscape(user.getFirstName()) %>">
-              <%= WebUtil.htmlEscape(user.getLastName()) %> <%= WebUtil.htmlEscape(user.getMiddleName()) %> <%= WebUtil.htmlEscape(user.getFirstName()) %>
+           <%= WebUtil.htmlEscape(room.getRoomId()) %>
+
             </td>
           </tr>
-              <%
+          <%
               }
             } else { // ユーザー情報がない場合
           %>
