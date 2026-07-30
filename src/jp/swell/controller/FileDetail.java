@@ -173,13 +173,13 @@ public class FileDetail extends ControllerBase {
         } else {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
-
+        
         ArrayList<FileDao> fileList = FileDao.dbSelectList(fileDao, sortKey, daoPageInfo);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         bean.setValue("recordCount", fileList.size()); // ファイルリストのサイズ
         bean.setValue("maxPageNo", (fileList.size() / Integer.parseInt(bean.value("lineCount")) + 1));
-
+        
         // ルーム情報の取得とセット
         ArrayList<FileDao> files = fileDao.getAllFiles();
 
@@ -512,6 +512,7 @@ public class FileDetail extends ControllerBase {
         try {
         	if(!(bean.value("loginUserId").equals(uploadUserId) || bean.value("loginUserId").equals(userInfoId))) {
         		bean.setError("このファイルを閲覧する権限がありません。");
+        		searchList();
         		forward("FileList.jsp");
         		return;
         	}

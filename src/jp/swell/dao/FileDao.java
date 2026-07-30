@@ -683,9 +683,25 @@ public class FileDao implements Serializable {
         // WHERE句
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);
+        
+        String sqlCount = "SELECT COUNT(*) FROM files "
+                + "LEFT JOIN user_info ON files.user_info_id = user_info.user_info_id "
+                + "LEFT JOIN user_info as uploader ON files.upload_user_id = uploader.user_info_id "
+                + where; // ★件数を数えるだけなので ORDER や LIMIT、OFFSET は不要です！
+        try (PreparedStatement pstmtCount = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sqlCount);
+             ResultSet rsCount = (ResultSet) pstmtCount.executeQuery()) {
+            if (rsCount.next()) {
+                // 結果の1列目（COUNT(*)の結果）を数値として取得し、daoPageInfo にセットする
+                daoPageInfo.setRecordCount(rsCount.getInt(1));
+            }
+        } catch (SQLException e) {
+            throw new AtareSysException("件数取得中にエラーが発生しました: " + e.getMessage(), e);
+        }
 
         int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         int limit = daoPageInfo.getLineCount();
+        
+        
         String sql = "SELECT "
                 + "files.file_id as files___file_id, "
                 + "files.user_info_id as files___user_info_id, "
@@ -702,8 +718,8 @@ public class FileDao implements Serializable {
                 + "user_info.first_name as user_first_name, "
                 + "user_info.last_name as user_last_name "
                 + "FROM files "
-                + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
-                + "JOIN user_info as uploader ON files.upload_user_id = uploader.user_info_id "
+                + "LEFT JOIN user_info ON files.user_info_id = user_info.user_info_id "
+                + "LEFT JOIN user_info as uploader ON files.upload_user_id = uploader.user_info_id "
                 + where + order
                 + " LIMIT " + limit + " OFFSET " + offset;
 
@@ -718,8 +734,11 @@ public class FileDao implements Serializable {
         	        dao.setFilePath(DbI.chara(rs.getString("files___file_path")));
         	        dao.setUploadDate(DbI.chara(rs.getString("files___upload_date")));
         	        dao.setFileKey(DbI.chara(rs.getString("files___file_key")));
-        	        // ... (他の files___ 項目も同様にセットしてください) ...
-        	        // 送信先ユーザーとアップロードユーザーもResultSetから直接取得
+        	        dao.setUserInfoId(DbI.chara(rs.getString("files___user_info_id")));
+        	        dao.setMimeType(DbI.chara(rs.getString("files___mime_type")));
+        	        dao.setSystemFileName(DbI.chara(rs.getString("files___system_file_name")));
+        	        dao.setUploadUserId(DbI.chara(rs.getString("files___upload_user_id")));
+        	        dao.setExpirationDate(DbI.chara(rs.getString("files___expiration_date")));
         	        dao.setFirstName(rs.getString("user_first_name"));
         	        dao.setLastName(rs.getString("user_last_name"));
         	        dao.setUploaderFirstName(rs.getString("uploader_first_name"));
@@ -742,42 +761,50 @@ public class FileDao implements Serializable {
      */
     private String dbWhere() throws AtareSysException {
         StringBuffer where = new StringBuffer(1024);
-        if (userIds != null && userIds.length > 0) {
-            where.append(where.length() > 0 ? " OR " : "");
-            where.append("files.user_info_id IN (");
-
-            for (int i = 0; i < userIds.length; i++) {
-                where.append(DbS.chara(userIds[i]));
-                if (i < userIds.length - 1) {
-                    where.append(", ");
-                }
-            }
-
-            where.append(") ");
-        }
-
-        if (getFileId().length() > 0) {
+        
+        if (getUserInfoId().length() > 0 && getUploadUserId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.file_id = " + DbS.chara(getFileId()));
-        }
+            where.append("(files.user_info_id = " + DbS.chara(getUserInfoId()) + 
+                         " OR files.upload_user_id = " + DbS.chara(getUploadUserId()) + ")");
+        } else if (getUserInfoId().length() > 0) {
+        
+	        if (userIds != null && userIds.length > 0) {
+	            where.append(where.length() > 0 ? " OR " : "");
+	            where.append("files.user_info_id IN (");
+	
+	            for (int i = 0; i < userIds.length; i++) {
+	                where.append(DbS.chara(userIds[i]));
+	                if (i < userIds.length - 1) {
+	                    where.append(", ");
+	                }
+	            }
+	
+	            where.append(") ");
+	        }
 
-        if (getUserInfoId().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
-        }
+	        if (getFileId().length() > 0) {
+	            where.append(where.length() > 0 ? " AND " : "");
+	            where.append("files.file_id = " + DbS.chara(getFileId()));
+	        }
+	
+	        if (getUserInfoId().length() > 0) {
+	            where.append(where.length() > 0 ? " AND " : "");
+	            where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
+	        }
+	
+	        if (getUploadUserId().length() > 0) {
+	            where.append(where.length() > 0 ? " AND " : "");
+	            where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+	        }
+	
+	        if (getSearchFileName().length() > 0) {
+	            where.append(where.length() > 0 ? " AND " : "");
+	            where.append("files.file_name LIKE " + DbS.chara("%" + getSearchFileName() + "%"));
+	        }
 
-        if (getUploadUserId().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
-        }
-
-        if (getSearchFileName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.file_name LIKE " + DbS.chara("%" + getSearchFileName() + "%"));
-        }
-
-        if (where.length() > 0) {
-            return "where " + where.toString();
+	        if (where.length() > 0) {
+	            return "where " + where.toString();
+	        }
         }
         return "";
     }

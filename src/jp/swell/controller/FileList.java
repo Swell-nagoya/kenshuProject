@@ -15,7 +15,6 @@
  */
 package jp.swell.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -109,7 +108,7 @@ public class FileList extends ControllerBase {
         bean.setValue("sort_key", "file_name"); /* 初回のソートキーを入れる */
         bean.setValue("sort_order", "asc");
         bean.setValue("lineCount",
-                SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "RoomList", "lineCount", "100"));
+                SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "FileList", "lineCount", "100"));
     }
 
     /**
@@ -183,17 +182,22 @@ public class FileList extends ControllerBase {
         }
 
         // マージしてセット
-        ArrayList<FileDao> fileList = new ArrayList<>();
-        fileList.addAll(receivedFiles);
-        fileList.addAll(sentFiles);
+        FileDao dao = new FileDao();
+	     // 送信元と送信先の「両方」に自分のIDをセットする！
+	    dao.setUploadUserId(userLoginInfo.getUserInfoId());
+	    dao.setUserInfoId(userLoginInfo.getUserInfoId());
+	    dao.setSearchFileName(bean.value("list_search_file_name"));
+	    List<FileDao> fileList = FileDao.dbSelectList(dao, sortKey, daoPageInfo);
+	    
+//        fileList.addAll(receivedFiles);
+//        fileList.addAll(sentFiles);
         bean.setValue("list", fileList);
         
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         // 受信件数だけでは recordCount が正確に反映されない可能性があるため、明示的に再セット
-        bean.setValue("recordCount", fileList.size());
-        bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
-
+        bean.setValue("recordCount", daoPageInfo.getRecordCount());
+        bean.setValue("maxPageNo", (int) Math.ceil((double)daoPageInfo.getRecordCount()/ daoPageInfo.getLineCount()));
         SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
 
         if (!Validate.isInteger(bean.value("lineCount"))) {
