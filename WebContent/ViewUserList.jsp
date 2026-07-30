@@ -486,12 +486,47 @@ footer {
             <td class="list_label" style="width: 5%">
               <input type="checkbox" id="select_user_info_id_all" onclick="toggleUserCheckAll(this);" />
             </td>
+            <%
+            String fullNameOrder = "";
+            String lastNameKanaOrder = "";
+            String memailOrder = "";
+            if("full_name".equals(webBean.value("sort_key_old"))){
+            	if("asc".equals(webBean.value("sort_order"))) {
+            		fullNameOrder = "▲";
+            	}else{
+            		fullNameOrder = "▼";
+            	}
+	        	lastNameKanaOrder = "";
+	        	memailOrder = "";
+            }else if("full_name_kana".equals(webBean.value("sort_key_old"))) {
+	        	if("asc".equals(webBean.value("sort_order"))) {
+	        		lastNameKanaOrder = "▲";
+	        	}else {
+	        		lastNameKanaOrder = "▼";
+	        	}
+	        	fullNameOrder = "";
+	        	memailOrder = "";
+	        	
+	        }else if("memail".equals(webBean.value("sort_key_old"))) {
+	        	if("asc".equals(webBean.value("sort_order"))) {
+	        		memailOrder = "▲";
+	        	}else {
+	        		memailOrder = "▼";
+	        	}
+	        	fullNameOrder = "";
+	        	lastNameKanaOrder = "";
+	        	
+	        }else {
+	        	fullNameOrder = "";
+	        	lastNameKanaOrder = "";
+	        	memailOrder = "";
+	        }%>
             <td class="list_label" style="width: 23%">
-            <a href="javaScript:go_sort_request('last_name_kana')"><%=webBean.txt("last_name_kana_order") %> 氏名</a></td>
+            <a href="javaScript:go_sort_request('full_name')"><%= fullNameOrder %> 氏名</a></td>
             <td class="list_label" style="width: 23%">
-            <a href="javaScript:go_sort_request('last_name_kana')"><%=webBean.txt("last_name_kana_order") %> 氏名よみ（かな）</a></td>
+            <a href="javaScript:go_sort_request('full_name_kana')"><%= lastNameKanaOrder %> 氏名よみ（かな）</a></td>
             <td class="list_label" style="width: 23%">
-            <a href="javaScript:go_sort_request('memail')"><%=webBean.txt("memail_order") %> メールアドレス</a></td>
+            <a href="javaScript:go_sort_request('memail')"><%= memailOrder %> メールアドレス</a></td>
             <td class="list_label" style="width: 23%"></td>
           </tr>
           <%

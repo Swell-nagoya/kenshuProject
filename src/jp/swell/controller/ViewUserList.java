@@ -279,26 +279,6 @@ public class ViewUserList extends ControllerBase
         bean.setValue("sort_key", "");
         bean.setValue("sort_key_old", key);
         bean.setValue("sort_order", sort_key.get(key));
-        if("last_name_kana".equals(bean.value("sort_key_old"))) {
-        	if("asc".equals(bean.value("sort_order"))) {
-        		bean.setValue("last_name_kana_order", "▲");
-        	}else {
-        		bean.setValue("last_name_kana_order", "▼");
-        	}
-        	bean.setValue("memail_order", "");
-        	
-        }else if("memail".equals(bean.value("sort_key_old"))) {
-        	if("asc".equals(bean.value("sort_order"))) {
-        		bean.setValue("memail_order", "▲");
-        	}else {
-        		bean.setValue("memail_order", "▼");
-        	}
-        	bean.setValue("last_name_kana_order", "");
-        	
-        }else {
-        	bean.setValue("last_name_kana_order", "");
-        	bean.setValue("memail_order", "");
-        }
         return sort_key;
     }
 
