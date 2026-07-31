@@ -766,6 +766,7 @@ public class FileDao implements Serializable {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("(files.user_info_id = " + DbS.chara(getUserInfoId()) + 
                          " OR files.upload_user_id = " + DbS.chara(getUploadUserId()) + ")");
+            
         } else if (getUserInfoId().length() > 0) {
         
 	        if (userIds != null && userIds.length > 0) {
@@ -781,12 +782,7 @@ public class FileDao implements Serializable {
 	
 	            where.append(") ");
 	        }
-
-	        if (getFileId().length() > 0) {
-	            where.append(where.length() > 0 ? " AND " : "");
-	            where.append("files.file_id = " + DbS.chara(getFileId()));
-	        }
-	
+	        
 	        if (getUserInfoId().length() > 0) {
 	            where.append(where.length() > 0 ? " AND " : "");
 	            where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
@@ -796,18 +792,26 @@ public class FileDao implements Serializable {
 	            where.append(where.length() > 0 ? " AND " : "");
 	            where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
 	        }
-	
-	        if (getSearchFileName().length() > 0) {
-	            where.append(where.length() > 0 ? " AND " : "");
-	            where.append("files.file_name LIKE " + DbS.chara("%" + getSearchFileName() + "%"));
-	        }
-
-	        if (where.length() > 0) {
-	            return "where " + where.toString();
-	        }
+	        
         }
-        return "";
-    }
+
+        if (getFileId().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("files.file_id = " + DbS.chara(getFileId()));
+        }
+
+        
+
+        if (getSearchFileName().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("files.file_name LIKE " + DbS.chara("%" + getSearchFileName() + "%"));
+        }
+
+        if (where.length() > 0) {
+            return "where " + where.toString();
+        }
+    return "";
+}
 
     /**
      * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
