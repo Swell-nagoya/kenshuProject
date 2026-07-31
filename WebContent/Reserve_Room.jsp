@@ -1,11 +1,79 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="jp.swell.dao.RoomDao"%>
 <%@ page import="jp.swell.dao.RoomYoyakuDao"%>
+<%@ page import="java.time.LocalDateTime" %>
 <%@ page import="jp.patasys.common.http.WebBean"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
+<% // データベースの reserve が空でないかの確認
+ String htmlTableString = "";
+ if (webBean.arrayList("list") != null && !webBean.arrayList("list").isEmpty()) {
+  
+  // ユーザー情報を取るためのループ処理
+  for (Object item : webBean.arrayList("list")) {
+    RoomYoyakuDao roomYoyaku = (RoomYoyakuDao) item;
+
+    String roomYoyakuDate = WebUtil.htmlEscape(roomYoyaku.getReservationDate());
+ 
+    //予約　年月日の取得.
+    String roomYoyakuYear = roomYoyakuDate.substring(0, 4);
+    String roomYoyakuMonth = roomYoyakuDate.substring(4, 6);
+    String roomYoyakuDay = roomYoyakuDate.substring(6, 8);
+    // チェックイン、チェックアウト
+    String checkinTime = WebUtil.htmlEscape(roomYoyaku.getCheckinTime());
+    String checkoutTime = WebUtil.htmlEscape(roomYoyaku.getCheckoutTime());
+    // 予約時刻を代入.
+    String formatCheckinTimeHour  = checkinTime.substring(0, 2);
+    String formatCheckinTimeMin   = checkinTime.substring(2, 4);
+    String formatCheckoutTimeHour  = checkoutTime.substring(0, 2);
+    String formatCheckoutTimeMin   = checkoutTime.substring(2, 4);
+ 
+    String formatDate = roomYoyakuYear + "/" + roomYoyakuMonth + "/" + roomYoyakuDay;
+ 
+ 
+    //チェックインの時間「XX:XX」
+    String formatCheckinTime = formatCheckinTimeHour + ":" + formatCheckinTimeMin;
+    //チェックアウトの時間「XX:XX」
+    String formatCheckoutTime = formatCheckoutTimeHour + ":" + formatCheckoutTimeMin;
+
+    // チェックイン日時.
+    LocalDateTime checkinDateTime = LocalDateTime.of(
+      Integer.parseInt(roomYoyakuYear),
+      Integer.parseInt(roomYoyakuMonth),
+      Integer.parseInt(roomYoyakuDay),
+      Integer.parseInt(formatCheckinTimeHour),
+      Integer.parseInt(formatCheckinTimeMin)
+    );
+
+    // チェックアウト日時.
+    LocalDateTime checkoutDateTime = LocalDateTime.of(
+      Integer.parseInt(roomYoyakuYear),
+      Integer.parseInt(roomYoyakuMonth),
+      Integer.parseInt(roomYoyakuDay),
+      Integer.parseInt(formatCheckoutTimeHour),
+      Integer.parseInt(formatCheckoutTimeMin)
+    );
+
+
+    //現在の日時を代入.
+    LocalDateTime now = LocalDateTime.now();
+      
+    // チェックアウトより現在の時刻が前の時
+    if (!now.isAfter(checkoutDateTime)) {
+      htmlTableString += "<tr class=\"" + (now.isBefore(checkinDateTime) ? "before" : " now") + "\">"
+ + "<td style='text-align: left;'>"
+ + "【日付】" + formatDate + "<br>"
+ + "【時間】" + formatCheckinTime + " - " + formatCheckoutTime + "<br>"
+ + "【ユーザー名】" + WebUtil.htmlEscape(roomYoyaku.getFullName()) + "<br>"
+ + "【部屋名】" + WebUtil.htmlEscape(roomYoyaku.getRoomName()) + "<br>"
+ + "【テキスト】" + WebUtil.htmlEscape(roomYoyaku.getInputText()) + "<br>"
+ + "</td>"
+ + "</tr>";
+    }
+  }
+}
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -127,40 +195,24 @@ window.onload = function() {
 <body>
 <div class="container">
   <form id="user_select_form">
-        <h1>部屋予約状況</h1>
-         <% // データベースの users が空でないかの確認
-           if (webBean.arrayList("list") != null && !webBean.arrayList("list").isEmpty()) { %>
-        <table>
-             <% // ユーザー情報を取るためのループ処理
-              for (Object item : webBean.arrayList("list")) {
-              	RoomYoyakuDao roomYoyaku = (RoomYoyakuDao) item;
-             %>
-          <tr>
-            <td style="text-align: left;">
-             <%= WebUtil.htmlEscape(roomYoyaku.getReservationDate()) %>
-             <%= WebUtil.htmlEscape(roomYoyaku.getUserInfoId()) %>
-             <%= WebUtil.htmlEscape(roomYoyaku.getCheckinTime()) %>
-             <%= WebUtil.htmlEscape(roomYoyaku.getCheckoutTime()) %>
-             <%= WebUtil.htmlEscape(roomYoyaku.getRoomId()) %>
-             <%= WebUtil.htmlEscape(roomYoyaku.getRoomName()) %>
-             <%= WebUtil.htmlEscape(roomYoyaku.getInputText()) %>
-            </td>
-          </tr>
-        </table>
-        <%
-             }
-        %>
-        
-        <%
-          } else { // ユーザー情報がない場合
-        %>
-        <p>予約はありません</p>
-        <%
-          }
-        %>
-        <div class="buttons">
-          <input type="button" value="選択" onclick="submitSelection()" class="btn btn-primary">
-        </div>
+     <h1>部屋予約状況</h1>
+     <%
+      if (htmlTableString != null && !htmlTableString.trim().isEmpty()) {
+     %>
+     <table>
+       <%= htmlTableString %>
+     </table>
+    <%
+     // 予約がない.または、過去の予約のみの時
+     } else {
+    %>
+      <p>予約はありません</p>
+    <%
+     }
+    %>   
+ <div class="buttons">
+   <input type="button" value="選択" onclick="submitSelection()" class="btn btn-primary">
+ </div>
   </form>
 </div>
 </body>

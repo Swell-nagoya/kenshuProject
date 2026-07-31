@@ -936,8 +936,7 @@ public class ReserveDao implements Serializable {
         sql += order;
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs = DbBase.dbSelect(sql);
-        
-        System.out.println("sql:" + sql);
+
         int cnt = rs.size();
         if (cnt < 1)
             return array;

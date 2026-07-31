@@ -212,7 +212,7 @@ public class RoomYoyakuList extends ControllerBase {
       bean.setValue("errors", errors);
       return;
     }
-    LinkedHashMap<String, String> sortKey = sortKey();
+  // LinkedHashMap<String, String> sortKey = sortKey();
    // RoomDao dao = new RoomDao();
     
 /*
@@ -256,13 +256,10 @@ public class RoomYoyakuList extends ControllerBase {
 
 
     System.out.println("roomYoyakuDao:" + roomYoyakuDao);
-    System.out.println("sortKey:" + sortKey);
     System.out.println("daoPageInfo:" + daoPageInfo);
-    ArrayList<RoomYoyakuDao> listData = RoomYoyakuDao.dbSelectList(roomYoyakuDao, sortKey, daoPageInfo);
+    ArrayList<RoomYoyakuDao> listData = RoomYoyakuDao.dbSelectListYoyaku(roomYoyakuDao, daoPageInfo);
 
 
-
-    
     System.out.println("listData:" + listData);
     
     

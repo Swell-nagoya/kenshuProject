@@ -2,7 +2,7 @@
 * (c)2010 2023 PATAPATA Corp. Corp. All Rights Reserved
 *
 * 機能名　　　　：DAOクラス
-* ファイル名　　：Reserve.java
+* ファイル名　　：RoomYoyakuDao.java
 * クラス名　　　：RoomYoyakuDao
 * 概要　　　　　：Reserve Reserve情報テーブルのDAOを提供する。
 * バージョン　　：
@@ -499,7 +499,26 @@ public class RoomYoyakuDao implements Serializable {
     public void setSelectMonth(String selectMonth) {
         this.selectMonth = selectMonth;
     }
+    
 
+    public String fullName = "";
+
+    /**
+     * フルネーム（last_name + first_name) を取得する。
+     * @return fullName フルネーム（last_name + first_name)
+     */
+    public String getFullName() {
+        return fullName;
+    }
+
+    /**
+     * フルネーム（last_name + first_name)をセットする。
+     * @return fullName フルネーム（last_name + first_name)
+     */
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+    
     /**
      * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
      */
@@ -641,6 +660,8 @@ public class RoomYoyakuDao implements Serializable {
         if (roomNameAttr != null) {
             dao.setRoomName(DbI.chara(roomNameAttr));
         }
+        dao.setFullName(map.get("last_name") + map.get("first_name"));
+        
         dao.setReservationDate(DbI.chara(map.get("reservation_date")));
         dao.setCheckinTime(DbI.chara(map.get("checkin_time")));
         dao.setCheckoutTime(DbI.chara(map.get("checkout_time")));
@@ -956,12 +977,102 @@ public class RoomYoyakuDao implements Serializable {
             {
                 RoomYoyakuDao dao = new RoomYoyakuDao();
                 dao.setRoomYoyakuDaoForJoin(map, dao);
+                
+                System.out.println("map" + map);
                 array.add(dao);
             }
         }
         return array;
     }
 
+    
+
+
+    /**
+     * user_info ユーザ情報テーブルを検索し指定されたレコードのリストを返す
+     * @param myclass        検索条件をUserInfoDaoのインスタンスに入れて渡す
+     * @param sortKey     ソート順を配列で渡す　キー値は項目名　値はソート順 "ASC" "DESC"
+     * @param daoPageInfo   取得したいページの番やライン数を入れる。結果がここに帰ってくる
+     *                       ライン数に-1を入れると全件取得になる
+     * @return 取得したUserInfoDaoの配列
+     * @throws AtareSysException エラー
+     */
+    static public ArrayList<RoomYoyakuDao> dbSelectListYoyaku(RoomYoyakuDao myclass,
+            DaoPageInfo daoPageInfo) throws AtareSysException {
+        ArrayList<RoomYoyakuDao> array = new ArrayList<RoomYoyakuDao>();
+
+        /* レコードの総件数を求める */
+        String sql = "select count(*) as count"
+                + " from reserve "
+                + " join user_info on reserve.user_info_id = user_info.user_info_id "
+                + " join room on reserve.room_id = room.room_id "
+                + myclass.dbWhere();
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        System.out.println("処理が通過しているか確認sql:" + sql);
+        if (0 == rs.size())
+            return array;
+        HashMap<String, String> map = rs.get(0);
+        int len = Integer.parseInt(map.get("count"));
+        daoPageInfo.setRecordCount(len);
+        
+        System.out.println("処理が通過しているか確認len:" + len);
+        if (len == 0)
+            return array;
+        if (-1 == daoPageInfo.getLineCount())
+            daoPageInfo.setLineCount(len);
+        daoPageInfo.setMaxPageNo((int) Math.ceil((double) len / (double) (daoPageInfo.getLineCount())));
+        if (daoPageInfo.getPageNo() < 1)
+            daoPageInfo.setPageNo(1);
+        if (daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo())
+            daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
+        int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
+        sql = "select "
+                + " reserve.reserve_id as reserve___reserve_id"
+                + ",reserve.user_info_id as reserve___user_info_id"
+                + ",reserve.room_id as reserve___room_id"
+                + ",reserve.reservation_date as reserve___reservation_date"
+                + ",reserve.checkin_time as reserve___checkin_time"
+                + ",reserve.checkout_time as reserve___checkout_time"
+                + ",reserve.input_text as reserve___input_text"
+                + ",reserve.rgb_color as reserve___rgb_color"
+                + ",reserve.input_remark as reserve___input_remark"
+                + ",reserve.insert_date as reserve___insert_date"
+                + ",reserve.insert_user_id as reserve___insert_user_id"
+                + ",reserve.update_date as reserve___update_date"
+                + ",reserve.update_user_id as reserve___update_user_id"
+                + ",reserve.user_reserve_id as reserve___user_reserve_id"
+                + ",user_info.last_name as user_info___last_name"
+                + ",user_info.middle_name as user_info___middle_name"
+                + ",user_info.first_name as user_info___first_name"
+                + ",user_info.state_flg as user_info___state_flg"
+                + ",room.room_name as room___room_name"
+                + " from reserve "
+                + " join user_info on reserve.user_info_id = user_info.user_info_id "
+                + " join room on reserve.room_id = room.room_id ";
+        String where = myclass.dbWhere();
+        String order = " ORDER BY reserve.reservation_date ASC";
+        sql += where;
+        sql += order;
+        sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
+        rs = DbBase.dbSelect(sql);
+        
+        System.out.println("ヒット" + sql);
+        int cnt = rs.size();
+        if (cnt < 1)
+            return array;
+
+        for (int i = 0; i < cnt; i++) {
+            map = rs.get(i);
+            {
+                RoomYoyakuDao dao = new RoomYoyakuDao();
+                dao.setRoomYoyakuDaoForJoin(map, dao);
+                
+                System.out.println("map" + map);
+                array.add(dao);
+            }
+        }
+        return array;
+    }
     /**
      * user_info ユーザ情報テーブルの検索条件を設定する。.
      *
@@ -974,33 +1085,9 @@ public class RoomYoyakuDao implements Serializable {
         // ユーザーが退会済み（state_flg = 9）じゃないことを追加
         where.append(" and user_info.state_flg != '9'");
 
-        if (getReservationDate() != null && !getReservationDate().isEmpty()) {
-            where.append(" AND reserve.reservation_date LIKE ").append(DbS.chara("%" + getReservationDate() + "%"));
+        if (getRoomId() != null && !getRoomId().isEmpty()) {
+         where.append(" AND room.room_id = ").append(DbS.chara(getRoomId()));
         }
-
-        if (getUserName() != null && !getUserName().isEmpty()) {
-            String keyword = DbS.chara("%" + getUserName() + "%");
-            where.append(" AND (user_info.last_name LIKE ").append(keyword)
-                    .append(" OR user_info.middle_name LIKE ").append(keyword)
-                    .append(" OR user_info.first_name LIKE ").append(keyword).append(")");
-        }
-
-        if (getRoomName() != null && !getRoomName().isEmpty()) {
-            where.append(" AND room.room_name LIKE ").append(DbS.chara("%" + getRoomName() + "%"));
-        }
-
-        if (getCheckinTime() != null && !getCheckinTime().isEmpty()) {
-            where.append(" AND reserve.checkin_time LIKE ").append(DbS.chara("%" + getCheckinTime() + "%"));
-        }
-
-        if (getCheckoutTime() != null && !getCheckoutTime().isEmpty()) {
-            where.append(" AND reserve.checkout_time LIKE ").append(DbS.chara("%" + getCheckoutTime() + "%"));
-        }
-
-        if (getUserInfoId() != null && !getUserInfoId().isEmpty()) {
-            where.append(" AND user_info.user_info_id = ").append(DbS.chara(getUserInfoId()));
-        }
-
         return where.toString();
     }
 
