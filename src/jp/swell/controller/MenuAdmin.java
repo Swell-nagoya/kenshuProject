@@ -32,8 +32,8 @@ public class MenuAdmin extends ControllerBase {
     public void doActionProcess() throws AtareSysException {
         WebBean bean = getWebBean();
         UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
-        if (!"1".equals(loginInfo.getAdmin())) {
-            redirect("UserMenuHome.do");
+        if (!loginInfo.isAdmin()) {
+            redirect("UserMenu.do");
             return;
         }
 

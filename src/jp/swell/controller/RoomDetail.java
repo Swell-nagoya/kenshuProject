@@ -44,7 +44,7 @@ public class RoomDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -58,8 +58,9 @@ public class RoomDetail extends ControllerBase
     public void doActionProcess() throws AtareSysException
     {
       WebBean bean = getWebBean();
-
+      
       try {
+    	  
           String formName = bean.value("form_name");
           String actionCmd = bean.value("action_cmd");
           String requestCmd = bean.value("request_cmd");
@@ -68,12 +69,8 @@ public class RoomDetail extends ControllerBase
           String beforeName = bean.value("before_name");
           RoomDao dao = setWeb2Dao2InputInfo();
           bean.setValue("request_name", "修正する");
-          if (beforeName == null || beforeName.trim().isEmpty()) {
-              beforeName = roomName;
-              bean.setValue("before_name", beforeName);
-          }
           bean.setValue("before_name", beforeName);
-          bean.setValue("room_name", roomName);
+          bean.setValue("room_name", roomName);;
           if ("RoomDetail".equals(formName))
           {
               if ("go_next".equals(actionCmd))
@@ -83,7 +80,7 @@ public class RoomDetail extends ControllerBase
                       bean.setMessage("この内容で登録します。よろしいですか？");
                       bean.setValue("request_name", "登録する");
                       bean.setValue("room_name", roomName);
-                      forward("RoomDetail_2.jsp");
+                      forward("RoomDetail.jsp");
                   }
                   else if ("update".equals(requestCmd))
                   {
@@ -91,7 +88,7 @@ public class RoomDetail extends ControllerBase
                       bean.setValue("request_name", "修正する");
                       bean.setValue("before_name", beforeName);
                       bean.setValue("room_name", roomName);
-                      forward("RoomDetail_2.jsp");
+                      forward("RoomDetail.jsp");
                   }
               }
               else if ("return".equals(actionCmd))
@@ -117,6 +114,12 @@ public class RoomDetail extends ControllerBase
                       }
                       else
                       {
+                    	  if (beforeName == null || beforeName.trim().isEmpty()) {
+                              beforeName = roomName;
+                              bean.setValue("before_name", beforeName);
+                              
+                          }
+                    	  
                           bean.setValue("request_name", "修正する");
                           bean.setValue("before_name", beforeName);
                           forward("RoomDetail.jsp");
@@ -131,10 +134,11 @@ public class RoomDetail extends ControllerBase
                       }
                       else
                       {
+                    	  bean.setValue("form_name", "RoomDetail_2");
                           bean.setMessage("この部屋を削除します。よろしいですか？");
                           bean.setValue("request_name", "削除する");
                           bean.setValue("room_name", roomName);
-                          forward("RoomDetail_2.jsp");
+                          forward("RoomDetail.jsp");
                       }
                   }
               }
@@ -190,12 +194,15 @@ public class RoomDetail extends ControllerBase
             }
             else
             {
+            	bean.setValue("form_name", "RoomList");
                 bean.setError("登録に失敗しました");
                 forward("RoomDetail.jsp");
             }
         }
         else
         {
+        	bean.setValue("request_name", "登録する");
+        	bean.setValue("form_name", "RoomList");
             bean.setError("入力内容に誤りがあります");
             forward("RoomDetail.jsp");
         }
@@ -227,7 +234,7 @@ public class RoomDetail extends ControllerBase
             String beforeName = bean.value("before_name").trim();
             bean.setValue("room_name", beforeName);
             bean.setValue("before_name", beforeName);
-
+            bean.setValue("form_name", "RoomList");
             bean.setError("入力項目にエラーがあります。下記事項をご確認ください。");
             forward("RoomDetail.jsp");
         }
@@ -290,16 +297,46 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
-        String roomName = bean.value("room_name").trim();
-        String beforeName = bean.value("before_name").trim(); // ← hidden から来る
-
-        if (roomName.length() == 0) {
-            errors.put("room_name_empty", "部屋名を入力してください。");
+        
+        String roomName = bean.value("room_name");
+        String beforeName = bean.value("before_name"); // ← hidden から来る
+        
+        if("insEnter".equals(bean.value("request_cmd"))) {
+        	if (roomName == null || roomName.trim().isEmpty()) {
+            	errors.put("room_name_empty", "部屋名を入力してください。");
+            	return errors.isEmpty();
+            } else {
+            roomName = roomName.trim();
+            }
+            if (!pRoomDao.dbSelectRoomName(roomName)) {
+                errors.put("room_name_duplicate", "同じ部屋名が存在します。別の名前を入力してください。");
+            }
+            return errors.isEmpty();
         }
-        if (roomName.equalsIgnoreCase(beforeName)) {
-            errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+        else if("updateEnter".equals(bean.value("request_cmd"))) {
+        	if (roomName == null || roomName.trim().isEmpty()) {
+            	errors.put("room_name_empty", "部屋名を入力してください。");
+            	return errors.isEmpty();
+            } else {
+            	roomName = roomName.trim();
+            	}
+        	if (beforeName == null || beforeName.trim().isEmpty()) {
+        		errors.put("room_name_duplicate", "もう一度操作してください。");
+        		return errors.isEmpty();
+            } else {
+            	beforeName = beforeName.trim();
+            }
+        	if (roomName.equalsIgnoreCase(beforeName)) {
+        	errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+        	return errors.isEmpty();
+        	}
+        	else if (!pRoomDao.dbSelectRoomName(roomName)) {
+            errors.put("room_name_duplicate", "同じ部屋名が存在します。別の名前を入力してください。");
+            return errors.isEmpty();
+            }
+        } else {
+        	errors.put("room_name_duplicate", "もう一度操作してください。");
         }
-
         return errors.isEmpty();
     }
    

@@ -43,7 +43,7 @@ public class FileDetail extends ControllerBase {
      */
     @Override
     public void doInit() {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -55,7 +55,8 @@ public class FileDetail extends ControllerBase {
         UserLoginInfo login = (UserLoginInfo)getLoginInfo();
         // 追加：JSP 上で使うためのログインユーザー名・ID
         bean.setValue("loginUserName", login.getLastName() + " " + login.getFirstName());
-        bean.setValue("loginUserId", login.getUserInfoId());
+        bean.setValue("loginUserId", login.getUserInfoId())
+        ;
         
         // デバッグログ：どのフォーム／コマンドで呼ばれたか
         String form = bean.value("form_name");
@@ -172,13 +173,13 @@ public class FileDetail extends ControllerBase {
         } else {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
-
+        
         ArrayList<FileDao> fileList = FileDao.dbSelectList(fileDao, sortKey, daoPageInfo);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         bean.setValue("recordCount", fileList.size()); // ファイルリストのサイズ
         bean.setValue("maxPageNo", (fileList.size() / Integer.parseInt(bean.value("lineCount")) + 1));
-
+        
         // ルーム情報の取得とセット
         ArrayList<FileDao> files = fileDao.getAllFiles();
 
@@ -363,7 +364,8 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+//        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        String filePath = getServletContext().getRealPath("/upload");
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
@@ -504,8 +506,16 @@ public class FileDetail extends ControllerBase {
         String baseFileName = dao.getFileName(); // 基本ファイル名を取得
         String mimeType = dao.getMimeType(); // MIMEタイプを取得
         String filePath = dao.getFilePath();// フルファイルパスを取得
-
+        String uploadUserId = dao.getUploadUserId();
+        String userInfoId = dao.getUserInfoId();
+        WebBean bean = getWebBean();
         try {
+        	if(!(bean.value("loginUserId").equals(uploadUserId) || bean.value("loginUserId").equals(userInfoId))) {
+        		bean.setError("このファイルを閲覧する権限がありません。");
+        		searchList();
+        		forward("FileList.jsp");
+        		return;
+        	}
             // 期限チェック
             if (isExpired(dao.getExpirationDate())) {
                 // 期限が過ぎている場合の処理
