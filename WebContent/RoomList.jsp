@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF8" ?>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="jp.swell.dao.RoomDao"%>
+<%@ page import="jp.swell.dao.ReserveDao"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
 <%@ page import="jp.patasys.common.http.HtmlParts"%>
 <%@ page import="jp.swell.constant.UserInfoState"%>
@@ -274,8 +275,9 @@ jQuery(function($)
   }
 
   // サブ画面処理
-  function openUserWindow(action_cmd, room_id) {
-      const selectedUserIds = room_id;
+  function openUserWindow(action_cmd, room_id, room_name) {
+      const selectedRoomId = room_id;
+      const selectedRoomName = room_name;
       // コントローラー設定
       const form = document.createElement('form');
       form.method = 'POST';
@@ -293,12 +295,18 @@ jQuery(function($)
       actionCmdInput.name = 'action_cmd';
       actionCmdInput.value = action_cmd;
       form.appendChild(actionCmdInput);
-      // ユーザー情報
+      // 部屋のID
       const roomIdInput = document.createElement('input');
       roomIdInput.type = 'hidden';
       roomIdInput.name = 'room_id';
-      roomIdInput.value = selectedUserIds;
+      roomIdInput.value = selectedRoomId;
       form.appendChild(roomIdInput);
+      // 部屋の名前
+      const roomNameInput = document.createElement('input');
+      roomNameInput.type = 'hidden';
+      roomNameInput.name = 'room_name';
+      roomNameInput.value = selectedRoomName;
+      form.appendChild(roomNameInput);
 
       document.body.appendChild(form);
       // サブ画面表示処理
@@ -321,7 +329,6 @@ jQuery(function($)
     </h1>
 </header>
   <form id="main_form" method="post" action="">
-   
       <input type="hidden" name="form_name" id="form_name" value="RoomList"/>
       <input type="hidden" name="action_cmd" id="action_cmd" value=""/>
       <input type="hidden" name="request_cmd" id="request_cmd" value=""/>
@@ -383,6 +390,7 @@ jQuery(function($)
           for(Object item : webBean.arrayList("list"))
           {
               RoomDao dao = (RoomDao)item;
+              
           %>
           <tr class="list_tr">
             <td class="list_text">
@@ -396,7 +404,7 @@ jQuery(function($)
             </td>
             <td class="list_btn">
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
-              <input type="button" value="予約確認" onclick="openUserWindow('sub', '<%=WebUtil.txtEscape(dao.getRoomId())%>')" />
+              <input type="button" value="予約確認" onclick="openUserWindow('sub', '<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
               <input type="button" value="削除" onclick="go_detail_2('go_next','delete','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
             </td>
           </tr>

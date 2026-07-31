@@ -63,6 +63,7 @@ public class ReserveList extends ControllerBase {
             // 検索クリアする条件を追加
             else if ("clear".equals(bean.value("action_cmd"))) {
                 formClear();
+                searchReserve();
 
                 // 予約情報管理画面移行する条件を追加
             } else if ("list".equals(bean.value("action_cmd"))) {
@@ -136,7 +137,6 @@ public class ReserveList extends ControllerBase {
     private void formClear() throws AtareSysException {
         WebBean bean = getWebBean();
         bean.setValue("list_search", "");
-        bean.setValue("lineCount", "");
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
     }

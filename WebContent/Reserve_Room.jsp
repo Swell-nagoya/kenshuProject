@@ -2,6 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="jp.swell.dao.RoomDao"%>
+<%@ page import="jp.swell.dao.RoomYoyakuDao"%>
 <%@ page import="jp.patasys.common.http.WebBean"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
@@ -127,28 +128,36 @@ window.onload = function() {
 <div class="container">
   <form id="user_select_form">
         <h1>部屋予約状況</h1>
+         <% // データベースの users が空でないかの確認
+           if (webBean.arrayList("list") != null && !webBean.arrayList("list").isEmpty()) { %>
         <table>
-          <% // データベースの users が空でないかの確認
-            if (webBean.arrayList("list") != null && !webBean.arrayList("list").isEmpty()) { %>
-              <% // ユーザー情報を取るためのループ処理
+             <% // ユーザー情報を取るためのループ処理
               for (Object item : webBean.arrayList("list")) {
-                RoomDao room = (RoomDao) item;
-              %>
+              	RoomYoyakuDao roomYoyaku = (RoomYoyakuDao) item;
+             %>
           <tr>
             <td style="text-align: left;">
-           <%= WebUtil.htmlEscape(room.getRoomId()) %>
-
+             <%= WebUtil.htmlEscape(roomYoyaku.getReservationDate()) %>
+             <%= WebUtil.htmlEscape(roomYoyaku.getUserInfoId()) %>
+             <%= WebUtil.htmlEscape(roomYoyaku.getCheckinTime()) %>
+             <%= WebUtil.htmlEscape(roomYoyaku.getCheckoutTime()) %>
+             <%= WebUtil.htmlEscape(roomYoyaku.getRoomId()) %>
+             <%= WebUtil.htmlEscape(roomYoyaku.getRoomName()) %>
+             <%= WebUtil.htmlEscape(roomYoyaku.getInputText()) %>
             </td>
           </tr>
-          <%
-              }
-            } else { // ユーザー情報がない場合
-          %>
-          <tr><td>ユーザー情報がありません</td></tr>
-          <%
-            }
-          %>
         </table>
+        <%
+             }
+        %>
+        
+        <%
+          } else { // ユーザー情報がない場合
+        %>
+        <p>予約はありません</p>
+        <%
+          }
+        %>
         <div class="buttons">
           <input type="button" value="選択" onclick="submitSelection()" class="btn btn-primary">
         </div>

@@ -30,9 +30,9 @@ import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.FileDao;
-import jp.swell.dao.ReserveDao;
 import jp.swell.dao.ReserveFileDao;
 import jp.swell.dao.RoomDao;
+import jp.swell.dao.RoomYoyakuDao;
 import jp.swell.dao.UserFileDao;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.dao.UserReserveDao;
@@ -86,12 +86,12 @@ public class RoomYoyakuList extends ControllerBase {
       }
 
       else if ("reserve".equals(bean.value("action_cmd"))) {
-        ReserveDao reserveDao = setWebDaoInputInfo();
-        if (!reserveDao.Duplication()) {
+        RoomYoyakuDao roomYoyakuDao = setWebDaoInputInfo();
+        if (!roomYoyakuDao.Duplication()) {
           // 重複している場合のエラーメッセージ設定
           forward("ReserveError.jsp");
           return;
-        }else if (inputCheck(reserveDao)) {
+        }else if (inputCheck(roomYoyakuDao)) {
           processReservation();
           bean.setMessage("この内容で修正します。よろしいですか？");
           forward("ReserveOk.jsp");
@@ -102,8 +102,8 @@ public class RoomYoyakuList extends ControllerBase {
         }
       // 部屋の情報の編集
       } else if ("edit".equals(bean.value("action_cmd"))) {
-        ReserveDao reserveDao = setWebDaoInputInfo();
-        if (inputCheck(reserveDao)) {
+      	RoomYoyakuDao roomYoyakuDao = setWebDaoInputInfo();
+        if (inputCheck(roomYoyakuDao)) {
           updateReseveInfo();
           forward("ResEditComp.jsp");
           return; // メソッドを終了
@@ -156,7 +156,7 @@ public class RoomYoyakuList extends ControllerBase {
    *
    * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
    */
-  private boolean inputCheck(ReserveDao dao) {
+  private boolean inputCheck(RoomYoyakuDao dao) {
 
     WebBean bean = getWebBean();
     HashMap<String, String> errors = bean.getItemErrors();
@@ -213,12 +213,13 @@ public class RoomYoyakuList extends ControllerBase {
       return;
     }
     LinkedHashMap<String, String> sortKey = sortKey();
-    RoomDao dao = new RoomDao();
-    System.out.println("test" + bean.value("room_id"));
+   // RoomDao dao = new RoomDao();
+    
+/*
     dao.setRoomId(bean.value("room_id"));
- //   dao.setSearchFullName(bean.value("list_search_full_name"));
- //   dao.setSearchFullNameKana(bean.value("list_search_full_name_kana"));
-
+    dao.setRoomName(bean.value("room_name"));
+    
+    
     DaoPageInfo daoPageInfo = new DaoPageInfo();
     if (!Validate.isInteger(bean.value("lineCount"))) {
       bean.setValue("lineCount", "20");
@@ -230,9 +231,41 @@ public class RoomYoyakuList extends ControllerBase {
     } else {
       daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
     }
-    ArrayList<RoomDao> listData = RoomDao.dbSelectList(dao, sortKey, daoPageInfo);
     
-    System.out.println(listData);
+    ArrayList<RoomDao> listData = RoomDao.dbSelectList(dao, sortKey, daoPageInfo);
+    */
+    
+
+
+    RoomYoyakuDao roomYoyakuDao = new RoomYoyakuDao();
+    roomYoyakuDao.setRoomId(bean.value("room_id"));
+    roomYoyakuDao.setRoomName(bean.value("room_name"));
+    System.out.println("room_name1:" + roomYoyakuDao.getRoomName());
+    
+    DaoPageInfo daoPageInfo = new DaoPageInfo();
+    if (!Validate.isInteger(bean.value("lineCount"))) {
+      bean.setValue("lineCount", "20");
+    }
+    daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
+    SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "UserMenuHome", "lineCount", bean.value("lineCount"));
+    if (!Validate.isInteger(bean.value("pageNo"))) {
+      daoPageInfo.setPageNo(1);
+    } else {
+      daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
+    }
+
+
+    System.out.println("roomYoyakuDao:" + roomYoyakuDao);
+    System.out.println("sortKey:" + sortKey);
+    System.out.println("daoPageInfo:" + daoPageInfo);
+    ArrayList<RoomYoyakuDao> listData = RoomYoyakuDao.dbSelectList(roomYoyakuDao, sortKey, daoPageInfo);
+
+
+
+    
+    System.out.println("listData:" + listData);
+    
+    
     bean.setValue("lineCount", daoPageInfo.getLineCount());
     bean.setValue("pageNo", daoPageInfo.getPageNo());
     bean.setValue("recordCount", daoPageInfo.getRecordCount());
@@ -247,6 +280,8 @@ public class RoomYoyakuList extends ControllerBase {
     bean.setValue("search_info", search_info);
     bean.setValue("rooms", rooms);
     bean.setValue("list", listData);
+    System.out.println("room_name2:" + roomYoyakuDao.getRoomName());
+
   }
 
   /**
@@ -332,9 +367,9 @@ public class RoomYoyakuList extends ControllerBase {
    * @return なし
    * @throws AtareSysException エラー
    */
-  private ReserveDao setWebDaoInputInfo() throws AtareSysException {
+  private RoomYoyakuDao setWebDaoInputInfo() throws AtareSysException {
     WebBean bean = getWebBean();
-    ReserveDao reserveDao = new ReserveDao();
+    RoomYoyakuDao roomYoyakuDao = new RoomYoyakuDao();
     // reservation_dateを変換: YYYY年MM月DD日 → YYYYMMDD
     String reservationDateStr = bean.value("reservation_date");
     SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
@@ -356,37 +391,37 @@ public class RoomYoyakuList extends ControllerBase {
     
     // 複数のuser_info_idがある場合、最初の1つを使用する
     String[] userInfoIds = bean.value("user_info_id").split(",");
-    reserveDao.setUserInfoIds(userInfoIds);
+    roomYoyakuDao.setUserInfoIds(userInfoIds);
     
-    reserveDao.setUserInfoId(userInfoIds[0].trim());
-    reserveDao.setRoomId(bean.value("room_id"));
-    reserveDao.setReservationDate(formattedReservationDate);
-    reserveDao.setCheckinTime(formattedCheckinTime);
-    reserveDao.setCheckoutTime(formattedCheckoutTime);
-    reserveDao.setInputText(bean.value("input_text"));
-    reserveDao.setColor(bean.value("rgb_color"));
-    reserveDao.setInputRemark(bean.value("input_remark"));
-    reserveDao.setInsertUserId(userInfoIds[0].trim());
-    reserveDao.setUpdateUserId(bean.value("update_user_id"));
-    reserveDao.setUserReserveId(bean.value("user_reserve_id"));
+    roomYoyakuDao.setUserInfoId(userInfoIds[0].trim());
+    roomYoyakuDao.setRoomId(bean.value("room_id"));
+    roomYoyakuDao.setReservationDate(formattedReservationDate);
+    roomYoyakuDao.setCheckinTime(formattedCheckinTime);
+    roomYoyakuDao.setCheckoutTime(formattedCheckoutTime);
+    roomYoyakuDao.setInputText(bean.value("input_text"));
+    roomYoyakuDao.setColor(bean.value("rgb_color"));
+    roomYoyakuDao.setInputRemark(bean.value("input_remark"));
+    roomYoyakuDao.setInsertUserId(userInfoIds[0].trim());
+    roomYoyakuDao.setUpdateUserId(bean.value("update_user_id"));
+    roomYoyakuDao.setUserReserveId(bean.value("user_reserve_id"));
     UserInfoDao userInfoDao = new UserInfoDao();
     String[] userNames = new String[userInfoIds.length];
     for (int i = 0; i < userInfoIds.length; i++) {
       userInfoDao.dbSelect(userInfoIds[i].trim());
       userNames[i] = (userInfoDao.getLastName() != null ? userInfoDao.getLastName() : "") + " " + (userInfoDao.getMiddleName() != null ? userInfoDao.getMiddleName() : "") + " " + (userInfoDao.getFirstName() != null ? userInfoDao.getFirstName() : "");
     }
-    reserveDao.setUserNames(userNames);
+    roomYoyakuDao.setUserNames(userNames);
     userInfoDao.dbSelect(userInfoIds[0].trim());
-    reserveDao.setUserName(userInfoDao.getLastName() + " " + userInfoDao.getMiddleName() + " " + userInfoDao.getFirstName());
-    reserveDao.setAdmin(userInfoDao.getAdmin());
+    roomYoyakuDao.setUserName(userInfoDao.getLastName() + " " + userInfoDao.getMiddleName() + " " + userInfoDao.getFirstName());
+    roomYoyakuDao.setAdmin(userInfoDao.getAdmin());
     userInfoDao.dbSelect(bean.value("update_user_id"));
-    reserveDao.setUpdateUserName(userInfoDao.getLastName() + " " + userInfoDao.getMiddleName() + " " + userInfoDao.getFirstName());
+    roomYoyakuDao.setUpdateUserName(userInfoDao.getLastName() + " " + userInfoDao.getMiddleName() + " " + userInfoDao.getFirstName());
     RoomDao roomDao = new RoomDao();
     roomDao.dbSelect(bean.value("room_id"));
-    reserveDao.setRoomName(roomDao.getRoomName());
+    roomYoyakuDao.setRoomName(roomDao.getRoomName());
 
-    bean.setValue("input_info", Sup.serialize(reserveDao));
-    return reserveDao;
+    bean.setValue("input_info", Sup.serialize(roomYoyakuDao));
+    return roomYoyakuDao;
   }
   
 /**
@@ -396,21 +431,21 @@ public class RoomYoyakuList extends ControllerBase {
  */
   private boolean processReservation() throws AtareSysException {
     WebBean bean = getWebBean();
-    ReserveDao reserveDao = setWebDaoInputInfo(); // setWebDaoInputInfoメソッドを呼び出してreserveDaoを設定する
+    RoomYoyakuDao roomYoyakuDao = setWebDaoInputInfo(); // setWebDaoInputInfoメソッドを呼び出してroomYoyakuDaoを設定する
     
     
     // 予約の重複チェック
     try {
 
       // 予約詳細をデータベースに保存
-      reserveDao.dbInsertReserve();
+     roomYoyakuDao.dbInsertReserve();
       
-      for (String userInfoId : reserveDao.getUserInfoIds()) {
+      for (String userInfoId : roomYoyakuDao.getUserInfoIds()) {
         // UserReserveDaoを作成
         UserReserveDao userReserveDao = new UserReserveDao();
         userReserveDao.setUserReserveId(GetNumber.getNumberChar("userReserve")); // user_reserve_idの作成
         userReserveDao.setUserInfoId(userInfoId.trim());
-        userReserveDao.setReserveId(reserveDao.getReserveId());
+        userReserveDao.setReserveId(roomYoyakuDao.getReserveId());
         // 予約詳細をデータベースに保存
         userReserveDao.dbInsertUserReserve();
       }
@@ -418,10 +453,10 @@ public class RoomYoyakuList extends ControllerBase {
       byte[] fileData = (byte[]) bean.object("file");
       if (fileData != null && fileData.length > 0) {
           // ファイル処理の追加
-          FileUpload(getRequest(), reserveDao.getUserInfoId(), reserveDao.getReserveId());
+          FileUpload(getRequest(), roomYoyakuDao.getUserInfoId(), roomYoyakuDao.getReserveId());
       }
       // 予約した部屋情報の取得
-      getRequest().setAttribute("reserveDao", reserveDao);
+      getRequest().setAttribute("roomYoyakuDao", roomYoyakuDao);
 
       // 成功メッセージを設定するなどのオプション
       bean.setValue("reservationStatus", "予約が成功しました！");
@@ -540,32 +575,32 @@ private String getExtensionFromMimeType(String mimeType) {
    */
   private void setInputInfoDaoWeb() throws AtareSysException {
     WebBean bean = getWebBean();
-    ReserveDao reserveDao = (ReserveDao) Sup.deserialize(bean.value("input_info"));
+    RoomYoyakuDao roomYoyakuDao = (RoomYoyakuDao) Sup.deserialize(bean.value("input_info"));
     // 複数のユーザーIDを取得
-    if (reserveDao.getUserInfoIds() != null) 
+    if (roomYoyakuDao.getUserInfoIds() != null) 
     {
-      String userInfoIds = String.join(",", reserveDao.getUserInfoIds()); 
+      String userInfoIds = String.join(",", roomYoyakuDao.getUserInfoIds()); 
       bean.setValue("user_info_ids", userInfoIds); // 複数のユーザーIDを保存
     }
     // 複数のユーザー名を取得
-    if (reserveDao.getUserNames() != null) 
+    if (roomYoyakuDao.getUserNames() != null) 
     {
-      String userNames = String.join(",", reserveDao.getUserNames());
+      String userNames = String.join(",", roomYoyakuDao.getUserNames());
       bean.setValue("user_names", userNames); // 複数のユーザーIDを保存
     }
     
-    bean.setValue("user_info_id", reserveDao.getUserInfoId()); 
-    bean.setValue("room_id", reserveDao.getRoomId());
-    bean.setValue("checkin_time", reserveDao.getCheckinTime());
-    bean.setValue("checkout_time", reserveDao.getCheckoutTime());
-    bean.setValue("input_text", reserveDao.getInputText());
-    bean.setValue("rgb_color", reserveDao.getColor());
-    bean.setValue("input_remark", reserveDao.getInputRemark());
-    bean.setValue("user_info_id", reserveDao.getInsertUserId());
-    bean.setValue("update_user_id", reserveDao.getUpdateUserId());
-    bean.setValue("user_name", reserveDao.getUserName());
-    bean.setValue("room_name", reserveDao.getRoomName());
-    bean.setValue("user_reserve_id", reserveDao.getUserReserveId());
+    bean.setValue("user_info_id", roomYoyakuDao.getUserInfoId()); 
+    bean.setValue("room_id", roomYoyakuDao.getRoomId());
+    bean.setValue("checkin_time", roomYoyakuDao.getCheckinTime());
+    bean.setValue("checkout_time", roomYoyakuDao.getCheckoutTime());
+    bean.setValue("input_text", roomYoyakuDao.getInputText());
+    bean.setValue("rgb_color", roomYoyakuDao.getColor());
+    bean.setValue("input_remark", roomYoyakuDao.getInputRemark());
+    bean.setValue("user_info_id", roomYoyakuDao.getInsertUserId());
+    bean.setValue("update_user_id", roomYoyakuDao.getUpdateUserId());
+    bean.setValue("user_name", roomYoyakuDao.getUserName());
+    bean.setValue("room_name", roomYoyakuDao.getRoomName());
+    bean.setValue("user_reserve_id", roomYoyakuDao.getUserReserveId());
     // ルーム情報の取得とセット
     RoomDao roomDao = new RoomDao();
     ArrayList<RoomDao> rooms = roomDao.getAllRooms();
@@ -597,14 +632,14 @@ private String getExtensionFromMimeType(String mimeType) {
     // main_keyの値を取得
     String reserveId = bean.value("main_key");
 
-    ReserveDao reserveDao = setWebDaoInputInfo();
-    reserveDao.setReserveId(reserveId); // reserve_idの設定
+    RoomYoyakuDao roomYoyakuDao = setWebDaoInputInfo();
+    roomYoyakuDao.setReserveId(reserveId); // reserve_idの設定
     
     // `dbUpdateReserve`メソッドを呼び出す
-    reserveDao.dbUpdateReserve();
+    roomYoyakuDao.dbUpdateReserve();
     
     // 予約した部屋情報の取得
-    getRequest().setAttribute("reserveDao", reserveDao);
+    getRequest().setAttribute("roomYoyakuDao", roomYoyakuDao);
   }
   /**
    * 予約情報を削除するメソッド
@@ -615,8 +650,8 @@ private String getExtensionFromMimeType(String mimeType) {
     // main_keyの値を取得
     String reserveId = bean.value("main_key");
 
-    ReserveDao reserveDao = setWebDaoInputInfo();
-    reserveDao.setReserveId(reserveId); // reserve_idの設定
+    RoomYoyakuDao roomYoyakuDao = setWebDaoInputInfo();
+    roomYoyakuDao.setReserveId(reserveId); // reserve_idの設定
     
     UserReserveDao userReserveDao = new UserReserveDao(); // UserReserveDaoのインスタンスを作成
     userReserveDao.setReserveId(bean.value("reserve_id"));
@@ -628,7 +663,7 @@ private String getExtensionFromMimeType(String mimeType) {
     if (reserveFileDao.dbSelect(reserveId)) { // データが存在するかをチェック
         // ファイルIDを取得して削除
         String fileId = reserveFileDao.getFileId();
-        reserveDao.setFileId(fileId); // ファイルIDをReserveDaoに設定
+        roomYoyakuDao.setFileId(fileId); // ファイルIDをRoomYoyakuDaoに設定
 
         FileDao fileDao = new FileDao();
         fileDao.setFileId(fileId);
@@ -641,12 +676,12 @@ private String getExtensionFromMimeType(String mimeType) {
     }
 
     // `dbDeleteUserReserve`メソッドを呼び出す
-    userReserveDao.dbDeleteUserReserve(reserveDao.getReserveId());
+    userReserveDao.dbDeleteUserReserve(roomYoyakuDao.getReserveId());
     
     // `dbDeleteReserve`メソッドを呼び出す
-    reserveDao.dbDeleteReserve(reserveId);
+    roomYoyakuDao.dbDeleteReserve(reserveId);
     
     // 予約した部屋情報の取得
-    getRequest().setAttribute("reserveDao", reserveDao);
+    getRequest().setAttribute("roomYoyakuDao", roomYoyakuDao);
   }
 }
