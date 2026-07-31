@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="jp.swell.dao.RoomYoyakuDao"%>
+<%@ page import="jp.swell.dao.ReserveDao"%>
 <%@ page import="java.time.LocalDateTime" %>
 <%@ page import="jp.patasys.common.http.WebBean"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
@@ -12,7 +12,7 @@
   
   // ユーザー情報を取るためのループ処理
   for (Object item : webBean.arrayList("list")) {
-    RoomYoyakuDao roomYoyaku = (RoomYoyakuDao) item;
+    ReserveDao roomYoyaku = (ReserveDao) item;
 
     String roomYoyakuDate = WebUtil.htmlEscape(roomYoyaku.getReservationDate());
  
@@ -83,7 +83,7 @@
 <link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet"/>
 <link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon"/>
 <link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon"/>
-<script type="text/javascript" src="js/jquery-3.6.4.js"></script>
+<script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
 <script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
@@ -211,7 +211,8 @@ window.onload = function() {
      }
     %>   
  <div class="buttons">
-   <input type="button" value="選択" onclick="submitSelection()" class="btn btn-primary">
+   <input type="button" value="新規予約" onclick="submitSelection()" class="btn btn-primary">
+   <input type="button" value="閉じる" onclick="window.close()" class="btn btn-close">
  </div>
   </form>
 </div>

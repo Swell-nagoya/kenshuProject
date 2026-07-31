@@ -221,6 +221,7 @@ public class ViewUserList extends ControllerBase
         
 
         LinkedHashMap<String, String> sortKey = sortKey();
+        System.out.println(sortKey);
         UserInfoDao dao = new UserInfoDao();
         dao.setSearchName(bean.value("list_search_full_name"));
         dao.setMemail(bean.value("list_search_memail"));
@@ -244,7 +245,6 @@ public class ViewUserList extends ControllerBase
         {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
-
 
         ArrayList<UserInfoDao> listData = UserInfoDao.dbSelectList(dao, sortKey, daoPageInfo);
 
