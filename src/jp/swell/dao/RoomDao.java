@@ -564,6 +564,7 @@ public class RoomDao implements Serializable
           RoomDao room = new RoomDao();
           // ルームDAOのインスタンスにデータを設定
           room.setRoomId(map.get("room_id"));
+          room.setStatus(Integer.parseInt(map.get("status")));
           room.setRoomName(map.get("room_name"));
           room.setInsertDate(map.get("insert_date"));
           room.setInsertUserId(map.get("insert_user_id"));
@@ -610,7 +611,7 @@ public class RoomDao implements Serializable
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs  =  DbBase.dbSelect(sql);
         int cnt = rs.size();
-
+        
         if(cnt < 1)    return array;
         RoomDao dao  = new RoomDao();
         for(int i=0;i<cnt;i++)
@@ -641,6 +642,11 @@ public class RoomDao implements Serializable
         {
             where.append(where.length()>0 ? " AND " : "");
             where.append("room.room_id LIKE " + DbS.chara("%" + getRoomId() + "%"));
+        }
+        
+        if (getStatus() == 8) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("room.status = " + DbS.chara(getStatus()));
         }
 
         if(getRoomName().length()>0)
@@ -673,6 +679,10 @@ public class RoomDao implements Serializable
             where.append("room.update_user_id LIKE " + DbS.chara("%" + getUpdateUserId() + "%"));
         }
 
+        
+        
+        
+        
         if(where.length()>0)
         {
             return "where " + where.toString();

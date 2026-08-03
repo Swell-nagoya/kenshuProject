@@ -240,7 +240,6 @@ public class RoomYoyakuList extends ControllerBase {
     ReserveDao reserveDao = new ReserveDao();
     reserveDao.setRoomId(bean.value("room_id"));
     reserveDao.setRoomName(bean.value("room_name"));
-    System.out.println("room_name1:" + reserveDao.getRoomName());
     
     DaoPageInfo daoPageInfo = new DaoPageInfo();
     if (!Validate.isInteger(bean.value("lineCount"))) {
@@ -255,12 +254,8 @@ public class RoomYoyakuList extends ControllerBase {
     }
 
 
-    System.out.println("reserveDao:" + reserveDao);
-    System.out.println("daoPageInfo:" + daoPageInfo);
     ArrayList<ReserveDao> listData = ReserveDao.dbSelectListRoomYoyaku(reserveDao, daoPageInfo);
 
-
-    System.out.println("listData:" + listData);
     
     
     bean.setValue("lineCount", daoPageInfo.getLineCount());
@@ -277,8 +272,6 @@ public class RoomYoyakuList extends ControllerBase {
     bean.setValue("search_info", search_info);
     bean.setValue("rooms", rooms);
     bean.setValue("list", listData);
-    System.out.println("room_name2:" + reserveDao.getRoomName());
-
   }
 
   /**

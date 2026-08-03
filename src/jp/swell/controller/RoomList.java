@@ -157,6 +157,7 @@ public class RoomList extends ControllerBase
     private void formClear() throws AtareSysException
     {
         WebBean bean = getWebBean();
+        bean.setValue("list_search_status", "");
         bean.setValue("list_search_room_name", "");
         bean.setValue("lineCount", "");
         String search_info = Sup.serialize(bean);
@@ -199,6 +200,11 @@ public class RoomList extends ControllerBase
         LinkedHashMap<String, String> sortKey = sortKey();
         RoomDao dao = new RoomDao();
         dao.setRoomName("%" + bean.value("list_search_room_name")+ "%");
+        
+
+        String statusStr = bean.value("list_search_status");
+        dao.setStatus((statusStr == null || statusStr.isEmpty()) ? 1 : Integer.parseInt(statusStr));
+        
         
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount")))

@@ -359,16 +359,15 @@ jQuery(function($)
         </div>
         <table class="select_table">
           <tr>
-            <td class="search_label center" style="width: 5%">名</td>
+            <td class="search_label center" style="width: 10%">メンテ<br>ナンス中</td>
             <td class="search_label center" style="width: 50%">部屋名</td>
-            <td class="search_label center" style="width: 22%">表示件数</td>
-            <td class="search_label center" style="width: 23%"></td>
+            <td class="search_label center" style="width: 20%">表示件数</td>
+            <td class="search_label center" style="width: 20%"></td>
           </tr>
           <tr>
             <td class="search_text center">
-            <input type="cheack">
-          <input type="checkbox"  name="list_search_state"  id="list_search_state" value="8" class="search_active <%=webBean.dispErrorCSS("list_search_state")%>" 
-         <% if("8".equals(webBean.txt("list_search_state"))) { %> checked<% } %> /> 
+              <input type="checkbox"  name="list_search_status"  id="list_search_status" value="8" class="search_active <%=webBean.dispErrorCSS("list_search_status")%>" 
+              <% if("8".equals(webBean.txt("list_search_status"))) { %> checked<% } %> /> 
             </td>
             <td class="search_text center">
               <input type="text" name="list_search_room_name" id="list_search_room_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_room_name") %>" class="ime_active <%=webBean.dispErrorCSS("list_search_room_name")%>" placeholder="検索"/>
