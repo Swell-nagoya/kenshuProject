@@ -57,7 +57,9 @@ class StateFlgCheckAll {
     this.is_fullReleaseClassName = "is-full_release";
     this.selectAll = "全選択"; // ボタンテキスト(利用停止全選択)
     this.fullRelease = "全解除"; // ボタンテキスト(利用停止全解除)
-    this.init();
+	this.statusClassName = "js-status";
+	this.$status = $( '.' + this.statusClassName );
+	this.init();
   }
   init() {
 
@@ -143,6 +145,11 @@ class StateFlgCheckAll {
             current.checked = true;
           }
         }
+		// 利用ステータスのselectをメンテナンス中に変更
+		for( let i = 0; this.$status.length > i; i++ ){
+		  this.$status[i].value = '8';
+		}
+		  
         this.selectorAllFun($element);
       } else {
         for (var i = 0; i < $dataTarget.length; i++) {
@@ -152,9 +159,15 @@ class StateFlgCheckAll {
             current.checked = false;
           }
         }
+		// 利用ステータスのselectを利用可能に変更
+		for( let i = 0; this.$status.length > i; i++ ){
+		  this.$status[i].value = '1';
+		}
+		
         this.fullReleaseFun($element);
       }
     });
+
 
 
   }
@@ -162,14 +175,22 @@ class StateFlgCheckAll {
   selectorAllFun($element) {
     if (!$element.hasClass(this.is_fullReleaseClassName)) {
       $element.addClass(this.is_fullReleaseClassName);
-    }
+    }/*
+    for( let i = 0; this.$status.length > i; i++ ){
+	  this.$status[i].value = '8';
+	}
+	*/
     $element[0].value = this.fullRelease;
   }
   // ターゲットのcheckboxをチェックなしに変更
   fullReleaseFun($element) {
     if ($element.hasClass(this.is_fullReleaseClassName)) {
       $element.removeClass(this.is_fullReleaseClassName);
-    }
+    }/*
+	for( let i = 0; this.$status.length > i; i++ ){
+	  this.$status[i].value = '1';
+	}
+	*/
     $element[0].value = this.selectAll;
   }
 }

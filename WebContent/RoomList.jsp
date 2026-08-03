@@ -233,6 +233,10 @@ jQuery(function($)
         $('table.list_table tr:odd').addClass('odd');
   });
   */
+
+  $(function(){
+	  new StatusFun();
+  });
   function go_submit(action_cmd)
   {
     document.getElementById('main_form').action='RoomList.do';
@@ -324,6 +328,81 @@ jQuery(function($)
 
       document.body.removeChild(form);
   }
+
+  // メンテナンス中　checkboxの変更
+  class StatusFun {
+
+    constructor() {
+      // メンテナンス中　checkboxの共通クラス名
+      this.statusCheckClassName = "js-status_check";
+      // メンテナンス中　selectの共通クラス名
+      this.statusClassName = "js-status";
+      // メンテナンス中　checkboxの取得
+      this.$statusCheck = $('.' + this.statusCheckClassName );
+      // メンテナンス中　selectの取得
+      this.$status = $('.' + this.statusClassName );
+      // メンテナンス中　checkboxのid名の共通接頭値
+      this.beforeNameSet = "status_";
+      // メンテナンス中のcheckboxとselectがページに存在する時
+      if( ( this.$status.length > 0 ) && 
+    	  ( this.$statusCheck.length > 0 )){
+    	  // 初期値の読み込み
+          this.init();
+      }
+    }
+    // 初期値
+    init() {
+        this.event();
+    }
+    // イベント処理
+    event(){
+        // メンテナンス中 checkboxの値に変化があった時
+        $(this.$statusCheck).on("change",(e) =>{
+            let target = e.target;
+            if( target ){
+              let targetValue = target.defaultValue;
+              let statusTargetIdName = this.beforeNameSet + targetValue;
+              let $statusTarget = $("#" + statusTargetIdName );
+
+                // メンテナンス中 selectの値を変更する
+                // checkboxのチェックを入っている時、selectは「8」を代入する
+                if(target.checked){
+                    $statusTarget[0].value = 8;
+
+                // checkboxのチェックがない時、selectは「1」を代入する
+                } else {
+                    $statusTarget[0].value = 1;
+                 }
+           }
+        });
+
+        // メンテナンス中 selectの値に変化があった時
+        $(this.$status).on("change",(e)=>{
+          let target = e.target;
+          if(target) {
+            let targetValue = target.value;
+            let targetId = target.id;
+            let roomId = targetId.replace(this.beforeNameSet, '');
+            
+
+            // メンテナンス中 checkboxの値を変更する
+            for(let i = 0; i < this.$statusCheck.length; i++){
+             if(this.$statusCheck[i].value === roomId){
+                // valueが「8」の時、checkboxのチェックを入れる
+               if(targetValue === "8"){
+                 this.$statusCheck[i].checked = true;
+               // valueが「8」の時、checkboxのチェックを外す
+               } else {
+                 this.$statusCheck[i].checked = false;
+               }
+             }
+            }
+          }
+        });
+        
+    }
+  }
+
 </script>
 </head>
 <body>
@@ -410,13 +489,13 @@ jQuery(function($)
           %>
           <tr class="list_tr">
             <td class="list_text">
-              <input type="checkbox" name="list_status_flg" id="status_flg_<%=WebUtil.txtEscape(dao.getRoomId())%>"  class="js-status_check" value="<%=WebUtil.txtEscape(dao.getRoomId())%>" <% if(dao.getStatus() == 8){ %> checked<%}%>>
+              <input type="checkbox" id="status_flg_<%=WebUtil.txtEscape(dao.getRoomId())%>"  class="js-status_check" name="list_status_flg" value="<%=WebUtil.txtEscape(dao.getRoomId())%>" <% if(dao.getStatus() == 8){ %> checked<%}%>>
             </td>
             <td class="list_text">
               <%=WebUtil.htmlEscape(dao.getRoomName())%>
             </td>
             <td class="list_text">
-              <select id="status_<%=WebUtil.txtEscape(dao.getRoomId())%>" name="list_status_<%=WebUtil.txtEscape(dao.getRoomId())%>" >
+              <select id="status_<%=WebUtil.txtEscape(dao.getRoomId())%>" class="js-status" name="list_status_<%=WebUtil.txtEscape(dao.getRoomId())%>" >
                 <option value="1" <% if(dao.getStatus() == 1){ %> selected<%}%>>利用可能</option>
                 <option value="8" <% if(dao.getStatus() == 8){ %> selected<%}%>>メンテナンス中</option>
               </select>

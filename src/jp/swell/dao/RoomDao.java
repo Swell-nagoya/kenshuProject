@@ -564,12 +564,13 @@ public class RoomDao implements Serializable
           RoomDao room = new RoomDao();
           // ルームDAOのインスタンスにデータを設定
           room.setRoomId(map.get("room_id"));
-          room.setStatus(Integer.parseInt(map.get("status")));
           room.setRoomName(map.get("room_name"));
+/*        
           room.setInsertDate(map.get("insert_date"));
           room.setInsertUserId(map.get("insert_user_id"));
           room.setUpdateDate(map.get("update_date"));
           room.setUpdateUserId(map.get("update_user_id"));
+*/
           rooms.add(room);
       }
 
