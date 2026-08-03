@@ -64,7 +64,6 @@ public class RoomList extends ControllerBase
     @Override
     public void doActionProcess() throws AtareSysException
     {
-    	System.out.println("hit");
         WebBean bean = getWebBean();
         if ("RoomList".equals(bean.value("form_name")))
         {
@@ -109,7 +108,6 @@ public class RoomList extends ControllerBase
             }
             else if ("statusUpdate".equals(bean.value("action_cmd")))
             {
-            	System.out.println("test");
                	dbStatusUpdateEdit();
                 searchList();
                 forward("RoomList.jsp");
@@ -135,7 +133,6 @@ public class RoomList extends ControllerBase
         }
         else
         {
-        	System.out.println("hit");
             formInit();
             searchList();
             forward("RoomList.jsp");
@@ -220,7 +217,6 @@ public class RoomList extends ControllerBase
         }
         ArrayList<RoomDao> listData = RoomDao.dbSelectList(dao, sortKey, daoPageInfo);
         
-        System.out.println(listData.get(0).getRoomId());
         
         // 表示中の部屋情報のIDをすべて取得
         String room_id_show_all = "";
@@ -363,15 +359,14 @@ public class RoomList extends ControllerBase
          	room_id_show_all_array = room_id_show_all_text.split(",");
         }
         
-        System.out.println(room_id_show_all_array[0]);
-         try {
+        try {
           DbBase.dbBeginTran();
           
           // 画面表示されている利用停止の値をすべてリセット「1」.
           if (room_id_show_all_array != null) {
              for (int z = 0; z < room_id_show_all_array.length; z++) {
               String statusReset = room_id_show_all_array[z];
-           //   dao.dbUpdateState(statusReset,"1");
+              dao.dbUpdateState(statusReset,"1");
              }
               
             }
@@ -379,17 +374,14 @@ public class RoomList extends ControllerBase
           if (listStatusFlgs != null) {
             for (int i = 0; i < listStatusFlgs.length; i++) {
               String status = listStatusFlgs[i];
-              System.out.println("hint:" + status);
                dao.dbUpdateState(status,"8");
             }
           }
-         // DbBase.dbCommitTran();
+          DbBase.dbCommitTran();
         } catch (Exception e) {
             DbBase.dbRollbackTran();
             throw e;
         }
-
-
       
     }
     

@@ -213,37 +213,6 @@ input[type="button"].button_send:hover {
   color: #fff;
 }
 
-.button_state_flg_check_all,
-input[type="button"].button_state_flg_check_all {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 5px 25px;
-  border-radius: 18px;
-  color: #113c4d;
-  background: #ffd956;
-  font-weight: 500;
-  font-size: 14px;
-  border: 2px solid #113c4d;
-  cursor: pointer;
-  transition: background 0.3s ease-in-out, color 0.1s ease-in-out;
-}
-
-.button_state_flg_check_all:hover,
-input[type="button"].button_state_flg_check_all:hover {
-  color: #ffd956;
-  background-color: #113c4d;
-}
-.button_state_flg_check_all.is-full_release,
-input[type="button"].button_state_flg_check_all.is-full_release {
-  color: #fff;
-  background-color: #ffa753;
-  border-color: #ff7f50;
-}
-.button_state_flg_check_all.is-full_release:hover,
-input[type="button"].button_state_flg_check_all.is-full_release:hover {
-  color: #ffa753;
-  background-color: #fff;
-}
 .new-btn {
   position: absolute;
   right: 10px; /* 右端に10pxの余白を取る */
@@ -595,7 +564,7 @@ footer {
         <% //管理者
           if( "1".equals(webBean.txt("admin")) ) { %>
         <div class="button_area">
-          <input type="button" value="利用停止全選択" class="button_state_flg_check_all js-state_flg_check_all" data-target="js-state_flg_check" />
+          <input type="button" value="全選択" class="button_check_all js-check_all" data-target="js-state_flg_check" />
           <input type="button" value="一括登録" class="button_send" onclick="go_submit('stateFlgUpdateAll');" />
         </div>
         <%

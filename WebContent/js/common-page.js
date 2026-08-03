@@ -51,12 +51,12 @@ class TableSort {
 
 class StateFlgCheckAll {
   constructor() {
-    this.$elements = $(".js-state_flg_check_all");
-    this.elementsLen = $(".js-state_flg_check_all").length;
+    this.$elements = $(".js-check_all");
+    this.elementsLen = this.$elements.length;
     this.dataTarget = "target";
     this.is_fullReleaseClassName = "is-full_release";
-    this.selectAll = "利用停止全選択"; // ボタンテキスト(利用停止全選択)
-    this.fullRelease = "利用停止全解除"; // ボタンテキスト(利用停止全解除)
+    this.selectAll = "全選択"; // ボタンテキスト(利用停止全選択)
+    this.fullRelease = "全解除"; // ボタンテキスト(利用停止全解除)
     this.init();
   }
   init() {

@@ -21,6 +21,8 @@
 <script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/common-page.js"></script>
+<link rel="stylesheet" type="text/css" href="css/common-page.css">
 <title>部屋情報一覧</title>
 <style type="text/css">
 body {
@@ -409,7 +411,7 @@ jQuery(function($)
           %>
           <tr class="list_tr">
             <td class="list_text">
-              <input type="checkbox" name="list_status_flg" id="status_flg_<%=WebUtil.txtEscape(dao.getRoomId())%>"  value="<%=WebUtil.txtEscape(dao.getRoomId())%>" <% if(dao.getStatus() == 8){ %> checked<%}%>>
+              <input type="checkbox" name="list_status_flg" id="status_flg_<%=WebUtil.txtEscape(dao.getRoomId())%>"  class="js-status_check" value="<%=WebUtil.txtEscape(dao.getRoomId())%>" <% if(dao.getStatus() == 8){ %> checked<%}%>>
             </td>
             <td class="list_text">
               <%=WebUtil.htmlEscape(dao.getRoomName())%>
@@ -429,7 +431,9 @@ jQuery(function($)
           </tr>
           <%}%>
         </table>
+        
         <div class="button_area">
+          <input type="button" value="全選択" class="button_check_all js-check_all"" data-target="js-status_check" />
           <input type="button" value="一括登録" class="button_send" onclick="go_submit('statusUpdateAll');" />
         </div>
         <%} else { %>

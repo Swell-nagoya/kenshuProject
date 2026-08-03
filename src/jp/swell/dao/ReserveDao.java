@@ -1021,14 +1021,12 @@ public class ReserveDao implements Serializable {
                 + " join room on reserve.room_id = room.room_id "
                 + myclass.dbWhere();
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        System.out.println("処理が通過しているか確認sql:" + sql);
         if (0 == rs.size())
             return array;
         HashMap<String, String> map = rs.get(0);
         int len = Integer.parseInt(map.get("count"));
         daoPageInfo.setRecordCount(len);
         
-        System.out.println("処理が通過しているか確認len:" + len);
         if (len == 0)
             return array;
         if (-1 == daoPageInfo.getLineCount())
@@ -1069,7 +1067,6 @@ public class ReserveDao implements Serializable {
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs = DbBase.dbSelect(sql);
         
-        System.out.println("ヒット" + sql);
         int cnt = rs.size();
         if (cnt < 1)
             return array;
@@ -1080,7 +1077,6 @@ public class ReserveDao implements Serializable {
             	   ReserveDao dao = new ReserveDao();
                 dao.setRoomYoyakuDaoForJoin(map, dao);
                 
-                System.out.println("map" + map);
                 array.add(dao);
             }
         }

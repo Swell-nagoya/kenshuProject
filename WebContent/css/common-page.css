@@ -28,3 +28,37 @@
 .js-table_sort_label.is-desc>a {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAfUlEQVQ4T2NkoDJgpLJ5DKMGUh6io2E4RMIwhIGBwZpItx5lYGBYg6wWWyw3MzAw2BBp4BEGBoZaQgbyMDAw9DMwMKgQMPQOAwNDIQMDwxdCBoLkCRmK1TCQRnwJG5ehOA0jZCA2l+I1jBgDYYaCIgoEQBGAEmbo4Tz48zIAQNgSFR9+d5MAAAAASUVORK5CYII=);
 }
+
+/*button_check_all*/
+
+.button_check_all,
+input[type="button"].button_check_all {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 5px 25px;
+  border-radius: 18px;
+  color: #113c4d;
+  background: #ffd956;
+  font-weight: 500;
+  font-size: 14px;
+  border: 2px solid #113c4d;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, color 0.1s ease-in-out;
+}
+
+.button_check_all:hover,
+input[type="button"].button_check_all:hover {
+  color: #ffd956;
+  background-color: #113c4d;
+}
+.button_check_all.is-full_release,
+input[type="button"].button_check_all.is-full_release {
+  color: #fff;
+  background-color: #ffa753;
+  border-color: #ff7f50;
+}
+.button_check_all.is-full_release:hover,
+input[type="button"].button_check_all.is-full_release:hover {
+  color: #ffa753;
+  background-color: #fff;
+}

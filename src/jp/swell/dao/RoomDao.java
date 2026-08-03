@@ -523,10 +523,9 @@ public class RoomDao implements Serializable
              + " where room_id = " + DbS.chara(roomId)
              + "";
        int ret = DbBase.dbExec(sql);
-       System.out.println(sql);
-     //
-     //  if (ret != 1)
-     //    throw new AtareSysException("dbUpdate number or record exception.");
+     
+       if (ret != 1)
+         throw new AtareSysException("dbUpdate number or record exception.");
        return true;
     }
 
