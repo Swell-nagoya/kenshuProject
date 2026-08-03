@@ -121,7 +121,7 @@ public class RoomYoyakuList extends ControllerBase {
         forward("ResDelComp.jsp");
         return; // メソッドを終了
       }
-      else if ("sub".equals(bean.value("action_cmd")))
+      else if ("reservationConfirmation".equals(bean.value("action_cmd")))
       {
         searchList();
         forward("Reserve_Room.jsp");
@@ -257,7 +257,7 @@ public class RoomYoyakuList extends ControllerBase {
 
     System.out.println("reserveDao:" + reserveDao);
     System.out.println("daoPageInfo:" + daoPageInfo);
-    ArrayList<ReserveDao> listData = ReserveDao.dbSelectListYoyaku(reserveDao, daoPageInfo);
+    ArrayList<ReserveDao> listData = ReserveDao.dbSelectListRoomYoyaku(reserveDao, daoPageInfo);
 
 
     System.out.println("listData:" + listData);

@@ -31,6 +31,7 @@ import jp.patasys.common.db.DbI;
 import jp.patasys.common.db.DbO;
 import jp.patasys.common.db.DbS;
 import jp.patasys.common.db.GetNumber;
+
 /**
  * room 部屋テーブルのDAOを提供する。
  *
@@ -339,7 +340,7 @@ public class RoomDao implements Serializable
     public void setInputRemark(String inputRemark) {
       this.inputRemark = inputRemark;
     }
-
+    
     /**
      * room 部屋テーブルを検索しroom 部屋テーブルの１行を取得します。.
      *
@@ -510,6 +511,24 @@ public class RoomDao implements Serializable
             throw new AtareSysException("dbUpdate number or record exception.");
         return true;
     }
+    /**
+     * user_info ユーザ情報テーブルのデータを更新する。(ステータスを更新).
+     *
+     * @return true:成功 false:失敗
+     * @throws AtareSysException フレームワーク共通例外
+     */
+     public boolean dbUpdateState(String roomId, String status) throws AtareSysException {
+       String sql = "update room set "
+             + " status = " + DbO.chara(status)
+             + " where room_id = " + DbS.chara(roomId)
+             + "";
+       int ret = DbBase.dbExec(sql);
+       System.out.println(sql);
+     //
+     //  if (ret != 1)
+     //    throw new AtareSysException("dbUpdate number or record exception.");
+       return true;
+    }
 
     /**
      * room ルームテーブルからデータを削除する
@@ -592,12 +611,16 @@ public class RoomDao implements Serializable
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs  =  DbBase.dbSelect(sql);
         int cnt = rs.size();
+
         if(cnt < 1)    return array;
+        RoomDao dao  = new RoomDao();
         for(int i=0;i<cnt;i++)
         {
-            RoomDao dao  = new RoomDao();
+            dao  = new RoomDao();
             map = rs.get(i);
             dao.setRoomDaoForJoin(map,dao);
+            
+
             array.add(dao);
         }
         return array;

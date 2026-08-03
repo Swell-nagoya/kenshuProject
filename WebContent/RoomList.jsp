@@ -237,6 +237,13 @@ jQuery(function($)
     document.getElementById('action_cmd').value=action_cmd;
     document.getElementById('main_form').submit();
   }
+  function go_submit_statusUpdate(action_cmd,main_key)
+  {
+    document.getElementById('main_form').action='RoomList.do';
+    document.getElementById('action_cmd').value=action_cmd;
+    document.getElementById('main_key').value=main_key;
+    document.getElementById('main_form').submit();
+  }
   function go_sort_request(key)
   {
     document.getElementById('sort_key').value=key;
@@ -247,7 +254,7 @@ jQuery(function($)
       document.getElementById('main_form').action = 'UserMenu.do';
       document.getElementById('action_cmd').value = action_cmd;
       document.getElementById('main_form').submit();
-    }
+  }
   function go_detail_1(action_cmd,request_cmd,main_key,before_name)
   {
     document.getElementById('main_form').action='RoomDetail.do';
@@ -340,6 +347,7 @@ jQuery(function($)
       <input type="hidden" name="sort_order" id="sort_order" value="<%=webBean.txt("sort_order")%>"/>
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>"/>
       <input type="hidden" name="room_id" id="room_id" value="<%=webBean.txt("room_id")%>"/>
+      <input type="hidden" name="room_id_show_all" id="room_id_show_all" value="<%=webBean.txt("room_id_show_all")%>"/>
       <div class="left">
         <div class="messages">
           <%=webBean.dispMessages()%>
@@ -349,11 +357,17 @@ jQuery(function($)
         </div>
         <table class="select_table">
           <tr>
+            <td class="search_label center" style="width: 5%">名</td>
             <td class="search_label center" style="width: 50%">部屋名</td>
-            <td class="search_label center" style="width: 25%">表示件数</td>
-            <td class="search_label center" style="width: 25%"></td>
+            <td class="search_label center" style="width: 22%">表示件数</td>
+            <td class="search_label center" style="width: 23%"></td>
           </tr>
           <tr>
+            <td class="search_text center">
+            <input type="cheack">
+          <input type="checkbox"  name="list_search_state"  id="list_search_state" value="8" class="search_active <%=webBean.dispErrorCSS("list_search_state")%>" 
+         <% if("8".equals(webBean.txt("list_search_state"))) { %> checked<% } %> /> 
+            </td>
             <td class="search_text center">
               <input type="text" name="list_search_room_name" id="list_search_room_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_room_name") %>" class="ime_active <%=webBean.dispErrorCSS("list_search_room_name")%>" placeholder="検索"/>
               <%=webBean.dispError("list_search_room_name")%>
@@ -382,9 +396,10 @@ jQuery(function($)
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 60%"><a href="javaScript:go_sort_request('room_name')">部屋名</a></td>
-            <td class="list_label" style="width: 20%">利用ステータス</td>
-            <td class="list_label" style="width: 20%"></td>
+            <td class="list_label" style="width: 10%">メンテ<br>ナンス中</td>
+            <td class="list_label" style="width: 54%"><a href="javaScript:go_sort_request('room_name')">部屋名</a></td>
+            <td class="list_label" style="width: 18%">利用ステータス</td>
+            <td class="list_label" style="width: 18%"></td>
           </tr>
           <%
           for(Object item : webBean.arrayList("list"))
@@ -394,17 +409,21 @@ jQuery(function($)
           %>
           <tr class="list_tr">
             <td class="list_text">
+              <input type="checkbox" name="list_status_flg" id="status_flg_<%=WebUtil.txtEscape(dao.getRoomId())%>"  value="<%=WebUtil.txtEscape(dao.getRoomId())%>" <% if(dao.getStatus() == 8){ %> checked<%}%>>
+            </td>
+            <td class="list_text">
               <%=WebUtil.htmlEscape(dao.getRoomName())%>
             </td>
             <td class="list_text">
-              <select name="list_status" id="status_flg_<%=WebUtil.txtEscape(dao.getRoomId())%>">
-                <option value="<%=WebUtil.txtEscape(dao.getRoomId())%>_1" <% if(dao.getStatus() == 1){ %> selected<%}%>>利用可能</option>
-                <option value="<%=WebUtil.txtEscape(dao.getRoomId())%>_8" <% if(dao.getStatus() == 8){ %> selected<%}%>>メンテナンス中</option>
+              <select id="status_<%=WebUtil.txtEscape(dao.getRoomId())%>" name="list_status_<%=WebUtil.txtEscape(dao.getRoomId())%>" >
+                <option value="1" <% if(dao.getStatus() == 1){ %> selected<%}%>>利用可能</option>
+                <option value="8" <% if(dao.getStatus() == 8){ %> selected<%}%>>メンテナンス中</option>
               </select>
             </td>
             <td class="list_btn">
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
-              <input type="button" value="予約確認" onclick="openUserWindow('sub', '<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
+              <input type="button" value="予約確認" onclick="openUserWindow('reservationConfirmation', '<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
+              <input type="button" value="利用ステータス保存" onclick="go_submit_statusUpdate('statusUpdate', '<%=WebUtil.txtEscape(dao.getRoomId())%>');" />
               <input type="button" value="削除" onclick="go_detail_2('go_next','delete','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
             </td>
           </tr>

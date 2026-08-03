@@ -1010,7 +1010,7 @@ public class ReserveDao implements Serializable {
      * @return 取得したUserInfoDaoの配列
      * @throws AtareSysException エラー
      */
-    static public ArrayList<ReserveDao> dbSelectListYoyaku(ReserveDao myclass,
+    static public ArrayList<ReserveDao> dbSelectListRoomYoyaku(ReserveDao myclass,
             DaoPageInfo daoPageInfo) throws AtareSysException {
         ArrayList<ReserveDao> array = new ArrayList<ReserveDao>();
 
@@ -1062,7 +1062,7 @@ public class ReserveDao implements Serializable {
                 + " from reserve "
                 + " join user_info on reserve.user_info_id = user_info.user_info_id "
                 + " join room on reserve.room_id = room.room_id ";
-        String where = myclass.dbWhere2();
+        String where = myclass.dbWhereRoomYoyaku();
         String order = " ORDER BY reserve.reservation_date ASC";
         sql += where;
         sql += order;
@@ -1130,12 +1130,12 @@ public class ReserveDao implements Serializable {
     }
 
     /**
-     * user_info ユーザ情報テーブルの検索条件を設定する。.
+     * user_info ユーザ情報と部屋情報の部屋IDを検索条件に設定する。.
      *
      * @return String where句の文字列
      * @throws AtareSysException フレームワーク共通例外
      */
-    private String dbWhere2() throws AtareSysException {
+    private String dbWhereRoomYoyaku() throws AtareSysException {
         StringBuilder where = new StringBuilder(" where 1=1 ");
 
         // ユーザーが退会済み（state_flg = 9）じゃないことを追加
@@ -1174,4 +1174,5 @@ public class ReserveDao implements Serializable {
         return str;
     }
 
+    
 }

@@ -19,8 +19,6 @@ package jp.swell.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
@@ -66,6 +64,7 @@ public class RoomList extends ControllerBase
     @Override
     public void doActionProcess() throws AtareSysException
     {
+    	System.out.println("hit");
         WebBean bean = getWebBean();
         if ("RoomList".equals(bean.value("form_name")))
         {
@@ -108,9 +107,16 @@ public class RoomList extends ControllerBase
             {
                 redirect("MenuAdmin.do");
             }
+            else if ("statusUpdate".equals(bean.value("action_cmd")))
+            {
+            	System.out.println("test");
+               	dbStatusUpdateEdit();
+                searchList();
+                forward("RoomList.jsp");
+            }
             else if ("statusUpdateAll".equals(bean.value("action_cmd")))
             {
-               	dbStatusEdit();
+               	dbStatusUpdateAllEdit();
                 searchList();
                 forward("RoomList.jsp");
             }
@@ -129,6 +135,7 @@ public class RoomList extends ControllerBase
         }
         else
         {
+        	System.out.println("hit");
             formInit();
             searchList();
             forward("RoomList.jsp");
@@ -195,7 +202,7 @@ public class RoomList extends ControllerBase
         LinkedHashMap<String, String> sortKey = sortKey();
         RoomDao dao = new RoomDao();
         dao.setRoomName("%" + bean.value("list_search_room_name")+ "%");
-
+        
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount")))
         {
@@ -213,8 +220,20 @@ public class RoomList extends ControllerBase
         }
         ArrayList<RoomDao> listData = RoomDao.dbSelectList(dao, sortKey, daoPageInfo);
         
-
-
+        System.out.println(listData.get(0).getRoomId());
+        
+        // 表示中の部屋情報のIDをすべて取得
+        String room_id_show_all = "";
+        for(int i = 0;i < listData.size();i++) {
+        if( listData.get(i).getRoomId() != null ) {
+          if( room_id_show_all != null && room_id_show_all != "" ) {
+          	room_id_show_all += ",";
+          }
+          room_id_show_all += listData.get(i).getRoomId();
+         }
+        }
+        
+        bean.setValue("room_id_show_all", Sup.serialize(room_id_show_all));
         
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
@@ -296,52 +315,85 @@ public class RoomList extends ControllerBase
     }
 
     /**
+     * 利用ステータス　個別登録.
+     * 1「利用可能」 8「メンテナンス中」
+     */
+    public void dbStatusUpdateEdit() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        RoomDao dao = new RoomDao();
+
+        String search_info = String.valueOf(Sup.deserialize(bean.value("search_info")));
+
+       	String roomId = bean.value("main_key");
+        String list_status = "list_status_" + roomId;
+        String roomStatus =	bean.value(list_status);
+
+        try {
+         DbBase.dbBeginTran();
+         // 画面表示されている利用停止の値でチェックが入っているものは「8」.
+         if (roomId != null) {
+             dao.dbUpdateStatus(roomId,roomStatus);
+         }
+         DbBase.dbCommitTran();
+       } catch (Exception e) {
+         DbBase.dbRollbackTran();
+         throw e;
+       }
+    }
+    
+    /**
      * 利用ステータス　一括登録.
      * 1「利用可能」 8「メンテナンス中」
      */
-    public void dbStatusEdit() throws AtareSysException
+    public void dbStatusUpdateAllEdit() throws AtareSysException
     {
         WebBean bean = getWebBean();
         RoomDao dao = new RoomDao();
         // チェックが入った項目のみIDを代入.
-        String[] listStatusFlgs = getRequest().getParameterValues("list_status");
+        String[] listStatusFlgs = getRequest().getParameterValues("list_status_flg");
+        String room_id_show_all_text = bean.value("room_id_show_all");
+        room_id_show_all_text = (String) Sup.deserialize(room_id_show_all_text);
+        
 
+        String[] room_id_show_all_array = null; 
+
+
+        if (room_id_show_all_text != null && !room_id_show_all_text.equals("")) {
+         	room_id_show_all_array = room_id_show_all_text.split(",");
+        }
+        
+        System.out.println(room_id_show_all_array[0]);
          try {
           DbBase.dbBeginTran();
-
+          
+          // 画面表示されている利用停止の値をすべてリセット「1」.
+          if (room_id_show_all_array != null) {
+             for (int z = 0; z < room_id_show_all_array.length; z++) {
+              String statusReset = room_id_show_all_array[z];
+           //   dao.dbUpdateState(statusReset,"1");
+             }
+              
+            }
           // 画面表示されている利用停止の値でチェックが入っているものは「8」.
           if (listStatusFlgs != null) {
             for (int i = 0; i < listStatusFlgs.length; i++) {
-              
-            	String roomInfoId = listStatusFlgs[i];
-
-              // 末尾の「_数字」の手前にあるすべての文字（room_id）を取得します。
-             Pattern patternRoomId = Pattern.compile("^(.*)(_\\d+)$");
-             Matcher matcherRoomId = patternRoomId.matcher(roomInfoId);
-             String roomId = "";
-             if (matcherRoomId.find()) {
-             	  roomId = matcherRoomId.group(1);
-             }
-             
-             
-              // 後ろの文字「_数字」を取得し、「_」を除去。「数字」はroom.statusのvalueとして、代入します。
-              Pattern patternRoomStatus = Pattern.compile("_(\\d+)$");
-              Matcher matcherRoomStatus = patternRoomStatus.matcher(roomInfoId);
-              String roomStatus = "";
-              if (matcherRoomStatus.find()) {
-                 	roomStatus = matcherRoomStatus.group(1);
-              }
-
-              dao.dbUpdateStatus(roomId,roomStatus);
+              String status = listStatusFlgs[i];
+              System.out.println("hint:" + status);
+               dao.dbUpdateState(status,"8");
             }
           }
-          DbBase.dbCommitTran();
+         // DbBase.dbCommitTran();
         } catch (Exception e) {
-          DbBase.dbRollbackTran();
-          throw e;
+            DbBase.dbRollbackTran();
+            throw e;
         }
+
+
       
     }
+    
+
     /**
      * ページ番号を加算減算する
      *
