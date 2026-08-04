@@ -983,7 +983,6 @@ public class ReserveDao implements Serializable {
         sql += order;
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs = DbBase.dbSelect(sql);
-
         int cnt = rs.size();
         if (cnt < 1)
             return array;
@@ -1019,11 +1018,13 @@ public class ReserveDao implements Serializable {
                 + " from reserve "
                 + " join user_info on reserve.user_info_id = user_info.user_info_id "
                 + " join room on reserve.room_id = room.room_id "
-                + myclass.dbWhere();
+                + myclass.dbWhereRoomYoyaku();
+        
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         if (0 == rs.size())
             return array;
         HashMap<String, String> map = rs.get(0);
+        
         int len = Integer.parseInt(map.get("count"));
         daoPageInfo.setRecordCount(len);
         
@@ -1066,7 +1067,7 @@ public class ReserveDao implements Serializable {
         sql += order;
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs = DbBase.dbSelect(sql);
-        
+
         int cnt = rs.size();
         if (cnt < 1)
             return array;
@@ -1136,10 +1137,13 @@ public class ReserveDao implements Serializable {
 
         // ユーザーが退会済み（state_flg = 9）じゃないことを追加
         where.append(" and user_info.state_flg != '9'");
-
+        System.out.println("getRoomId()" + getRoomId());
         if (getRoomId() != null && !getRoomId().isEmpty()) {
-         where.append(" AND room.room_id = ").append(DbS.chara(getRoomId()));
+         where.append(" and room.room_id = ").append(DbS.chara(getRoomId()));
         }
+
+        where.append(" and reserve.reservation_date >= current_date");
+        
         return where.toString();
     }
 
