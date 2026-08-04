@@ -612,9 +612,6 @@ public class RoomDao implements Serializable
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs  =  DbBase.dbSelect(sql);
         
-        System.out.println("sql:" + sql);
-        System.out.println("sortKey:" + sortKey);
-        System.out.println("order:" + order);
         
         int cnt = rs.size();
         
@@ -712,9 +709,7 @@ public class RoomDao implements Serializable
         for (Iterator<String> i = keySet.iterator(); i.hasNext();)
         {
             String key = i.next();
-            System.out.println("key11:" + fieldsArray.get(key));
             if (null == fieldsArray.get(key)) continue;
-            System.out.println("key21:" + key);
             str += !"".equals(str) ? " , " : "";
             String ss[] = fieldsArray.get(key).split(",");
             for (int j = 0; j < ss.length; j++)

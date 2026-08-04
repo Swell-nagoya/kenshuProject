@@ -190,12 +190,54 @@ window.onload = function() {
         }
     });
 };
+
+
+
+//カレンダーのセルにクリックイベントを追加
+$(document).on('click', '.btn-primary', function(e) {
+	const today = new Date();
+
+	const year = today.getFullYear();
+
+	// 月を2桁にする (0から始まるので+1)
+	const month = String(today.getMonth() + 1).padStart(2, '0');
+
+	// 日を2桁にする
+	const day = String(today.getDate()).padStart(2, '0');
+
+    const formattedDate = year + "年" + month + "月" + day + "日";
+     // hidden フィールドに値をセット
+    $('#reservation_date').val(formattedDate);
+     //予約画面に移行
+    go_detail('reserve');
+});
+
+function go_detail(action_cmd) {
+
+	// フォームの送信先を親ウィンドウの名前に設定
+	if (window.opener && !window.opener.closed) {
+	 if (!window.opener.name) {
+	    window.opener.name = "parentWindow_" + Date.now();
+	  }
+	    
+	  document.getElementById('main_form').target = window.opener.name;
+	}
+
+	document.getElementById('main_form').action = 'UserMenu.do';
+	document.getElementById('action_cmd').value = action_cmd;
+	document.getElementById('main_form').submit();
+	window.close();
+}
 </script>
 </head>
 <body>
 <div class="container">
-  <form id="user_select_form">
-     <h1>部屋予約状況</h1>
+  <h1>部屋予約状況</h1>
+  <form id="main_form">
+     <input type="hidden" name="form_name" id="form_name" value="RoomYoyaku"/>
+     <input type="hidden" name="action_cmd"id="action_cmd" value=""/>
+     <input type="hidden" id="reservation_date" name="reservation_date" value=""/>
+     <input type="hidden" name="main_key"id="main_key" value="<%=webBean.txt("main_key")%>" />
      <%
       if (htmlTableString != null && !htmlTableString.trim().isEmpty()) {
      %>
@@ -211,7 +253,7 @@ window.onload = function() {
      }
     %>   
  <div class="buttons">
-   <input type="button" value="新規予約" onclick="submitSelection()" class="btn btn-primary">
+   <input type="button" value="新規予約" class="btn btn-primary js-btn-primary">
    <input type="button" value="閉じる" onclick="window.close()" class="btn btn-close">
  </div>
   </form>

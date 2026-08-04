@@ -8,7 +8,6 @@
 <%@ page import="jp.swell.constant.UserInfoState"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.List"%>
-<%@ page import="jp.patasys.common.http.WebBean" %>
 
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -342,14 +341,13 @@ div.error {
         <h1>新規予約</h1>
         <input type="hidden" name="form_name" id="form_name" value="UserYoyakuDetail" />
         <input type="hidden" name="action_cmd" id="action_cmd" value="" />
-        <input type="hidden" name="main_key" id="main_key" value="" />
+        <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
         <input type="hidden" name="main_cmd" id="main_cmd" value="" />
         <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" /> 
         <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
         <input type="hidden" name="reserveId" id="reserveId"value="<%=webBean.txt("reserve_id")%>" />
         <input type="hidden" name="user_info_id" id="user_info_id" value="<%= String.join(",", webBean.txt("user_info_ids")) %>">
         <input type="hidden" name="user_name" id="user_name" value="<%= String.join(",", webBean.txt("user_names")) %>">
-        
         <div class="style_head3">
           <div class="messages"><%=webBean.dispMessages()%></div>
           <div class="errors"><%=webBean.dispErrorMessages()%></div>
@@ -393,7 +391,9 @@ div.error {
                                 RoomDao room = (RoomDao) item;
                             %>
 
-                            <option value="<%= WebUtil.htmlEscape(room.getRoomId()) %>" <%= WebUtil.dispSelected(webBean.value("room_id"), room.getRoomId()) %> data-room-name="<%= WebUtil.htmlEscape(room.getRoomName()) %>"> <%= WebUtil.htmlEscape(room.getRoomName()) %></option>
+                            <option value="<%= WebUtil.htmlEscape(room.getRoomId()) %>" <%= WebUtil.dispSelected(webBean.value("room_id"), room.getRoomId()) %> data-room-name="<%= WebUtil.htmlEscape(room.getRoomName()) %>" <% if((webBean.txt("main_key")).equals(WebUtil.htmlEscape(room.getRoomId())) ){ %> selected<% } %>
+                            > <%= WebUtil.htmlEscape(room.getRoomName()) %></option>
+                            
                             <%
                             }
                                   } else { // 部屋情報がない場合

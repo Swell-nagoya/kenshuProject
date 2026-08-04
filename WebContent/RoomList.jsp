@@ -422,7 +422,7 @@ jQuery(function($)
   }
 
   // サブ画面処理
-  function openUserWindow(action_cmd, room_id, room_name) {
+  function openRoomYoyakuWindow(action_cmd, room_id, room_name) {
       const selectedRoomId = room_id;
       const selectedRoomName = room_name;
       // コントローラー設定
@@ -445,7 +445,7 @@ jQuery(function($)
       // 部屋のID
       const roomIdInput = document.createElement('input');
       roomIdInput.type = 'hidden';
-      roomIdInput.name = 'room_id';
+      roomIdInput.name = 'main_key';
       roomIdInput.value = selectedRoomId;
       form.appendChild(roomIdInput);
       // 部屋の名前
@@ -457,7 +457,7 @@ jQuery(function($)
 
       document.body.appendChild(form);
       // サブ画面表示処理
-      window.open('', 'Reserve_Room', 'width=400,height=500');
+      window.open('', 'Reserve_Room', 'width=600,height=600');
       form.submit();
 
       document.body.removeChild(form);
@@ -545,11 +545,11 @@ jQuery(function($)
       <input type="button" value="新規登録" onclick="go_detail('go_next','ins')" />
       <input type="button" value="　戻る　" onclick="go_submit('return')" />
     </div>
-<header>
+  <header>
     <h1>
         <a href="javascript:void(0)" value="" onclick="go_menu('top')">部屋情報一覧</a>
     </h1>
-</header>
+  </header>
   <form id="main_form" method="post" action="">
       <input type="hidden" name="form_name" id="form_name" value="RoomList"/>
       <input type="hidden" name="action_cmd" id="action_cmd" value=""/>
@@ -642,7 +642,7 @@ jQuery(function($)
             </td>
             <td class="list_btn">
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
-              <input type="button" value="予約確認" onclick="openUserWindow('reservationConfirmation', '<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
+              <input type="button" value="予約確認" onclick="openRoomYoyakuWindow('reservationConfirmation', '<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
               <input type="button" value="利用ステータス保存" onclick="go_submit_statusUpdate('statusUpdate', '<%=WebUtil.txtEscape(dao.getRoomId())%>');" />
               <input type="button" value="削除" onclick="go_detail_2('go_next','delete','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
             </td>

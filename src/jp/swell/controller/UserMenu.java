@@ -153,7 +153,7 @@ public class UserMenu extends ControllerBase
                 bean.setValue("reserves", reserves);
                 forward("UserMenuHome.jsp");
             }
-        }   
+        }
         else if ("UserInfoDetail".equals(bean.value("form_name")))
         {
             setWebBeanFromSerialize(bean.value("search_info"));
@@ -163,6 +163,18 @@ public class UserMenu extends ControllerBase
             ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
             bean.setValue("reserves", reserves);
             forward("UserMenuHome.jsp");
+        }
+        else if ("RoomYoyaku".equals(bean.value("form_name")))
+        {
+            bean.trimAllItem();
+            // 新規予約する条件を追加
+            if ("reserve".equals(bean.value("action_cmd")))
+            {
+               searchList();
+               //setWebDaoInputInfo();
+               forward("UserMenuReserve.jsp");
+               return; // メソッドを終了
+            }
         }
         else
         {
