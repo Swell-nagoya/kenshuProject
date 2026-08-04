@@ -31,6 +31,10 @@ body {
   margin: 0;
   padding: 10px;
 }
+input[type="checkbox"],
+select {
+ cursor: pointer;
+}
 
 header {
   position: relative;
@@ -233,10 +237,11 @@ jQuery(function($)
         $('table.list_table tr:odd').addClass('odd');
   });
   */
-
+/*
   $(function(){
 	  new StatusFun();
   });
+*/
   function go_submit(action_cmd)
   {
     document.getElementById('main_form').action='RoomList.do';
@@ -328,7 +333,7 @@ jQuery(function($)
 
       document.body.removeChild(form);
   }
-
+/*
   // メンテナンス中　checkboxの変更
   class StatusFun {
 
@@ -402,7 +407,7 @@ jQuery(function($)
         
     }
   }
-
+*/
 </script>
 </head>
 <body>

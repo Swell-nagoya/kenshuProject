@@ -134,6 +134,7 @@ class StateFlgCheckAll {
   }
 
   event() {
+  console.log(this.$elements)
     this.$elements.on("click", (element) => {
       let $element = $(element.currentTarget);
       let $dataTarget = $("." + $element.data(this.dataTarget));
@@ -145,10 +146,12 @@ class StateFlgCheckAll {
             current.checked = true;
           }
         }
+		/*
 		// 利用ステータスのselectをメンテナンス中に変更
 		for( let i = 0; this.$status.length > i; i++ ){
 		  this.$status[i].value = '8';
 		}
+		*/
 		  
         this.selectorAllFun($element);
       } else {
@@ -159,10 +162,12 @@ class StateFlgCheckAll {
             current.checked = false;
           }
         }
+		/*
 		// 利用ステータスのselectを利用可能に変更
 		for( let i = 0; this.$status.length > i; i++ ){
 		  this.$status[i].value = '1';
 		}
+	    */
 		
         this.fullReleaseFun($element);
       }
