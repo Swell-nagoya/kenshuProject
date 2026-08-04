@@ -112,6 +112,61 @@ td {
   border-collapse: collapse;
 }
 
+.table-wrap {
+  overflow: auto;
+  max-height: 500px;
+  border-top: 1px #a0a0a0 solid;
+  border-bottom: 1px #a0a0a0 solid;
+}
+.table-wrap > table {
+  width: 100%;
+  min-width: 800px;
+}
+
+.select_table tr,
+.list_table tr {
+  padding: 0;
+}
+.select_table th,
+.select_table td,
+.list_table th,
+.list_table td {
+  border: 1px #a0a0a0 solid;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.select_table input[type="radio"] {
+  margin: 3px 0 0 5px;
+}
+.select_table input[type="radio"] + label {
+  display: inline-block;
+  margin: 3px 0 0 0;
+  padding-left: 5px;
+}
+
+
+.select_table input[type="radio"] + label:has() {
+  letter-spacing: -.4em;
+}
+.select_table input[type="radio"] + label:has() > * {
+  letter-spacing: normal;
+}
+.select_table input[type="checkbox"],
+.select_table input[type="radio"],
+.select_table input[type="radio"] + label {
+  cursor: pointer;
+}
+
+.search_label {
+  padding: 4px 10px;
+  background: #00bcd4;
+  color: #fff;
+  text-align: center;
+  font-size: 16px;
+  font-weight: normal;
+}
+
 .search_label { /* 部屋、表示件数 */
   background: #00bcd4;
   color: #fff;
@@ -207,6 +262,80 @@ input[type="button"].button_send {
 input[type="button"].button_send:hover {
     background-color: #ff7f50;
     color: #fff;
+}
+
+/*.list_table*/
+.list_table .fixed {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.list_table th {
+  padding: 0;
+}
+.list_table td {
+  padding: 5px 10px;
+}
+.list_table > thead > tr > th {
+  font-size: 16px;
+}
+.table-wrap .list_table > thead > tr > th {
+  border-top: none;
+}
+.table-wrap .list_table > tbody > tr:last-child td {
+  border-bottom: none;
+}
+.list_table input[type="checkbox"] {
+  cursor: pointer;
+}
+.list_table input[type="button"] {
+  margin: 3px 2px;
+}
+
+.list_table thead > tr > .statas,
+.list_table tbody > tr > .statas {
+  width: 12%;
+}
+.list_table thead > tr > .full_name,
+.list_table tbody > tr > .full_name {
+  width: 22%;
+}
+.list_table thead > tr > .full_name_kana,
+.list_table tbody > tr > .full_name_kana {
+  width: 22%;
+}
+.list_table thead > tr > .memail,
+.list_table tbody > tr > .memail {
+  width: 22%;
+}
+.list_table thead > tr > .search_button,
+.list_table tbody > tr > .search_button {
+  width: 22%;
+}
+
+.list_title  {
+  border-left: 1px #a0a0a0 solid;
+  border-right: 1px #a0a0a0 solid;
+}
+
+.list_label {
+  padding: 3px 7px;
+  background: #00bcd4;
+  color: #fff;
+  text-align: center;
+  font-weight: normal;
+}
+
+.list_label a {
+  color: #fff;
+  text-decoration: none;
+}
+.list_tr:nth-child(odd) {
+  background: #efefef;
+}
+
+.list_tr:nth-child(even) {
+  background: #fff;
 }
 </style>
 <script type="text/javascript">
