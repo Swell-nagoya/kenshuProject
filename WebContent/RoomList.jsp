@@ -443,10 +443,10 @@ jQuery(function($)
         </div>
         <table class="select_table">
           <tr>
-            <td class="search_label center" style="width: 10%">メンテ<br>ナンス中</td>
-            <td class="search_label center" style="width: 50%">部屋名</td>
-            <td class="search_label center" style="width: 20%">表示件数</td>
-            <td class="search_label center" style="width: 20%"></td>
+            <th class="search_label center" style="width: 10%">メンテ<br>ナンス中</th>
+            <th class="search_label center" style="width: 50%">部屋名</th>
+            <th class="search_label center" style="width: 20%">表示件数</th>
+            <th class="search_label center" style="width: 20%"></th>
           </tr>
           <tr>
             <td class="search_text center">
@@ -481,10 +481,16 @@ jQuery(function($)
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 10%">メンテ<br>ナンス中</td>
-            <td class="list_label" style="width: 54%"><a href="javaScript:go_sort_request('room_name')">部屋名</a></td>
-            <td class="list_label" style="width: 18%">利用ステータス</td>
-            <td class="list_label" style="width: 18%"></td>
+            <th style="width: 10%" class="list_label js-table_sort_label<%= "status".equals(webBean.txt("sort_key_old")) ? ("desc".equals(webBean.txt("sort_order")) ? " is-desc" : " is-asc") : "" %>">
+            <a href="javaScript:go_sort_request('status')">メンテ<br>ナンス中</a>
+            </th>
+            <th style="width: 54%" class="list_label js-table_sort_label<%= "room_name".equals(webBean.txt("sort_key_old")) ? ("desc".equals(webBean.txt("sort_order")) ? " is-desc" : " is-asc") : "" %>">
+            <a href="javaScript:go_sort_request('room_name')">部屋名</a>
+            </th>
+            <th style="width: 18%" class="list_label js-table_sort_label<%= "status".equals(webBean.txt("sort_key_old")) ? ("desc".equals(webBean.txt("sort_order")) ? " is-desc" : " is-asc") : "" %>">
+            <a href="javaScript:go_sort_request('status')">利用ステータス</a>
+            </th>
+            <th class="list_label" style="width: 18%"></th>
           </tr>
           <%
           for(Object item : webBean.arrayList("list"))

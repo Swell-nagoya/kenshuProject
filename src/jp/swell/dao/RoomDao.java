@@ -135,7 +135,7 @@ public class RoomDao implements Serializable
         fieldsArray.put("insert_user_id","room.insert_user_id");
         fieldsArray.put("update_date","room.update_date");
         fieldsArray.put("update_user_id","room.update_user_id");
-
+        fieldsArray.put("status","room.status");
     }
     /**
      * @return roomId
@@ -611,6 +611,11 @@ public class RoomDao implements Serializable
         sql += order;
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs  =  DbBase.dbSelect(sql);
+        
+        System.out.println("sql:" + sql);
+        System.out.println("sortKey:" + sortKey);
+        System.out.println("order:" + order);
+        
         int cnt = rs.size();
         
         if(cnt < 1)    return array;
@@ -701,11 +706,15 @@ public class RoomDao implements Serializable
     {
         String str = "";
         if (sortKey == null) return "";
+        
         Set<String> keySet = sortKey.keySet();
+
         for (Iterator<String> i = keySet.iterator(); i.hasNext();)
         {
             String key = i.next();
+            System.out.println("key11:" + fieldsArray.get(key));
             if (null == fieldsArray.get(key)) continue;
+            System.out.println("key21:" + key);
             str += !"".equals(str) ? " , " : "";
             String ss[] = fieldsArray.get(key).split(",");
             for (int j = 0; j < ss.length; j++)
