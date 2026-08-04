@@ -184,9 +184,9 @@ public class UserReserveDao implements Serializable {
   public boolean dbSelect(String pUserReserveId) throws AtareSysException
   {
       String sql =  "select "
-              + " user_reserve.user_reserve_id as user_reserve___user_reserve_id"
-              + ",user_reserve.user_info_id as user_reserve___user_info_id"
-              + ",user_reserve.reserve_id as user_reserve___reserve_id"
+              + "user_reserve_id"
+              + ",user_info_id"
+              + ",reserve_id"
       + " from user_reserve ";
       sql += ""
       + " where user_reserve_id = " + DbS.chara(pUserReserveId);
@@ -206,9 +206,9 @@ public class UserReserveDao implements Serializable {
   public boolean dbSelect(String pUserReserveId,String pas) throws AtareSysException
   {
       String sql =  "select "
-              + " user_reserve.user_reserve_id as user_reserve___user_reserve_id"
-              + ",user_reserve.user_info_id as user_reserve___user_info_id"
-              + ",user_reserve.reserve_id as user_reserve___reserve_id"
+              + "user_reserve_id"
+              + ",user_info_id"
+              + ",reserve_id"
       + " from user_reserve ";
       sql += ""
       + " where user_reserve_id = " + DbS.chara(pUserReserveId)
