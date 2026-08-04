@@ -224,8 +224,17 @@ public class UserInfoDetail extends ControllerBase
                   if ("ins".equals(bean.value("request_cmd"))) 
                   {
                       setInputInfo2Dao2Web();
-                      signUp();
-                      scheduleInsert();
+                      try {
+                          DbBase.dbBeginTran();
+                          signUp();
+                          scheduleInsert();
+                          DbBase.dbCommitTran();
+                      } catch (Exception e) {
+                          DbBase.dbRollbackTran();
+                          bean.setError("登録に失敗しました");
+                          forward("UserInfoDetail.jsp");
+                          return;
+                      }
                       redirect("ViewUserList.do");
                   }
                   else if ("update".equals(bean.value("request_cmd"))) 
