@@ -348,6 +348,7 @@ div.error {
         <input type="hidden" name="reserveId" id="reserveId"value="<%=webBean.txt("reserve_id")%>" />
         <input type="hidden" name="user_info_id" id="user_info_id" value="<%= String.join(",", webBean.txt("user_info_ids")) %>">
         <input type="hidden" name="user_name" id="user_name" value="<%= String.join(",", webBean.txt("user_names")) %>">
+        <input type="hidden" name="previous_page" id="previous_page" value="<%=webBean.txt("previous_page")%>" />
         <div class="style_head3">
           <div class="messages"><%=webBean.dispMessages()%></div>
           <div class="errors"><%=webBean.dispErrorMessages()%></div>
@@ -463,9 +464,16 @@ div.error {
                 </tr>
             </table>
             <div class="buttons">
-                <button type="button" class="btn btn-primary" onclick="go_detail('reserve', '');"><i class="material-icons">trip_origin</i>OK</button>
-                <button type="button" class="btn btn-secondary" onclick="window.location.href='UserMenu.do'"><i class="material-icons">close</i>キャンセル</button>
-            </div>
+            <% if ("RoomYoyakuList".equals(webBean.txt("previous_page"))){ %>
+             <button type="button" class="btn btn-primary" onclick="go_detail('reserve', '');"><i class="material-icons">trip_origin</i>OK</button>
+             <button type="button" class="btn btn-secondary" onclick="window.location.href='RoomList.do'"><i class="material-icons">close</i>キャンセル</button>
+            <% } else { %>
+             <button type="button" class="btn btn-primary" onclick="go_detail('reserve', '');"><i class="material-icons">trip_origin</i>OK</button>
+             <button type="button" class="btn btn-secondary" onclick="window.location.href='UserMenu.do'"><i class="material-icons">close</i>キャンセル</button>
+           
+            <% } %>
+           </div>
+           <!-- ./buttons -->
     </div>
 </form>
 </body>

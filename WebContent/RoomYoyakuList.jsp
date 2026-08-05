@@ -10,66 +10,124 @@
  String htmlTableString = "";
  if (webBean.arrayList("list") != null && !webBean.arrayList("list").isEmpty()) {
   // ユーザー情報を取るためのループ処理
-  for (Object item : webBean.arrayList("list")) {
-    ReserveDao roomYoyaku = (ReserveDao) item;
+  for (Object item : webBean.arrayList("list")) {ReserveDao roomYoyaku = (ReserveDao) item;
 
-    String roomYoyakuDate = WebUtil.htmlEscape(roomYoyaku.getReservationDate());
- 
-    //予約　年月日の取得.
-    String roomYoyakuYear = roomYoyakuDate.substring(0, 4);
-    String roomYoyakuMonth = roomYoyakuDate.substring(4, 6);
-    String roomYoyakuDay = roomYoyakuDate.substring(6, 8);
-    // チェックイン、チェックアウト
-    String checkinTime = WebUtil.htmlEscape(roomYoyaku.getCheckinTime());
-    String checkoutTime = WebUtil.htmlEscape(roomYoyaku.getCheckoutTime());
-    // 予約時刻を代入.
-    String formatCheckinTimeHour  = checkinTime.substring(0, 2);
-    String formatCheckinTimeMin   = checkinTime.substring(2, 4);
-    String formatCheckoutTimeHour  = checkoutTime.substring(0, 2);
-    String formatCheckoutTimeMin   = checkoutTime.substring(2, 4);
- 
-    String formatDate = roomYoyakuYear + "/" + roomYoyakuMonth + "/" + roomYoyakuDay;
- 
- 
-    //チェックインの時間「XX:XX」
-    String formatCheckinTime = formatCheckinTimeHour + ":" + formatCheckinTimeMin;
-    //チェックアウトの時間「XX:XX」
-    String formatCheckoutTime = formatCheckoutTimeHour + ":" + formatCheckoutTimeMin;
+  String roomYoyakuDate = roomYoyaku.getReservationDate();
 
-    // チェックイン日時.
-    LocalDateTime checkinDateTime = LocalDateTime.of(
-      Integer.parseInt(roomYoyakuYear),
-      Integer.parseInt(roomYoyakuMonth),
-      Integer.parseInt(roomYoyakuDay),
-      Integer.parseInt(formatCheckinTimeHour),
-      Integer.parseInt(formatCheckinTimeMin)
-    );
+  //予約　年月日の取得.
+  String roomYoyakuYear = roomYoyakuDate.substring(0, 4);
+  String roomYoyakuMonth = roomYoyakuDate.substring(4, 6);
+  String roomYoyakuDay = roomYoyakuDate.substring(6, 8);
+  String formatDate = roomYoyakuYear + "/" + roomYoyakuMonth + "/" + roomYoyakuDay;
+  
+  // チェックイン、チェックアウト
+  String checkinTime = roomYoyaku.getCheckinTime();
+  String checkoutTime = roomYoyaku.getCheckoutTime();
+  
+  String formatCheckinTimeHour = "";
+  String formatCheckinTimeMin = "";
+  String formatCheckinTime = "";
+  
+  String formatCheckoutTimeHour = "";
+  String formatCheckoutTimeMin = "";
+  String formatCheckoutTime = "";
+  
+  // 予約時刻を代入（チェックイン）.
+  if (checkinTime != null && checkinTime.length() >= 4){
+   formatCheckinTimeHour  = checkinTime.substring(0, 2);
+   formatCheckinTimeMin   = checkinTime.substring(2, 4);
+   //チェックインの時間「XX:XX」
+   formatCheckinTime = formatCheckinTimeHour + ":" + formatCheckinTimeMin;
+  }
 
-    // チェックアウト日時.
-    LocalDateTime checkoutDateTime = LocalDateTime.of(
-      Integer.parseInt(roomYoyakuYear),
-      Integer.parseInt(roomYoyakuMonth),
-      Integer.parseInt(roomYoyakuDay),
-      Integer.parseInt(formatCheckoutTimeHour),
-      Integer.parseInt(formatCheckoutTimeMin)
-    );
+  // 予約時刻を代入（チェックアウト）.
+  if (checkoutTime != null && checkoutTime.length() >= 4){
+   formatCheckoutTimeHour  = checkoutTime.substring(0, 2);
+   formatCheckoutTimeMin   = checkoutTime.substring(2, 4);
+   //チェックアウトの時間「XX:XX」
+   formatCheckoutTime = formatCheckoutTimeHour + ":" + formatCheckoutTimeMin;
+  }
+
+  // 外側で変数を宣言（Object型にすることで、日時と日付の両方に対応）
+  Object checkinDateTime = null;
+  Object checkoutDateTime = null;
+
+  // --- チェックイン日時の設定 ---
+  if (checkinTime != null && checkinTime.length() >= 4){
+   // 値がある場合は「LocalDateTime」
+   checkinDateTime = java.time.LocalDateTime.of(
+     Integer.parseInt(roomYoyakuYear),
+     Integer.parseInt(roomYoyakuMonth),
+     Integer.parseInt(roomYoyakuDay),
+     Integer.parseInt(formatCheckinTimeHour),
+     Integer.parseInt(formatCheckinTimeMin)
+   );
+  } else {
+   // 値がない場合は時間・分なしの「LocalDate」
+   checkinDateTime = java.time.LocalDate.of(
+     Integer.parseInt(roomYoyakuYear),
+     Integer.parseInt(roomYoyakuMonth),
+     Integer.parseInt(roomYoyakuDay)
+   );
+  }
+
+  // --- チェックアウト日時の設定 ---
+  if (checkoutTime != null && checkoutTime.length() >= 4){
+   // 値がある場合は「LocalDateTime」
+   checkoutDateTime = java.time.LocalDateTime.of(
+     Integer.parseInt(roomYoyakuYear),
+     Integer.parseInt(roomYoyakuMonth),
+     Integer.parseInt(roomYoyakuDay),
+     Integer.parseInt(formatCheckoutTimeHour),
+     Integer.parseInt(formatCheckoutTimeMin)
+   );
+  } else {
+   // 値がない場合は時間・分なしの「LocalDate」
+   checkoutDateTime = java.time.LocalDate.of(
+     Integer.parseInt(roomYoyakuYear),
+     Integer.parseInt(roomYoyakuMonth),
+     Integer.parseInt(roomYoyakuDay)
+   );
+  }
 
 
-    //現在の日時を代入.
-    LocalDateTime now = LocalDateTime.now();
-      
-    // チェックアウトより現在の時刻が前の時
-    if (!now.isAfter(checkoutDateTime)) {
-      htmlTableString += "<tr class=\"" + (now.isBefore(checkinDateTime) ? "before" : " now") + "\">"
- + "<td style='text-align: left;'>"
- + "【日付】" + formatDate + "<br>"
- + "【時間】" + formatCheckinTime + " - " + formatCheckoutTime + "<br>"
- + "【ユーザー名】" + WebUtil.htmlEscape(roomYoyaku.getFullName()) + "<br>"
- + "【部屋名】" + WebUtil.htmlEscape(roomYoyaku.getRoomName()) + "<br>"
- + "【テキスト】" + WebUtil.htmlEscape(roomYoyaku.getInputText()) + "<br>"
- + "</td>"
- + "</tr>";
+  // --- 現在日時との比較判定処理 ---
+  boolean isBefore = false;
+  if (checkinDateTime instanceof java.time.LocalDateTime) {
+      // 時間がある場合：現在の「日時」と比較
+      isBefore = java.time.LocalDateTime.now().isBefore((java.time.LocalDateTime) checkinDateTime);
+  } else if (checkinDateTime instanceof java.time.LocalDate) {
+      // 時間がない場合：現在の「日付」と比較（時間・分は一切なし）
+      isBefore = java.time.LocalDate.now().isBefore((java.time.LocalDate) checkinDateTime);
+  }
+
+
+  // 判定結果（isBefore）を使ってクラス名を切り替え
+  htmlTableString += "<tr class=\"" + (isBefore ? "before" : " now") + "\">"
+  + "<td style='text-align: left;'>"
+  + "【日付】" + formatDate + "<br>";
+  // 時間はDBに登録があれば、表示する
+  if ((checkinTime != null && !checkinTime.isEmpty()) || (checkoutTime != null && !checkoutTime.isEmpty())) {
+    htmlTableString += "【時間】";
+    if (checkinTime != null && !checkinTime.isEmpty()) {
+       htmlTableString += formatCheckinTime;
     }
+    if ((checkinTime != null && !checkinTime.isEmpty()) && (checkoutTime != null && !checkoutTime.isEmpty())) {
+       htmlTableString += " - ";
+    }
+    if (checkoutTime != null && !checkoutTime.isEmpty()) {
+       htmlTableString += formatCheckoutTime;
+    }
+       htmlTableString += "<br>";
+  }
+
+
+  htmlTableString += "【ユーザー名】" + WebUtil.htmlEscape(roomYoyaku.getFullName()) + "<br>"
++ "【部屋名】" + WebUtil.htmlEscape(roomYoyaku.getRoomName()) + "<br>"
++ "【テキスト】" + WebUtil.htmlEscape(roomYoyaku.getInputText()) + "<br>"
++ "</td>"
++ "</tr>";
+      
   }
 }
 %>
@@ -243,11 +301,11 @@ function go_submit(action_cmd)
 <div class="container">
   <h1>部屋予約状況</h1>
   <form id="main_form" method="post" action="">
-     <input type="hidden" name="form_name" id="form_name" value="RoomYoyaku"/>
-     <input type="hidden" name="action_cmd"id="action_cmd" value=""/>
+     <input type="hidden" id="form_name" name="form_name" value="RoomYoyaku"/>
+     <input type="hidden" id="action_cmd" name="action_cmd" value=""/>
      <input type="hidden" id="reservation_date" name="reservation_date" value=""/>
-     <input type="hidden" name="main_key"id="main_key" value="<%=webBean.txt("main_key")%>" />
-     
+     <input type="hidden" id="main_key" name="main_key" value="<%=webBean.txt("main_key")%>" />
+     <input type="hidden" id="previous_page" name="previous_page" value="RoomYoyakuList" />
     <%
       if (webBean.arrayList("list").size() > 0) {
     %>

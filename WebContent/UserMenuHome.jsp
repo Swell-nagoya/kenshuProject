@@ -1058,6 +1058,7 @@ String actionCmd = (String) request.getParameter("action_cmd");
             <input type="hidden" id="checkin_time" name="checkin_time" value="">
             <input type="hidden" id="checkout_time" name="checkout_time" value="">
             <input type="hidden" id="calendar_type" name="calendar_type" value="calendar">
+            <input type="hidden" id="previous_page" name="previous_page" value="UserMenu" />
 
             <header>
                 <div id="title">
