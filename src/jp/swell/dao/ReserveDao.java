@@ -1024,7 +1024,9 @@ public class ReserveDao implements Serializable {
         if (0 == rs.size())
             return array;
         HashMap<String, String> map = rs.get(0);
-        
+
+
+
         int len = Integer.parseInt(map.get("count"));
         daoPageInfo.setRecordCount(len);
         
@@ -1068,6 +1070,7 @@ public class ReserveDao implements Serializable {
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs = DbBase.dbSelect(sql);
 
+        
         int cnt = rs.size();
         if (cnt < 1)
             return array;
@@ -1137,12 +1140,11 @@ public class ReserveDao implements Serializable {
 
         // ユーザーが退会済み（state_flg = 9）じゃないことを追加
         where.append(" and user_info.state_flg != '9'");
-        System.out.println("getRoomId()" + getRoomId());
         if (getRoomId() != null && !getRoomId().isEmpty()) {
          where.append(" and room.room_id = ").append(DbS.chara(getRoomId()));
         }
-
-        where.append(" and reserve.reservation_date >= current_date");
+        // 部屋のチェックアウト時間が今現在よりも前の場合
+        where.append(" and STR_TO_DATE(concat(reserve.reservation_date, LPAD(reserve.checkout_time, 4, '0')), '%Y%m%d%H%i') >= now()");
         
         return where.toString();
     }

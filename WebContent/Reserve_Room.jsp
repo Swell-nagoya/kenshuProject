@@ -9,7 +9,6 @@
 <% // データベースの reserve が空でないかの確認
  String htmlTableString = "";
  if (webBean.arrayList("list") != null && !webBean.arrayList("list").isEmpty()) {
-  
   // ユーザー情報を取るためのループ処理
   for (Object item : webBean.arrayList("list")) {
     ReserveDao roomYoyaku = (ReserveDao) item;
@@ -133,7 +132,12 @@ td {
     border-bottom: 1px solid #ddd;
     text-align: center;
 }
-
+.pagenation, .select_table {
+    margin-bottom: 10px;
+}
+.pagenation {
+    text-align: center;
+}
 .buttons {
     margin-top: 20px;
     text-align: center;
@@ -213,7 +217,6 @@ $(document).on('click', '.btn-primary', function(e) {
 });
 
 function go_detail(action_cmd) {
-
 	// フォームの送信先を親ウィンドウの名前に設定
 	if (window.opener && !window.opener.closed) {
 	 if (!window.opener.name) {
@@ -228,6 +231,12 @@ function go_detail(action_cmd) {
 	document.getElementById('main_form').submit();
 	window.close();
 }
+function go_submit(action_cmd)
+{
+  document.getElementById('main_form').action='RoomYoyakuList.do';
+  document.getElementById('action_cmd').value=action_cmd;
+  document.getElementById('main_form').submit();
+}
 </script>
 </head>
 <body>
@@ -238,6 +247,23 @@ function go_detail(action_cmd) {
      <input type="hidden" name="action_cmd"id="action_cmd" value=""/>
      <input type="hidden" id="reservation_date" name="reservation_date" value=""/>
      <input type="hidden" name="main_key"id="main_key" value="<%=webBean.txt("main_key")%>" />
+     
+    <%
+      if (webBean.arrayList("list").size() > 0) {
+    %>
+    <div class="pagenation">
+      <input type="text" name="pageNo" id="pageNo" maxlength="3" size='1' value="<%=webBean.txt("pageNo")%>" class="right ime_disabled" />  /
+      <%=webBean.html("maxPageNo")%> ページ〚全
+      <%=webBean.html("recordCount")%>件〛<br/>
+      <%if(!"1".equals(webBean.value("pageNo"))){%> <input type="button" value="<--前の<%=webBean.html("lineCount")%>件" onclick="go_submit('prior')" />
+      <%}else{%>
+      <%}%>
+      <input type="button" value="ページ表示" onclick="go_submit('jump')" />
+      <%if(!webBean.value("pageNo").equals(webBean.value("maxPageNo"))){%> <input type="button" value="次の<%=webBean.html("lineCount")%>件-->" onclick="go_submit('next')" />
+      <%}else{%>
+      <%}%>
+     </div>
+      <%}%>
      <%
       if (htmlTableString != null && !htmlTableString.trim().isEmpty()) {
      %>
