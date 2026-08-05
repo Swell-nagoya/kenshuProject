@@ -41,15 +41,34 @@ public class UserLogin extends ControllerBase {
         WebBean bean = getWebBean();
         bean.trimAllItem();
 
+        String account = bean.value("ac");
+        String password = bean.value("ko");
+        
+        System.out.println("入力されたID = [" + account);
+        System.out.println("パスワード入力あり = " + (password != null && !password.isEmpty()));
+
         if ("UserLogin".equals(bean.value("form_name"))) {
-            // ログインボタンが押されたときの処理
+    
+        	// ログインボタンが押されたときの処理
             if ("login".equals(bean.value("action_cmd"))) {
                 this.setLoginInfo(null);
+                System.out.println("inputCheckを実行します");
                 if (!inputCheck()) {
+                	System.out.println("inputCheck失敗");
                     this.forward("/UserLogin.jsp");
                     return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
                 }
-                    redirect("UserMenu.do");
+                System.out.println("inputCheck成功");
+                System.out.println("ログイン後の画面へ移動します");
+                UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+                //管理者権限の有無確認
+                if("1".equals(userLoginInfo.getAdmin())) {
+                	System.out.println("管理者権限画面に移動します");
+                	redirect("MenuAdmin.do");
+                } else {
+					System.out.println("カレンダー画面に移動します");
+					redirect("Calendar.do");
+				}
                 return;
             } else if ("repassword".equals(bean.value("action_cmd"))) {
                 redirect("SendPassMail.do");
@@ -75,10 +94,12 @@ public class UserLogin extends ControllerBase {
 
         WebBean bean = getWebBean();
         if (bean.value("ac").length() == 0) {
+        	System.out.println("入力チェック失敗：acが空です");
             bean.setError("ac", "未入力");
             return false;
         }
         if (bean.value("ko").length() == 0) {
+        	System.out.println("入力チェック失敗：koが空です");
             bean.setError("ko", "未入力");
             return false;
         }
@@ -87,13 +108,39 @@ public class UserLogin extends ControllerBase {
         if (userLoginInfo == null) {
             userLoginInfo = new UserLoginInfo();
         }
-        if (!userLoginInfo.login(bean.value("ac"), bean.value("ko"))) {
-            bean.setError("ac", "usernameかpasswordが違います");
+        System.out.println("ログイン認証を開始します");
+
+        boolean loginResult =
+                userLoginInfo.login(
+                        bean.value("ac"),
+                        bean.value("ko")
+                );
+
+        System.out.println("認証結果 = " + loginResult);
+
+        if (!loginResult) {
+            System.out.println(
+                    "入力チェック失敗：ユーザー名またはパスワード不一致"
+            );
+            bean.setError(
+                    "ac",
+                    "usernameかpasswordが違います"
+            );
             return false;
         }
-        userLoginInfo.setUserInfo(userLoginInfo.getUserInfoDao());
+
+        System.out.println("ログイン認証成功");
+
+        userLoginInfo.setUserInfo(
+                userLoginInfo.getUserInfoDao()
+        );
         setLoginInfo(userLoginInfo);
-        bean.setValue("user_info_id", userLoginInfo.getUserInfoId());
+
+        bean.setValue(
+                "user_info_id",
+                userLoginInfo.getUserInfoId()
+        );
+
         return true;
     }
 
