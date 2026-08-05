@@ -242,7 +242,7 @@ function go_submit(action_cmd)
 <body>
 <div class="container">
   <h1>部屋予約状況</h1>
-  <form id="main_form">
+  <form id="main_form" method="post" action="">
      <input type="hidden" name="form_name" id="form_name" value="RoomYoyaku"/>
      <input type="hidden" name="action_cmd"id="action_cmd" value=""/>
      <input type="hidden" id="reservation_date" name="reservation_date" value=""/>

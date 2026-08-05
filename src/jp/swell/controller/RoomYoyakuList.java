@@ -44,7 +44,7 @@ public class RoomYoyakuList extends ControllerBase {
      if ("reservationConfirmation".equals(bean.value("action_cmd")))
       {
         searchList();
-        forward("Reserve_Room.jsp");
+        forward("RoomYoyakuList.jsp");
         return; // メソッドを終了
       }
 
@@ -55,21 +55,21 @@ public class RoomYoyakuList extends ControllerBase {
       {
           bean.setValue("pageNo", calcPageNo(bean.value("pageNo"), 1));
           searchList();
-          forward("Reserve_Room.jsp");
+          forward("RoomYoyakuList.jsp");
       }
       else if ("jump".equals(bean.value("action_cmd")))
       {
           searchList();
-          forward("Reserve_Room.jsp");
+          forward("RoomYoyakuList.jsp");
       }
       else if ("prior".equals(bean.value("action_cmd")))
       {
           bean.setValue("pageNo", calcPageNo(bean.value("pageNo"), -1));
           searchList();
-          forward("Reserve_Room.jsp");
+          forward("RoomYoyakuList.jsp");
       }
      } else {
-      forward("Reserve_Room.do");
+      forward("RoomYoyakuList.do");
     }
   }
 
@@ -89,6 +89,7 @@ public class RoomYoyakuList extends ControllerBase {
     if (!Validate.isInteger(bean.value("lineCount"))) {
       bean.setValue("lineCount", "20");
     }
+
     daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
     SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "UserMenuHome", "lineCount", bean.value("lineCount"));
     if (!Validate.isInteger(bean.value("pageNo"))) {
