@@ -12,7 +12,7 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript"/>
 <meta http-equiv="Content-Style-Type" content="text/css"/>
 <link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet"/>
-<link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon"/>
+<link rel="shortcut icon" href="images/favicon.ico" type="imfage/vnd.microsoft.icon"/>
 <link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon"/>
 <script type="text/javascript" src="js/jquery-3.6.4.js"></script>
 <script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
