@@ -226,12 +226,16 @@ public class UserInfoDetail extends ControllerBase
                       setInputInfo2Dao2Web();
                       try {
                           DbBase.dbBeginTran();
-                          signUp();
-                          scheduleInsert();
+                          if (!signUp()) {
+                              throw new AtareSysException("ユーザー登録できませんでした。");
+                          }
+                          if (!scheduleInsert()) {
+                              throw new AtareSysException("スケジュール登録できませんでした。");
+                          }
                           DbBase.dbCommitTran();
                       } catch (Exception e) {
                           DbBase.dbRollbackTran();
-                          bean.setError("登録に失敗しました");
+                          bean.setError("登録に失敗しました。");
                           forward("UserInfoDetail.jsp");
                           return;
                       }

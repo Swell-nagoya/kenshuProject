@@ -159,7 +159,7 @@ function go_list(action_cmd) {
   %>
   <div class="container">
     <div class="new-btn">
-      <input type="button" onclick="go_list('return')" value="　戻る　" />
+      <input type="button" onclick="go_list('return')" value="戻る" />
     </div>
 <header>
     <h1> <%= header %>ページ </h1>

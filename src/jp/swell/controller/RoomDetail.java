@@ -146,14 +146,17 @@ public class RoomDetail extends ControllerBase
                   if ("insEnter".equals(requestCmd))
                   {
                       dbRegistration();
+                      return;
                   }
                   else if ("updateEnter".equals(requestCmd))
                   {
                       dbEdit();
+                      return;
                   }
                   else if ("deleteEnter".equals(requestCmd))
                   {
                       dbDeletef();
+                      return;
                   }
               }
               redirect("RoomList.do");
