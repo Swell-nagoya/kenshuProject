@@ -44,7 +44,7 @@ public class UserLogin extends ControllerBase {
         String account = bean.value("ac");
         String password = bean.value("ko");
         
-        System.out.println("入力されたID = [" + account);
+        System.out.println("入力されたID = " + account);
         System.out.println("パスワード入力あり = " + (password != null && !password.isEmpty()));
 
         if ("UserLogin".equals(bean.value("form_name"))) {
@@ -66,8 +66,8 @@ public class UserLogin extends ControllerBase {
                 	System.out.println("管理者権限画面に移動します");
                 	redirect("MenuAdmin.do");
                 } else {
-					System.out.println("カレンダー画面に移動します");
-					redirect("Calendar.do");
+					System.out.println("一般画面に移動します");
+					redirect("UserMenu.do");
 				}
                 return;
             } else if ("repassword".equals(bean.value("action_cmd"))) {
@@ -110,36 +110,22 @@ public class UserLogin extends ControllerBase {
         }
         System.out.println("ログイン認証を開始します");
 
-        boolean loginResult =
-                userLoginInfo.login(
-                        bean.value("ac"),
-                        bean.value("ko")
-                );
+        boolean loginResult = userLoginInfo.login(bean.value("ac"),bean.value("ko"));
 
         System.out.println("認証結果 = " + loginResult);
 
         if (!loginResult) {
-            System.out.println(
-                    "入力チェック失敗：ユーザー名またはパスワード不一致"
-            );
-            bean.setError(
-                    "ac",
-                    "usernameかpasswordが違います"
-            );
+            System.out.println("入力チェック失敗：ユーザー名またはパスワード不一致");
+            bean.setError("ac","usernameかpasswordが違います");
             return false;
         }
 
         System.out.println("ログイン認証成功");
 
-        userLoginInfo.setUserInfo(
-                userLoginInfo.getUserInfoDao()
-        );
+        userLoginInfo.setUserInfo(userLoginInfo.getUserInfoDao());
         setLoginInfo(userLoginInfo);
 
-        bean.setValue(
-                "user_info_id",
-                userLoginInfo.getUserInfoId()
-        );
+        bean.setValue("user_info_id",userLoginInfo.getUserInfoId());
 
         return true;
     }
