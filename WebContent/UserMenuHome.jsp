@@ -503,16 +503,38 @@ footer {
                     %>
                     <%
                     if (WebUtil.htmlEscape(reserve.getUserInfoId()).equals(webBean.txt("user_info_id"))) {
-                   
                       %>
                         dateCell.innerHTML += '<div class="myreserve room<%= WebUtil.htmlEscape(reserve.getRoomId()) %> <%= WebUtil.htmlEscape(reserve.getUserInfoId()) %>" '
+                        <% if ( !"".equals(reserve.getRoomId())) { %>
                         + 'date-roomid="<%= WebUtil.htmlEscape(reserve.getRoomId()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getUserInfoId())) { %>
                         + 'date-userinfoId="<%= WebUtil.htmlEscape(reserve.getUserInfoId()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getUserName())) { %>
                         + 'date-username="<%= WebUtil.htmlEscape(reserve.getUserName()) %>"'
-                        + 'date-checkin-time="<%= displayCheckinTime %>"' 
-                        + 'date-checkout-time="<%= displayCheckoutTime %>"'
-                        + 'date-userinfoids="<%= userInfoIds %>"'
-                        + 'date-usernames="<%= userNames %>"'
+                        <% } %>
+                        <% if ( !"".equals(displayCheckinTime)) { %>
+                        + 'date-checkin-time="<%= WebUtil.htmlEscape(displayCheckinTime) %>"'
+                        <% } %>
+                        <% if ( !"".equals(displayCheckoutTime)) { %>
+                        + 'date-checkout-time="<%= WebUtil.htmlEscape(displayCheckoutTime) %>"'
+                        <% } %>
+                        <% if ( !"".equals(userInfoIds)) { %>
+                        + 'date-userinfoids="<%= WebUtil.htmlEscape(userInfoIds) %>"'
+                        <% } %>
+                        <% if ( !"".equals(userNames)) { %>
+                        + 'date-usernames="<%= WebUtil.htmlEscape(userNames) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getInputText())) { %>
+                        + 'date-inputText="<%= WebUtil.htmlEscape(reserve.getInputText()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getColor())) { %>
+                        + 'date-rgbcolor="<%= WebUtil.htmlEscape(reserve.getColor()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getInputRemark())) { %>
+                          + 'date-inputRemark="<%= WebUtil.htmlEscape(reserve.getInputRemark()) %>"'
+                        <% } %>
                         + '>'
                         + '<%= displayTime %> <%= WebUtil.htmlEscape(reserve.getRoomName()) %>'
                         + '</div>';
@@ -520,13 +542,36 @@ footer {
                     } else if (webBean.txt("admin").equals("admin")) {
                     %>
                         dateCell.innerHTML += '<div class="reserved room<%= WebUtil.htmlEscape(reserve.getRoomId()) %> <%= WebUtil.htmlEscape(reserve.getUserInfoId()) %>" '
+                        <% if ( !"".equals(reserve.getRoomId())) { %>
                         + 'date-roomid="<%= WebUtil.htmlEscape(reserve.getRoomId()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getUserInfoId())) { %>
                         + 'date-userinfoId="<%= WebUtil.htmlEscape(reserve.getUserInfoId()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getUserName())) { %>
                         + 'date-username="<%= WebUtil.htmlEscape(reserve.getUserName()) %>"'
-                        + 'date-checkin-time="<%= displayCheckinTime %>"' 
-                        + 'date-checkout-time="<%= displayCheckoutTime %>"'
-                        + 'date-userinfoids="<%= userInfoIds %>"'
-                        + 'date-usernames="<%= userNames %>"'
+                        <% } %>
+                        <% if ( !"".equals(displayCheckinTime)) { %>
+                        + 'date-checkin-time="<%= WebUtil.htmlEscape(displayCheckinTime) %>"'
+                        <% } %>
+                        <% if ( !"".equals(displayCheckoutTime)) { %>
+                        + 'date-checkout-time="<%= WebUtil.htmlEscape(displayCheckoutTime) %>"'
+                        <% } %>
+                        <% if ( !"".equals(userInfoIds)) { %>
+                        + 'date-userinfoids="<%= WebUtil.htmlEscape(userInfoIds) %>"'
+                        <% } %>
+                        <% if ( !"".equals(userNames)) { %>
+                        + 'date-usernames="<%= WebUtil.htmlEscape(userNames) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getInputText())) { %>
+                        + 'date-inputText="<%= WebUtil.htmlEscape(reserve.getInputText()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getColor())) { %>
+                        + 'date-rgbcolor="<%= WebUtil.htmlEscape(reserve.getColor()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getInputRemark())) { %>
+                        + 'date-inputRemark="<%= WebUtil.htmlEscape(reserve.getInputRemark()) %>"'
+                        <% } %>
                         +'>'
                         + '<%= displayTime %> <%= WebUtil.htmlEscape(reserve.getRoomName()) %>'
                         + '<br>'
@@ -995,30 +1040,73 @@ footer {
         const formattedDate = selectedDate.substr(0, 4) + "年" + selectedDate.substr(4, 2) + "月" + selectedDate.substr(6, 2) + "日";
          // hidden フィールドに値をセット
         $('#reservation_date').val(formattedDate);
-        
-        let roomId = $(e.target).attr('date-roomid');
-        let userInfoId = $(e.target).attr('date-userinfoId');
-        let userName = $(e.target).attr('date-username');
-        let checkinTime = $(e.target).attr('date-checkin-time');
-        let checkoutTime = $(e.target).attr('date-checkout-time');
-        let userInfoIds = $(e.target).attr('date-userinfoids');
-        let userNames = $(e.target).attr('date-usernames');
-        
-        
-        valFun("room_id", roomId);
-        valFun("user_info_id", userInfoId);
-        valFun("user_name", userName);
-        valFun("checkin_time", checkinTime);
-        valFun("checkout_time", checkoutTime);
-        valFun("user_info_ids", userInfoIds);
-        valFun("user_names", userNames);
-        
-        
 
+        // room.room_id
+        let roomId = $(e.target).attr('date-roomid');
+        if(roomId){
+            valFun("room_id", roomId);
+        }
+
+        // reserve.user_info_id
+        let userInfoId = $(e.target).attr('date-userinfoId');
+        if(userInfoId){
+            valFun("user_info_id", userInfoId);
+        }
+
+        let userName = $(e.target).attr('date-username');
+        if(userName){
+            valFun("user_name", userName);
+        }
+
+        // reserve.checkin_time
+        let checkinTime = $(e.target).attr('date-checkin-time');
+        if(checkinTime){
+            valFun("checkin_time", checkinTime);
+        }
+
+        // reserve.checkout_time
+        let checkoutTime = $(e.target).attr('date-checkout-time');
+        if(checkoutTime){
+            valFun("checkout_time", checkoutTime);
+        }
         
-        //予約画面に移行
-        go_detail('reserve', '');
+        let userInfoIds = $(e.target).attr('date-userinfoids');
+        if(userInfoIds){
+            valFun("user_info_ids", userInfoIds);
+        }
+        
+        let userNames = $(e.target).attr('date-usernames');
+        if(userNames){
+          valFun("user_names", userNames);
+        }
+
+        // reserve.input_text
+        let inputText = $(e.target).attr('date-inputtext');
+        if(inputText){
+            valFun("input_text", inputText);
+        }
+
+        // reserve.rgb_color
+        let rgbColor = $(e.target).attr('date-rgbcolor');
+        if(rgbColor){
+            valFun("rgb_color", rgbColor);
+        }
+        // reserve.input_remark
+        let inputRemark = $(e.target).attr('date-inputremark');
+        if(inputRemark){
+            valFun("input_remark", inputRemark);
+        }
+        
+        // 予約画面に移行
+        // 予約編集
+        if($(e.target).hasClass("myreserve")){
+        	go_detail('edit', '');
+        // 新規予約
+        } else {
+        	go_detail('reserve', '');
+        }
     });
+    
     function valFun(inputIdName, data){
         if(data !== "undefined" && data !== ""){
            if( $("#" + inputIdName).length > 0 ) {
@@ -1172,6 +1260,10 @@ String actionCmd = (String) request.getParameter("action_cmd");
             <input type="hidden" name="user_info_ids" id="user_info_ids" value="<%= webBean.txt("user_info_ids") %>">
             <input type="hidden" name="user_names" id="user_names" value="<%= webBean.txt("user_names") %>">
             <input type="hidden" name="selected_user_ids" id="selected_user_ids" value="<%= webBean.txt("selected_user_ids") %>">
+            <input type="hidden" name="input_text" id="input_text" value="<%= webBean.txt("input_text") %>">
+            <input type="hidden" name="rgb_color" id="rgb_color" value="<%= webBean.txt("rgb_color") %>">
+            <input type="hidden" name="input_remark" id="input_remark" value="<%= webBean.txt("input_remark") %>">
+            
             <input type="hidden" id="room_id" name="room_id" value="">
             <input type="hidden" id="reservation_date" name="reservation_date" value="">
             <input type="hidden" id="checkin_time" name="checkin_time" value="">

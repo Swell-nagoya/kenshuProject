@@ -518,6 +518,9 @@ public class ReserveDao implements Serializable {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
+    
+    
+    
     /**
      * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
      */
@@ -734,6 +737,7 @@ public class ReserveDao implements Serializable {
                 + "," + DbO.chara(getUserReserveId())
                 + ")";
         int ret = DbBase.dbExec(sql);
+
         if (ret != 1)
             throw new AtareSysException("dbInsertReserve number or record exception.");
         return true;
@@ -857,6 +861,9 @@ public class ReserveDao implements Serializable {
     public ArrayList<ReserveDao> getCalendarReserves() throws AtareSysException {
         String sql = "SELECT reserve_id"
                 + ", reserve.user_info_id"
+                + ", reserve.input_text"
+                + ", reserve.rgb_color"
+                + ", reserve.input_remark"
                 + ", last_name"
                 + ", middle_name"
                 + ", first_name"
@@ -871,11 +878,17 @@ public class ReserveDao implements Serializable {
                 + "ORDER BY reservation_date ASC, checkin_time ASC;";
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         ArrayList<ReserveDao> reserves = new ArrayList<>();
+
         for (HashMap<String, String> map : rs) {
             ReserveDao reserve = new ReserveDao();
             // ReserveDAOのインスタンスにデータを設定
             reserve.setReserveId(map.get("reserve_id"));
             reserve.setUserInfoId(map.get("user_info_id"));
+
+            reserve.setInputText(map.get("input_text"));
+            reserve.setColor(map.get("rgb_color"));
+            reserve.setInputRemark(map.get("input_remark"));
+            
             reserve.setUserName(map.get("last_name") + map.get("middle_name") + map.get("first_name"));
             reserve.setRoomId(map.get("room_id"));
             reserve.setRoomName(map.get("room_name"));
