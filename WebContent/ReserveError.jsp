@@ -60,14 +60,14 @@ h1 {
     font-size: 18px;
     text-align: center;
   }
-    </style>
+</style>
 <script type="text/javascript">
     function go_menu(action_cmd) {
         document.getElementById('main_form').action = 'UserYoyakuDetail.do';
         document.getElementById('action_cmd').value = action_cmd;
         document.getElementById('main_form').submit();
     }
-</script>    
+</script>
 </head>
 <body>
  <div class="container">
@@ -77,6 +77,7 @@ h1 {
 
         <input type="hidden" name="form_name" id="form_name" value="ReserveError" /> 
         <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
+        <input type="hidden" name="reservation_date" id="reservation_date" value="<%=webBean.txt("reservation_date")%>" /> 
         <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" /> 
         <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
         <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />

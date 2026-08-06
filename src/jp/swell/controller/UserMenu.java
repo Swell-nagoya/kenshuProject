@@ -46,7 +46,8 @@ public class UserMenu extends ControllerBase
     public void doActionProcess() throws AtareSysException
     {
         WebBean bean = getWebBean();
-
+        System.out.println("form_name:" + bean.value("form_name"));
+        
         if ("UserMenuHome".equals(bean.value("form_name")))
         {
             bean.trimAllItem();
@@ -180,13 +181,18 @@ public class UserMenu extends ControllerBase
         {
             formInit();
             searchList();
-            bean.setValue("schedule", "メイン");
             ReserveDao reserveDao = new ReserveDao();
             ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
             bean.setValue("reserves", reserves);
+            
             RoomDao roomDao = new RoomDao();
             ArrayList<RoomDao> rooms = roomDao.getAllRooms();
             bean.setValue("rooms", rooms);
+            
+            UserReserveDao userReserveDao = new UserReserveDao();
+            ArrayList<UserReserveDao> userReserves = userReserveDao.getAllUserReserves();
+            bean.setValue("userReserves", userReserves);
+            
             forward("UserMenuHome.jsp");
         }
     }
