@@ -57,7 +57,7 @@ public class UserMenu extends ControllerBase
                 ReserveDao reserveDao = new ReserveDao();
                 ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
                 bean.setValue("reserves", reserves);
-                forward("UserMenuHome.jsp");
+                forward("UserMenuHome.sjp");
             }
 
             else if ("home".equals(bean.value("action_cmd")))
@@ -165,9 +165,9 @@ public class UserMenu extends ControllerBase
             forward("UserMenuHome.jsp");
         }
         else
-        {
-            formInit();
-            searchList();
+        {    
+        	formInit();
+        	searchList();
             bean.setValue("schedule", "メイン");
             ReserveDao reserveDao = new ReserveDao();
             ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
