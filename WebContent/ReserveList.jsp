@@ -467,9 +467,13 @@ a:hover {
                           }
                       }
                       
+                      String formatDate = "";
                       String reserveDate = WebUtil.htmlEscape(reserve.getReservationDate());
-                      String formatDate = reserveDate.substring(0, 4) + "/" + reserveDate.substring(4, 6) + "/" + reserveDate.substring(6, 8);
-                      
+                      if (reserveDate != null && reserveDate.length() >= 8) {
+
+                        formatDate = reserveDate.substring(0, 4) + "/" + reserveDate.substring(4, 6) + "/" + reserveDate.substring(6, 8);
+                     
+                      }               
                       String checkinTime = WebUtil.htmlEscape(reserve.getCheckinTime());
                       String checkoutTime = WebUtil.htmlEscape(reserve.getCheckoutTime());
                       String formatCheckinTime = checkinTime.substring(0, 2) + ":" + checkinTime.substring(2, 4);
