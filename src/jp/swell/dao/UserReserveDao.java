@@ -153,13 +153,26 @@ public class UserReserveDao implements Serializable {
       return this.userIds;
   }
   
+  private String userName;
+
+
+  // ユーザー名をセットするメソッド
+  public void setUserName(String userName) {
+      this.userName = userName;
+  }
+
+  // ユーザー名を取得するメソッド
+  public String getUserName() {
+      return this.userName;
+  }
+  
   /**
    * データアクセス権限のあるユーザリストを取得する。.
    */
   public ArrayList<String> getAuthorityUserList() {
     return authorityUserList;
   }
-
+  
   /**
    * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
    */
@@ -272,6 +285,7 @@ public class UserReserveDao implements Serializable {
               + "," + DbO.chara(getReserveId())
               + ")";
       int ret = DbBase.dbExec(sql);
+      System.out.println(sql);
       if (ret != 1) throw new AtareSysException("dbInsertReserve number or record exception.");
       return true;
   }
@@ -325,6 +339,7 @@ public class UserReserveDao implements Serializable {
     ArrayList<UserReserveDao> userReserves = new ArrayList<>();
     for (HashMap<String, String> map : rs) {
       UserReserveDao userReserve = new UserReserveDao();
+      
         // ReserveDAOのインスタンスにデータを設定
         userReserve.setUserReserveId(map.get("user_reserve_id"));
         userReserve.setUserInfoId(map.get("user_info_id"));
@@ -334,7 +349,43 @@ public class UserReserveDao implements Serializable {
 
     return userReserves; // 取得したルームリストを返す
 }
-  
+
+  /**
+   * データベースからカレンダー用に全ての予約を取得するメソッド
+   * @return userReservesに返す
+   * @throws AtareSysException
+   */
+  public ArrayList<UserReserveDao> getCalendarUserReserves() throws AtareSysException {
+
+   String sql = "SELECT user_reserve.user_reserve_id"
+       + ", user_reserve.user_info_id"
+       + ", user_reserve.reserve_id"
+       + ", user_info.first_name"
+       + ", user_info.middle_name"
+       + ", user_info.last_name"
+       + " FROM user_reserve"
+       + " JOIN user_info ON user_reserve.user_info_id = user_info.user_info_id";
+   List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+   
+   
+   System.out.println("sql+:" + sql);
+   
+   
+   ArrayList<UserReserveDao> userReserves = new ArrayList<>();
+   for (HashMap<String, String> map : rs) {
+     UserReserveDao userReserve = new UserReserveDao();
+     
+       // ReserveDAOのインスタンスにデータを設定
+       userReserve.setUserReserveId(map.get("user_reserve_id"));
+       
+       userReserve.setUserName(map.get("last_name") + map.get("middle_name") + map.get("first_name"));
+       userReserve.setUserInfoId(map.get("user_info_id"));
+       userReserve.setReserveId(map.get("reserve_id"));
+       userReserves.add(userReserve);
+   }
+
+   return userReserves; // 取得したルームリストを返す
+  }
   
   
   /**

@@ -190,7 +190,7 @@ public class UserMenu extends ControllerBase
             bean.setValue("rooms", rooms);
             
             UserReserveDao userReserveDao = new UserReserveDao();
-            ArrayList<UserReserveDao> userReserves = userReserveDao.getAllUserReserves();
+            ArrayList<UserReserveDao> userReserves = userReserveDao.getCalendarUserReserves();
             bean.setValue("userReserves", userReserves);
             
             forward("UserMenuHome.jsp");

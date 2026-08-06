@@ -469,6 +469,7 @@ footer {
                     }
                     %>
                     <%
+                    String userNames = "";
                     String userInfoIds = "";
                     String reserveId = reserve.getReserveId();
                     // データベースのuser_reserveが空でないかの確認
@@ -480,9 +481,18 @@ footer {
                          String userReserveUserReserveId = userReserve.getUserReserveId();
                          String userReserveReserveId = userReserve.getReserveId();
                          
+                         String userReserveUserName = userReserve.getUserName();
+                         
+                         
                          // reserve.reserve_id と user_reserve.reserve_idが一致するとき
                          if( reserveId != null && reserveId.equals(userReserveReserveId) ){
 
+                          if( !userNames.equals("") ){
+                               userNames += ",";
+                          }
+
+                           userNames += userReserveUserName;
+                          
                            if( !userInfoIds.equals("") ){
                          	   userInfoIds += ",";
                            }
@@ -502,6 +512,7 @@ footer {
                         + 'date-checkin-time="<%= displayCheckinTime %>"' 
                         + 'date-checkout-time="<%= displayCheckoutTime %>"'
                         + 'date-userinfoids="<%= userInfoIds %>"'
+                        + 'date-usernames="<%= userNames %>"'
                         + '>'
                         + '<%= displayTime %> <%= WebUtil.htmlEscape(reserve.getRoomName()) %>'
                         + '</div>';
@@ -515,6 +526,7 @@ footer {
                         + 'date-checkin-time="<%= displayCheckinTime %>"' 
                         + 'date-checkout-time="<%= displayCheckoutTime %>"'
                         + 'date-userinfoids="<%= userInfoIds %>"'
+                        + 'date-usernames="<%= userNames %>"'
                         +'>'
                         + '<%= displayTime %> <%= WebUtil.htmlEscape(reserve.getRoomName()) %>'
                         + '<br>'
@@ -990,6 +1002,7 @@ footer {
         let checkinTime = $(e.target).attr('date-checkin-time');
         let checkoutTime = $(e.target).attr('date-checkout-time');
         let userInfoIds = $(e.target).attr('date-userinfoids');
+        let userNames = $(e.target).attr('date-usernames');
         
         
         valFun("room_id", roomId);
@@ -998,6 +1011,7 @@ footer {
         valFun("checkin_time", checkinTime);
         valFun("checkout_time", checkoutTime);
         valFun("user_info_ids", userInfoIds);
+        valFun("user_names", userNames);
         
         
 
@@ -1156,7 +1170,7 @@ String actionCmd = (String) request.getParameter("action_cmd");
             <input type="hidden" name="request_cmd" id="request_cmd" value=""/>
             <input type="hidden" name="date" id="date" value="<%= new java.util.Date() %>" />
             <input type="hidden" name="user_info_ids" id="user_info_ids" value="<%= webBean.txt("user_info_ids") %>">
-            <input type="hidden" name="user_name" id="user_name" value="<%= String.join(",", webBean.txt("user_names")) %>">
+            <input type="hidden" name="user_names" id="user_names" value="<%= webBean.txt("user_names") %>">
             <input type="hidden" name="selected_user_ids" id="selected_user_ids" value="<%= webBean.txt("selected_user_ids") %>">
             <input type="hidden" id="room_id" name="room_id" value="">
             <input type="hidden" id="reservation_date" name="reservation_date" value="">
