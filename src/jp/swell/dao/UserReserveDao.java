@@ -241,8 +241,6 @@ public class UserReserveDao implements Serializable {
    * @param dao UserReserveDaoこのテーブルのインスタンス
    */
   public void setUserReserveDaoForJoin(HashMap<String, String> map, UserReserveDao dao) throws AtareSysException {
-	 // コンソールにエラーが出た為に修正、
-	  System.out.println(map.keySet());
     dao.setUserReserveId(DbI.chara(map.get("user_reserve_id")));
     dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
     dao.setReserveId(DbI.chara(map.get("reserve_id")));

@@ -38,29 +38,20 @@ public class UserLogin extends ControllerBase {
      */
     @Override
     public void doActionProcess() throws AtareSysException {
-    	System.out.println("login開始");
         WebBean bean = getWebBean();
         bean.trimAllItem();
 
         if ("UserLogin".equals(bean.value("form_name"))) {
             // ログインボタンが押されたときの処理
-        	System.out.println("action_cmd:"+bean.value ("action_cmd"));
-        	 boolean checkResult = inputCheck();
-        	 System.out.println("inputCheckの結果"+checkResult);
+        
         	 
-        	 if(!checkResult) {
-        		 System.out.println("入力チェック失敗→ログイン画面");
-        		 this.forward("/UserLogin.jsp");
-        		 		return;
-        	 }
-        	 
-//            if ("login".equals(bean.value("action_cmd"))) {
-//                this.setLoginInfo(null);
-//                if (!inputCheck()) {
-//                    this.forward("/UserLogin.jsp");
-//                    return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
-//                }
-//                   
+            if ("login".equals(bean.value("action_cmd"))) {
+                this.setLoginInfo(null);
+                if (!inputCheck()) {
+                    this.forward("/UserLogin.jsp");
+                    return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
+                }
+                   
                     UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
                     System.out.println("loginInfo:" +loginInfo);
                     
@@ -87,6 +78,8 @@ public class UserLogin extends ControllerBase {
         } else {
             this.forward("/UserLogin.jsp");
         }
+        }
+        
     }
 
     /**

@@ -252,7 +252,6 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
         try {
             userInfoDao = new UserInfoDao();
             boolean flg = userInfoDao.login(pAccount, pPassword);
-            System.out.println("UserInfoDap.loginの結果"+ flg);
             if (!flg) {
                 return false;
             }
