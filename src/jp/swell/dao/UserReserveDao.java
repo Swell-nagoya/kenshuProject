@@ -285,7 +285,7 @@ public class UserReserveDao implements Serializable {
               + "," + DbO.chara(getReserveId())
               + ")";
       int ret = DbBase.dbExec(sql);
-      System.out.println(sql);
+
       if (ret != 1) throw new AtareSysException("dbInsertReserve number or record exception.");
       return true;
   }
@@ -367,8 +367,6 @@ public class UserReserveDao implements Serializable {
        + " JOIN user_info ON user_reserve.user_info_id = user_info.user_info_id";
    List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
    
-   
-   System.out.println("sql+:" + sql);
    
    
    ArrayList<UserReserveDao> userReserves = new ArrayList<>();
