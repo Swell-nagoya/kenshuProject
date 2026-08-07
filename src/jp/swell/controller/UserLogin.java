@@ -67,7 +67,7 @@ public class UserLogin extends ControllerBase {
                 	redirect("MenuAdmin.do");
                 } else {
 					System.out.println("一般画面に移動します");
-					redirect("UserMenuHome.do");
+					redirect("UserMenu.do");
 				}
                 return;
             } else if ("repassword".equals(bean.value("action_cmd"))) {

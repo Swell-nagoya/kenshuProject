@@ -57,7 +57,7 @@ public class UserMenu extends ControllerBase
                 ReserveDao reserveDao = new ReserveDao();
                 ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
                 bean.setValue("reserves", reserves);
-                forward("UserMenuHome.sjp");
+                forward("UserMenuHome.jsp");
             }
 
             else if ("home".equals(bean.value("action_cmd")))
