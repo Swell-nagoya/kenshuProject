@@ -360,9 +360,8 @@ public class RoomDao implements Serializable
              + "FROM room "
              + "WHERE room.room_id = ?"; // テーブル名も明示して確実に指定
      try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
-     	System.out.println("11:"+pstmt);
          pstmt.setString(1, pRoomId);
-System.out.println("22:"+pstmt);
+
          try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
              if (!rs.next()) {
                  return false;
