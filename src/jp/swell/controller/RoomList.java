@@ -372,7 +372,7 @@ public class RoomList extends ControllerBase
           if (room_id_show_all_array != null) {
              for (int z = 0; z < room_id_show_all_array.length; z++) {
               String statusReset = room_id_show_all_array[z];
-              dao.dbUpdateState(statusReset,"1");
+              dao.dbUpdateStatus(statusReset,"1");
              }
               
             }
@@ -380,7 +380,7 @@ public class RoomList extends ControllerBase
           if (listStatusFlgs != null) {
             for (int i = 0; i < listStatusFlgs.length; i++) {
               String status = listStatusFlgs[i];
-               dao.dbUpdateState(status,"8");
+               dao.dbUpdateStatus(status,"8");
             }
           }
           DbBase.dbCommitTran();

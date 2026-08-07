@@ -208,6 +208,7 @@ public class RoomDetail extends ControllerBase
                   else if ("insConfirm".equals(requestCmd))
                   {
                       dbRegistration();
+                      return;
                   }
                   else if ("updateConfirm".equals(requestCmd))
                   {
@@ -217,6 +218,7 @@ public class RoomDetail extends ControllerBase
                           setInputInfo2Dao2Web();
                           setWeb2Dao2InputInfo();
                           dbEdit();
+                          return;
                       }
                       else 
                       {
@@ -236,6 +238,7 @@ public class RoomDetail extends ControllerBase
                          setInputInfo2Dao2Web();
                          setWeb2Dao2InputInfo();
                          dbDelete();
+                         return;
                       }
                       else 
                        {

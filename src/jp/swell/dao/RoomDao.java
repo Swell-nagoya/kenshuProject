@@ -360,8 +360,9 @@ public class RoomDao implements Serializable
              + "FROM room "
              + "WHERE room.room_id = ?"; // テーブル名も明示して確実に指定
      try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
+     	System.out.println("11:"+pstmt);
          pstmt.setString(1, pRoomId);
-
+System.out.println("22:"+pstmt);
          try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
              if (!rs.next()) {
                  return false;
@@ -501,33 +502,24 @@ public class RoomDao implements Serializable
      * @throws AtareSysException フレームワーク共通例外
      */
     public boolean dbUpdateStatus(String roomId, String status) throws AtareSysException {
-        String sql = "update room set "
-                + " status = " + DbO.chara(status)
-                + " where room_id = " + DbS.chara(roomId)
-                + "";
-        int ret = DbBase.dbExec(sql);
-        
-        if (ret != 1)
-            throw new AtareSysException("dbUpdate number or record exception.");
-        return true;
-    }
-    /**
-     * user_info ユーザ情報テーブルのデータを更新する。(ステータスを更新).
-     *
-     * @return true:成功 false:失敗
-     * @throws AtareSysException フレームワーク共通例外
-     */
-     public boolean dbUpdateState(String roomId, String status) throws AtareSysException {
-       String sql = "update room set "
-             + " status = " + DbO.chara(status)
-             + " where room_id = " + DbS.chara(roomId)
-             + "";
-       int ret = DbBase.dbExec(sql);
+     String sql = "UPDATE room SET status = ? WHERE room.room_id = ?";
      
-       if (ret != 1)
-         throw new AtareSysException("dbUpdate number or record exception.");
-       return true;
-    }
+     try (PreparedStatement pstmt = DbBase.getDbConnection().prepareStatement(sql)) {
+
+         pstmt.setString(1, status);
+         pstmt.setString(2, roomId);
+
+         int updatedCount = pstmt.executeUpdate();
+
+         if (updatedCount == 0) {
+           	return false;
+         }
+         return true;
+         
+         } catch (SQLException e) {
+           throw new AtareSysException("データベース処理中にエラーが発生しました: " + e.getMessage(), e);
+         }
+     }
 
     /**
      * room ルームテーブルからデータを削除する
