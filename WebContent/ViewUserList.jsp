@@ -322,13 +322,53 @@ footer {
           <%
           for (Object item : webBean.arrayList("list")) {
               UserInfoDao dao = (UserInfoDao) item;
-          %>
+			  
+			      String fullName = "";
+
+			      if (dao.getLastName() != null
+			              && !dao.getLastName().isEmpty()) {
+			          fullName = dao.getLastName();
+			      }
+
+			      if (dao.getMiddleName() != null
+			              && !dao.getMiddleName().isEmpty()) {
+			          fullName += (fullName.isEmpty() ? "" : "・") + dao.getMiddleName();
+			      }
+
+			      if (dao.getFirstName() != null
+			              && !dao.getFirstName().isEmpty()) {
+			          fullName += (fullName.isEmpty() ? "" : "・") + dao.getFirstName();
+			      }
+
+			      String fullNameKana = "";
+
+			      if (dao.getLastNameKana() != null
+			              && !dao.getLastNameKana().isEmpty()) {
+			          fullNameKana = dao.getLastNameKana();
+			      }
+
+			      if (dao.getMiddleNameKana() != null
+			              && !dao.getMiddleNameKana().isEmpty()) {
+			          fullNameKana += (fullNameKana.isEmpty() ? "" : "・") + dao.getMiddleNameKana();
+			      }
+
+			      if (dao.getFirstNameKana() != null
+			              && !dao.getFirstNameKana().isEmpty()) {
+			          fullNameKana += (fullNameKana.isEmpty() ? "" : "・") + dao.getFirstNameKana();
+			      }
+			  %>
           <tr class="list_tr">
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
-            </td>
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
-            </td>
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
+			<td class="list_text">
+			    <%=WebUtil.htmlEscape(fullName)%>
+			</td>
+
+			<td class="list_text">
+			    <%=WebUtil.htmlEscape(fullNameKana)%>
+			</td>
+
+			<td class="list_text">
+			    <%=WebUtil.htmlEscape(dao.getMemail())%>
+			</td>
             <td class="list_btn">
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
               <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />

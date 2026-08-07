@@ -165,9 +165,9 @@ public class UserMenu extends ControllerBase
             forward("UserMenuHome.jsp");
         }
         else
-        {
-            formInit();
-            searchList();
+        {    
+        	formInit();
+        	searchList();
             bean.setValue("schedule", "メイン");
             ReserveDao reserveDao = new ReserveDao();
             ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();

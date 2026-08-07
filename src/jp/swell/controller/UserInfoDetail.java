@@ -224,9 +224,17 @@ public class UserInfoDetail extends ControllerBase
                   if ("ins".equals(bean.value("request_cmd"))) 
                   {
                       setInputInfo2Dao2Web();
-                      signUp();
-                      scheduleInsert();
+                      boolean signupResult = signUp();
+                      System.out.println("signUpの結果 = " + signupResult);
+                      if (!signupResult) {
+						  bean.setError("ユーザー登録に失敗しました。");
+						  forward("UserInfoDetail_3.jsp");
+						  return;
+						  }
+                      boolean scheduleResult = scheduleInsert();
+                      System.out.println("scheduleInsertの結果 = " + scheduleResult);
                       redirect("ViewUserList.do");
+                      return;
                   }
                   else if ("update".equals(bean.value("request_cmd"))) 
                   {
@@ -657,11 +665,14 @@ public class UserInfoDetail extends ControllerBase
 
       try {
         // 入力内容をデータベースに保存
+    	System.out.println("ユーザー登録を開始します");
         dao.dbInsert();
-        
+        System.out.println("ユーザー登録が完了しました");
         return true;
         
       } catch (Exception e) {
+    	System.out.println("ユーザー登録に失敗しました");
+    	e.printStackTrace();
         return false;
       }
     }
