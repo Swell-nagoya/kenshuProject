@@ -571,6 +571,28 @@ public class RoomDao implements Serializable
       return rooms; // 取得したルームリストを返す
     }
 
+    /**
+     * データベースから代入したroomNameがroom.room_nameと一致した場合。取得するメソッド
+     * @return UserMenuに返す
+     * @throws AtareSysException
+     */
+    public ArrayList<RoomDao> getExistRoomsName(String roomName) throws AtareSysException {
+      String sql = "SELECT room_id, room_name FROM room "
+      		+ "where room_name = '" + roomName + "';";
+      List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+      
+      ArrayList<RoomDao> rooms = new ArrayList<>();
+      for (HashMap<String, String> map : rs) {
+          RoomDao room = new RoomDao();
+          // ルームDAOのインスタンスにデータを設定
+          room.setRoomId(map.get("room_id"));
+          room.setRoomName(map.get("room_name"));
+          rooms.add(room);
+      }
+
+      return rooms; // 取得したルームリストを返す
+    }
+    
     static public ArrayList<RoomDao> dbSelectList(RoomDao myclass,LinkedHashMap<String,String> sortKey,DaoPageInfo daoPageInfo) throws AtareSysException
     {
         ArrayList<RoomDao> array = new ArrayList<RoomDao>();

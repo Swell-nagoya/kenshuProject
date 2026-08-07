@@ -435,8 +435,7 @@ public class RoomDetail extends ControllerBase
 
          // DBのルーム名を全検索.今回の登録と一致するかどうか.
          RoomDao dao = new RoomDao();
-         ArrayList<RoomDao> allRooms = dao.getAllRooms();
-         
+         ArrayList<RoomDao> allRooms = dao.getExistRoomsName(roomName);
          boolean registeredFlag = false;
 
          for (RoomDao allRoom : allRooms) {
