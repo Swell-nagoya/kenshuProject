@@ -46,7 +46,6 @@ public class UserMenu extends ControllerBase
     public void doActionProcess() throws AtareSysException
     {
         WebBean bean = getWebBean();
-        System.out.println("form_name:" + bean.value("form_name"));
         
         if ("UserMenuHome".equals(bean.value("form_name")))
         {
