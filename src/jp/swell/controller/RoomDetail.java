@@ -85,6 +85,7 @@ public class RoomDetail extends ControllerBase
               {
                   if ("ins".equals(requestCmd)) 
                   {
+
                       bean.setValue("input_info", Sup.serialize(new RoomDao()));
                       bean.setValue("request_name", "登録");
                       forward("RoomDetail.jsp");
@@ -404,7 +405,7 @@ public class RoomDetail extends ControllerBase
      * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
      * @throws AtareSysException
      */
-    private boolean inputCheck(RoomDao pRoomDao) throws AtareSysException
+     boolean inputCheck(RoomDao pRoomDao) throws AtareSysException
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
