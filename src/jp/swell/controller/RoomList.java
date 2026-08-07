@@ -368,14 +368,6 @@ public class RoomList extends ControllerBase
         try {
           DbBase.dbBeginTran();
           
-          // 画面表示されている利用停止の値をすべてリセット「1」.
-          if (room_id_show_all_array != null) {
-             for (int z = 0; z < room_id_show_all_array.length; z++) {
-              String statusReset = room_id_show_all_array[z];
-              dao.dbUpdateStatus(statusReset,"1");
-             }
-              
-            }
           // 画面表示されている利用停止の値でチェックが入っているものは「8」.
           if (listStatusFlgs != null) {
             for (int i = 0; i < listStatusFlgs.length; i++) {
