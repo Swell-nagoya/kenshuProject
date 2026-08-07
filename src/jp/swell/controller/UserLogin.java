@@ -38,24 +38,38 @@ public class UserLogin extends ControllerBase {
      */
     @Override
     public void doActionProcess() throws AtareSysException {
+    	System.out.println("login開始");
         WebBean bean = getWebBean();
         bean.trimAllItem();
 
         if ("UserLogin".equals(bean.value("form_name"))) {
             // ログインボタンが押されたときの処理
-            if ("login".equals(bean.value("action_cmd"))) {
-                this.setLoginInfo(null);
-                if (!inputCheck()) {
-                    this.forward("/UserLogin.jsp");
-                    return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
-                }
-                   
+        	System.out.println("action_cmd:"+bean.value ("action_cmd"));
+        	 boolean checkResult = inputCheck();
+        	 System.out.println("inputCheckの結果"+checkResult);
+        	 
+        	 if(!checkResult) {
+        		 System.out.println("入力チェック失敗→ログイン画面");
+        		 this.forward("/UserLogin.jsp");
+        		 		return;
+        	 }
+        	 
+//            if ("login".equals(bean.value("action_cmd"))) {
+//                this.setLoginInfo(null);
+//                if (!inputCheck()) {
+//                    this.forward("/UserLogin.jsp");
+//                    return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
+//                }
+//                   
                     UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
+                    System.out.println("loginInfo:" +loginInfo);
                     
                     if ("1".equals(loginInfo.getAdmin())) {
+                    	System.out.println("MenuAdomin.doへ移動");
                     	redirect("MenuAdmin.do");
                     	
                     } else {
+                    	System.out.println("UserMenu.doへ移動");
                     	redirect("UserMenu.do");
                     }
                        
@@ -63,7 +77,7 @@ public class UserLogin extends ControllerBase {
                 
             } else if ("repassword".equals(bean.value("action_cmd"))) {
                 redirect("SendPassMail.do");
-            }
+           
         } else if ("UserMenuHome".equals(bean.value("form_name"))) {
             // ログインボタンが押されたときの処理
             if ("logout".equals(bean.value("action_cmd"))) {
@@ -84,6 +98,7 @@ public class UserLogin extends ControllerBase {
     private boolean inputCheck() throws AtareSysException {
 
         WebBean bean = getWebBean();
+        
         if (bean.value("ac").length() == 0) {
             bean.setError("ac", "未入力");
             return false;
