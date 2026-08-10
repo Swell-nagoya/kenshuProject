@@ -134,7 +134,6 @@ class StateFlgCheckAll {
   }
 
   event() {
-  console.log(this.$elements)
     this.$elements.on("click", (element) => {
       let $element = $(element.currentTarget);
       let $dataTarget = $("." + $element.data(this.dataTarget));

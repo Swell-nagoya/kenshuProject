@@ -376,11 +376,17 @@ jQuery(function($)
     const confirmText = "一括更新しますか？";
     document.getElementById('main_form').action='RoomList.do';
     document.getElementById('action_cmd').value=action_cmd;
+    let submit_flg = true;
     // アラートでOKを選択した場合、submit
     if('statusUpdateAll' === action_cmd) {
+      submit_flg = false;
       if ( confirm(confirmText) ) {
-          document.getElementById('main_form').submit();
+          submit_flg = true;
       }
+    }
+    
+    if(submit_flg === true) {
+      document.getElementById('main_form').submit();
     }
   }
   function go_submit_statusUpdate(action_cmd,main_key)
