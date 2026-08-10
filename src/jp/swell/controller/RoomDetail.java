@@ -438,7 +438,7 @@ public class RoomDetail extends ControllerBase
         RoomDao dao = new RoomDao();
         boolean registeredFlag = dao.getExistRoomsName(roomName);
 
-         if(registeredFlag) {
+         if(registeredFlag == false) {
            errors.put("room_name_duplicate", "同一の部屋名が登録済みです。別の名前を入力してください。");
          }
 

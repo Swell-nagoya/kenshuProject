@@ -582,12 +582,12 @@ public class RoomDao implements Serializable
 
                  if ( count == 0 ) {
 
-                   return false;
+                   return true;
                  }
                  
              }
 
-             return true;
+             return false;
          }
 
      } catch (SQLException e) {
