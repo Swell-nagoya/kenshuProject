@@ -860,12 +860,13 @@ public class ShiftDAO implements Serializable {
     * @param dao  UserInfoDaoこのテーブルのインスタンス
     */
     public void setEmployeeShift(HashMap<String, String> map, ShiftDAO dao) throws AtareSysException {
-        dao.setId(DbI.chara(map.get("employee_shifts___id")));
-        dao.setName(DbI.chara(map.get("employee_shifts___name")));
-        dao.setEmail(DbI.chara(map.get("employee_shifts___email")));
-        dao.setStartTime(DbI.chara(map.get("employee_shifts___start_time")));
-        dao.setEndTime(DbI.chara(map.get("employee_shifts___end_time")));
-        dao.setWorkPlace(DbI.chara(map.get("employee_shifts___work_place")));
+    	System.out.println("ShiftDaoの取得列名 = " + map.keySet());
+        dao.setId(DbI.chara(map.getOrDefault("employee_shifts___id",map.get("id"))));
+        dao.setName(DbI.chara(map.getOrDefault("employee_shifts___name",map.get("name"))));
+        dao.setEmail(DbI.chara(map.getOrDefault("employee_shifts___email",map.get("email"))));
+        dao.setStartTime(DbI.chara(map.getOrDefault("employee_shifts___start_time",map.get("start_time"))));
+        dao.setEndTime(DbI.chara(map.getOrDefault("employee_shifts___end_time",map.get("end_time"))));
+        dao.setWorkPlace(DbI.chara(map.getOrDefault("employee_shifts___work_place",map.get("work_place"))));
     }
 
     /** 
