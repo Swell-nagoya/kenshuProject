@@ -916,7 +916,6 @@ public class UserInfoDao implements Serializable {
      * @param dao  UserInfoDaoこのテーブルのインスタンス
      */
     public void setUserInfoDaoForJoin(HashMap<String, String> map, UserInfoDao dao) throws AtareSysException {
-    	System.out.println("UserInfoDaoの取得列名 = " + map.keySet());
         dao.setUserInfoId(DbI.chara(map.getOrDefault("user_info___user_info_id",map.getOrDefault("user_info_id",""))));
         dao.setPassword(DbI.chara(map.getOrDefault("user_info___password",map.getOrDefault("password",""))));
         dao.setLastName(DbI.chara(map.getOrDefault("user_info___last_name",map.getOrDefault("last_name",""))));
@@ -1337,7 +1336,7 @@ public class UserInfoDao implements Serializable {
             where.append(")");
         }
         where.append(where.length() > 0 ? " AND " : "");
-        where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
+        where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date > '" + todayStr + "'))");
 
         if (where.length() > 0) {
             return "where " + where.toString();
