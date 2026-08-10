@@ -23,7 +23,7 @@ import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.RoomDao;
-
+import jp.swell.user.UserLoginInfo;
 /**
  * ：user_info ユーザ情報テーブルデータを登録・更新・削除するためのコントローラクラス
  *
@@ -67,12 +67,8 @@ public class RoomDetail extends ControllerBase
           String roomName = bean.value("room_name");
           String beforeName = bean.value("before_name");
           RoomDao dao = setWeb2Dao2InputInfo();
-          bean.setValue("request_name", "修正する");
-          if (beforeName == null || beforeName.trim().isEmpty()) {
-              beforeName = roomName;
-              bean.setValue("before_name", beforeName);
-          }
-          bean.setValue("before_name", beforeName);
+
+          bean.setValue("", beforeName);
           bean.setValue("room_name", roomName);
           if ("RoomDetail".equals(formName))
           {
@@ -131,6 +127,12 @@ public class RoomDetail extends ControllerBase
                       }
                       else
                       {
+                    	  UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
+                    	  String deleteUserName = "";
+                    	  if (loginInfo != null) {
+                    		  deleteUserName = loginInfo.getUserName();
+                    	  }
+                    	  bean.setValue("delete_user_name", deleteUserName);
                           bean.setMessage("この部屋を削除します。よろしいですか？");
                           bean.setValue("request_name", "削除する");
                           bean.setValue("room_name", roomName);
@@ -170,7 +172,6 @@ public class RoomDetail extends ControllerBase
           }
       } catch (Exception e) {
           bean.setError("処理中にエラーが発生しました: " + e.getMessage());
-          forward("ErrorPage.jsp");
       }
     }
     /**
@@ -230,6 +231,7 @@ public class RoomDetail extends ControllerBase
 
             bean.setError("入力項目にエラーがあります。下記事項をご確認ください。");
             forward("RoomDetail.jsp");
+            return;
         }
     }
     
