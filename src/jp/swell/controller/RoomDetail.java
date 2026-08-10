@@ -17,7 +17,6 @@ package jp.swell.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import jp.patasys.common.AtareSysException;
@@ -434,21 +433,11 @@ public class RoomDetail extends ControllerBase
          }
         }
 
+								// DBの部屋名room.room_nameを全検索.
+        // 今回の登録と一致するかどうか.
+        RoomDao dao = new RoomDao();
+        boolean registeredFlag = dao.getExistRoomsName(roomName);
 
-
-         // DBのルーム名を全検索.今回の登録と一致するかどうか.
-         RoomDao dao = new RoomDao();
-         ArrayList<RoomDao> allRooms = dao.getExistRoomsName(roomName);
-         boolean registeredFlag = false;
-
-         for (RoomDao allRoom : allRooms) {
-             String name = allRoom.getRoomName();
-
-            if( (roomName != null) &&
-                (name.equals(roomName))) {
-                registeredFlag = true;
-            }
-         }
          if(registeredFlag) {
            errors.put("room_name_duplicate", "同一の部屋名が登録済みです。別の名前を入力してください。");
          }

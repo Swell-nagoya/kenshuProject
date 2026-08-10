@@ -568,33 +568,32 @@ public class RoomDao implements Serializable
      * @return UserMenuに返す
      * @throws AtareSysException
      */
-    public ArrayList<RoomDao> getExistRoomsName(String roomName) throws AtareSysException {
-      String sql = "SELECT room_id, room_name FROM room "
-      		+ "where room_name = ?";
-      
-      ArrayList<RoomDao> rooms = new ArrayList<>();
-      
+    public boolean getExistRoomsName(String roomName) throws AtareSysException {
 
-      try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
+     String sql = "select count(room_id) from room where room_name = ?";
+     
+     try (PreparedStatement pstmt = DbBase.getDbConnection().prepareStatement(sql)) {
 
-          pstmt.setString(1, roomName);
+         pstmt.setString(1, roomName);
 
-          try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
-              while (rs.next()) {
-               RoomDao room = new RoomDao();
-               
-               room.setRoomId(rs.getString("room_id"));
-               room.setRoomName(rs.getString("room_name"));
-               
-               rooms.add(room);
+         try (ResultSet rs = pstmt.executeQuery()) {
+             if (rs.next()) {
+                 int count = rs.getInt(1);
+
+                 if ( count == 0 ) {
+
+                   return false;
+                 }
+                 
              }
 
-              return rooms; // 取得したルームリストを返す
-          }
-      } catch (SQLException e) {
-          throw new AtareSysException("データベース処理中にエラーが発生しました: " + e.getMessage(), e);
-      }
-    }
+             return true;
+         }
+
+     } catch (SQLException e) {
+         throw new AtareSysException("データベース処理中にエラーが発生しました: " + e.getMessage(), e);
+     }
+ }
     
     static public ArrayList<RoomDao> dbSelectList(RoomDao myclass,LinkedHashMap<String,String> sortKey,DaoPageInfo daoPageInfo) throws AtareSysException
     {
