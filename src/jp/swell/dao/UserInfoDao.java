@@ -785,8 +785,7 @@ public class UserInfoDao implements Serializable {
         Class.forName("com.mysql.jdbc.Driver");
 
         // DBに接続（JDBC URL・ユーザー・パスワードは適宜変更）
-        try (Connection conn = DriverManager.getConnection(
-        		
+        try (Connection conn = DriverManager.getConnection(     		
                 "jdbc:mysql://localhost:3306/your_database", "db_user", "db_password");
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user_info");
              ResultSet rs = stmt.executeQuery()) {
@@ -1395,11 +1394,6 @@ public class UserInfoDao implements Serializable {
         setUserInfoDao(map, this);
         String password = Digest.hex(Digest.SHA512, pPassword);
         String dbPassword = DbI.chara(map.get("password"));
-        System.out.println ("mapのキー:" + map.keySet());
-        System.out.println("入力側のハッシュの文字数:"+password.length());
-        System.out.println("DB側のパスワード文字数:"+dbPassword.length());
-        System.out.println("パスワード一致:" +password.equals(dbPassword));
-        
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
         }
