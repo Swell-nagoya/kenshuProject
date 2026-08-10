@@ -67,6 +67,9 @@ public class UserLogin extends ControllerBase {
 			if ("logout".equals(bean.value("action_cmd"))) {
 				doLogout();
 				return;
+				
+			} else {
+				redirect("UserLogin.jsp");
 			}
 		}
 
