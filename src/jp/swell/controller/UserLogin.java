@@ -61,18 +61,20 @@ public class UserLogin extends ControllerBase {
 
 			} else if ("repassword".equals(bean.value("action_cmd"))) {
 				redirect("SendPassMail.do");
-			}
+				return;
+            }
 
 		} else if ("UserMenuHome".equals(bean.value("form_name"))) {
-			if ("logout".equals(bean.value("action_cmd"))) {
+			if ("logout".equals(bean.value("action_cmd"))){
 				doLogout();
 				return;
 				
-			} else {
-				redirect("UserLogin.jsp");
-			}
+			} 
+			
+			
+        } else {
+			this.forward("/UserLogin.jsp");
 		}
-
 	}
 
 	/**
