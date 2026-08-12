@@ -397,17 +397,40 @@ th {
 						<th>アップロード日時</th>
 						<th>送信先ユーザー</th>
 						<th>アップロードユーザー</th>
+						<th>ダウンロード期限</th>
 						<th>ダウンロード</th>
 						<%
 						for (Object item : webBean.arrayList("list")) {
 						    FileDao dao = (FileDao) item;
 						%>
-						<tr
-							<tr style="background-color:<%="received".equals(dao.getFileType() != null ? dao.getFileType() : "") ? "#1565c0" : "white"%>">
+						<tr style="background-color:<%="received".equals(dao.getFileType() != null ? dao.getFileType() : "") ? "#1565c0" : "white"%>">
 							<td><%=WebUtil.htmlEscape(dao.getFileName())%></td>
 							<td><%=WebUtil.htmlEscape(dao.getUploadDate())%></td>
 							<td><%=WebUtil.htmlEscape(dao.getSendUserName())%></td>
 							<td><%=WebUtil.htmlEscape(dao.getUploadUserName())%></td>
+							<td>
+							<%
+							String expirationToDate = WebUtil.htmlEscape(dao.getExpirationToDate());
+			    
+							if ((expirationToDate != null ) && !(expirationToDate.isEmpty())) {
+								int expirationToDateInt = Integer.parseInt(expirationToDate.trim());
+
+								if ( expirationToDateInt > 0 ){
+									out.println("<span class='expiration_remaining_date'>" + "期限 " + expirationToDate + " 日前です" + "</span>");
+									out.println("<br>");
+			            
+								} else if(expirationToDateInt == 0) {
+									out.println("<span class='expiration_remaining_date'>" + "期限当日です" + "</span>");
+									out.println("<br>");
+			            
+								} else {
+									out.println("<span class='expiration_remaining_date'>" + "期限オーバーです" + "</span>");
+									out.println("<br>");
+								}
+							}
+							%>
+							<%=WebUtil.htmlEscape(dao.getExpirationDate())%>
+							</td>
 							<td><input type="button" value="ダウンロード"
 								onclick="go_download('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
 								<input type="button" value="削除"
@@ -419,7 +442,6 @@ th {
 						<td colspan="4">ファイルがありません</td>
 					</tr>
 					<%}%>
-				
 				
 				</table>
 			</div>

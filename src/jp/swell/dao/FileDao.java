@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -367,27 +371,52 @@ public class FileDao implements Serializable {
     }
 
     /**
-     * uploaderLastName アップロードユーザー名字
+     * expirationDate 有効期限
      */
     private String expirationDate;
 
     /**
-     * uploaderLastName アップロードユーザー名字を取得します。
+     * uploaderLastName 有効期限を取得します。
      *
-     * @return uploaderLastName アップロードユーザー名字
+     * @return expirationDate 有効期限
      */
     public String getExpirationDate() {
         return expirationDate;
     }
 
     /**
-     * uploaderLastName アップロードユーザー名字を設定します。
+     * expirationDate 有効期限を設定します。
      *
-     * @param uploaderLastName アップロードユーザー名字
+     * @param expirationDate 有効期限
      */
     public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
     }
+    
+
+    /**
+     * expirationToDate 有効期限が本日付けから何日差があるか
+     */
+    private String expirationToDate;
+
+    /**
+     * uploaderLastName 有効期限が本日付けから何日差があるかを取得します。
+     *
+     * @return expirationToDate 有効期限が本日付け
+     */
+    public String getExpirationToDate() {
+        return expirationToDate;
+    }
+
+    /**
+     * expirationDate 有効期限が本日付けから何日差があるかを設定します。
+     *
+     * @param expirationToDate 有効期限が本日付け
+     */
+    public void setExpirationToDate(String expirationToDate) {
+        this.expirationToDate = expirationToDate;
+    }
+
 
     /**
      * 
@@ -397,27 +426,38 @@ public class FileDao implements Serializable {
         return uploaderLastName + " " + uploaderFirstName;
     }
 
+
+    /**
+     * userIds ユーザーのID(複数)
+     */
     private String[] userIds;
 
-    // userIdsをセットするメソッド
-    public void setUserIds(String[] userIds) {
-        this.userIds = userIds;
-    }
 
     // userIdsを取得するメソッド
     public String[] getUserIds() {
         return this.userIds;
     }
-
+    // userIdsをセットするメソッド
+    public void setUserIds(String[] userIds) {
+        this.userIds = userIds;
+    }
+    
+    
+    /**
+     * fileType ファイルタイプ
+     */
     private String fileType;
 
-    public String getFileType() {
-        return fileType;
-    }
 
+    // fileTypeを取得するメソッド
     public void setFileType(String fileType) {
         this.fileType = fileType;
     }
+    // fileTypeをセットするメソッド
+    public String getFileType() {
+     return fileType;
+    }
+    
 
     /**
      * files ファイルテーブルを検索し fileテーブルの１行を取得します。.
@@ -460,6 +500,7 @@ public class FileDao implements Serializable {
                 map.put("system_file_name", rs.getString("files___system_file_name"));
                 map.put("upload_user_id", rs.getString("files___upload_user_id"));
                 map.put("expiration_date", rs.getString("files___expiration_date"));
+                
 
                 setFileDaoForJoin(map, this);
                 return true;
@@ -542,10 +583,34 @@ public class FileDao implements Serializable {
                 DbI.chara(map.get("upload_user_id") != null ? map.get("upload_user_id") : ""));
         dao.setExpirationDate(
                 DbI.chara(map.get("expiration_date") != null ? map.get("expiration_date") : ""));
+
+
+        // ダウンロード期限が今時点より前なのか
+        if(map.get("expiration_date") != null ){
+         
+          // 本日の日付を取得
+          LocalDate today = LocalDate.now();
+
+          // 比較したい日時をパース（時分秒が含まれるためLocalDateTimeを使用）
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+          LocalDateTime targetDateTime = LocalDateTime.parse(map.get("expiration_date"), formatter);
+          LocalDate targetDate = targetDateTime.toLocalDate();
+
+          // 日数差を計算（今日から見てターゲットが何日後か）
+          long expiration_to_date = ChronoUnit.DAYS.between(today, targetDate);
+
+          dao.setExpirationToDate(DbI.chara(expiration_to_date	));
+          
+        }
+        
+        
+        
         dao.setUploaderFirstName(DbI.chara(map.get("uploader_first_name") != null ? map.get("uploader_first_name") : ""));
         dao.setUploaderLastName(DbI.chara(map.get("uploader_last_name") != null ? map.get("uploader_last_name") : ""));
         dao.setFirstName(DbI.chara(map.get("first_name") != null ? map.get("first_name") : ""));
         dao.setLastName(DbI.chara(map.get("last_name") != null ? map.get("last_name") : ""));
+        
+        
     }
 
     /**
@@ -793,7 +858,6 @@ public class FileDao implements Serializable {
             + "LIMIT " + limit + " OFFSET " + start + ";";
 
      rs = DbBase.dbSelect(sql);
-     
      
       int cnt = rs.size();
       if (cnt < 1) return array;
