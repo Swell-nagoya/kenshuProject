@@ -76,7 +76,11 @@ public class FileDetail extends ControllerBase {
              
             	
             	  if(inputCheck(dao)) {
-            	
+
+                 byte[] fileData = (byte[]) bean.object("file");
+                 bean.setValue("fileData", java.util.Base64.getEncoder().encodeToString(fileData));
+                 
+                 
             	    dao.setUserInfoId(bean.value("user_info_id"));
                  bean.setValue("input_info", Sup.serialize(dao));
 
@@ -441,8 +445,13 @@ public class FileDetail extends ControllerBase {
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
-        // FileUtil fileUtil = new FileUtil();
-        // byte[] fileData = (byte[]) bean.object("file");
+        FileUtil fileUtil = new FileUtil();
+        
+        String base64String = bean.value("fileData");
+
+        byte[] fileData = java.util.Base64.getDecoder().decode(base64String);
+     
+     
 
         String file_value = bean.value("file_value");
         String fileExtension = file_value.replaceAll("^.*\\.", "");
@@ -457,7 +466,7 @@ public class FileDetail extends ControllerBase {
         
         // 拡張子を一度だけ追加
         if (fileExtension != null && !fileExtension.isEmpty()) {
-            systemFileName += fileExtension;
+            systemFileName += "." + fileExtension;
         }
         
         
@@ -465,15 +474,14 @@ public class FileDetail extends ControllerBase {
         String fullPath = filePath + "/" + systemFileName;
         
 
-
-        /*
+        if ( "/".equals(fullPath) ) {
+          return null;
+        }
+        
         if (!fileUtil.outputFile(fullPath, fileData)) {
             return null;
         }
-        */
-        if (fullPath == "") {
-         return null;
-        }
+        
         // アップロード期限を設定
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.WEEK_OF_YEAR, 1); // 現在の日時に1週間追加

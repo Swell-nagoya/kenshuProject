@@ -211,6 +211,7 @@ function go_list(action_cmd , request_cmd) {
        <input type="hidden" name="action_cmd" id="action_cmd" value="" />
        <input type="hidden" name="input_name" id="input_name" value="<%=webBean.txt("input_name")%>" />
        <input type="hidden" name="file_value" id="file_value" value="<%=webBean.txt("file_value")%>" />
+       <input type="hidden" name="fileData" id="fileData" value="<%=webBean.txt("fileData")%>" />
        <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" />
        <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
        <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
