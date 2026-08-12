@@ -711,19 +711,27 @@ public class UserInfoDetail extends ControllerBase
         UserInfoDao dao = setWeb2Dao2InputInfo();
         String userInfoId = bean.value("user_info_id");//userIdの取得
         String leaveDate = bean.value("leave_date");     // leave_dateの取得
-
+        System.out.println("削除対象ID = [" + userInfoId + "]");
+        System.out.println("退職予定日 = [" + leaveDate + "]");
+        
         try {
-          dao.dbUpdate(userInfoId);
-          if (leaveDate == null || leaveDate.trim().isEmpty()) {
-            dao.dbCancelDelete(userInfoId);
+            dao.dbUpdate(userInfoId);
+
+            if (leaveDate == null || leaveDate.trim().isEmpty()) {
+                System.out.println("退職予定日が空のため削除を取り消します");
+                dao.dbCancelDelete(userInfoId);
+            } else {
+                System.out.println("ユーザーを削除状態にします");
+                boolean result = dao.dbDelete(userInfoId);
+                System.out.println("dbDeleteの結果 = " + result);
+            }
+
             redirect("ViewUserList.do");
-          }
-          else {
-            dao.dbDelete(userInfoId);
-            redirect("ViewUserList.do");
-          }
-        }catch (Exception e) {
-          forward("ViewUserList.do");
+            return;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new AtareSysException("ユーザー削除処理に失敗しました。");
         }
     }
     

@@ -245,9 +245,11 @@ function go_list(action_cmd)
          <table class="room__form--name">
            <tr class="table-header">
              <td>削除</td> 
+			 <td>ユーザー名</td>
            </tr>
            <tr class="table-date">
              <td><%=webBean.txt("room_name")%></td>
+			 <td><%=webBean.txt("delete_user_name")%></td>
            </tr>
          </table>
          <%} %>

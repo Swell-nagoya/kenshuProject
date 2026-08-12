@@ -23,7 +23,7 @@ import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.RoomDao;
-
+import jp.swell.user.UserLoginInfo;
 /**
  * ：user_info ユーザ情報テーブルデータを登録・更新・削除するためのコントローラクラス
  *
@@ -44,7 +44,7 @@ public class RoomDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -67,11 +67,7 @@ public class RoomDetail extends ControllerBase
           String roomName = bean.value("room_name");
           String beforeName = bean.value("before_name");
           RoomDao dao = setWeb2Dao2InputInfo();
-          bean.setValue("request_name", "修正する");
-          if (beforeName == null || beforeName.trim().isEmpty()) {
-              beforeName = roomName;
-              bean.setValue("before_name", beforeName);
-          }
+
           bean.setValue("before_name", beforeName);
           bean.setValue("room_name", roomName);
           if ("RoomDetail".equals(formName))
@@ -131,6 +127,12 @@ public class RoomDetail extends ControllerBase
                       }
                       else
                       {
+                    	  UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
+                    	  String deleteUserName = "";
+                    	  if (loginInfo != null) {
+                    		  deleteUserName = loginInfo.getUserName();
+                    	  }
+                    	  bean.setValue("delete_user_name", deleteUserName);
                           bean.setMessage("この部屋を削除します。よろしいですか？");
                           bean.setValue("request_name", "削除する");
                           bean.setValue("room_name", roomName);
@@ -170,7 +172,6 @@ public class RoomDetail extends ControllerBase
           }
       } catch (Exception e) {
           bean.setError("処理中にエラーが発生しました: " + e.getMessage());
-          forward("ErrorPage.jsp");
       }
     }
     /**
@@ -230,6 +231,7 @@ public class RoomDetail extends ControllerBase
 
             bean.setError("入力項目にエラーがあります。下記事項をご確認ください。");
             forward("RoomDetail.jsp");
+            return;
         }
     }
     
@@ -292,12 +294,12 @@ public class RoomDetail extends ControllerBase
         HashMap<String, String> errors = bean.getItemErrors();
         String roomName = bean.value("room_name").trim();
         String beforeName = bean.value("before_name").trim(); // ← hidden から来る
+        String requestCmd = bean.value("request_cmd");
 
-        if (roomName.length() == 0) {
-            errors.put("room_name_empty", "部屋名を入力してください。");
-        }
-        if (roomName.equalsIgnoreCase(beforeName)) {
-            errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+        if (("update".equals(requestCmd)
+                || "updateEnter".equals(requestCmd))
+                && roomName.equalsIgnoreCase(beforeName)) {
+        	errors.put("room_name_duplicate","部屋名が以前と同じです。別の名前を入力してください。");
         }
 
         return errors.isEmpty();

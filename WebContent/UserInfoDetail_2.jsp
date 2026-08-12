@@ -194,22 +194,17 @@ input.error {
   $(function() {
       $("#leave_date_input").datepicker({
 		dateFormat: "yy年mm月dd日", // 日付のフォーマットを指定
-		altFild: "#leave_date", // 代替フィールドのIDを指定
+		altField: "#leave_date", // 代替フィールドのIDを指定
 		altFormat: "yymmdd", // 代替フィールドの日付フォーマットを指定
 	  });
 	  
 	  const savedDate = $("#leave_date").val();
 	  	  if (/^\d{8}$/.test(savedDate)) {
 		  const year = Number(savedDate.substring(0, 4));
-		  const month = Number(savedDate.substring(4, 6));
+		  const month = Number(savedDate.substring(4, 6)) -1;
 		  const day = Number(savedDate.substring(6, 8));
 		  $("#leave_date_input").datepicker("setDate", new Date(year, month, day));
 	  }
-      $("#leave_date_input").on("change",function() {
-          var value = $(this).val();
-          var value1 = value.replaceAll("-","");
-          $("#leave_date").val(value1);
-      });
   });
 
   $(document).ready(function() {
@@ -305,8 +300,8 @@ input.error {
           <tr>
             <td class="style_head3 style_head_size" style="width: 30%">退職予定日</td>
               <td class="input-text" style="width: 70%">
-                <input type="text" name="leave_date" id="leave_date_input" value="<%=webBean.txt("leave_date")%>" class="input-text ime_active <%=webBean.dispErrorCSS("leave_date")%>"readonly>
-				<input type="hidden" name="leave_date" id="leave?date" value="<%=webBean.txt("leave_date")%>">
+                <input type="text" id="leave_date_input" class="input-text ime_active <%=webBean.dispErrorCSS("leave_date")%>" readonly>
+				<input type="hidden" name="leave_date" id="leave_date" value="<%=webBean.txt("leave_date")%>">
                 <br> <span id="error_leave_date" class="error"><%=webBean.dispError("leave_date")%> </span>
               </td>
           </tr>

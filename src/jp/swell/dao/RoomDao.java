@@ -414,12 +414,43 @@ public class RoomDao implements Serializable
      */
     public void setRoomDaoForJoin(HashMap<String, String> map,RoomDao dao)  throws AtareSysException
     {
-        dao.setRoomId(DbI.chara(map.get("room___room_id") != null ? map.get("room___room_id") : ""));
-        dao.setRoomName(DbI.chara(map.get("room___room_name") != null ? map.get("room___room_name") : ""));
-        dao.setInsertDate(DbI.chara(map.get("room___insert_date") != null ? map.get("room___insert_date") : ""));
-        dao.setInsertUserId(DbI.chara(map.get("room___insert_user_id") != null ? map.get("room___insert_user_id") : ""));
-        dao.setUpdateDate(DbI.chara(map.get("room___update_date") != null ? map.get("room___update_date") : ""));
-        dao.setUpdateUserId(DbI.chara(map.get("room___update_user_id") != null ? map.get("room___update_user_id") : ""));
+    	//System .out.println("RoomDaoの取得列名 = " + map.keySet());
+        String roomId = map.get("room___room_id");
+        if (roomId == null) {
+            roomId = map.get("room_id");
+        }
+
+        String roomName = map.get("room___room_name");
+        if (roomName == null) {
+            roomName = map.get("room_name");
+        }
+
+        String insertDate = map.get("room___insert_date");
+        if (insertDate == null) {
+            insertDate = map.get("insert_date");
+        }
+
+        String insertUserId = map.get("room___insert_user_id");
+        if (insertUserId == null) {
+            insertUserId = map.get("insert_user_id");
+        }
+
+        String updateDate = map.get("room___update_date");
+        if (updateDate == null) {
+            updateDate = map.get("update_date");
+        }
+
+        String updateUserId = map.get("room___update_user_id");
+        if (updateUserId == null) {
+            updateUserId = map.get("update_user_id");
+        }
+
+        dao.setRoomId(DbI.chara(roomId != null ? roomId : ""));
+        dao.setRoomName(DbI.chara(roomName != null ? roomName : ""));
+        dao.setInsertDate(DbI.chara(insertDate != null ? insertDate : ""));
+        dao.setInsertUserId(DbI.chara(insertUserId != null ? insertUserId : ""));
+        dao.setUpdateDate(DbI.chara(updateDate != null ? updateDate : ""));
+        dao.setUpdateUserId(DbI.chara(updateUserId != null ? updateUserId : ""));
     }
     /**
      * room 部屋テーブルにデータを挿入する
