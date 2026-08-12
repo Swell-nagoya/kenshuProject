@@ -2,6 +2,8 @@ package jp.swell.controller;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -632,7 +634,8 @@ public class FileDetail extends ControllerBase {
             FileDao fileData = dao; // ここは前の行で dao を設定したので、そのまま使用
 
             String fileOwnerId = fileData.getUploadUserId(); // ファイルの所有者ID
-
+            
+            System.out.println("getFilePath:" + filePath);
             // 所有者が現在のユーザーと一致するか確認
             if (!userLoginInfo.getUserInfoId().equals(fileOwnerId)) {
                 bean.setError("このファイルを削除する権限がありません。");
@@ -644,6 +647,18 @@ public class FileDetail extends ControllerBase {
             DbBase.dbBeginTran();
             dao.dbDelete(mainKey);
             DbBase.dbCommitTran();
+            
+
+            // ファイルのパスを取得
+            String filePath = fileData.getFilePath();
+            // ファイルの削除
+            try {
+                Files.deleteIfExists(Paths.get(filePath));
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
             redirect("FileList.do");
         } catch (Exception e) {
             DbBase.dbRollbackTran();
