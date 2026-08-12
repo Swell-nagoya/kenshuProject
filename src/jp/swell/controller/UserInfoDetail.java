@@ -314,6 +314,8 @@ public class UserInfoDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         UserInfoDao dao = new UserInfoDao();
+        
+        System.out.println("main_key="+bean.value("main_key"));
         if (!dao.dbSelect(bean.value("main_key")))
         {
             return false;
