@@ -266,8 +266,27 @@ th {
 		document.getElementById('main_form').action = 'FileDetail.do';
 		document.getElementById('action_cmd').value = action_cmd;
 		document.getElementById('request_cmd').value = request_cmd;
+
+
+		// 本日の日付を取得する
+		const today = new Date();
+		// 1週間後の日付を取得し、代入する
+		const oneWeekLater = new Date(today);
+		oneWeekLater.setDate(oneWeekLater.getDate() + 7);
+		
+		const year = oneWeekLater.getFullYear();
+		const month = String(oneWeekLater.getMonth() + 1).padStart(2, '0');
+		const day = oneWeekLater.getDate();
+		// 年月日の表示を代入
+	    const formattedDate = year + "年" + month + "月" + day + "日";
+	     // hidden フィールドに値をセット
+	    $('#expiration_data').val(formattedDate);
+
+	    
 		document.getElementById('main_form').submit();
+	  
 	}
+
 </script>
 </head>
 <body>
@@ -305,7 +324,9 @@ th {
 				value="<%=webBean.txt("file_name")%>" />
 			<input type="hidden" name="file_id" id="file_id"
 				value="<%=webBean.txt("file_id")%>" />
-
+			<input type="hidden" id="expiration_data" name="expiration_data" value="">
+			
+			
 			<div class="left">
 				<div class="messages">
 					<%=webBean.dispMessages()%>

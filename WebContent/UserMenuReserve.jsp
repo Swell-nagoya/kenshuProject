@@ -365,7 +365,7 @@ div.error {
                 <tr>
                     <th>日付</th>
                     <td>
-                        <input type="text" name="reservation_date"id="reservation_date_input" value="<%=webBean.txt("reservation_date")%>" class="reserve_id <%=webBean.dispErrorCSS("reservation_date")%>" readonly/>
+                        <input type="text" name="reservation_date" id="reservation_date_input" value="<%=webBean.txt("reservation_date")%>" class="reserve_id <%=webBean.dispErrorCSS("reservation_date")%>" readonly/>
                         <div id="error_reservation_date" class="error"><%=webBean.dispError("reservation_date")%></div>
                     </td>
                 </tr>

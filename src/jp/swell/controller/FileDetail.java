@@ -5,6 +5,10 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -483,27 +487,49 @@ public class FileDetail extends ControllerBase {
         if (!fileUtil.outputFile(fullPath, fileData)) {
             return null;
         }
-        
+
+/*
         // アップロード期限を設定
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.WEEK_OF_YEAR, 1); // 現在の日時に1週間追加
         java.util.Date expirationDate = calendar.getTime(); // Date型を取得
 
-        // 各送信先ユーザーに対してデータベースにファイル情報を登録
-        String fileId = UUID.randomUUID().toString().substring(0, 13);
-        FileDao fileDao = new FileDao();
-
         // expirationDateをString型に変換
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String expirationDateString = sdf.format(expirationDate);
+*/      
+
+        // 各送信先ユーザーに対してデータベースにファイル情報を登録
+        String fileId = UUID.randomUUID().toString().substring(0, 13);
+        FileDao fileDao = new FileDao();
+        String expirationDate = bean.value("expiration_data");
         
+
+//      2. 元のフォーマット定義と解析（日付のみを取得）
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+        LocalDate parsedDate = LocalDate.parse(expirationDate, inputFormatter);
+
+//      3. 現在の「時間・分・秒」のみを取得
+        LocalTime nowTime = LocalTime.now();
+
+//      4. 解析した日付と、現在の時間を結合する
+        LocalDateTime combinedDateTime = parsedDate.atTime(nowTime);
+
+//      5. 目的の "yyyy-MM-dd HH:mm:ss" 形式に変換
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String expirationDateString = combinedDateTime.format(outputFormatter);
+     
+     
       /*
         fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
         expirationDateString);
         */
         // fileテーブルにユーザー情報を挿入
-        fileDao.dbFileInsert(fileId, sourceUserInfoIdsString, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
+       /* fileDao.dbFileInsert(fileId, sourceUserInfoIdsString, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
         expirationDateString);
+*/
+        fileDao.dbFileInsert(fileId, sourceUserInfoIdsString, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
+          expirationDateString);
 
         fileDaos.add(fileDao);
 
@@ -635,7 +661,6 @@ public class FileDetail extends ControllerBase {
 
             String fileOwnerId = fileData.getUploadUserId(); // ファイルの所有者ID
             
-            System.out.println("getFilePath:" + filePath);
             // 所有者が現在のユーザーと一致するか確認
             if (!userLoginInfo.getUserInfoId().equals(fileOwnerId)) {
                 bean.setError("このファイルを削除する権限がありません。");
@@ -807,9 +832,25 @@ public class FileDetail extends ControllerBase {
         }
         String fileValue = bean.value("file_value").trim();
         
+        
         if (fileValue.length() == 0) {
           errors.put("file_value_empty", "ファイルリンクを入力してください。");
         }
+        String expirationData = bean.value("expiration_data");
+        String resultData = expirationData.replaceAll("[年月日]", "");
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formattedDate = today.format(formatter);
+        
+        
+        int comparison = resultData.compareTo(formattedDate);
+
+        if (comparison < 0) {
+          errors.put("expiration_data_empty", "本日または後日を登録してください。");
+       
+        }
+        
+        
         return errors.isEmpty();
     }
 

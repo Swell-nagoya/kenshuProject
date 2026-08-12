@@ -28,6 +28,7 @@
 <script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/flatpickr.min.js"></script>
+<script type="text/javascript" src="js/datePicker.js"></script>
 <title>アップロード画面</title>
 <style>
 body {
@@ -184,7 +185,7 @@ td, th {
 }
 
 span {
-	color: #f00;
+/*	color: #f00;*/
 	font-size: 16px;
 }
 
@@ -261,6 +262,33 @@ function openUserWindow(action_cmd) {
   document.body.removeChild(form);
 }
 
+$(function(){
+	$("#expiration_data_input").datepicker();
+    $("#expiration_data_input").on("change",function() {
+        var value = $(this).val();
+        var value1 = value.replaceAll("-","");
+        $("#reservation_date").val(value1);
+    });
+});
+
+
+$(document).ready(function() {
+    // 予約日、チェックイン時間、チェックアウト時間の入力フィールドで入力が行われた時に関数を実行
+    $('#expiration_data_input').on('input', function() {
+        // 現在の入力フィールドの name 属性を fieldName 変数に格納し、値を value 変数に格納
+        var fieldName = $(this).attr('name');
+        var value = $(this).val();
+
+        // 現在のフィールドが expiration_dataである場合に、以下の処理を実行する条件を指定
+        if (fieldName === 'expiration_data') {
+            if (isNumeric(value)) { // 数字であるかどうかを判断
+                $(this).removeClass('error'); // クラス削除
+                $('#error_' + fieldName).text(''); // エラーメッセージ非表示
+            }
+        }
+    });
+});
+
 function receiveSelectedUsers(users, type) {
   let selectedUsersDiv;
   let userIds = [];
@@ -290,6 +318,7 @@ function receiveSelectedUsers(users, type) {
     document.getElementById('destination_user_info_id').value = userIds.join(',');
   }
 }
+
 </script>
 </head>
 <body>
@@ -316,7 +345,6 @@ function receiveSelectedUsers(users, type) {
 				value="<%=webBean.txt("name")%>" />
 			<input type="hidden" name="destination_user_info_id"
 				id="destination_user_info_id">
-
             <%
               Map<String, String> itemErrors = webBean.getItemErrors();
             %>   
@@ -378,6 +406,20 @@ function receiveSelectedUsers(users, type) {
 							<td class="input-text" style="width: 60%">
 								<div id="selected_destination_users" class="user_list"></div> <span
 								id="error_destination_user_info_id" class="error"><%=webBean.dispError("destination_user_info_id")%></span>
+							</td>
+						</tr>
+						<!-- 送信先ユーザー選択 -->
+						<tr>
+							<td class="style_head3 style_head_size" style="width: 40%">ファイル期限</td>
+							<td class="input-text" style="width: 60%">
+                              <input type="text" name="expiration_data"id="expiration_data_input" value="<%=webBean.txt("expiration_data")%>" class="expiration_data" readonly/>
+                                 <%
+                                  if (itemErrors.containsKey("expiration_data_empty")) { 
+                                 %>
+            					 <div class="field-error errors"><%=itemErrors.get("expiration_data_empty")%></div>
+                                 <%
+                                  }
+                                 %>
 							</td>
 						</tr>
 					</table>
