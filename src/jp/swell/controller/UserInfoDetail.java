@@ -315,11 +315,12 @@ public class UserInfoDetail extends ControllerBase
         WebBean bean = getWebBean();
         UserInfoDao dao = new UserInfoDao();
         
-        System.out.println("main_key="+bean.value("main_key"));
         if (!dao.dbSelect(bean.value("main_key")))
         {
             return false;
         }
+      
+        
         bean.setValue("user_info_id", dao.getUserInfoId());
         bean.setValue("state_flg", dao.getStateFlg());
         bean.setValue("last_name", dao.getLastName());
