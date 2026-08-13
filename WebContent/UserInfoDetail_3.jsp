@@ -185,10 +185,9 @@ td, th {
      String maidenName = webBean.txt("maiden_name").trim();
      String insertUserId = webBean.txt("insert_user_id").trim();
      String val = webBean.txt("request_cmd");
-     if (val == null) val="";
-     String actionType =  "ins".equals(val)? "ins" : "update".equals(val)? "update" : "delete".equals(val)?"delete" : "send".equals(val)? "send" : "unknown";
+     String actionType =  val.equals("ins") ? "ins" : val.equals("update") ? "update" : val.equals("delete") ? "delete" : val.equals("send") ? "send" : "unknown";
      String actionBtn =  val.equals("send") ? "go_mail" : "go_submit";
-     String header =  val.equals("登録") ? "登録確定" : val.equals("修正") ? "情報編集確定" : val.equals("確定") ? "情報削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
+     String header =  val.equals("ins") ? "登録確定" : val.equals("update") ? "情報編集確定" : val.equals("delete") ? "情報削除確定" : val.equals("send") ? "情報確認" : "unknown";
    %>
 	<div class="container">
 		<div class="new-btn">

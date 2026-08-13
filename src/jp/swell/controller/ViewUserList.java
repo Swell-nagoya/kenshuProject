@@ -51,7 +51,7 @@ public class ViewUserList extends ControllerBase
     {
         setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
-        setHttpsNeeds(true); // この処理はhttps でなければならないか。公開時にはtrueにする
+        setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
     }
     /**
