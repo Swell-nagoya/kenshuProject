@@ -40,7 +40,6 @@ import jp.swell.dao.FileDao;
 import jp.swell.dao.UserFileDao;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.user.UserLoginInfo;
-
 /**
  * ファイル情報を登録・更新・削除するためのコントローラクラス
  */
@@ -123,6 +122,7 @@ public class FileDetail extends ControllerBase {
                     bean.setValue("request_name", "登録する");
                     searchList();
                     forward("FileDetail.jsp");
+              
                 } else if ("download".equals(requestCmd)) {
                     dao.dbSelect(mainKey);
                     downloadFileWrite(dao);
@@ -503,20 +503,19 @@ public class FileDetail extends ControllerBase {
         String expirationDate = bean.value("expiration_data");
         
 
-//      2. 元のフォーマット定義と解析（日付のみを取得）
+//      元のフォーマット定義と解析（日付のみを取得）
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
         LocalDate parsedDate = LocalDate.parse(expirationDate, inputFormatter);
 
-//      3. 現在の「時間・分・秒」のみを取得
+//      現在の「時間・分・秒」のみを取得
         LocalTime nowTime = LocalTime.now();
 
-//      4. 解析した日付と、現在の時間を結合する
+//      解析した日付と、現在の時間を結合する
         LocalDateTime combinedDateTime = parsedDate.atTime(nowTime);
 
-//      5. 目的の "yyyy-MM-dd HH:mm:ss" 形式に変換
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//      目的の "yyyy/MM/dd HH:mm:ss" 形式に変換
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String expirationDateString = combinedDateTime.format(outputFormatter);
-     
      
       /*
         fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
@@ -851,5 +850,7 @@ public class FileDetail extends ControllerBase {
         
         return errors.isEmpty();
     }
+    
+    
 
 }
