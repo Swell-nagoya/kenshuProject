@@ -527,21 +527,21 @@ public class FileDao implements Serializable {
      * @param dao  FileDaoこのテーブルのインスタンス
      */
     public void setFileDaoForJoin(HashMap<String, String> map, FileDao dao) throws AtareSysException {
-        dao.setFileId(DbI.chara(map.get("files___file_id") != null ? map.get("files___file_id") : ""));
-        dao.setUserInfoId(DbI.chara(map.get("files___user_info_id") != null ? map.get("files___user_info_id") : ""));
-        dao.setFileName(DbI.chara(map.get("files___file_name") != null ? map.get("files___file_name") : ""));
-        dao.setFilePath(DbI.chara(map.get("files___file_path") != null ? map.get("files___file_path") : ""));
-        dao.setUploadDate(DbI.chara(map.get("files___upload_date") != null ? map.get("files___upload_date") : ""));
-        dao.setFileKey(DbI.chara(map.get("files___file_key") != null ? map.get("files___file_key") : ""));
-        dao.setMimeType(DbI.chara(map.get("files___mime_type") != null ? map.get("files___mime_type") : ""));
+        dao.setFileId(DbI.chara(map.get("file_id") != null ? map.get("file_id") : ""));
+        dao.setUserInfoId(DbI.chara(map.get("user_info_id") != null ? map.get("user_info_id") : ""));
+        dao.setFileName(DbI.chara(map.get("file_name") != null ? map.get("file_name") : ""));
+        dao.setFilePath(DbI.chara(map.get("file_path") != null ? map.get("file_path") : ""));
+        dao.setUploadDate(DbI.chara(map.get("upload_date") != null ? map.get("upload_date") : ""));
+        dao.setFileKey(DbI.chara(map.get("file_key") != null ? map.get("file_key") : ""));
+        dao.setMimeType(DbI.chara(map.get("mime_type") != null ? map.get("mime_type") : ""));
         dao.setSystemFileName(
-                DbI.chara(map.get("files___system_file_name") != null ? map.get("files___system_file_name") : ""));
+                DbI.chara(map.get("system_file_name") != null ? map.get("system_file_name") : ""));
         dao.setUploadUserId(
-                DbI.chara(map.get("files___upload_user_id") != null ? map.get("files___upload_user_id") : ""));
+                DbI.chara(map.get("upload_user_id") != null ? map.get("upload_user_id") : ""));
         dao.setExpirationDate(
-                DbI.chara(map.get("files___expiration_date") != null ? map.get("files___expiration_date") : ""));
-        dao.setUploaderFirstName(map.get("uploader_first_name"));
-        dao.setUploaderLastName(map.get("uploader_last_name"));
+                DbI.chara(map.get("expiration_date") != null ? map.get("expiration_date") : ""));
+        dao.setUploaderFirstName(map.get("first_name"));
+        dao.setUploaderLastName(map.get("last_name"));
     }
 
     /**
@@ -714,8 +714,8 @@ public class FileDao implements Serializable {
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
             dao.setFileDaoForJoin(map, dao);
-            dao.setFirstName(map.get("user_first_name"));
-            dao.setLastName(map.get("user_last_name"));
+            dao.setFirstName(map.get("first_name"));
+            dao.setLastName(map.get("last_name"));
             resultList.add(dao);
         }
 
