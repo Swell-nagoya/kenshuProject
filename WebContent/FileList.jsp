@@ -196,6 +196,13 @@ th {
 	color: #fff;
 	text-align: center;
 }
+.expiration_remaining_date {
+	color: #FF0000;
+	font-weight: bold;
+    text-shadow: 0 0 2px #fff,
+                 0 0 2px #fff;
+}
+
 </style>
 <script type="text/javascript">
 	
@@ -252,16 +259,7 @@ th {
 		document.getElementById('file_name').value = file_name;
 		document.getElementById('main_form').submit();
 	}
-
-	function go_download(action_cmd, request_cmd, main_key, file_name) {
-		document.getElementById('main_form').action = 'FileDetail.do';
-		document.getElementById('action_cmd').value = action_cmd;
-		document.getElementById('request_cmd').value = request_cmd;
-		document.getElementById('main_key').value = main_key;
-		document.getElementById('file_name').value = file_name;
-		document.getElementById('main_form').submit();
-	}
-
+	
 	function go_detail(action_cmd, request_cmd) {
 		document.getElementById('main_form').action = 'FileDetail.do';
 		document.getElementById('action_cmd').value = action_cmd;
@@ -402,6 +400,7 @@ th {
 						<%
 						for (Object item : webBean.arrayList("list")) {
 						    FileDao dao = (FileDao) item;
+							String expirationToDate = WebUtil.htmlEscape(dao.getExpirationToDate());
 						%>
 						<tr style="background-color:<%="received".equals(dao.getFileType() != null ? dao.getFileType() : "") ? "#1565c0" : "white"%>">
 							<td><%=WebUtil.htmlEscape(dao.getFileName())%></td>
@@ -410,8 +409,6 @@ th {
 							<td><%=WebUtil.htmlEscape(dao.getUploadUserName())%></td>
 							<td>
 							<%
-							String expirationToDate = WebUtil.htmlEscape(dao.getExpirationToDate());
-			    
 							if ((expirationToDate != null ) && !(expirationToDate.isEmpty())) {
 								int expirationToDateInt = Integer.parseInt(expirationToDate.trim());
 
@@ -431,9 +428,25 @@ th {
 							%>
 							<%=WebUtil.htmlEscape(dao.getExpirationDate())%>
 							</td>
-							<td><input type="button" value="ダウンロード"
-								onclick="go_download('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
-								<input type="button" value="削除"
+							<td>
+							
+							<%
+							if ((expirationToDate != null ) && !(expirationToDate.isEmpty())) {
+								int expirationToDateInt = Integer.parseInt(expirationToDate.trim());
+
+								if ( expirationToDateInt > 0 ){
+
+									%>
+							<input type="button" value="ダウンロード"
+								onclick="go_detail_2('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
+							<%
+								}
+							}
+							%>
+							<input type="button" value="プレビュー"
+								onclick="go_detail_2('go_next','preview','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
+
+							<input type="button" value="削除"
 								onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
 							</td></tr>
 

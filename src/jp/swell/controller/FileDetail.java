@@ -123,8 +123,6 @@ public class FileDetail extends ControllerBase {
                     bean.setValue("request_name", "登録する");
                     searchList();
                     forward("FileDetail.jsp");
-                    
-
                 } else if ("download".equals(requestCmd)) {
                     dao.dbSelect(mainKey);
                     downloadFileWrite(dao);

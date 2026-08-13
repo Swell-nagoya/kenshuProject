@@ -480,7 +480,6 @@ public class FileDao implements Serializable {
                 + "files.expiration_date as files___expiration_date "
                 + "FROM files "
                 + "WHERE file_id = ?";
-
         try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
             pstmt.setString(1, pFileId);
 
@@ -500,7 +499,6 @@ public class FileDao implements Serializable {
                 map.put("system_file_name", rs.getString("files___system_file_name"));
                 map.put("upload_user_id", rs.getString("files___upload_user_id"));
                 map.put("expiration_date", rs.getString("files___expiration_date"));
-                
 
                 setFileDaoForJoin(map, this);
                 return true;
@@ -588,12 +586,15 @@ public class FileDao implements Serializable {
         // ダウンロード期限が今時点より前なのか
         if(map.get("expiration_date") != null ){
          
+        	// expiration_dateの値がyyyy-MM-ddの場合、yyyy/MM/ddに変更
+         String expDateStr = map.get("expiration_date").toString().replace("-", "/");
+         
           // 本日の日付を取得
           LocalDate today = LocalDate.now();
 
           // 比較したい日時をパース（時分秒が含まれるためLocalDateTimeを使用）
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-          LocalDateTime targetDateTime = LocalDateTime.parse(map.get("expiration_date"), formatter);
+          LocalDateTime targetDateTime = LocalDateTime.parse( expDateStr , formatter);
           LocalDate targetDate = targetDateTime.toLocalDate();
 
           // 日数差を計算（今日から見てターゲットが何日後か）
@@ -602,9 +603,7 @@ public class FileDao implements Serializable {
           dao.setExpirationToDate(DbI.chara(expiration_to_date	));
           
         }
-        
-        
-        
+
         dao.setUploaderFirstName(DbI.chara(map.get("uploader_first_name") != null ? map.get("uploader_first_name") : ""));
         dao.setUploaderLastName(DbI.chara(map.get("uploader_last_name") != null ? map.get("uploader_last_name") : ""));
         dao.setFirstName(DbI.chara(map.get("first_name") != null ? map.get("first_name") : ""));
@@ -783,7 +782,7 @@ public class FileDao implements Serializable {
                 + " limit " + limit + " offset " + offset;
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         
-
+        
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
             dao.setFileDaoForJoin(map, dao);
