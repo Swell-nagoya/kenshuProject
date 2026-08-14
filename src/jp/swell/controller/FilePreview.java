@@ -71,9 +71,15 @@ public class FilePreview extends ControllerBase {
 												}
         }
 
-        
-        
-								
+        // レスポンスの文字エンコーディングを設定
+        this.getResponse().setCharacterEncoding("UTF-8");
+
+        this.getResponse().setHeader("pragma", "no-store");
+        this.getResponse().setHeader("Cache-Control", "no-store");
+
+        String file_value = filePath;
+        String fileExtension = file_value.replaceAll("^.*\\.", "");
+        // 添付ファイル名をレスポンスヘッダーに設定
         this.getResponse().setHeader("Content-Disposition", attachmentFileName);
    
         forward("FilePreview.jsp");
