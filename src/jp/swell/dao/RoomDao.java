@@ -346,12 +346,12 @@ public class RoomDao implements Serializable
                 }
 
                 HashMap<String, String> map = new HashMap<>();
-                map.put("room___room_id", rs.getString("room___room_id"));
-                map.put("room___room_name", rs.getString("room___room_name"));
-                map.put("room___insert_date", rs.getString("room___insert_date"));
-                map.put("room___insert_user_id", rs.getString("room___insert_user_id"));
-                map.put("room___update_date", rs.getString("room___update_date"));
-                map.put("room___update_user_id", rs.getString("room___update_user_id"));
+                map.put("room_id", rs.getString("room___room_id"));
+                map.put("room_name", rs.getString("room___room_name"));
+                map.put("insert_date", rs.getString("room___insert_date"));
+                map.put("insert_user_id", rs.getString("room___insert_user_id"));
+                map.put("update_date", rs.getString("room___update_date"));
+                map.put("update_user_id", rs.getString("room___update_user_id"));
 
                 setRoomDaoForJoin(map, this);
                 return true;
@@ -550,7 +550,6 @@ public class RoomDao implements Serializable
         {
             RoomDao dao  = new RoomDao();
             map = rs.get(i);
-            System.out.println("部屋の項目名=" +map.keySet());
             dao.setRoomDaoForJoin(map,dao);
             array.add(dao);
         }
