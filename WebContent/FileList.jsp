@@ -296,56 +296,46 @@ th {
 	}
 
 
-	  // サブ画面処理
-	  function openFilePreviewWindow(action_cmd, request_cmd, main_key) {
+	// サブ画面処理
+	function openFilePreviewWindow(action_cmd, request_cmd, main_key) {
 
-	      // コントローラー設定
-	      const form = document.createElement('form');
-	      form.method = 'POST';
-	      form.action = 'FilePreview.do';
-	      form.target = 'File_Preview';
-	      // form_name設定
-	      const formNameInput = document.createElement('input');
-	      formNameInput.type = 'hidden';
-	      formNameInput.name = 'form_name';
-	      formNameInput.value = 'FilePreview';
-	      form.appendChild(formNameInput);
-	      // アクションコマンド設定
-	      const actionCmdInput = document.createElement('input');
-	      actionCmdInput.type = 'hidden';
-	      actionCmdInput.name = 'action_cmd';
-	      actionCmdInput.value = action_cmd;
-	      form.appendChild(actionCmdInput);
-	      // 部屋の名前
-	      const requestCmdInput = document.createElement('input');
-	      requestCmdInput.type = 'hidden';
-	      requestCmdInput.name = 'request_cmd';
-	      requestCmdInput.value = request_cmd;
-	      form.appendChild(requestCmdInput);
-	      
-	      // ファイルのID
-	      const roomIdInput = document.createElement('input');
-	      roomIdInput.type = 'hidden';
-	      roomIdInput.name = 'main_key';
-	      roomIdInput.value = main_key;
-	      form.appendChild(roomIdInput);
-	      document.body.appendChild(form);
-	      // サブ画面表示処理
-	      window.open('', 'File_Preview', 'width=600,height=600');
-	      form.submit();
+		// コントローラー設定
+		const form = document.createElement('form');
+		form.method = 'POST';
+		form.action = 'FilePreview.do';
+		form.target = 'File_Preview';
+		// form_name設定
+		const formNameInput = document.createElement('input');
+		formNameInput.type = 'hidden';
+		formNameInput.name = 'form_name';
+		formNameInput.value = 'FilePreview';
+		form.appendChild(formNameInput);
+		// アクションコマンド設定
+		const actionCmdInput = document.createElement('input');
+		actionCmdInput.type = 'hidden';
+		actionCmdInput.name = 'action_cmd';
+		actionCmdInput.value = action_cmd;
+		form.appendChild(actionCmdInput);
+		// 部屋の名前
+		const requestCmdInput = document.createElement('input');
+		requestCmdInput.type = 'hidden';
+		requestCmdInput.name = 'request_cmd';
+		requestCmdInput.value = request_cmd;
+		form.appendChild(requestCmdInput);
+		
+		// ファイルのID
+		const roomIdInput = document.createElement('input');
+		roomIdInput.type = 'hidden';
+		roomIdInput.name = 'main_key';
+		roomIdInput.value = main_key;
+		form.appendChild(roomIdInput);
+		document.body.appendChild(form);
+		// サブ画面表示処理
+		window.open('', 'File_Preview', 'width=600,height=600');
+		form.submit();
 
-	      document.body.removeChild(form);
-
-
-	      /*
-		document.getElementById('main_form').action = '';
-		document.getElementById('action_cmd').value = action_cmd;
-		document.getElementById('request_cmd').value = request_cmd;
-		document.getElementById('main_key').value = main_key;
-		document.getElementById('main_form').submit();
-		*/
-	  }
-
+		document.body.removeChild(form);
+	}
 </script>
 </head>
 <body>
@@ -476,11 +466,11 @@ th {
 								if ( expirationToDateInt > 0 ){
 									out.println("<span class='expiration_remaining_date'>" + "期限 " + expirationToDate + " 日前です" + "</span>");
 									out.println("<br>");
-			            
+					
 								} else if(expirationToDateInt == 0) {
 									out.println("<span class='expiration_remaining_date'>" + "期限当日です" + "</span>");
 									out.println("<br>");
-			            
+					
 								} else {
 									out.println("<span class='expiration_remaining_date'>" + "期限オーバーです" + "</span>");
 									out.println("<br>");
@@ -497,8 +487,7 @@ th {
 								int expirationToDateInt = Integer.parseInt(expirationToDate.trim());
 
 								if ( expirationToDateInt > 0 ){
-
-									%>
+							%>
 									<input type="button" value="ダウンロード"
 										onclick="go_detail_2('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
 							
@@ -515,10 +504,15 @@ th {
 									<input type="button" value="プレビュー"
 										onclick="openFilePreviewWindow('go_next','preview','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
 
-									<%}%>
+									<%
+									}
+									%>
 									
-								<%}%>
-							<%}%>
+							<%
+								}
+								
+							}
+							%>
 							
 							<input type="button" value="削除"
 								onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
