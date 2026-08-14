@@ -491,17 +491,16 @@ th {
 							</td>
 							<td>
 							
+									<input type="button" value="ダウンロード"
+										onclick="go_detail_2('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
+							
 							<%
 							// 本日がダウンロード期限よりも前か
 							if ((expirationToDate != null ) && !(expirationToDate.isEmpty())) {
 								int expirationToDateInt = Integer.parseInt(expirationToDate.trim());
 
 								if ( expirationToDateInt > 0 ){
-
-									%>
-									<input type="button" value="ダウンロード"
-										onclick="go_detail_2('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
-							
+							%>
 									<%
 									// PDF、jpgまたはpngまたはgif
 									if (
@@ -515,10 +514,15 @@ th {
 									<input type="button" value="プレビュー"
 										onclick="openFilePreviewWindow('go_next','preview','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
 
-									<%}%>
+									<%
+									}
+									%>
 									
-								<%}%>
-							<%}%>
+							<%
+								}
+								
+							}
+							%>
 							
 							<input type="button" value="削除"
 								onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
