@@ -584,24 +584,8 @@ public class FileDao implements Serializable {
 
 
         // ダウンロード期限が今時点より前なのか
-        if(map.get("expiration_date") != null ){
-         
-        	// expiration_dateの値がyyyy-MM-ddの場合、yyyy/MM/ddに変更
-         String expDateStr = map.get("expiration_date").toString().replace("-", "/");
-         
-          // 本日の日付を取得
-          LocalDate today = LocalDate.now();
-
-          // 比較したい日時をパース（時分秒が含まれるためLocalDateTimeを使用）
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-          LocalDateTime targetDateTime = LocalDateTime.parse( expDateStr , formatter);
-          LocalDate targetDate = targetDateTime.toLocalDate();
-
-          // 日数差を計算（今日から見てターゲットが何日後か）
-          long expiration_to_date = ChronoUnit.DAYS.between(today, targetDate);
-
-          dao.setExpirationToDate(DbI.chara(expiration_to_date	));
-          
+        if( map.get("expiration_date") != null ){
+          dao.setExpirationToDate(DbI.chara(ExpirationToDate(map.get("expiration_date"))	));
         }
 
         dao.setUploaderFirstName(DbI.chara(map.get("uploader_first_name") != null ? map.get("uploader_first_name") : ""));
@@ -609,7 +593,29 @@ public class FileDao implements Serializable {
         dao.setFirstName(DbI.chara(map.get("first_name") != null ? map.get("first_name") : ""));
         dao.setLastName(DbI.chara(map.get("last_name") != null ? map.get("last_name") : ""));
         
-        
+    }
+    
+
+    /**
+     * 本日から何日差があるか
+     * @return -〇 ～ 〇 文字列で返す
+     */
+    public static long ExpirationToDate (String expiration_date) {
+
+    	// expiration_dateの値がyyyy-MM-ddの場合、yyyy/MM/ddに変更
+     String expDateStr = expiration_date.toString().replace("-", "/");
+     
+      // 本日の日付を取得
+      LocalDate today = LocalDate.now();
+
+      // 比較したい日時をパース（時分秒が含まれるためLocalDateTimeを使用）
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+      LocalDateTime targetDateTime = LocalDateTime.parse( expDateStr , formatter);
+      LocalDate targetDate = targetDateTime.toLocalDate();
+
+      // 日数差を計算（今日から見てターゲットが何日後か）
+      long expiration_to_date = ChronoUnit.DAYS.between(today, targetDate);
+      return expiration_to_date;
     }
 
     /**

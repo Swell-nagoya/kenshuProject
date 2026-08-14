@@ -122,7 +122,6 @@ public class FileDetail extends ControllerBase {
                     bean.setValue("request_name", "登録する");
                     searchList();
                     forward("FileDetail.jsp");
-              
                 } else if ("download".equals(requestCmd)) {
                     dao.dbSelect(mainKey);
                     downloadFileWrite(dao);
@@ -156,7 +155,8 @@ public class FileDetail extends ControllerBase {
                     downloadFileWrite(dao);
 
                 } else if ("deleteEnter".equals(requestCmd)) {
-                    dbDeletef();
+                     bean.rtrimAllItem();
+                	    forward(dbDeletef(mainKey));
                 }
 
             } else if ("return".equals(actionCmd)) {
@@ -382,7 +382,7 @@ public class FileDetail extends ControllerBase {
      * @return dao 
      * @throws AtareSysException フレームワーク共通例外
      */
-    private FileDao setWeb2Dao2InputInfo() throws AtareSysException {
+    FileDao setWeb2Dao2InputInfo() throws AtareSysException {
      WebBean bean = getWebBean();
      FileDao dao = new FileDao();
      dao.setUserInfoId(bean.value("user_info_id"));
@@ -635,22 +635,22 @@ public class FileDetail extends ControllerBase {
 
     /**
      * データベースから指定されたレコードを削除するメソッド
+     * @return 
      * @throws AtareSysException
      */
-    public void dbDeletef() throws AtareSysException {
+    public String dbDeletef(String mainKey) throws AtareSysException {
         WebBean bean = getWebBean();
         bean.rtrimAllItem();
         FileDao dao = setWeb2Dao2InputInfo();
-
-        String mainKey = bean.value("main_key"); // fileIdの取得
-        UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo(); // 現在のユーザー情報を取得
+        
+        UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
 
         try {
             // ファイルの存在を確認
             if (!dao.dbSelect(mainKey)) {
+
                 bean.setError("ファイルが見つかりませんでした。");
-                forward("FileList.jsp");
-                return;
+                return "FileList.jsp";
             }
 
             // ファイル情報を取得
@@ -659,10 +659,12 @@ public class FileDetail extends ControllerBase {
             String fileOwnerId = fileData.getUploadUserId(); // ファイルの所有者ID
             
             // 所有者が現在のユーザーと一致するか確認
+
+            System.out.println(userLoginInfo);
+            System.out.println(userLoginInfo.getUserInfoId());
             if (!userLoginInfo.getUserInfoId().equals(fileOwnerId)) {
                 bean.setError("このファイルを削除する権限がありません。");
-                forward("FileDetail_3.jsp");
-                return;
+                return "FileDetail_3.jsp";
             }
 
             // 所有者が一致する場合は削除処理を実行
@@ -673,7 +675,7 @@ public class FileDetail extends ControllerBase {
 
             // ファイルのパスを取得
             String filePath = fileData.getFilePath();
-            // ファイルの削除
+            // アップロードした実体ファイルを削除
             try {
                 Files.deleteIfExists(Paths.get(filePath));
                 
@@ -681,12 +683,15 @@ public class FileDetail extends ControllerBase {
                 e.printStackTrace();
             }
             
-            redirect("FileList.do");
+            return "FileList.do";
         } catch (Exception e) {
             DbBase.dbRollbackTran();
-            forward("FileDetail.jsp");
+            return "FileDetail.jsp";
         }
     }
+    
+    
+    
 
     /**
      * ファイルをダウンロードしてきた時の処理
@@ -699,7 +704,7 @@ public class FileDetail extends ControllerBase {
         ServletOutputStream out = null; // 出力ストリームを初期化
         String baseFileName = dao.getFileName(); // 基本ファイル名を取得
         String mimeType = dao.getMimeType(); // MIMEタイプを取得
-        String filePath = dao.getFilePath();// フルファイルパスを取得
+        String filePath = dao.getFilePath(); // フルファイルパスを取得
         WebBean bean = getWebBean();
         bean.rtrimAllItem();
         // 現在のユーザー情報を取得
@@ -818,21 +823,25 @@ public class FileDetail extends ControllerBase {
      * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
      * @throws AtareSysException
      */
-    private boolean inputCheck(FileDao pFileDao) throws AtareSysException
-    {
+     boolean inputCheck(FileDao pFileDao) throws AtareSysException {
+       	
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
-
+        
+        
+        // ファイル名の入力
         String inputName = bean.value("input_name").trim();
         if (inputName.length() == 0) {
           errors.put("input_name_empty", "ファイル名を入力してください。");
         }
+        
+        // ファイルのリンク
         String fileValue = bean.value("file_value").trim();
-        
-        
         if (fileValue.length() == 0) {
           errors.put("file_value_empty", "ファイルリンクを入力してください。");
         }
+        
+        // ダウンロードの有効期限が本日よりも後か判定
         String expirationData = bean.value("expiration_data");
         String resultData = expirationData.replaceAll("[年月日]", "");
         LocalDate today = LocalDate.now();
