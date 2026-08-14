@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,8 +20,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.ibm.icu.text.SimpleDateFormat;
 
 import jp.patasys.common.AtareSysCalendar;
 import jp.patasys.common.AtareSysException;
@@ -659,9 +655,6 @@ public class FileDetail extends ControllerBase {
             String fileOwnerId = fileData.getUploadUserId(); // ファイルの所有者ID
             
             // 所有者が現在のユーザーと一致するか確認
-
-            System.out.println(userLoginInfo);
-            System.out.println(userLoginInfo.getUserInfoId());
             if (!userLoginInfo.getUserInfoId().equals(fileOwnerId)) {
                 bean.setError("このファイルを削除する権限がありません。");
                 return "FileDetail_3.jsp";
@@ -678,7 +671,6 @@ public class FileDetail extends ControllerBase {
             // アップロードした実体ファイルを削除
             try {
                 Files.deleteIfExists(Paths.get(filePath));
-                
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -806,14 +798,17 @@ public class FileDetail extends ControllerBase {
             return false; // 期限が設定されていない場合は未期限とする
         }
 
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date expirationDate = sdf.parse(expirationDateString);
-            return expirationDate.before(new Date()); // 現在の日時と比較
-        } catch (ParseException e) {
-            e.printStackTrace(); // 解析エラーの処理
-            return false; // 解析に失敗した場合、期限切れとしない
-        }
+
+        LocalDateTime today = LocalDateTime.now();
+								DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+								String formattedDate = today.format(formatter);
+								int comparison = expirationDateString.compareTo(formattedDate);
+								
+								if (comparison < 0) {
+								  return true;
+								}else {
+								 	return false;
+								}
     }
     
 
