@@ -1,5 +1,9 @@
 package jp.swell.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Locale;
+
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.http.WebBean;
 import jp.swell.common.ControllerBase;
@@ -39,9 +43,40 @@ public class FilePreview extends ControllerBase {
         dao.dbSelect(bean.value("main_key"));
         String filePath = dao.getFilePath();
         bean.setValue( "filePathData", fileAsDataUrl(filePath) );
+        String baseFileName = dao.getFileName();
+        String encodedFileName = null;
         
         
-         forward("FilePreview.jsp");
+
+        // ユーザーエージェントを取得
+        String ua = this.getRequest().getHeader("user-agent");
+        String attachmentFileName = ""; // 添付ファイル名を初期化
+        // ブラウザによってファイル名の設定を分岐
+        if (ua.indexOf("MSIE") == -1) {
+            // Firefox, Opera 11など
+            try {
+													attachmentFileName = String.format(Locale.JAPAN, "inline; filename*=utf-8'jp'%s",
+													        URLEncoder.encode(baseFileName, "utf-8"));
+												} catch (UnsupportedEncodingException e) {
+													e.printStackTrace();
+												}
+        } else {
+            // IE7, 8, 9用の処理
+            try {
+													attachmentFileName = String.format(Locale.JAPAN, "inline; filename=\"%s\"",
+													        new String(baseFileName.getBytes("MS932"), "ISO8859_1"));
+												} catch (UnsupportedEncodingException e) {
+													// TODO 自動生成された catch ブロック
+													e.printStackTrace();
+												}
+        }
+
+        
+        
+								
+        this.getResponse().setHeader("Content-Disposition", attachmentFileName);
+   
+        forward("FilePreview.jsp");
        }
       
         return;
@@ -87,7 +122,7 @@ public class FilePreview extends ControllerBase {
           	   return "";
           }
        }
-
+       
        // ファイルをbyte配列に変換する
        byte[] bytes = java.nio.file.Files.readAllBytes(targetFile.toPath());
 
@@ -103,3 +138,4 @@ public class FilePreview extends ControllerBase {
      }
   }
 }
+
