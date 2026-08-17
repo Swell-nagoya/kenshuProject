@@ -2,12 +2,14 @@ package jp.swell.controller;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import jp.patasys.common.http.WebBean;
 import jp.swell.dao.FileDao;
+import jp.swell.dao.UserFileDao;
 import jp.swell.user.UserLoginInfo;
 
 class FileDetailTest {
@@ -59,30 +61,43 @@ class FileDetailTest {
  */
 	@Test
 	void testFileDetail2() throws Exception {
+	 // ユーザーログインID
+  String userInfoId = "EGBH00008";
+  // main_keyの生成
+  String main_key = java.util.UUID.randomUUID().toString().substring(0, 13);
+  // ファイルパス
+  String pfullPath = "C:/Users/user/Documents/プログラム/ex/workspace/kenshuProject/test/WebContent/dummy/dummy.jpg";
+  // ダウンロード時のファイル名
+  String fileName = "dummy.jpg";
+  // ファイルタイプ
+  String pmimeType = "image/jpeg";
+  // システムファイル名
+  String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + ".jpg";
+  // アップロードユーザー	
+  String puploadUserId = "EGBH00008";
+  // 送信先ユーザー
+  String userFileInsertUserId = "EGBH00008";
 
-  // テスト対象のファイルを登録したユーザーID
-  String userInfoId = "dummyUserID";
-  // テスト対象のファイルID
-  String main_key = "1e44f960-ef2f";
-  //ダミーログイン情報
-		UserLoginInfo strangerUser = new UserLoginInfo() {
+  new FileDao().dbFileInsert(main_key, userInfoId, pfullPath, fileName, pmimeType, systemFileName, puploadUserId, "1234567890121314", "2026/08/31 23:59:59");
+  new UserFileDao().dbUserFileInsert(userFileInsertUserId, main_key);
+
+  // 削除時：テスト用のログインユーザー
+  String strangerUserInfoId = "dummyUserID";
+  
+  UserLoginInfo strangerUser = new UserLoginInfo() {
       @Override
-      public String getUserInfoId() {
-          return userInfoId;
-      }
+      public String getUserInfoId() { return strangerUserInfoId; }
   };
   FileDetail testFileDetail = new FileDetail() {
       @Override
-      public UserLoginInfo getLoginInfo() {
-          return strangerUser;
-      }
+      public UserLoginInfo getLoginInfo() { return strangerUser; }
   };
 
-
+  // 自動生成された main_key で削除処理が走る
   String nextScreen = testFileDetail.dbDeletef(main_key);
-
   assertEquals("このファイルを削除する権限がありません。", testFileDetail.getWebBean().dispErrorMessages());
 	}
+	
 
  /* 
   * アップロードしたファイル一覧に、アップロードしたユーザー名とファイルIDが合致する場合.
@@ -91,32 +106,41 @@ class FileDetailTest {
  */
 	@Test
 	void testFileDetail3() throws Exception {
-
-  // テスト対象のファイルを登録したユーザーID
+	 // ユーザーログインID
   String userInfoId = "EGBH00008";
-  // テスト対象のファイルID
-  String main_key = "1e44f960-ef2f";
+  // main_keyの生成
+  String main_key = java.util.UUID.randomUUID().toString().substring(0, 13);
+  // ファイルパス
+  String pfullPath = "C:/Users/user/Documents/プログラム/ex/workspace/kenshuProject/test/WebContent/dummy/dummy.jpg";
+  // ダウンロード時のファイル名
+  String fileName = "dummy.jpg";
+  // ファイルタイプ
+  String pmimeType = "image/jpeg";
+  // システムファイル名
+  String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + ".jpg";
+  // アップロードユーザー	
+  String puploadUserId = "EGBH00008";
+  // 送信先ユーザー
+  String userFileInsertUserId = "EGBH00008";
 
-  //ダミーログイン情報
+  new FileDao().dbFileInsert(main_key, userInfoId, pfullPath, fileName, pmimeType, systemFileName, puploadUserId, "1234567890121314", "2026/08/31 23:59:59");
+  new UserFileDao().dbUserFileInsert(userFileInsertUserId, main_key);
+
+  // 削除時：テスト用のログインユーザー
+  String strangerUserInfoId = "EGBH00008";
+  
   UserLoginInfo strangerUser = new UserLoginInfo() {
       @Override
-      public String getUserInfoId() {
-          return userInfoId;
-      }
+      public String getUserInfoId() { return strangerUserInfoId; }
   };
   FileDetail testFileDetail = new FileDetail() {
       @Override
-      public UserLoginInfo getLoginInfo() {
-          return strangerUser;
-      }
+      public UserLoginInfo getLoginInfo() { return strangerUser; }
   };
 
-
+  // 自動生成された main_key で削除処理が走る
   String nextScreen = testFileDetail.dbDeletef(main_key);
-
   assertEquals("", testFileDetail.getWebBean().dispErrorMessages());
-
-	  
 	}
 
  /* 
@@ -236,7 +260,7 @@ class FileDetailTest {
   actualBean.setValue("file_value", "test");
 
   // ダウンロード期限
-  actualBean.setValue("expiration_data", "2026年08月14日");
+  actualBean.setValue("expiration_data", "2026年08月17日");
   
   // 入力チェックを実行
   boolean isValid = fileDetail.inputCheck(dao);
@@ -276,6 +300,7 @@ class FileDetailTest {
   assertEquals(null, errorSet.get("file_value_empty"));
   assertEquals(null, errorSet.get("expiration_data_empty"));
 }
+
 }
 
 
