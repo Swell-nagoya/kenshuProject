@@ -243,22 +243,6 @@ th {
 		document.getElementById('main_form').submit();
 	}
 
-	function go_detail_1(action_cmd, request_cmd, main_key) {
-		document.getElementById('main_form').action = '';
-		document.getElementById('action_cmd').value = action_cmd;
-		document.getElementById('request_cmd').value = request_cmd;
-		document.getElementById('main_key').value = main_key;
-		document.getElementById('main_form').submit();
-	}
-
-	function go_detail_2(action_cmd, request_cmd, main_key, file_name) {
-		document.getElementById('main_form').action = 'FileDetail.do';
-		document.getElementById('action_cmd').value = action_cmd;
-		document.getElementById('request_cmd').value = request_cmd;
-		document.getElementById('main_key').value = main_key;
-		document.getElementById('file_name').value = file_name;
-		document.getElementById('main_form').submit();
-	}
 	
 	function go_detail(action_cmd, request_cmd) {
 		document.getElementById('main_form').action = 'FileDetail.do';
@@ -285,24 +269,34 @@ th {
 	  
 	}
 
-
-
-	function go_detail_1(action_cmd, request_cmd, main_key) {
-		document.getElementById('main_form').action = '';
+	function go_detail_2(action_cmd, request_cmd, main_key, file_name) {
+		document.getElementById('main_form').action = 'FileDetail.do';
 		document.getElementById('action_cmd').value = action_cmd;
 		document.getElementById('request_cmd').value = request_cmd;
 		document.getElementById('main_key').value = main_key;
+		document.getElementById('file_name').value = file_name;
 		document.getElementById('main_form').submit();
 	}
 
+	function go_download( action_cmd, main_key, file_name) {
+		document.getElementById('main_form').action = 'FileList.do';
+		document.getElementById('action_cmd').value = action_cmd;
+		document.getElementById('main_key').value = main_key;
+		document.getElementById('file_name').value = file_name;
+		document.getElementById('main_form').submit();
+	}
+
+	
+
+
 
 	// サブ画面処理
-	function openFilePreviewWindow(action_cmd, request_cmd, main_key) {
+	function openFilePreviewWindow(main_key) {
 
 		// コントローラー設定
 		const form = document.createElement('form');
 		form.method = 'POST';
-		form.action = 'FilePreview.do';
+		form.action = 'FileSeparateWindow.do';
 		form.target = 'File_Preview';
 		// form_name設定
 		const formNameInput = document.createElement('input');
@@ -310,19 +304,6 @@ th {
 		formNameInput.name = 'form_name';
 		formNameInput.value = 'FilePreview';
 		form.appendChild(formNameInput);
-		// アクションコマンド設定
-		const actionCmdInput = document.createElement('input');
-		actionCmdInput.type = 'hidden';
-		actionCmdInput.name = 'action_cmd';
-		actionCmdInput.value = action_cmd;
-		form.appendChild(actionCmdInput);
-		// 部屋の名前
-		const requestCmdInput = document.createElement('input');
-		requestCmdInput.type = 'hidden';
-		requestCmdInput.name = 'request_cmd';
-		requestCmdInput.value = request_cmd;
-		form.appendChild(requestCmdInput);
-		
 		// ファイルのID
 		const roomIdInput = document.createElement('input');
 		roomIdInput.type = 'hidden';
@@ -489,7 +470,7 @@ th {
 								if ( expirationToDateInt > 0 ){
 							%>
 									<input type="button" value="ダウンロード"
-										onclick="go_detail_2('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
+										onclick="go_download('download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
 							
 									<%
 									// PDF、jpgまたはpngまたはgif
@@ -502,8 +483,7 @@ th {
 										) {
 									%>
 									<input type="button" value="プレビュー"
-										onclick="openFilePreviewWindow('go_next','preview','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
-
+										onclick="openFilePreviewWindow('<%=WebUtil.txtEscape(dao.getFileId())%>');" />
 									<%
 									}
 									%>

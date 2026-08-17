@@ -9,7 +9,7 @@ import jp.patasys.common.http.WebBean;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.FileDao;
 
-public class FilePreview extends ControllerBase {
+public class FileSeparateWindow extends ControllerBase {
     /**
      * jp.patasys.alumni.controller.HttpServlet のメソッドをオーバライドする。
      * オーバライドしない場合は、デフォルトが設定される。.
@@ -32,11 +32,8 @@ public class FilePreview extends ControllerBase {
     WebBean bean = getWebBean();
 
     if ("FilePreview".equals(bean.value("form_name"))) {
-      bean.trimAllItem();
+        bean.trimAllItem();
       
-      
-     if ("go_next".equals(bean.value("action_cmd"))) {
-       if ("preview".equals(bean.value("request_cmd"))) {
        	
        	FileDao dao = new FileDao(); 
 
@@ -83,10 +80,8 @@ public class FilePreview extends ControllerBase {
         this.getResponse().setHeader("Content-Disposition", attachmentFileName);
    
         forward("FilePreview.jsp");
-       }
       
         return;
-      }
 
     }
   }
