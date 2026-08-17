@@ -1,6 +1,9 @@
 package jp.swell.controller;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -11,6 +14,7 @@ import jp.patasys.common.http.WebBean;
 import jp.swell.dao.FileDao;
 import jp.swell.dao.UserFileDao;
 import jp.swell.user.UserLoginInfo;
+
 
 class FileDetailTest {
  private WebBean bean;
@@ -65,8 +69,19 @@ class FileDetailTest {
   String userInfoId = "EGBH00008";
   // main_keyの生成
   String main_key = java.util.UUID.randomUUID().toString().substring(0, 13);
-  // ファイルパス
-  String pfullPath = "C:/Users/user/Documents/プログラム/ex/workspace/kenshuProject/test/WebContent/dummy/dummy.jpg";
+  // アップロードするダミーファイルのパス
+  String pfullPath_set = "C:/Users/user/Documents/プログラム/ex/workspace/kenshuProject/test/WebContent/dummy/";
+  // ダミーファイル
+  String pfullPath_before = pfullPath_set + "dummy.jpg";
+  // 削除用の複製するダミーファイル名
+  String pfullPath = pfullPath_set + "dummy_after.jpg";
+  // ダミーファイル、削除用に複製
+  try {
+   Files.copy(java.nio.file.Paths.get(pfullPath_before), java.nio.file.Paths.get(pfullPath), StandardCopyOption.REPLACE_EXISTING);
+
+  } catch (IOException e) {
+      System.err.println("コピーに失敗しました: " + e.getMessage());
+  }
   // ダウンロード時のファイル名
   String fileName = "dummy.jpg";
   // ファイルタイプ
@@ -110,8 +125,18 @@ class FileDetailTest {
   String userInfoId = "EGBH00008";
   // main_keyの生成
   String main_key = java.util.UUID.randomUUID().toString().substring(0, 13);
-  // ファイルパス
-  String pfullPath = "C:/Users/user/Documents/プログラム/ex/workspace/kenshuProject/test/WebContent/dummy/dummy.jpg";
+  // アップロードするダミーファイルのパス
+  String pfullPath_set = "C:/Users/user/Documents/プログラム/ex/workspace/kenshuProject/test/WebContent/dummy/";
+  // ダミーファイル
+  String pfullPath_before = pfullPath_set + "dummy.jpg";
+  // 削除用の複製するダミーファイル名
+  String pfullPath = pfullPath_set + "dummy_after.jpg";
+  // ダミーファイル、削除用に複製
+  try {
+   Files.copy(java.nio.file.Paths.get(pfullPath_before), java.nio.file.Paths.get(pfullPath), StandardCopyOption.REPLACE_EXISTING);
+  } catch (IOException e) {
+      System.err.println("コピーに失敗しました: " + e.getMessage());
+  }
   // ダウンロード時のファイル名
   String fileName = "dummy.jpg";
   // ファイルタイプ
