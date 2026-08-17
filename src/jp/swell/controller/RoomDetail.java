@@ -114,7 +114,6 @@ public class RoomDetail extends ControllerBase
                       else
                       {
                           bean.setValue("request_name", "修正する");
-                          bean.setValue("before_name", bean.value("roomName"));
                           forward("RoomDetail.jsp");
                       }
                   } 
