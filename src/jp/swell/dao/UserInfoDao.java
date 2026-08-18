@@ -176,6 +176,30 @@ public class UserInfoDao implements Serializable {
         this.password = password;
     }
 
+    
+
+    /**
+     * file_name
+     */
+    private String fileName = "";
+
+    /**
+     * 
+     * @return fileName
+     */
+    public String getFileName() {
+        return fileName;
+    }
+
+    /**
+     * 
+     * @param fileName セットする fileName
+     */
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    
     /**
      * lastName  姓
      */

@@ -160,6 +160,12 @@ function go_submit(action_cmd)
 <div class="container">
   <h1>ファイルダウンロード一覧</h1>   
   <form id="main_form" method="post" action="">
+      
+     <input type="hidden" id="form_name" name="form_name" value="FileDownloads"/>
+     <input type="hidden" id="action_cmd" name="action_cmd" value=""/>
+     <input type="hidden" id="main_key" name="main_key" value="<%=webBean.txt("main_key")%>" />
+     <input type="hidden" id="previous_page" name="previous_page" value="RoomYoyakuList" />
+     
      <%
       if (webBean.arrayList("list").size() > 0) {
      %>
@@ -177,20 +183,13 @@ function go_submit(action_cmd)
      </div>
       <%}%>
       
-      
-     <input type="hidden" id="form_name" name="form_name" value="FileDownloads"/>
-     <input type="hidden" id="action_cmd" name="action_cmd" value=""/>
-     <input type="hidden" id="reservation_date" name="reservation_date" value=""/>
-     <input type="hidden" id="main_key" name="main_key" value="<%=webBean.txt("main_key")%>" />
-     <input type="hidden" id="file_downloads_id_show_all" name="file_downloads_id_show_all" value="<%=webBean.txt("file_downloads_id_show_all")%>" />
-     <input type="hidden" id="previous_page" name="previous_page" value="RoomYoyakuList" />
-     
+     <%
+      if (webBean.arrayList("list").size() > 0) {
+     %>
      <table border="1">
        <tr>
-          <th>ID</th>
-          <th>ユーザーID</th>
-          <th>ファイルID</th>
-          <th>ダウンロード日時</th>
+          <th>ユーザー名</th>
+          <th>最終ダウンロード時刻</th>
        </tr>
        <%
         for(Object item : webBean.arrayList("list"))
@@ -198,21 +197,20 @@ function go_submit(action_cmd)
           FileDownloadsDao dao = (FileDownloadsDao)item;
        %>
        <tr class="list_tr">
-            <td class="list_text">
-              <%=WebUtil.htmlEscape(dao.getFileDownloadsId())%>
-            </td>
-            <td class="list_text">
-              <%=WebUtil.htmlEscape(dao.getUserInfoId())%>
-            </td>
-            <td class="list_text">
-              <%=WebUtil.htmlEscape(dao.getFileId())%>
-            </td>
-            <td class="list_text">
-              <%=WebUtil.htmlEscape(dao.getDownloadsDate())%>
-            </td>
+         <td class="list_text">
+            <%=WebUtil.htmlEscape(dao.getFirstName())%>
+            <%=WebUtil.htmlEscape(dao.getMiddleName())%>
+            <%=WebUtil.htmlEscape(dao.getLastName())%>
+         </td>
+         <td class="list_text">
+            <%=WebUtil.htmlEscape(dao.getDownloadsDate())%>
+         </td>
        </tr>
        <%}%>
     </table>
+    <% } else { %>
+    <p>ダウンロード履歴はありません。</p>
+    <%}%>
     <div class="buttons">
       <input type="button" value="閉じる" onclick="window.close()" class="btn btn-close">
     </div>

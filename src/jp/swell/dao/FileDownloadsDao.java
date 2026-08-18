@@ -17,48 +17,25 @@ import jp.patasys.common.db.DbS;
 
   public class FileDownloadsDao implements Serializable {
 
+   /**
+    * firstName  名
+    */
+   private String firstName = "";
 
    /**
-    * file_downloads_id
+    * 名を取得する。.
+    * @return  firstName 名
     */
-   private String fileDownloadsId = "";
-
-   /**
-    * 
-    * @return fileDownloadsId
-    */
-   public String getFileDownloadsId() {
-       return fileDownloadsId;
+   public String getFirstName() {
+       return firstName;
    }
 
    /**
-    * 
-    * @param fileDownloadsId セットする fileDownloadsId
+    * 名をセットする。.
+    * @param firstName 名
     */
-   public void setFileDownloadsId(String fileDownloadsId) {
-       this.fileDownloadsId = fileDownloadsId;
-   }
-   
-   
-   /**
-    * user_info_id
-    */
-   private String userInfoId = "";
-
-   /**
-    * 
-    * @return userInfoId
-    */
-   public String getUserInfoId() {
-       return userInfoId;
-   }
-
-   /**
-    * 
-    * @param userInfoId セットする userInfoId
-    */
-   public void setUserInfoId(String userInfoId) {
-       this.userInfoId = userInfoId;
+   public void setFirstName(String firstName) {
+       this.firstName = firstName;
    }
 
    /**
@@ -81,9 +58,26 @@ import jp.patasys.common.db.DbS;
    public void setFileId(String fileId) {
        this.fileId = fileId;
    }
+   /**
+     * file_name
+    */
+   private String fileName = "";
 
+   /**
+    * 
+    * @return fileName
+    */
+   public String getFileName() {
+       return fileName;
+   }
 
-
+   /**
+    * 
+    * @param fileName セットする fileName
+    */
+   public void setFileName(String fileName) {
+       this.fileName = fileName;
+   }
    /**
     * downloadsDate ダウンロード日時
     */
@@ -105,69 +99,92 @@ import jp.patasys.common.db.DbS;
        this.downloadsDate = downloadsDate;
    }
    
+   /**
+    * lastName  姓
+    */
+   private String lastName = "";
+
+   /**
+    * 姓を取得する。.
+    * @return  lastName 姓
+    */
+   public String getLastName() {
+       return lastName;
+   }
+
+   /**
+    * 姓をセットする。.
+    * @param lastName 姓
+    */
+   public void setLastName(String lastName) {
+       this.lastName = lastName;
+   }
+
+   /**
+    * middleName  ミドルネーム
+    */
+   private String middleName = "";
+
+   /**
+    * ミドルネームを取得する。.
+    * @return  middleName ミドルネーム
+    */
+   public String getMiddleName() {
+       return middleName;
+   }
+
+   /**
+    * ミドルネームをセットする。.
+    * @param middleName ミドルネーム
+    */
+   public void setMiddleName(String middleName) {
+       this.middleName = middleName;
+   }
+
+   /**
+    * file_downloads_id
+    */
+   private String fileDownloadsId = "";
+
+   /**
+    * 
+    * @return fileDownloadsId
+    */
+   public String getFileDownloadsId() {
+       return fileDownloadsId;
+   }
+
     /**
-     * files_downloads ダウンロード履歴テーブルにデータを挿入する
-     * @param puserInfoId 
-     *
-     * @return true:成功 false:失敗
-     * @throws AtareSysException エラー
+     * 
+     * @param fileDownloadsId セットする fileDownloadsId
      */
-    public boolean dbFileDownloadsInsert(String downloadsId, String puserInfoId, String pfileId)
-     throws AtareSysException {
-     setUserInfoId(puserInfoId);
-
-     String createTableSql = "CREATE TABLE IF NOT EXISTS files_downloads ("
-         + " file_downloads_id VARCHAR(13) NOT NULL,"
-         + " user_info_id VARCHAR(13) NOT NULL,"
-         + " file_id VARCHAR(13) NOT NULL,"
-         + " downloads_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-         + " PRIMARY KEY (file_downloads_id)"
-         + " );";
-
-     DbBase.dbExec(createTableSql);
-
-
-     String sql = "insert into files_downloads ("
-         + " file_downloads_id"
-         + ",user_info_id"
-         + ",file_id"
-         + ",downloads_date"
-         + " ) values ( "
-         + DbO.chara(downloadsId)
-         + "," + DbO.chara(puserInfoId)
-         + "," + DbO.chara(pfileId)
-         + "," + "NOW()"
-         + " );";
-    int ret = DbBase.dbExec(sql);
-
-    if (ret != 1)
-       throw new AtareSysException("dbInsert number or record exception.");
-       return true;
+    public void setFileDownloadsId(String fileDownloadsId) {
+       this.fileDownloadsId = fileDownloadsId;
     }
-    
-
+   
+   
+    /**
+     * user_info_id
+     */
+    private String userInfoId = "";
 
     /**
-     * files ファイル情報テーブルの検索条件を設定する。.
-     *
-     * @return String where句の文字列
-     * @throws AtareSysException フレームワーク共通例外
+     * 
+     * @return userInfoId
      */
-    private String dbWhere() throws AtareSysException {
-        StringBuffer where = new StringBuffer(1024);
-        
-        if (getFileId().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
-            where.append("files_downloads.file_id = " + DbS.chara(getFileId()));
-        }
-
-        if(where.length()>0)
-        {
-            return "where " + where.toString();
-        }
-        return "";
+    public String getUserInfoId() {
+       return userInfoId;
     }
-    
+
+    /**
+     * 
+     * @param userInfoId セットする userInfoId
+     */
+     public void setUserInfoId(String userInfoId) {
+       this.userInfoId = userInfoId;
+     }
+     
+
     /**
      * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
      */
@@ -209,23 +226,35 @@ import jp.patasys.common.db.DbS;
         if(daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo()) daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
         int start  =   (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql =  "select "
-            + "max( files_downloads.file_downloads_id ) as files_downloads___file_downloads_id"
+            + "any_value( files_downloads.file_downloads_id ) as file_downloads_id"
             + ",files_downloads.user_info_id as files_downloads___user_info_id"
             + ",files_downloads.file_id as files_downloads___file_id"
-            + ",max( files_downloads.downloads_date ) as files_downloads___insert_date"
-            + " from files_downloads ";
+            + ",max( files_downloads.downloads_date ) as downloads_date"
+            + ",files.file_name AS files___name"
+            + ",user_info.last_name AS user_info___last_name"
+            + ",user_info.middle_name AS user_info___middle_name"
+            + ",user_info.first_name AS user_info___first_name"
+            
+            + " from files_downloads "
+            + " inner join files "
+            + " on files_downloads.file_id = files.file_id COLLATE utf8mb4_unicode_ci "
+            + " inner join user_info "
+            + " on files_downloads.user_info_id = user_info.user_info_id COLLATE utf8mb4_unicode_ci ";
         String where = myclass.dbWhere();
         String order = myclass.dbSearchFilesDownloadsOrder(sortKey);
         sql += where;
 
         sql += " group by "; 
         sql += " files_downloads.user_info_id,";
-        sql += " files_downloads.file_id ";
+        sql += " files_downloads.file_id,";
+        sql += " files.file_name,";
+        sql += " user_info.last_name,";
+        sql += " user_info.middle_name,";
+        sql += " user_info.first_name ";
 
         sql += order;
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
         rs  =  DbBase.dbSelect(sql);
-        
         
         int cnt = rs.size();
         
@@ -243,8 +272,30 @@ import jp.patasys.common.db.DbS;
         return array;
     }
     
+
     /**
-     * files ファイル情報テーブルの並べ替え順序を設定する。.
+     * files_downloads ファイル情報テーブルの検索条件を設定する。.
+     *
+     * @return String where句の文字列
+     * @throws AtareSysException フレームワーク共通例外
+     */
+    private String dbWhere() throws AtareSysException {
+        StringBuffer where = new StringBuffer(1024);
+        
+        if (getFileId().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("files_downloads.file_id = " + DbS.chara(getFileId()));
+        }
+
+        if(where.length()>0)
+        {
+            return "where " + where.toString();
+        }
+        return "";
+    }
+    
+    /**
+     * files_downloads ファイル情報テーブルの並べ替え順序を設定する。.
      *
      * @param sortKey
      * @return Stringソート句の文字列
@@ -271,16 +322,61 @@ import jp.patasys.common.db.DbS;
     }
 
     /**
-     *  FileDao にfiles_downloads ファイルテーブルから読み込んだデータを設定する。.
+     *  FileDownloadsDao にfiles_downloads ファイルテーブルから読み込んだデータを設定する。.
      *
      * @param map  読み込んだテーブルの１レコードが入っているHashMap
-     * @param dao  FileDaoこのテーブルのインスタンス
+     * @param dao  FileDownloadsDaoこのテーブルのインスタンス
      */
     public void setFileDownloadHistoryDaoForJoin(HashMap<String, String> map, FileDownloadsDao dao) throws AtareSysException {
-        dao.setFileDownloadsId(DbI.chara(map.get("file_downloads_id") != null ? map.get("file_downloads_id") : ""));
-        dao.setUserInfoId(DbI.chara(map.get("user_info_id") != null ? map.get("user_info_id") : ""));
+        dao.setFileName(DbI.chara(map.get("file_name") != null ? map.get("file_name") : ""));
         dao.setFileId(DbI.chara(map.get("file_id") != null ? map.get("file_id") : ""));
         dao.setDownloadsDate(DbI.chara(map.get("downloads_date") != null ? map.get("downloads_date") : ""));
+        dao.setLastName(DbI.chara(map.get("last_name") != null ? map.get("last_name") : ""));
+        dao.setMiddleName(DbI.chara(map.get("middle_name") != null ? map.get("middle_name") : ""));
+        dao.setFirstName(DbI.chara(map.get("first_name") != null ? map.get("first_name") : ""));
+        dao.setFileDownloadsId(DbI.chara(map.get("file_downloads_id") != null ? map.get("file_downloads_id") : ""));
+        dao.setUserInfoId(DbI.chara(map.get("user_info_id") != null ? map.get("user_info_id") : ""));
+    }
+
+    /**
+     * files_downloads ダウンロード履歴テーブルにデータを新規作成や挿入する.
+     * @param puserInfoId 
+     *
+     * @return true:成功 false:失敗
+     * @throws AtareSysException エラー
+     */
+    public boolean dbFileDownloadsInsert(String downloadsId, String puserInfoId, String pfileId)
+     throws AtareSysException {
+     setUserInfoId(puserInfoId);
+
+     String createTableSql = "CREATE TABLE IF NOT EXISTS files_downloads ("
+         + " file_downloads_id VARCHAR(13) NOT NULL,"
+         + " user_info_id VARCHAR(13) NOT NULL,"
+         + " file_id VARCHAR(13) NOT NULL,"
+         + " downloads_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+         + " PRIMARY KEY (file_downloads_id)"
+         + " );";
+
+     DbBase.dbExec(createTableSql);
+
+
+     String sql = "insert into files_downloads ("
+         + " file_downloads_id"
+         + ",user_info_id"
+         + ",file_id"
+         + ",downloads_date"
+         + " ) values ( "
+         + DbO.chara(downloadsId)
+         + "," + DbO.chara(puserInfoId)
+         + "," + DbO.chara(pfileId)
+         + "," + "NOW()"
+         + " );";
+    int ret = DbBase.dbExec(sql);
+
+    if (ret != 1)
+       throw new AtareSysException("dbInsert number or record exception.");
+       return true;
     }
     
+
 }

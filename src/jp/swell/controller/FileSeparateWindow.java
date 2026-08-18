@@ -36,14 +36,10 @@ public class FileSeparateWindow extends ControllerBase {
     }
     @Override
      public void doActionProcess() throws AtareSysException {
-       // UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
-        FileDownloadsDao dao = new FileDownloadsDao();
         FileDao fileDao = new FileDao();
-        FileList fileList = new FileList();
         WebBean bean = getWebBean();
         bean.trimAllItem();
 
-        System.out.println(bean.value("form_name"));
 
         if ("FileDownloads".equals(bean.value("form_name"))) {
           
@@ -60,27 +56,14 @@ public class FileSeparateWindow extends ControllerBase {
           {
               bean.setValue("pageNo", calcPageNo(bean.value("pageNo"), -1));
               searchFilesDownloadsList();
-          }else {
+          } else {
            
 
            bean.setValue("pageNo", "1");
            searchFilesDownloadsList();
-           
           }
 
           forward("FileDownloads.jsp");
-        	
-        	
-          //String filePath = fileDownloadsDao.getFilePath();
-          
-         // fileList.searchList();
-          //String downloadsId = UUID.randomUUID().toString().substring(0, 13);
-          // ログイン中のユーザーIDを取得
-          //String userInfoIdString = userLoginInfo.getUserInfoId(); // ユーザーIDを取得
-          
-          //fileDownloadsDao.dbFileDownloadsInsert(downloadsId,userInfoIdString,mainKey);
-          
-     
           return;
    
         } else if ("FilePreview".equals(bean.value("form_name"))) {
@@ -129,12 +112,10 @@ public class FileSeparateWindow extends ControllerBase {
           return;
 
         }
-  }
-
-
+    }
 
     /**
-     * 検索を行いbeanに格納する。.
+     * ファイルダウンロード履歴一覧の検索を行いbeanに格納する。.
      */
     private void searchFilesDownloadsList() throws AtareSysException
     {
@@ -165,19 +146,6 @@ public class FileSeparateWindow extends ControllerBase {
         }
         ArrayList<FileDownloadsDao> listData = FileDownloadsDao.dbSearchFilesDownloadsList(dao, sortKey, daoPageInfo);
         
-        
-        // 表示中のファイルダウンロードのIDをすべて取得
-        String file_downloads_id_show_all = "";
-        for(int i = 0;i < listData.size();i++) {
-        if( listData.get(i).getFileDownloadsId() != null ) {
-          if( file_downloads_id_show_all != null && file_downloads_id_show_all != "" ) {
-          	file_downloads_id_show_all += ",";
-          }
-          file_downloads_id_show_all += listData.get(i).getFileDownloadsId();
-         }
-        }
-        
-        bean.setValue("file_downloads_id_show_all", Sup.serialize(file_downloads_id_show_all));
         
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
