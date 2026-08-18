@@ -1,15 +1,19 @@
 package jp.swell.controller;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 
+import javax.servlet.ServletOutputStream;
+
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
+import jp.patasys.common.util.FileUtil;
 import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
@@ -65,53 +69,69 @@ public class FileSeparateWindow extends ControllerBase {
 
           forward("FileDownloads.jsp");
           return;
-   
         } else if ("FilePreview".equals(bean.value("form_name"))) {
-       	
-        	 fileDao.dbSelect(bean.value("main_key"));
-          String filePath = fileDao.getFilePath();
-          bean.setValue( "filePathData", fileAsDataUrl(filePath) );
-          String baseFileName = fileDao.getFileName();
-        
-        
+         // 出力ストリームを初期化
+         ServletOutputStream out = null;
+         fileDao.dbSelect(bean.value("main_key"));
+         String filePath = fileDao.getFilePath();
+         String baseFileName = fileDao.getFileName();
+         
 
-          // ユーザーエージェントを取得
-          String ua = this.getRequest().getHeader("user-agent");
-          String attachmentFileName = ""; // 添付ファイル名を初期化
-          // ブラウザによってファイル名の設定を分岐
-          if (ua.indexOf("MSIE") == -1) {
-            // Firefox, Opera 11など
-              try {
-												   	attachmentFileName = String.format(Locale.JAPAN, "inline; filename*=utf-8'jp'%s",
-													        URLEncoder.encode(baseFileName, "utf-8"));
-												  } catch (UnsupportedEncodingException e) {
-												   	e.printStackTrace();
-												  }
-           } else {
-              // IE7, 8, 9用の処理
-              try {
-													    attachmentFileName = String.format(Locale.JAPAN, "inline; filename=\"%s\"",
-													        new String(baseFileName.getBytes("MS932"), "ISO8859_1"));
-												  } catch (UnsupportedEncodingException e) {
-												    	// TODO 自動生成された catch ブロック
-												    	e.printStackTrace();
-												  }
-          }
+         // ユーザーエージェントを取得
+         String ua = this.getRequest().getHeader("user-agent");
+         // 添付ファイル名を初期化
+         String attachmentFileName = ""; 
+         
+         // ブラウザによってファイル名の設定を分岐
+         // Firefox, Opera 11など
+         if (ua.indexOf("MSIE") == -1) {
+             try {
+                 attachmentFileName = String.format(Locale.JAPAN, "inline; filename*=utf-8'jp'%s",
+                         URLEncoder.encode(baseFileName, "utf-8"));
+             } catch (UnsupportedEncodingException e) {
+                 e.printStackTrace();
+             }
+         // IE7, 8, 9用の処理
+         } else {
+             try {
+                 attachmentFileName = String.format(Locale.JAPAN, "inline; filename=\"%s\"",
+                         new String(baseFileName.getBytes("MS932"), "ISO8859_1"));
+             } catch (UnsupportedEncodingException e) {
+                 e.printStackTrace();
+             }
+         }
 
-          // レスポンスの文字エンコーディングを設定
-          this.getResponse().setCharacterEncoding("UTF-8");
+         // レスポンスの文字エンコーディングを設定
+         this.getResponse().setCharacterEncoding("UTF-8");
+         this.getResponse().setHeader("pragma", "no-cache");
+         this.getResponse().setHeader("Cache-Control", "no-cache");
 
-          this.getResponse().setHeader("pragma", "no-store");
-          this.getResponse().setHeader("Cache-Control", "no-store");
+         
+         String contentType = this.getServletContext().getMimeType(baseFileName);
+         // ファイルgetMimeTypeが空の時
+         if (contentType == null) {
+             contentType = "application/octet-stream";
+         }
+         this.getResponse().setContentType(contentType);
 
-          // 添付ファイル名をレスポンスヘッダーに設定
-          this.getResponse().setHeader("Content-Disposition", attachmentFileName);
-   
-          forward("FilePreview.jsp");
-      
-          return;
+         // 添付ファイル名をレスポンスヘッダーに設定
+         this.getResponse().setHeader("Content-Disposition", attachmentFileName);
 
-        }
+         try {
+             // レスポンスの出力ストリームを取得
+            	out = this.getResponse().getOutputStream();
+
+             // ファイルを出力ストリームに書き込み
+             FileUtil fileUtil = new FileUtil();
+             fileUtil.inputFile(filePath, out);
+
+             out.flush(); // 出力ストリームをフラッシュ
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+
+         return;
+     }
     }
 
     /**
