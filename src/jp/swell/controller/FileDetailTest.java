@@ -7,9 +7,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import jp.patasys.common.AtareSysException;
 import jp.patasys.common.http.WebBean;
 import jp.swell.dao.FileDao;
 import jp.swell.dao.UserFileDao;
@@ -19,6 +21,10 @@ import jp.swell.user.UserLoginInfo;
 class FileDetailTest {
  private WebBean bean;
  private FileDetail fileDetail;
+ // テスト用で追加したファイルのフルパスを格納.
+ private String pfullPath;
+ // テスト用で生成した、main_keyを格納.
+ private String main_key;
  
  @BeforeEach
  void setUp() {
@@ -57,7 +63,6 @@ class FileDetailTest {
   assertEquals("ファイルが見つかりませんでした。", testFileDetail.getWebBean().dispErrorMessages());
 	}
 
-
  /* 
   * アップロードしたファイル一覧に、アップロードしたユーザー名が存在しないとき.
   * ファイル削除を拒否する.
@@ -68,16 +73,16 @@ class FileDetailTest {
 	 // ユーザーログインID
   String userInfoId = "EGBH00008";
   // main_keyの生成
-  String main_key = java.util.UUID.randomUUID().toString().substring(0, 13);
+  this.main_key = java.util.UUID.randomUUID().toString().substring(0, 13);
   // アップロードするダミーファイルのパス
   String pfullPath_set = "C:/Users/user/Documents/プログラム/ex/workspace/kenshuProject/test/WebContent/dummy/";
   // ダミーファイル
   String pfullPath_before = pfullPath_set + "dummy.jpg";
   // 削除用の複製するダミーファイル名
-  String pfullPath = pfullPath_set + "dummy_after_2.jpg";
+  this.pfullPath = pfullPath_set + "dummy_after_2.jpg";
   // ダミーファイル、削除用に複製
   try {
-   Files.copy(java.nio.file.Paths.get(pfullPath_before), java.nio.file.Paths.get(pfullPath), StandardCopyOption.REPLACE_EXISTING);
+   Files.copy(java.nio.file.Paths.get(pfullPath_before), java.nio.file.Paths.get(this.pfullPath), StandardCopyOption.REPLACE_EXISTING);
 
   } catch (IOException e) {
       System.err.println("コピーに失敗しました: " + e.getMessage());
@@ -93,8 +98,8 @@ class FileDetailTest {
   // 送信先ユーザー
   String userFileInsertUserId = "EGBH00008";
 
-  new FileDao().dbFileInsert(main_key, userInfoId, pfullPath, fileName, pmimeType, systemFileName, puploadUserId, "1234567890121314", "2026/08/31 23:59:59");
-  new UserFileDao().dbUserFileInsert(userFileInsertUserId, main_key);
+  new FileDao().dbFileInsert(this.main_key, userInfoId, this.pfullPath, fileName, pmimeType, systemFileName, puploadUserId, "1234567890121314", "2026/08/31 23:59:59");
+  new UserFileDao().dbUserFileInsert(userFileInsertUserId, this.main_key);
 
   // 削除時：テスト用のログインユーザー
   String strangerUserInfoId = "dummyUserID";
@@ -108,8 +113,8 @@ class FileDetailTest {
       public UserLoginInfo getLoginInfo() { return strangerUser; }
   };
 
-  // 自動生成された main_key で削除処理が走る
-  String nextScreen = testFileDetail.dbDeletef(main_key);
+  // 自動生成された this.main_key で削除処理が走る
+  testFileDetail.dbDeletef(this.main_key);
   assertEquals("このファイルを削除する権限がありません。", testFileDetail.getWebBean().dispErrorMessages());
 	}
 	
@@ -124,16 +129,16 @@ class FileDetailTest {
 	 // ユーザーログインID
   String userInfoId = "EGBH00008";
   // main_keyの生成
-  String main_key = java.util.UUID.randomUUID().toString().substring(0, 13);
+  this.main_key = java.util.UUID.randomUUID().toString().substring(0, 13);
   // アップロードするダミーファイルのパス
   String pfullPath_set = "C:/Users/user/Documents/プログラム/ex/workspace/kenshuProject/test/WebContent/dummy/";
   // ダミーファイル
   String pfullPath_before = pfullPath_set + "dummy.jpg";
   // 削除用の複製するダミーファイル名
-  String pfullPath = pfullPath_set + "dummy_after_3.jpg";
+  this.pfullPath = pfullPath_set + "dummy_after_3.jpg";
   // ダミーファイル、削除用に複製
   try {
-   Files.copy(java.nio.file.Paths.get(pfullPath_before), java.nio.file.Paths.get(pfullPath), StandardCopyOption.REPLACE_EXISTING);
+   Files.copy(java.nio.file.Paths.get(pfullPath_before), java.nio.file.Paths.get(this.pfullPath), StandardCopyOption.REPLACE_EXISTING);
   } catch (IOException e) {
       System.err.println("コピーに失敗しました: " + e.getMessage());
   }
@@ -148,8 +153,8 @@ class FileDetailTest {
   // 送信先ユーザー
   String userFileInsertUserId = "EGBH00008";
 
-  new FileDao().dbFileInsert(main_key, userInfoId, pfullPath, fileName, pmimeType, systemFileName, puploadUserId, "1234567890121314", "2026/08/31 23:59:59");
-  new UserFileDao().dbUserFileInsert(userFileInsertUserId, main_key);
+  new FileDao().dbFileInsert(this.main_key, userInfoId, this.pfullPath, fileName, pmimeType, systemFileName, puploadUserId, "1234567890121314", "2026/08/31 23:59:59");
+  new UserFileDao().dbUserFileInsert(userFileInsertUserId, this.main_key);
 
   // 削除時：テスト用のログインユーザー
   String strangerUserInfoId = "EGBH00008";
@@ -163,7 +168,7 @@ class FileDetailTest {
       public UserLoginInfo getLoginInfo() { return strangerUser; }
   };
   // 自動生成された main_key で削除処理が走る
-  String nextScreen = testFileDetail.dbDeletef(main_key);
+  testFileDetail.dbDeletef(this.main_key);
   assertEquals("", testFileDetail.getWebBean().dispErrorMessages());
 	}
 
@@ -284,7 +289,7 @@ class FileDetailTest {
   actualBean.setValue("file_value", "test");
 
   // ダウンロード期限
-  actualBean.setValue("expiration_data", "2026年08月17日");
+  actualBean.setValue("expiration_data", "2026年08月19日");
   
   // 入力チェックを実行
   boolean isValid = fileDetail.inputCheck(dao);
@@ -325,6 +330,42 @@ class FileDetailTest {
   assertEquals(null, errorSet.get("expiration_data_empty"));
 }
 
+
+@AfterEach
+void tearDown() {
+
+    if (this.main_key != null) {
+         // 1. 本来の所有者「EGBH00008」のログイン情報を作成
+         UserLoginInfo ownerUser = new UserLoginInfo() {
+             @Override
+             public String getUserInfoId() { return "EGBH00008"; }
+         };
+         
+         // 2. 所有者情報を持たせた FileDetail を作成
+         FileDetail cleanupFileDetail = new FileDetail() {
+             @Override
+             public UserLoginInfo getLoginInfo() { return ownerUser; }
+         };
+         
+         // dbDeletef を実行してレコードを消す
+         try {
+										cleanupFileDetail.dbDeletef(this.main_key);
+									} catch (AtareSysException e) {
+										// TODO 自動生成された catch ブロック
+										e.printStackTrace();
+									}
+         
+    }
+    // ファイル削除処理
+    if (this.pfullPath != null) {
+        try {
+            Files.deleteIfExists(java.nio.file.Paths.get(this.pfullPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+	
 }
 
 
