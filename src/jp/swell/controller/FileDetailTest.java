@@ -7,6 +7,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +58,7 @@ class FileDetailTest {
   assertEquals("ファイルが見つかりませんでした。", testFileDetail.getWebBean().dispErrorMessages());
 	}
 
-
+private String pfullPath;
  /* 
   * アップロードしたファイル一覧に、アップロードしたユーザー名が存在しないとき.
   * ファイル削除を拒否する.
@@ -74,7 +75,7 @@ class FileDetailTest {
   // ダミーファイル
   String pfullPath_before = pfullPath_set + "dummy.jpg";
   // 削除用の複製するダミーファイル名
-  String pfullPath = pfullPath_set + "dummy_after_2.jpg";
+  this.pfullPath = pfullPath_set + "dummy_after_2.jpg";
   // ダミーファイル、削除用に複製
   try {
    Files.copy(java.nio.file.Paths.get(pfullPath_before), java.nio.file.Paths.get(pfullPath), StandardCopyOption.REPLACE_EXISTING);
@@ -284,7 +285,7 @@ class FileDetailTest {
   actualBean.setValue("file_value", "test");
 
   // ダウンロード期限
-  actualBean.setValue("expiration_data", "2026年08月17日");
+  actualBean.setValue("expiration_data", "2026年08月19日");
   
   // 入力チェックを実行
   boolean isValid = fileDetail.inputCheck(dao);
@@ -325,6 +326,20 @@ class FileDetailTest {
   assertEquals(null, errorSet.get("expiration_data_empty"));
 }
 
+
+@AfterEach
+void tearDown() {
+
+    // ファイル削除処理
+    if (this.pfullPath != null) {
+        try {
+            Files.deleteIfExists(java.nio.file.Paths.get(this.pfullPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+	
 }
 
 
