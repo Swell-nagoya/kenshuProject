@@ -2,12 +2,19 @@ package jp.swell.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 
 import jp.patasys.common.AtareSysException;
+import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
+import jp.patasys.common.util.Sup;
+import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.FileDao;
+import jp.swell.dao.FileDownloadsDao;
 
 public class FileSeparateWindow extends ControllerBase {
     /**
@@ -27,66 +34,162 @@ public class FileSeparateWindow extends ControllerBase {
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
     }
-  @Override
-  public void doActionProcess() throws AtareSysException {
-    WebBean bean = getWebBean();
-
-    if ("FilePreview".equals(bean.value("form_name"))) {
+    @Override
+     public void doActionProcess() throws AtareSysException {
+       // UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+        FileDownloadsDao dao = new FileDownloadsDao();
+        FileDao fileDao = new FileDao();
+        FileList fileList = new FileList();
+        WebBean bean = getWebBean();
         bean.trimAllItem();
-      
-       	
-       	FileDao dao = new FileDao(); 
 
-        dao.dbSelect(bean.value("main_key"));
-        String filePath = dao.getFilePath();
-        bean.setValue( "filePathData", fileAsDataUrl(filePath) );
-        String baseFileName = dao.getFileName();
-        String encodedFileName = null;
-        
-        
+        System.out.println(bean.value("form_name"));
 
-        // ユーザーエージェントを取得
-        String ua = this.getRequest().getHeader("user-agent");
-        String attachmentFileName = ""; // 添付ファイル名を初期化
-        // ブラウザによってファイル名の設定を分岐
-        if (ua.indexOf("MSIE") == -1) {
-            // Firefox, Opera 11など
-            try {
-													attachmentFileName = String.format(Locale.JAPAN, "inline; filename*=utf-8'jp'%s",
-													        URLEncoder.encode(baseFileName, "utf-8"));
-												} catch (UnsupportedEncodingException e) {
-													e.printStackTrace();
-												}
-        } else {
-            // IE7, 8, 9用の処理
-            try {
-													attachmentFileName = String.format(Locale.JAPAN, "inline; filename=\"%s\"",
-													        new String(baseFileName.getBytes("MS932"), "ISO8859_1"));
-												} catch (UnsupportedEncodingException e) {
-													// TODO 自動生成された catch ブロック
-													e.printStackTrace();
-												}
-        }
+        if ("FileDownloads".equals(bean.value("form_name"))) {
+          
+          if ("next".equals(bean.value("action_cmd")))
+          {
+              bean.setValue("pageNo", calcPageNo(bean.value("pageNo"), 1));
+              searchFilesDownloadsList();
+          }
+          else if ("jump".equals(bean.value("action_cmd")))
+          {
+              	searchFilesDownloadsList();
+          }
+          else if ("prior".equals(bean.value("action_cmd")))
+          {
+              bean.setValue("pageNo", calcPageNo(bean.value("pageNo"), -1));
+              searchFilesDownloadsList();
+          }else {
+           
 
-        // レスポンスの文字エンコーディングを設定
-        this.getResponse().setCharacterEncoding("UTF-8");
+           bean.setValue("pageNo", "1");
+           searchFilesDownloadsList();
+           
+          }
 
-        this.getResponse().setHeader("pragma", "no-store");
-        this.getResponse().setHeader("Cache-Control", "no-store");
-
-        String file_value = filePath;
-        String fileExtension = file_value.replaceAll("^.*\\.", "");
-        // 添付ファイル名をレスポンスヘッダーに設定
-        this.getResponse().setHeader("Content-Disposition", attachmentFileName);
+          forward("FileDownloads.jsp");
+        	
+        	
+          //String filePath = fileDownloadsDao.getFilePath();
+          
+         // fileList.searchList();
+          //String downloadsId = UUID.randomUUID().toString().substring(0, 13);
+          // ログイン中のユーザーIDを取得
+          //String userInfoIdString = userLoginInfo.getUserInfoId(); // ユーザーIDを取得
+          
+          //fileDownloadsDao.dbFileDownloadsInsert(downloadsId,userInfoIdString,mainKey);
+          
+     
+          return;
    
-        forward("FilePreview.jsp");
-      
-        return;
+        } else if ("FilePreview".equals(bean.value("form_name"))) {
+       	
+        	 fileDao.dbSelect(bean.value("main_key"));
+          String filePath = fileDao.getFilePath();
+          bean.setValue( "filePathData", fileAsDataUrl(filePath) );
+          String baseFileName = fileDao.getFileName();
+        
+        
 
-    }
+          // ユーザーエージェントを取得
+          String ua = this.getRequest().getHeader("user-agent");
+          String attachmentFileName = ""; // 添付ファイル名を初期化
+          // ブラウザによってファイル名の設定を分岐
+          if (ua.indexOf("MSIE") == -1) {
+            // Firefox, Opera 11など
+              try {
+												   	attachmentFileName = String.format(Locale.JAPAN, "inline; filename*=utf-8'jp'%s",
+													        URLEncoder.encode(baseFileName, "utf-8"));
+												  } catch (UnsupportedEncodingException e) {
+												   	e.printStackTrace();
+												  }
+           } else {
+              // IE7, 8, 9用の処理
+              try {
+													    attachmentFileName = String.format(Locale.JAPAN, "inline; filename=\"%s\"",
+													        new String(baseFileName.getBytes("MS932"), "ISO8859_1"));
+												  } catch (UnsupportedEncodingException e) {
+												    	// TODO 自動生成された catch ブロック
+												    	e.printStackTrace();
+												  }
+          }
+
+          // レスポンスの文字エンコーディングを設定
+          this.getResponse().setCharacterEncoding("UTF-8");
+
+          this.getResponse().setHeader("pragma", "no-store");
+          this.getResponse().setHeader("Cache-Control", "no-store");
+
+          // 添付ファイル名をレスポンスヘッダーに設定
+          this.getResponse().setHeader("Content-Disposition", attachmentFileName);
+   
+          forward("FilePreview.jsp");
+      
+          return;
+
+        }
   }
 
 
+
+    /**
+     * 検索を行いbeanに格納する。.
+     */
+    private void searchFilesDownloadsList() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+
+        LinkedHashMap<String, String> sortKey = new LinkedHashMap<>();
+        sortKey.put("downloads_date", "asc");
+        
+
+        FileDownloadsDao dao = new FileDownloadsDao();
+        dao.setFileId(bean.value("main_key"));
+        
+        
+        DaoPageInfo daoPageInfo = new DaoPageInfo();
+        if (!Validate.isInteger(bean.value("lineCount")))
+        {
+            bean.setValue("lineCount", "20");
+        }
+        daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
+        SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileDownloadsList", "lineCount", bean.value("lineCount"));
+        if (!Validate.isInteger(bean.value("pageNo")))
+        {
+            daoPageInfo.setPageNo(1);
+        }
+        else
+        {
+            daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
+        }
+        ArrayList<FileDownloadsDao> listData = FileDownloadsDao.dbSearchFilesDownloadsList(dao, sortKey, daoPageInfo);
+        
+        
+        // 表示中のファイルダウンロードのIDをすべて取得
+        String file_downloads_id_show_all = "";
+        for(int i = 0;i < listData.size();i++) {
+        if( listData.get(i).getFileDownloadsId() != null ) {
+          if( file_downloads_id_show_all != null && file_downloads_id_show_all != "" ) {
+          	file_downloads_id_show_all += ",";
+          }
+          file_downloads_id_show_all += listData.get(i).getFileDownloadsId();
+         }
+        }
+        
+        bean.setValue("file_downloads_id_show_all", Sup.serialize(file_downloads_id_show_all));
+        
+        bean.setValue("lineCount", daoPageInfo.getLineCount());
+        bean.setValue("pageNo", daoPageInfo.getPageNo());
+        bean.setValue("recordCount", daoPageInfo.getRecordCount());
+        bean.setValue("maxPageNo", daoPageInfo.getMaxPageNo());
+
+        bean.getWebValues().remove("search_info");
+        String search_info = Sup.serialize(bean);
+        bean.setValue("search_info", search_info);
+        bean.setValue("list", listData);
+    }
+    
   /**
    * DBに登録したfileのデータURLスキーム形式を取得.
    *
@@ -137,6 +240,36 @@ public class FileSeparateWindow extends ControllerBase {
          e.printStackTrace();
          return "";
      }
+  }
+  
+
+  /**
+   * ページ番号を加算減算する
+   *
+   * @param $page_no
+   *        現在のページ番号
+   * @param $add
+   *        加算減算する値
+   * @return 結果のページを返す
+   */
+  private String calcPageNo(String pageNo, int add)
+  {
+      int ret;
+      if (null == pageNo)
+      {
+          pageNo = "1";
+      }
+      else if ("".equals(pageNo))
+      {
+          pageNo = "1";
+      }
+      else if (!Validate.isInteger(pageNo))
+      {
+          pageNo = "1";
+      }
+      ret = Integer.parseInt(pageNo);
+      ret += add;
+      return String.valueOf(ret);
   }
 }
 

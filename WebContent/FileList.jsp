@@ -287,22 +287,18 @@ th {
 	}
 
 	
-
-
-
 	// サブ画面処理
-	function openFilePreviewWindow(main_key) {
-
+	function openFileSeparateWindow(formTarget, formName, main_key) {
 		// コントローラー設定
 		const form = document.createElement('form');
 		form.method = 'POST';
 		form.action = 'FileSeparateWindow.do';
-		form.target = 'File_Preview';
+		form.target = formTarget;
 		// form_name設定
 		const formNameInput = document.createElement('input');
 		formNameInput.type = 'hidden';
 		formNameInput.name = 'form_name';
-		formNameInput.value = 'FilePreview';
+		formNameInput.value = formName;
 		form.appendChild(formNameInput);
 		// ファイルのID
 		const roomIdInput = document.createElement('input');
@@ -311,8 +307,11 @@ th {
 		roomIdInput.value = main_key;
 		form.appendChild(roomIdInput);
 		document.body.appendChild(form);
+
+
+		
 		// サブ画面表示処理
-		window.open('', 'File_Preview', 'width=600,height=600');
+		window.open('', formTarget, 'width=600,height=600');
 		form.submit();
 
 		document.body.removeChild(form);
@@ -429,6 +428,7 @@ th {
 						<th>アップロードユーザー</th>
 						<th>ダウンロード期限</th>
 						<th>ダウンロード</th>
+					</tr>
 						<%
 						for (Object item : webBean.arrayList("list")) {
 						    FileDao dao = (FileDao) item;
@@ -472,6 +472,9 @@ th {
 									<input type="button" value="ダウンロード"
 										onclick="go_download('download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
 							
+									<input type="button" value="ダウンロード履歴"
+										onclick="openFileSeparateWindow('File_Downloads', 'FileDownloads','<%=WebUtil.txtEscape(dao.getFileId())%>');" />
+								
 									<%
 									// PDF、jpgまたはpngまたはgif
 									if (
@@ -483,7 +486,7 @@ th {
 										) {
 									%>
 									<input type="button" value="プレビュー"
-										onclick="openFilePreviewWindow('<%=WebUtil.txtEscape(dao.getFileId())%>');" />
+										onclick="openFileSeparateWindow('File_Preview', 'FilePreview','<%=WebUtil.txtEscape(dao.getFileId())%>');" />
 									<%
 									}
 									%>

@@ -69,7 +69,7 @@ public class FileDetail extends ControllerBase {
         if ("FileDetail".equals(form)) {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
-             
+             System.out.println("hit");
             	
             	  if(inputCheck(dao)) {
 
@@ -188,6 +188,7 @@ public class FileDetail extends ControllerBase {
         } else {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
+        System.out.println(sortKey);
 
         ArrayList<FileDao> fileList = FileDao.dbSelectList(fileDao, sortKey, daoPageInfo);
         bean.setValue("lineCount", daoPageInfo.getLineCount());

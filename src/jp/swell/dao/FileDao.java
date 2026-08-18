@@ -480,6 +480,7 @@ public class FileDao implements Serializable {
                 + "files.expiration_date as files___expiration_date "
                 + "FROM files "
                 + "WHERE file_id = ?";
+        
         try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
             pstmt.setString(1, pFileId);
 
@@ -714,6 +715,12 @@ public class FileDao implements Serializable {
         String sqlDeleteUserFiles = "DELETE FROM user_files WHERE file_id = " + DbS.chara(pFileId);
         DbBase.dbExec(sqlDeleteUserFiles);
 
+
+        // files_downloadsテーブルからレコードを削除
+        String sqlDeleteFilesDownload = "DELETE FROM files_downloads WHERE file_id = " + DbS.chara(pFileId);
+        DbBase.dbExec(sqlDeleteFilesDownload);
+        
+        
         // filesテーブルからレコードを削除
         String sqlDeleteFiles = "DELETE FROM files WHERE file_id = " + DbS.chara(pFileId);
         int retFiles = DbBase.dbExec(sqlDeleteFiles);
@@ -803,7 +810,6 @@ public class FileDao implements Serializable {
      * (ログインユーザーがファイルをアップロードまたは送信したDBを取得）
      * @return UserMenuに返す
      */
-    //
     public static ArrayList<FileDao> dbSelectList(FileDao myclass, LinkedHashMap<String, String> sortKey,
       DaoPageInfo daoPageInfo, FileDao myclassUpload) throws AtareSysException {
       ArrayList<FileDao> array = new ArrayList<>();
@@ -888,6 +894,33 @@ public class FileDao implements Serializable {
      return array;
   }
 
+    /**
+     * file_downloads ダウンロード履歴テーブルにデータを挿入する
+     * @param puserInfoId 
+     *
+     * @return true:成功 false:失敗
+     * @throws AtareSysException エラー
+     */
+    public boolean dbFileDownloadsInsert(String downloadsId, String puserInfoId, String pfileId)
+            throws AtareSysException {
+        setUserInfoId(puserInfoId);
+
+        String sql = "insert into file_downloads ("
+                + " downloads_id"
+                + ",user_info_id"
+                + ",file_id"
+                + ",downloads_date"
+                + " ) values ( "
+                + DbO.chara(downloadsId)
+                + "," + DbO.chara(puserInfoId)
+                + "," + DbO.chara(pfileId)
+                + "," + "NOW()"
+                + " )";
+        int ret = DbBase.dbExec(sql);
+        if (ret != 1)
+            throw new AtareSysException("dbInsert number or record exception.");
+        return true;
+    }
     
 
     /**

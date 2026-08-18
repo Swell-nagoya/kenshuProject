@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +39,7 @@ import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.FileDao;
+import jp.swell.dao.FileDownloadsDao;
 import jp.swell.user.UserLoginInfo;
 
 /**
@@ -104,6 +106,13 @@ public class FileList extends ControllerBase {
                 FileDao dao = new FileDao();
                 String mainKey = bean.value("main_key");
                 dao.dbSelect(mainKey);
+                
+                UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+                FileDownloadsDao fileDownloadsDao = new FileDownloadsDao();
+                String downloadsId = UUID.randomUUID().toString().substring(0, 13);
+                String userInfoIdString = userLoginInfo.getUserInfoId();
+                fileDownloadsDao.dbFileDownloadsInsert(downloadsId,userInfoIdString,mainKey);
+                
                 downloadFileWrite(dao);
                 
             } else {
@@ -166,7 +175,7 @@ public class FileList extends ControllerBase {
     /**
      * 検索を行いbeanに格納する。.
      */
-    private void searchList() throws AtareSysException {
+    void searchList() throws AtareSysException {
         WebBean bean = getWebBean();
         UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
         HashMap<String, String> errors = inputCheck();
