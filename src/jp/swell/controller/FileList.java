@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -349,6 +350,8 @@ public class FileList extends ControllerBase {
      bean.setValue("dao", dao);
      return dao;
     }
+    
+    
     /**
      * ファイルの期限が切れているかをチェック
      *
@@ -360,19 +363,20 @@ public class FileList extends ControllerBase {
             return false; // 期限が設定されていない場合は未期限とする
         }
 
+        try {
+         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+         
+         LocalDateTime expirationDate = LocalDateTime.parse(expirationDateString, formatter);
+         LocalDateTime now = LocalDateTime.now();
+         
 
-        LocalDateTime today = LocalDateTime.now();
-								DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-								String formattedDate = today.format(formatter);
-								int comparison = expirationDateString.compareTo(formattedDate);
-								
-								if (comparison < 0) {
-								  return true;
-								}else {
-								 	return false;
-								}
+         return now.isAfter(expirationDate);
+
+     } catch (DateTimeParseException e) {
+         return false;
+     }
     }
-    
+
     /**
      * ソート順番を求める
      *
