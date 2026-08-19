@@ -118,8 +118,9 @@ public class FileDetail extends ControllerBase {
                    
                     String loginUserId= login.getUserInfoId();
                     String destinationUserId =dao.getUserInfoId();
+                    String uploadUserId = dao.getUploadUserId();
                     
-                    if(!loginUserId.equals(destinationUserId)) {
+                    if(!loginUserId.equals(destinationUserId) && !loginUserId.equals(uploadUserId)) {
                     	bean.setError("このファイルをダウンロードできる権限がありません");
                     	forward("FileList.do");
                     	return;
@@ -393,7 +394,7 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        String filePath = request.getServletContext().getRealPath("/upload");//保存先フォルダのパス設定
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
