@@ -43,7 +43,7 @@ public class FileDetail extends ControllerBase {
      */
     @Override
     public void doInit() {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -100,11 +100,41 @@ public class FileDetail extends ControllerBase {
                     bean.setValue("request_name", "登録する");
                     searchList();
                     forward("FileDetail.jsp");
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
 
                 } else if ("download".equals(requestCmd)) {
-                    dao.dbSelect(mainKey);
+                    boolean found = dao.dbSelect(mainKey);
+                    
+                    if (!found) {
+                    	return;
+                    }
+                   
+                    String loginUserId= login.getUserInfoId();
+                    String destinationUserId =dao.getUserInfoId();
+                    
+                    if(!loginUserId.equals(destinationUserId)) {
+                    	bean.setError("このファイルをダウンロードできる権限がありません");
+                    	forward("FileList.do");
+                    	return;
+                    }
                     downloadFileWrite(dao);
-
+                   
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 } else if ("deletef".equals(requestCmd)) {
                     if (!dao.dbSelect(mainKey)) {
                         bean.setError("データの取得に失敗しました");
@@ -363,7 +393,7 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        String filePath = "C:/git/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
@@ -399,6 +429,7 @@ public class FileDetail extends ControllerBase {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String expirationDateString = sdf.format(expirationDate);
 
+            
             fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
                     expirationDateString);
             fileDaos.add(fileDao);
