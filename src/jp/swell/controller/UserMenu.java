@@ -50,6 +50,7 @@ public class UserMenu extends ControllerBase
         if ("UserMenuHome".equals(bean.value("form_name")))
         {
             bean.trimAllItem();
+            
             if("top".equals(bean.value("action_cmd"))) {
                 formInit();
                 searchList();
@@ -111,7 +112,8 @@ public class UserMenu extends ControllerBase
             else if ("reserve".equals(bean.value("action_cmd")))
             {
                 searchList();
-                //setWebDaoInputInfo();
+                setWebDaoInputInfo();
+                //↑コメントから有効化
                 forward("UserMenuReserve.jsp");
                 return; // メソッドを終了
             // 予約情報を編集する条件を追加
@@ -290,12 +292,14 @@ private void searchList() throws AtareSysException
     // ユーザセレクトの一覧を取得とセット
     ScheduleDao scheduleDao = new ScheduleDao();
     scheduleDao.setMainUserId(getLoginUserId());
+    
     ArrayList<ScheduleDao> scheduleDaos = ScheduleDao.dbSelectList(scheduleDao, scheduleSortKey, daoPageInfo);
     
     // 予約情報の一覧とファイルを取得とセット
     UserReserveDao userReserveDao = new UserReserveDao();
     daoPageInfo.setLineCount(100);
     userReserveDao.setUserInfoId(getLoginUserId());
+    
     ArrayList<UserReserveDao> userReserveDaos = UserReserveDao.dbSelectList(userReserveDao, sortKey, daoPageInfo);
 
     // ファイルを取得とセット

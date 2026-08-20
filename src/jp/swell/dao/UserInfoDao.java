@@ -1381,6 +1381,9 @@ public class UserInfoDao implements Serializable {
      *         エラー
      */
     public boolean login(String pAccount, String pPassword) throws AtareSysException {
+    	
+    	System.out.println("UserInfoDao.java_アカウント名"+pAccount+"パスワード"+pPassword);
+    	
         String sql = "";
         sql = " SELECT user_info.*"
                 + " FROM user_info "
@@ -1393,9 +1396,11 @@ public class UserInfoDao implements Serializable {
         HashMap<String, String> map = rs.get(0);
         setUserInfoDao(map, this);
         String password = Digest.hex(Digest.SHA512, pPassword);
+        
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
         }
+        
         return true;
     }
 
