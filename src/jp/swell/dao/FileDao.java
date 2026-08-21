@@ -688,7 +688,7 @@ public class FileDao implements Serializable {
         int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         int limit = daoPageInfo.getLineCount();
 
-        String sql = "SELECT "
+        String sql = "SELECT DISTINCT "
                 + "files.file_id, "
                 + "files.user_info_id, "
                 + "files.file_name, "
@@ -783,12 +783,17 @@ public class FileDao implements Serializable {
             where.append("files.file_id = " + DbS.chara(getFileId()));
         }
 
-        if (getUserInfoId().length() > 0) {
+        if (getUserInfoId().length() > 0 && getUploadUserId().length() > 0) {
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("(");
+            where.append("user_files.user_info_id = " + DbS.chara(getUserInfoId()));
+            where.append(" OR ");
+            where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+            where.append(")");
+        } else if (getUserInfoId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("user_files.user_info_id = " + DbS.chara(getUserInfoId()));
-        }
-
-        if (getUploadUserId().length() > 0) {
+        } else if (getUploadUserId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
         }
