@@ -29,6 +29,7 @@ import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.FileDao;
+import jp.swell.dao.UserFileDao;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.user.UserLoginInfo;
 
@@ -101,7 +102,16 @@ public class FileDetail extends ControllerBase {
                     forward("FileDetail.jsp");
 
                 } else if ("download".equals(requestCmd)) {
-                    dao.dbSelect(mainKey);
+                	if (!dao.dbSelect(mainKey)) {
+                        bean.setError("データの取得に失敗しました");
+                        forward("FileList.jsp");
+                        return;
+                    }
+                    if (!canDownloadFile(dao, login.getUserInfoId())) {
+                        bean.setError("権限がありません。");
+                        forward("FileDetail_3.jsp");
+                        return;
+                    }
                     downloadFileWrite(dao);
 
                 } else if ("deletef".equals(requestCmd)) {
@@ -124,7 +134,16 @@ public class FileDetail extends ControllerBase {
                     redirect("FileList.do");
 
                 } else if ("download".equals(requestCmd)) {
-                    dao.dbSelect(mainKey);
+                	if (!dao.dbSelect(mainKey)) {
+                        bean.setError("データの取得に失敗しました");
+                        forward("FileList.jsp");
+                        return;
+                    }
+                    if (!canDownloadFile(dao, login.getUserInfoId())) {
+                        bean.setError("権限がありません。");
+                        forward("FileDetail_3.jsp");
+                        return;
+                    }
                     downloadFileWrite(dao);
 
                 } else if ("deleteEnter".equals(requestCmd)) {
@@ -361,7 +380,7 @@ public class FileDetail extends ControllerBase {
 
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
-
+        String primaryDestinationUserId = destinationUserInfoIds.length > 0 ? destinationUserInfoIds[0] : null;
         String filePath = "C:/pleiades/2026-03/workspace/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
@@ -390,18 +409,22 @@ public class FileDetail extends ControllerBase {
         java.util.Date expirationDate = calendar.getTime(); // Date型を取得
 
         // 各送信先ユーザーに対してデータベースにファイル情報を登録
-        for (String userInfoId : destinationUserInfoIds) { // 送信先ユーザーIDを使用
-            String fileId = UUID.randomUUID().toString().substring(0, 13);
-            FileDao fileDao = new FileDao();
+        String fileId = UUID.randomUUID().toString().substring(0, 13);
+ 
+        // expirationDateをString型に変換
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String expirationDateString = sdf.format(expirationDate);
+ 
+        FileDao fileDao = new FileDao();
+        fileDao.dbFileInsert(fileId, primaryDestinationUserId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey, expirationDateString);
+        fileDaos.add(fileDao);
 
-            // expirationDateをString型に変換
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String expirationDateString = sdf.format(expirationDate);
+        UserFileDao userFileDao = new UserFileDao();
 
-            fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
-                    expirationDateString);
-            fileDaos.add(fileDao);
+        for (String userInfoId : destinationUserInfoIds) {
+            userFileDao.dbUserFileInsert(userInfoId, fileId);
         }
+ 
         return fileDaos;
     }
 
@@ -449,6 +472,14 @@ public class FileDetail extends ControllerBase {
         }
     }
 
+    private boolean canDownloadFile(FileDao dao, String loginUserId) throws AtareSysException {
+        if (loginUserId.equals(dao.getUploadUserId())) {
+            return true;
+        }
+        UserFileDao userFileDao = new UserFileDao();
+        return userFileDao.existsByUserInfoIdAndFileId(loginUserId, dao.getFileId());
+    }
+    
     /**
      * データベースから指定されたレコードを削除するメソッド
      * @throws AtareSysException
