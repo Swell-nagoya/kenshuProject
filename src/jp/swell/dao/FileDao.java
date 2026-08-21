@@ -704,7 +704,8 @@ public class FileDao implements Serializable {
                 + "user_info.first_name AS user_first_name, "
                 + "user_info.last_name AS user_last_name "
                 + "FROM files "
-                + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
+                + "JOIN user_files ON files.file_id = user_files.file_id "
+                + "JOIN user_info ON user_files.user_info_id = user_info.user_info_id "
                 + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
                 + where + order
                 + " LIMIT " + limit + " OFFSET " + offset;
@@ -784,7 +785,7 @@ public class FileDao implements Serializable {
 
         if (getUserInfoId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
+            where.append("user_files.user_info_id = " + DbS.chara(getUserInfoId()));
         }
 
         if (getUploadUserId().length() > 0) {
