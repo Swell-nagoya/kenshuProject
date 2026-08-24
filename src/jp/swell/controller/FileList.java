@@ -18,7 +18,6 @@ package jp.swell.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
@@ -164,27 +163,19 @@ public class FileList extends ControllerBase {
         }
 
         // 自分がアップロードしたファイル（送信）
-        FileDao sentDao = new FileDao();
-        sentDao.setUploadUserId(userLoginInfo.getUserInfoId());
-        sentDao.setSearchFileName(bean.value("list_search_file_name"));
-        List<FileDao> sentFiles = FileDao.dbSelectList(sentDao, sortKey, daoPageInfo);
-        for (FileDao file : sentFiles) {
-            file.setFileType("sent");
-        }
+        FileDao fileDao = new FileDao();
+        fileDao.setUserInfoId(userLoginInfo.getUserInfoId());       // 受信側の条件
+        fileDao.setUploadUserId(userLoginInfo.getUserInfoId());     // 送信側の条件
+        fileDao.setSearchFileName(bean.value("list_search_file_name"));
+        ArrayList<FileDao> fileList = FileDao.dbSelectList(fileDao, sortKey, daoPageInfo);
 
-        // 自分宛てのファイル（受信）
-        FileDao receivedDao = new FileDao();
-        receivedDao.setUserInfoId(userLoginInfo.getUserInfoId());
-        receivedDao.setSearchFileName(bean.value("list_search_file_name"));
-        List<FileDao> receivedFiles = FileDao.dbSelectList(receivedDao, sortKey, daoPageInfo);
-        for (FileDao file : receivedFiles) {
-            file.setFileType("received");
+        for (FileDao file : fileList) {
+            if (userLoginInfo.getUserInfoId().equals(file.getUploadUserId())) {
+                file.setFileType("sent");
+            } else {
+                file.setFileType("received");
+            }
         }
-
-        // マージしてセット
-        ArrayList<FileDao> fileList = new ArrayList<>();
-        fileList.addAll(receivedFiles);
-        fileList.addAll(sentFiles);
 
         bean.setValue("list", fileList);
         bean.setValue("lineCount", daoPageInfo.getLineCount());

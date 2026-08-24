@@ -44,7 +44,7 @@ public class RoomDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -67,13 +67,13 @@ public class RoomDetail extends ControllerBase
           String roomName = bean.value("room_name");
           String beforeName = bean.value("before_name");
           RoomDao dao = setWeb2Dao2InputInfo();
-          bean.setValue("request_name", "修正する");
+          /*bean.setValue("request_name", "修正する");
           if (beforeName == null || beforeName.trim().isEmpty()) {
               beforeName = roomName;
               bean.setValue("before_name", beforeName);
           }
           bean.setValue("before_name", beforeName);
-          bean.setValue("room_name", roomName);
+          bean.setValue("room_name", roomName);*/
           if ("RoomDetail".equals(formName))
           {
               if ("go_next".equals(actionCmd))
@@ -83,7 +83,8 @@ public class RoomDetail extends ControllerBase
                       bean.setMessage("この内容で登録します。よろしいですか？");
                       bean.setValue("request_name", "登録する");
                       bean.setValue("room_name", roomName);
-                      forward("RoomDetail_2.jsp");
+                      bean.setValue("check", "confirm");
+                      forward("RoomDetail.jsp");
                   }
                   else if ("update".equals(requestCmd))
                   {
@@ -91,7 +92,8 @@ public class RoomDetail extends ControllerBase
                       bean.setValue("request_name", "修正する");
                       bean.setValue("before_name", beforeName);
                       bean.setValue("room_name", roomName);
-                      forward("RoomDetail_2.jsp");
+                      bean.setValue("check", "confirm");
+                      forward("RoomDetail.jsp");
                   }
               }
               else if ("return".equals(actionCmd))
@@ -106,6 +108,7 @@ public class RoomDetail extends ControllerBase
                   if ("ins".equals(requestCmd)) 
                   {
                       bean.setValue("request_name", "登録する");
+                      bean.setValue("check", "verify");
                       forward("RoomDetail.jsp");
                   } 
                   else if ("update".equals(requestCmd)) 
@@ -119,6 +122,7 @@ public class RoomDetail extends ControllerBase
                       {
                           bean.setValue("request_name", "修正する");
                           bean.setValue("before_name", beforeName);
+                          bean.setValue("check", "verify");
                           forward("RoomDetail.jsp");
                       }
                   } 
@@ -134,7 +138,8 @@ public class RoomDetail extends ControllerBase
                           bean.setMessage("この部屋を削除します。よろしいですか？");
                           bean.setValue("request_name", "削除する");
                           bean.setValue("room_name", roomName);
-                          forward("RoomDetail_2.jsp");
+                          bean.setValue("check", "confirm");
+                          forward("RoomDetail.jsp");
                       }
                   }
               }
@@ -146,14 +151,17 @@ public class RoomDetail extends ControllerBase
                   if ("insEnter".equals(requestCmd))
                   {
                       dbRegistration();
+                      return;
                   }
                   else if ("updateEnter".equals(requestCmd))
                   {
                       dbEdit();
+                      return;
                   }
                   else if ("deleteEnter".equals(requestCmd))
                   {
                       dbDeletef();
+                      return;
                   }
               }
               redirect("RoomList.do");
@@ -227,7 +235,7 @@ public class RoomDetail extends ControllerBase
             String beforeName = bean.value("before_name").trim();
             bean.setValue("room_name", beforeName);
             bean.setValue("before_name", beforeName);
-
+            bean.setValue("check", "verify");
             bean.setError("入力項目にエラーがあります。下記事項をご確認ください。");
             forward("RoomDetail.jsp");
         }
@@ -270,6 +278,7 @@ public class RoomDetail extends ControllerBase
         }
         bean.setValue("room_id", dao.getRoomId());
         bean.setValue("room_name", dao.getRoomName());
+        bean.setValue("before_name", dao.getRoomName());
         bean.setValue("insert_date", dao.getInsertDate());
         bean.setValue("insert_user_id", dao.getInsertUserId());
         bean.setValue("update_date", dao.getUpdateDate());
@@ -290,13 +299,14 @@ public class RoomDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
+        String requestCmd = bean.value("request_cmd");
         String roomName = bean.value("room_name").trim();
-        String beforeName = bean.value("before_name").trim(); // ← hidden から来る
+        String beforeName = bean.value("before_name").trim(); 
 
         if (roomName.length() == 0) {
             errors.put("room_name_empty", "部屋名を入力してください。");
         }
-        if (roomName.equalsIgnoreCase(beforeName)) {
+        if ("updateEnter".equals(requestCmd) && roomName.equalsIgnoreCase(beforeName)) {
             errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         }
 

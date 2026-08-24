@@ -54,7 +54,7 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -224,8 +224,21 @@ public class UserInfoDetail extends ControllerBase
                   if ("ins".equals(bean.value("request_cmd"))) 
                   {
                       setInputInfo2Dao2Web();
-                      signUp();
-                      scheduleInsert();
+                      try {
+                          DbBase.dbBeginTran();
+                          if (!signUp()) {
+                              throw new AtareSysException("ユーザー登録できませんでした。");
+                          }
+                          if (!scheduleInsert()) {
+                              throw new AtareSysException("スケジュール登録できませんでした。");
+                          }
+                          DbBase.dbCommitTran();
+                      } catch (Exception e) {
+                          DbBase.dbRollbackTran();
+                          bean.setError("登録に失敗しました。");
+                          forward("UserInfoDetail.jsp");
+                          return;
+                      }
                       redirect("ViewUserList.do");
                   }
                   else if ("update".equals(bean.value("request_cmd"))) 
@@ -702,16 +715,18 @@ public class UserInfoDetail extends ControllerBase
         String leaveDate = bean.value("leave_date");     // leave_dateの取得
 
         try {
+          DbBase.dbBeginTran();
           dao.dbUpdate(userInfoId);
           if (leaveDate == null || leaveDate.trim().isEmpty()) {
             dao.dbCancelDelete(userInfoId);
-            redirect("ViewUserList.do");
           }
           else {
             dao.dbDelete(userInfoId);
-            redirect("ViewUserList.do");
           }
+          DbBase.dbCommitTran();
+          redirect("ViewUserList.do");
         }catch (Exception e) {
+          DbBase.dbRollbackTran();
           forward("ViewUserList.do");
         }
     }

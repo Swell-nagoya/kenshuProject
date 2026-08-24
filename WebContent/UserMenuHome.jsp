@@ -373,8 +373,35 @@ footer {
         document.getElementById('file_name').value=file_name;
         document.getElementById('main_form').submit();
     }
-
-
+    // JSP側で cell.js が読み込むための変数を用意する
+    const reservationsData = [
+        // ----------------------------------------------------
+        // ここにJava側から取得した予約データをループで出力する処理を書きます
+        // ----------------------------------------------------
+        <%
+        if (webBean.arrayList("reserves") != null && !webBean.arrayList("reserves").isEmpty()) {
+            for (Object reserveItem : webBean.arrayList("reserves")) {
+                ReserveDao reserve = (ReserveDao) reserveItem;
+        %>
+        {
+            reservationDate: '<%=WebUtil.htmlEscape(reserve.getReservationDate())%>',
+            checkinTime: '<%=WebUtil.htmlEscape(reserve.getCheckinTime())%>',
+            checkoutTime: '<%=WebUtil.htmlEscape(reserve.getCheckoutTime())%>',
+            roomId: '<%=WebUtil.htmlEscape(reserve.getRoomId())%>',
+            roomName: '<%=WebUtil.htmlEscape(reserve.getRoomName())%>',
+            color: '<%=WebUtil.htmlEscape(reserve.getColor())%>',
+            userId: '<%=WebUtil.htmlEscape(reserve.getUserInfoId())%>',
+            userName: '<%=WebUtil.htmlEscape(reserve.getUserName())%>',
+            reserveId: '<%=WebUtil.htmlEscape(reserve.getReserveId())%>',
+            fileLinks: 'none',
+            fileIds: ''
+        },
+        <%
+            }
+        }
+        %>
+    ];
+    // ... 既存のJavaScript処理 ...
     const date = new Date();
     const today = date.getDate();
     const monthDays = ["日", "月", "火", "水", "木", "金", "土"];
@@ -679,6 +706,7 @@ footer {
             for (Object allUsers : webBean.arrayList("users")) {
                 UserInfoDao user = (UserInfoDao) allUsers;
                 String userId = WebUtil.htmlEscape(user.getUserInfoId());
+                if (userId != null && !userId.trim().isEmpty() && !"&nbsp;".equals(userId)) {
         %>
         const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
         if (checkbox<%=userId%>) {
@@ -694,6 +722,7 @@ footer {
             }
         }
         <%
+                }
             }
         }
         %>
@@ -707,6 +736,7 @@ footer {
             for (Object allUsers : webBean.arrayList("users")) {
                 UserInfoDao user = (UserInfoDao) allUsers;
                 String userId = WebUtil.htmlEscape(user.getUserInfoId());
+                if (userId != null && !userId.trim().isEmpty() && !"&nbsp;".equals(userId)) {
         %>
         const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
         if (checkbox<%=userId%>) {
@@ -724,6 +754,7 @@ footer {
             });
         }
         <%
+                }
             }
         }
         %>

@@ -134,23 +134,24 @@
              </div>
             <form method="post" id="main_form" action="" class="main__form">
                 <input type="hidden" name="form_name" id="form_name" value="UserLogin" />
-                <input type="hidden" name="action_cmd" id="action_cmd" value="" />
+                <input type="hidden" name="action_cmd" id="action_cmd" value="login" />
                 <input type="hidden" name="before_doc" id="before_doc" value="<%=webBean.txt("before_doc")%>" />
                 <div class="main__form--name">
                     <input type="text" id="ac" name="ac" class="ime_disabled" value="<%=webBean.txt("ac")%>" placeholder="Username" size="25" maxlength="255" />
+                    <%=webBean.txt("ac1")%><br/>
                 </div>
                 <div class="main__form--password">
                     <input type="password" id="ko" name="ko" class="ime_disabled" value="" placeholder="Password" size="25" maxlength="60"/>
+                    <%=webBean.txt("ko1")%>
                 </div>
                 <div class="main__form--btn">
-                    <input type="submit" id="bt" name="login-btn"  onclick="go_submit('')" class="submit-btn" value="ログイン"/>
+                    <input type="submit" id="bt" name="login-btn"  onclick="go_submit('login')" class="submit-btn" value="ログイン"/>
                 </div>
                 <div class="main__form--link">
                   <a href="#" id="reissue" onclick="go_submit_1('')" class="link-btn">パスワード再発行</a>
                 </div>
             </form>
-              <%=webBean.dispError("ac")%><br/>
-              <%=webBean.dispError("ko")%>
+ 
             <div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
         </div>
     </div>

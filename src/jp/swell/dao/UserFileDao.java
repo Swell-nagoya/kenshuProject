@@ -227,7 +227,15 @@ public class UserFileDao implements Serializable {
         return true;
     }
 
-
+    public boolean existsByUserInfoIdAndFileId(String pUserInfoId, String pFileId) throws AtareSysException {
+        String sql = "select user_files_id"
+                + " from user_files"
+                + " where user_info_id = " + DbS.chara(pUserInfoId)
+                + " and file_id = " + DbS.chara(pFileId);
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        return rs.size() > 0;
+    }
+    
     /**
      * データベースからルーム名を取得するメソッド
      * @return UserYoyakuDetailに返す
