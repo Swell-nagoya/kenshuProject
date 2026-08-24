@@ -131,6 +131,7 @@
              <h1>LOGIN</h1>
              <div class="main__text">
                  <p>usernameとpasswordを入力してください</p>
+                 <p style="color:red;"><%=webBean.object("1")%></p>
              </div>
             <form method="post" id="main_form" action="" class="main__form">
                 <input type="hidden" name="form_name" id="form_name" value="UserLogin" />
@@ -149,8 +150,7 @@
                   <a href="#" id="reissue" onclick="go_submit_1('')" class="link-btn">パスワード再発行</a>
                 </div>
             </form>
-              <%=webBean.dispError("ac")%><br/>
-              <%=webBean.dispError("ko")%>
+              <br/>
             <div class="copyright">Copyright &#169; 2017 RayD Developer All Rights Reserved.</div><!-- /.copyright -->
         </div>
     </div>

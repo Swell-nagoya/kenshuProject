@@ -1,3 +1,4 @@
+
 /*
 * (c)2010 2023 PATAPATA Corp. Corp. All Rights Reserved
 *
@@ -786,11 +787,12 @@ public class UserInfoDao implements Serializable {
 
         // DBに接続（JDBC URL・ユーザー・パスワードは適宜変更）
         try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/your_database", "db_user", "db_password");
+                "jdbc:mysql://118.27.3.165:3306/testdb", "dbadmin", "StrongPass123!");
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user_info");
+        	//検索系SQL文
              ResultSet rs = stmt.executeQuery()) {
 
-            while (rs.next()) {
+            while (rs.next()) {//結果行の最後まで
                 UserInfoDao user = new UserInfoDao();
                 user.setUserInfoId(rs.getString("user_info_id"));
                 user.setFirstName(rs.getString("first_name"));
@@ -1396,6 +1398,10 @@ public class UserInfoDao implements Serializable {
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
         }
+        if(1== Integer.parseInt(DbI.chara(map.get("admin")))) {
+        	setAdmin("1");
+        }
+        
         return true;
     }
 
