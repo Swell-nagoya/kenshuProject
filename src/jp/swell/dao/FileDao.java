@@ -795,7 +795,10 @@ public class FileDao implements Serializable {
     		     + DbS.chara("%" +searchFileName+ "%");
     	 }
     	 
-    	 sql += " ORDER BY files.upload_date ASC "
+    	 sql += " ORDER BY  "
+    	     + "CASE WHEN files.user_info_id =" + DbS.chara(userId)
+    	     +" THEN 0 ELSE 1 END, "
+    	     +"files.upload_date ASC "
     		 +  " LIMIT " + limit
     	     +  " OFFSET " + offset;
     	 
