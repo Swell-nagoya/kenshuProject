@@ -1,5 +1,6 @@
 package jp.swell.dao;
 
+import java.io.File;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -543,6 +544,8 @@ public class FileDao implements Serializable {
         dao.setUploaderFirstName(map.get("first_name"));
         dao.setUploaderLastName(map.get("last_name"));
     }
+    
+    
 
     /**
      * 新しいトークンを生成するメソッド。
@@ -639,15 +642,80 @@ public class FileDao implements Serializable {
         // user_filesテーブルから関連するレコードを削除
         String sqlDeleteUserFiles = "DELETE FROM user_files WHERE file_id = " + DbS.chara(pFileId);
         DbBase.dbExec(sqlDeleteUserFiles);
+        
+        
+        
+        /*追加*/
+        
+        String sqlCount=
+        	   "SELECT COUNT(*) AS count FROM user_files WHERE file_id= " + DbS.chara(pFileId);
+        
+        List<HashMap<String,String>> rs = DbBase.dbSelect(sqlCount);
+        
+        int count =  Integer.parseInt(rs.get(0).get("count"));
+        
+        if(count == 0) {
+        	
+        	
+        	
+        
+        String sqlPath =
+        		"SELECT file_path FROM files WHERE file_id ="
+                +DbS.chara(pFileId);
+        
+        
+        List<HashMap<String, String>> pathRs = DbBase.dbSelect(sqlPath);
+        
+        String filePath ="";
+        
+        if (pathRs.size() > 0) {
+        	filePath = pathRs.get(0).get("file_path");
+        }
+        
 
         // filesテーブルからレコードを削除
-        String sqlDeleteFiles = "DELETE FROM files WHERE file_id = " + DbS.chara(pFileId);
-        int retFiles = DbBase.dbExec(sqlDeleteFiles);
-
-        if (retFiles != 1)
-            throw new AtareSysException("dbDelete number or record exception");
+          String sqlDeleteFiles = "DELETE FROM files WHERE file_id = " + DbS.chara(pFileId);
+          int retFiles = DbBase.dbExec(sqlDeleteFiles);
+          
+          if(retFiles !=1) {
+        	  throw new AtareSysException(
+        			  "dbDelete number or record exception");
+        	  
+          }
+          
+          
+          String sqlPathCount =
+        		  "SELECT COUNT(*) AS count "
+        		 +"FROM files "
+        	     +"WHERE file_path = " + DbS.chara(filePath);
+          
+          List<HashMap<String, String>> cs =
+        		  DbBase.dbSelect(sqlPathCount);
+          
+          int pathCount = Integer.parseInt(cs.get(0).get("count"));
+          
+          
+          if (pathCount == 0) {
+          
+          
+          
+          /*追加*/
+          
+          File f =new File(filePath);
+          if (f.exists()) {
+        	  f.delete();
+          }
+        }    
+        
+        }
         return true;
+       
     }
+        
+        
+        
+        
+        
 
     /**
      * データベースからルーム名を取得するメソッド
@@ -676,6 +744,140 @@ public class FileDao implements Serializable {
 
         return files; // 取得したルームリストを返す
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //*データベースで受信者と送信者をまとめる*//
+    public ArrayList<FileDao> getFileList( String userId, String searchFileName, int limit, int offset) throws AtareSysException {
+    	 ArrayList<FileDao> files = new ArrayList<>();	
+    	 
+    	 
+    	 String sql =
+    			 "SELECT "
+    			+"files.file_id AS file_id, "
+    		    +"files.user_info_id AS user_info_id, "
+    			+"files.file_name AS file_name, "
+    		    +"files.file_path AS file_path, "
+    		    +"files.upload_date AS upload_date, "
+    		    +"files.file_key AS file_key, "
+    		    +"files.mime_type AS mime_type, "
+    		    + "files.system_file_name AS system_file_name, "
+    		    +"files.upload_user_id AS upload_user_id, "
+    		    +"files.expiration_date AS expiration, "
+    		    +"user_info.first_name AS user_first_name, "
+    		    +"user_info.last_name AS user_last_name, "
+    		    +"CASE "
+    		    +"  WHEN files.upload_user_id = " + DbS.chara(userId)
+    		    +"  THEN 'sent' "
+    		    + "ELSE 'received' "
+    		    +" END AS file_type "
+                +"FROM files "
+    		    +"JOIN user_info ON files.user_info_id = user_info.user_info_id "
+    			+" WHERE (files.upload_user_id =" +DbS.chara(userId)
+    			+" OR files.user_info_id =" +DbS.chara(userId) + ")";
+    			
+    	 if(searchFileName !=null && !searchFileName.isEmpty()) {
+    		 sql +=" AND files.file_name LIKE "
+    		     + DbS.chara("%" +searchFileName+ "%");
+    	 }
+    	 
+    	 sql += " ORDER BY files.upload_date ASC "
+    		 +  " LIMIT " + limit
+    	     +  " OFFSET " + offset;
+    	 
+    	 List<HashMap<String , String>> rs = DbBase.dbSelect(sql);
+    	 
+    	 for (HashMap<String,  String> map :rs){
+    		 
+    		 
+    		 FileDao dao = new FileDao();
+    		 
+    		 dao.setFileDaoForJoin(map, dao);
+
+    		 dao.setFirstName(map.get("first_name"));
+    		 dao.setLastName(map.get("last_name"));
+    		 
+    		 String uploadUserId  =map.get("upload_user_id");
+             UserInfoDao uploadUser = new UserInfoDao();
+             
+             if (uploadUserId != null && !uploadUserId.isEmpty()) {
+             	boolean found = uploadUser.dbSelect(uploadUserId);
+             	 
+             	if (found) {
+             		dao.setUploaderFirstName(uploadUser.getFirstName());
+             		dao.setUploaderLastName(uploadUser.getLastName());
+             	}
+             }
+             
+             dao.setFileType(map.get("file_type"));
+    	     files.add(dao);
+    	 }
+    	 
+    	 return files;
+    }
+    	 
+    
+    //*全体の件数の取得*//
+    public int getFileCount(
+    		String userId,
+    		String searchFileName) throws AtareSysException {
+    String sql =
+    		"SELECT COUNT(*) AS count "
+    	 +  "FROM files "  
+         +  "WHERE (upload_user_id = " + DbS.chara(userId)
+         +  "OR user_info_id = " + DbS.chara(userId) + ") ";
+    if (searchFileName !=null && !searchFileName.isEmpty()) {
+    	sql += "AND file_name LIKE "
+    	    + DbS.chara("%" +searchFileName + "%" );
+    }
+    
+    List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+    if(rs.size() == 0) {
+    	return 0;
+    }
+    
+    return Integer.parseInt(rs.get(0).get("count"));
+    
+    }
+    
+   
+    			
+    					
+    
+    
+    
+    
+    
+  
+   
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    
 
     public static ArrayList<FileDao> dbSelectList(FileDao myclass, LinkedHashMap<String, String> sortKey,
             DaoPageInfo daoPageInfo) throws AtareSysException {

@@ -161,6 +161,9 @@ public class FileDetail extends ControllerBase {
 
                 } else if ("deleteEnter".equals(requestCmd)) {
                     dbDeletef();
+                    
+                    searchList();
+                    redirect("FileList.do");
                 }
 
             } else if ("return".equals(actionCmd)) {
@@ -520,6 +523,8 @@ public class FileDetail extends ControllerBase {
             redirect("FileList.do");
         } catch (Exception e) {
             DbBase.dbRollbackTran();
+            
+         
             forward("FileDetail.jsp");
         }
     }
