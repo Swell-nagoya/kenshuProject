@@ -3,6 +3,7 @@ package jp.swell.controller;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.HashMap;
+
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
@@ -16,7 +17,7 @@ public class ApiRoomDetailController extends ControllerBase {
 
     @Override
     public void doInit() {
-        setLoginNeeds(false); // APIの動作確認を簡単にするためfalseに設定
+        setLoginNeeds(true);
         setHttpNeeds(false);
         setHttpsNeeds(false);
         setUsecache(false);

@@ -15,7 +15,7 @@ public class ApiRoomListController extends ControllerBase {
 
     @Override
     public void doInit() {
-        setLoginNeeds(false); // APIの動作確認を簡単にするためfalseに設定
+        setLoginNeeds(true); 
         setHttpNeeds(false);
         setHttpsNeeds(false);
         setUsecache(false);
