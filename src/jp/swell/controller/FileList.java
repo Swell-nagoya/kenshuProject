@@ -18,7 +18,6 @@ package jp.swell.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
@@ -162,37 +161,59 @@ public class FileList extends ControllerBase {
         } else {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
+        
+        
+       /*送信ファイルと受信ファイルを別々に取るのをやめてDBからまとめて受け取る*/ 
 
-        // 自分がアップロードしたファイル（送信）
-        FileDao sentDao = new FileDao();
-        sentDao.setUploadUserId(userLoginInfo.getUserInfoId());
-        sentDao.setSearchFileName(bean.value("list_search_file_name"));
-        List<FileDao> sentFiles = FileDao.dbSelectList(sentDao, sortKey, daoPageInfo);
-        for (FileDao file : sentFiles) {
-            file.setFileType("sent");
-        }
-
-        // 自分宛てのファイル（受信）
-        FileDao receivedDao = new FileDao();
-        receivedDao.setUserInfoId(userLoginInfo.getUserInfoId());
-        receivedDao.setSearchFileName(bean.value("list_search_file_name"));
-        List<FileDao> receivedFiles = FileDao.dbSelectList(receivedDao, sortKey, daoPageInfo);
-        for (FileDao file : receivedFiles) {
-            file.setFileType("received");
-        }
-
-        // マージしてセット
-        ArrayList<FileDao> fileList = new ArrayList<>();
-        fileList.addAll(receivedFiles);
-        fileList.addAll(sentFiles);
-
+     FileDao fileDao = new FileDao();
+     
+     int limit = daoPageInfo.getLineCount();
+     int offset =
+    		 (daoPageInfo.getPageNo()-1)
+    		 *daoPageInfo.getLineCount();
+     
+     ArrayList<FileDao> fileList =
+    		 fileDao.getFileList(
+    				 userLoginInfo.getUserInfoId(),
+    				 bean.value("list_search_file_name"),
+    				 limit,
+    				 offset);
+     
+     int recordCount=
+    		 fileDao.getFileCount(
+    				 userLoginInfo.getUserInfoId(),
+    				 bean.value("limit_search_file_name"));
+     
+     
         bean.setValue("list", fileList);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         // 受信件数だけでは recordCount が正確に反映されない可能性があるため、明示的に再セット
-        bean.setValue("recordCount", fileList.size());
-        bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
+        //表示する件数だけではバグるので、全体件数を分けて入れる
+        bean.setValue("recordCount", recordCount);
+        bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) recordCount  / daoPageInfo.getLineCount())));
 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
 
         if (!Validate.isInteger(bean.value("lineCount"))) {
