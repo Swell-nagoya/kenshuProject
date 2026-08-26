@@ -38,6 +38,7 @@ import jp.patasys.common.db.GetNumber;
  * @author 2023 PATAPATA Corp. Corp.
  * @version 1.0
  */
+
 public class RoomDao implements Serializable
 {
      /** Derializable No. */
@@ -594,7 +595,12 @@ public class RoomDao implements Serializable
          throw new AtareSysException("データベース処理中にエラーが発生しました: " + e.getMessage(), e);
      }
  }
-    
+
+    /**
+     * データベースからroomテーブルを取得するメソッド
+     * @return arrayに返す
+     * @throws AtareSysException
+     */
     static public ArrayList<RoomDao> dbSelectList(RoomDao myclass,LinkedHashMap<String,String> sortKey,DaoPageInfo daoPageInfo) throws AtareSysException
     {
         ArrayList<RoomDao> array = new ArrayList<RoomDao>();
@@ -640,13 +646,25 @@ public class RoomDao implements Serializable
             dao  = new RoomDao();
             map = rs.get(i);
             dao.setRoomDaoForJoin(map,dao);
-            
-
             array.add(dao);
         }
         return array;
     }
 
+    /**
+     * room_idとroom_nameを代入するメソッド
+     */
+    public static class RoomApiDto {
+    
+    		private String roomId;
+    		private String roomName;
+    		
+    		public RoomApiDto(String roomId, String roomName) {
+    			this.roomId = roomId;
+    			this.roomName = roomName;
+    		}
+
+    }
     /**
      * user_info ユーザ情報テーブルの検索条件を設定する。.
      *

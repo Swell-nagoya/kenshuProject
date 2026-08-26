@@ -10,6 +10,7 @@ import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.RoomDao;
+import jp.swell.dao.RoomDao.RoomApiDto;
 
 public class ApiRoomListController extends ControllerBase {
 
@@ -36,10 +37,21 @@ public class ApiRoomListController extends ControllerBase {
             sortKey.put("room_id", "asc"); // IDで昇順ソート
 
             ArrayList<RoomDao> listData = RoomDao.dbSelectList(dao, sortKey, daoPageInfo);
+            
+            int cnt = listData.size();
 
+            ArrayList<RoomApiDto> apiDtoList = new ArrayList<>();
+            
+            for(int i = 0; i < cnt; i++)
+            {
+
+            	  RoomApiDto dto = new RoomApiDto(listData.get(i).getRoomId(),listData.get(i).getRoomName());
+            	  apiDtoList.add(dto);
+            }
+            
             // Gson を用いてリストをJSON文字列に変換
             Gson gson = new Gson();
-            String jsonResponse = gson.toJson(listData);
+            String jsonResponse = gson.toJson(apiDtoList);
 
             // レスポンスヘッダーの設定
             this.getResponse().setContentType("application/json; charset=UTF-8");
@@ -49,6 +61,7 @@ public class ApiRoomListController extends ControllerBase {
             out.print(jsonResponse);
             out.flush();
             out.close();
+            
 
         } catch (Exception e) {
             e.printStackTrace();
