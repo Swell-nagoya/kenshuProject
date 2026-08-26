@@ -53,6 +53,7 @@ public class ApiRoomDetailController extends ControllerBase {
                         this.getResponse().setStatus(HttpServletResponse.SC_CREATED);
                         HashMap<String, String> success = new HashMap<String, String>();
                         success.put("message", "登録成功");
+                        success.put("roomId", inputDao.getRoomId());
                         out.print(gson.toJson(success));
                     } catch (Exception e) {
                         DbBase.dbRollbackTran();

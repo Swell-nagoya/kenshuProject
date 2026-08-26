@@ -32,6 +32,7 @@ table.list_table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 .list_tr:nth-child(even) { background: #ffffff; }
 </style>
 <script type="text/javascript">
+
   // 部屋一覧を取得してテーブルを再描画する
   function reloadRooms() {
     fetch('ApiRoomListController.do')
@@ -58,7 +59,10 @@ table.list_table { width: 100%; border-collapse: collapse; margin-top: 10px; }
           const deleteBtn = document.createElement('input');
           deleteBtn.type = 'button';
           deleteBtn.value = '削除 (非同期)';
-          deleteBtn.onclick = function() { deleteRoom(room.roomId); };
+          deleteBtn.onclick = function(e) { 
+		     deleteRoom(room.roomId, e.currentTarget);
+		  };
+          
           
           tdBtn.appendChild(deleteBtn);
           
@@ -72,18 +76,22 @@ table.list_table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         alert('一覧の取得に失敗しました。');
       });
   }
-  
   // 部屋を削除する
-  function deleteRoom(roomId) {
+  function deleteRoom(roomId,target) {
+
+		  
     if(!confirm("本当に削除しますか？")) return;
-    
+
     fetch('ApiRoomDetailController.do?room_id=' + roomId, {
       method: 'DELETE'
     })
     .then(response => {
       if(response.ok) {
         alert("削除しました");
-        reloadRooms(); // 画面リロードせずに再取得
+		const targetTr = target.closest('.list_tr');
+        if( targetTr ){
+        	targetTr.remove();
+        }
       } else {
         alert("削除に失敗しました");
       }
@@ -93,7 +101,8 @@ table.list_table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 
   // 部屋を新規追加する
   function addRoom() {
-    const roomName = document.getElementById('newRoomName').value;
+    const $roomName = document.getElementById('newRoomName');
+    const roomName = $roomName.value;
     if(!roomName) {
       alert("部屋名を入力してください");
       return;
@@ -108,20 +117,64 @@ table.list_table { width: 100%; border-collapse: collapse; margin-top: 10px; }
       body: JSON.stringify({ roomName: roomName })
     })
     .then(response => {
+      // 成功時（200 OK または 201 Created）
       if(response.ok || response.status === 201) {
         alert("登録しました");
-        document.getElementById('newRoomName').value = '';
-        reloadRooms(); // 画面リロードせずに再取得
+        $roomName.value = '';
+        return response.json(); // ★成功時のデータを確実に次の .then に渡す
       } else {
-        response.json().then(data => alert("エラー: " + data.message)).catch(() => alert("登録に失敗しました"));
+        // ★エラー時は、エラーメッセージを解析して次の .then に行かせない（.catch に飛ばす）
+        return response.json().then(data => {
+          throw new Error(data.message || "登録に失敗しました");
+        }).catch(err => {
+          throw new Error(err.message || "登録に失敗しました");
+        });
       }
+    })
+      .then(data => {
+          
+        const roomId = data.roomId; 
+        console.log("新しく追加された部屋のID:", roomId);
+
+        // roomId が正常に取得できなかった場合
+        if (!roomId) {
+            return;
+        }
+
+        // --- 以下、テーブル追加処理 ---
+        const tbody = document.getElementById('roomListBody');
+        
+        const tr = document.createElement('tr');
+        tr.className = 'list_tr';
+        
+        const tdName = document.createElement('td');
+        tdName.className = 'list_text';
+        tdName.textContent = roomName;
+        
+        const tdBtn = document.createElement('td');
+        tdBtn.className = 'list_btn center';
+        tdBtn.style.textAlign = 'center';
+        
+        const deleteBtn = document.createElement('input');
+        deleteBtn.type = 'button';
+        deleteBtn.value = '削除 (非同期)';
+        
+        // 取得した roomId を削除関数に渡す
+        deleteBtn.onclick = function(e) { 
+            deleteRoom(roomId, e.currentTarget);
+        };
+        
+        tdBtn.appendChild(deleteBtn);
+        tr.appendChild(tdName);
+        tr.appendChild(tdBtn);
+        tbody.appendChild(tr); // 最初の質問の通り、これで上書きされずに追記されます
     })
     .catch(error => console.error('Error:', error));
   }
 
   // 画面ロード時に自動で一覧取得
   $(document).ready(function(){
-      reloadRooms();
+	  reloadRooms();
   });
 </script>
 </head>
