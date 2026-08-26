@@ -177,22 +177,18 @@ public class FileList extends ControllerBase {
 
      FileDao fileDao = new FileDao();
      
-     int limit = daoPageInfo.getLineCount();
-     int offset =
-    		 (daoPageInfo.getPageNo()-1)
-    		 *daoPageInfo.getLineCount();
-     
+    fileDao.setUserInfoId(userLoginInfo.getUserInfoId());
+    fileDao.setUploadUserId(userLoginInfo.getUserInfoId());
+    fileDao.setSearchFileName(bean.value("list_serach_file_name"));
+    
+   
      ArrayList<FileDao> fileList =
-    		 fileDao.getFileList(
-    				 userLoginInfo.getUserInfoId(),
-    				 bean.value("list_search_file_name"),
-    				 limit,
-    				 offset);
+    		 FileDao.dbSelectList(fileDao, sortKey, daoPageInfo);
      
      int recordCount=
     		 fileDao.getFileCount(
     				 userLoginInfo.getUserInfoId(),
-    				 bean.value("limit_search_file_name"));
+    				 bean.value("list_search_file_name"));
      
      
         bean.setValue("list", fileList);

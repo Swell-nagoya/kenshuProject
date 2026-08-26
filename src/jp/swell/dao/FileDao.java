@@ -762,11 +762,18 @@ public class FileDao implements Serializable {
 
 		// WHERE句
 		String where = myclass.dbWhere();
+		System.out.println("WHERE確認：" + where);
 		String order = myclass.dbOrder(sortKey);
+		System.out.println("ORDER確認:" + order);
 
 		int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
 		int limit = daoPageInfo.getLineCount();
 
+		System.out.println("pageNo=" + daoPageInfo.getPageNo());
+		System.out.println("limit=" + limit);
+		System.out.println("offset=" + offset);
+		
+		
 		String sql = "SELECT " + "files.file_id AS files___file_id, " + "files.user_info_id AS files___user_info_id, "
 				+ "files.file_name AS files___file_name, " + "files.file_path AS files___file_path, "
 				+ "files.upload_date AS files___upload_date, " + "files.file_key AS files___file_key, "
@@ -778,12 +785,19 @@ public class FileDao implements Serializable {
 				+ "JOIN user_info ON files.user_info_id = user_info.user_info_id "
 				+ "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id " + where + order
 				+ " LIMIT " + limit + " OFFSET " + offset;
+		System.out.println("SQL確認:" + sql);
 
 		List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 
 		for (HashMap<String, String> map : rs) {
 			FileDao dao = new FileDao();
 			dao.setFileDaoForJoin(map, dao);
+			
+			if(myclass.getUserInfoId().equals(dao.getUserInfoId())) {
+				dao.setFileType("received");
+			}else {
+				dao.setFileType("sent");
+			}
 			dao.setUserInfoId(map.get("user_info_id"));
 			dao.setFirstName(map.get("first_name"));
 			dao.setLastName(map.get("last_name"));
@@ -812,6 +826,9 @@ public class FileDao implements Serializable {
 	 */
 	private String dbWhere() throws AtareSysException {
 		StringBuffer where = new StringBuffer(1024);
+		System.out.println("dbWhere user=" + getUserInfoId());
+		System.out.println("dbWhere upload=" + getUploadUserId());
+		
 		if (userIds != null && userIds.length > 0) {
 			where.append(where.length() > 0 ? " OR " : "");
 			where.append("files.user_info_id IN (");
@@ -828,17 +845,29 @@ public class FileDao implements Serializable {
 
 		if (getFileId().length() > 0) {
 			where.append(where.length() > 0 ? " AND " : "");
-			where.append("files.file_id = " + DbS.chara(getFileId()));
+			where.append("files.file_id =" + DbS.chara(getFileId()));
+			
 		}
+		
+		if (getUserInfoId().length() > 0 && getUploadUserId().length() > 0) {
+	      where.append(where.length() > 0 ? " AND " : "");
+		  where.append("(");
+	      where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
+		  where.append(" OR ");
+		  where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+		  where.append(")");
+			  
+		 }else {
+			  
+		   if(getUserInfoId().length() >0 ) {
+		     where.append(where.length() >0 ? " AND " : "");
+			 where.append("file.user_info_id =" + DbS.chara(getUploadUserId()));
+		   }
 
-		if (getUserInfoId().length() > 0) {
-			where.append(where.length() > 0 ? " AND " : "");
-			where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
-		}
-
-		if (getUploadUserId().length() > 0) {
-			where.append(where.length() > 0 ? " AND " : "");
-			where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+		   if (getUploadUserId().length() > 0) {
+		     where.append(where.length() > 0 ? " AND " : "");
+			 where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+		   }
 		}
 
 		if (getSearchFileName().length() > 0) {
@@ -850,7 +879,8 @@ public class FileDao implements Serializable {
 			return "where " + where.toString();
 		}
 		return "";
-	}
+	    }
+	
 
 	/**
 	 * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
@@ -879,12 +909,16 @@ public class FileDao implements Serializable {
 	 * @param sortKey
 	 * @return Stringソート句の文字列
 	 */
-	private String dbOrder(LinkedHashMap<String, String> sortKey) {
+	private String dbOrder(LinkedHashMap<String, String> sortKey) throws AtareSysException {
 		String str = "";
-		if (sortKey == null)
-			return "";
-		Set<String> keySet = sortKey.keySet();
-		for (Iterator<String> i = keySet.iterator(); i.hasNext();) {
+		if(getUserInfoId().length() >0 && getUploadUserId().length() >0) {
+			
+			str = "CASE WHEN files.user_info_id=" +DbS.chara(getUserInfoId())+ " THEN 0 ELSE 1 END ";
+		}
+		
+		if(sortKey !=null) {
+		  Set<String> keySet = sortKey.keySet();
+		  for (Iterator<String> i = keySet.iterator(); i.hasNext();) {
 			String key = i.next();
 			if (null == fieldsArray.get(key))
 				continue;
@@ -895,6 +929,7 @@ public class FileDao implements Serializable {
 					str += ",";
 				str += ss[j] + ' ' + sortKey.get(key);
 			}
+		  }
 		}
 		str = "".equals(str) ? "" : (" order by " + str);
 		return str;
