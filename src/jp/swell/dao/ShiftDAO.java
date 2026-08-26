@@ -831,14 +831,16 @@ public class ShiftDAO implements Serializable {
      * @return true:読み込み成功 false:存在しない
      * @throws AtareSysException フレームワーク共通例外
      */
+    
+    //as以降不要だったため修正いたしました。
     public boolean dbSelect(String pId) throws AtareSysException {
         String sql = "SELECT "
-                + "employee_shifts.id AS employee_shifts___id, "
-                + "employee_shifts.name AS employee_shifts___name, "
-                + "employee_shifts.email AS employee_shifts___email, "
-                + "CONVERT(start_time, CHAR)  AS employee_shifts___start_time, "
-                + "CONVERT(end_time, CHAR)  AS employee_shifts___end_time, "
-                + "employee_shifts.work_place AS employee_shifts___work_place "
+                + "employee_shifts.id, "
+                + "employee_shifts.name, "
+                + "employee_shifts.email, "
+                + "CONVERT(start_time, CHAR), "
+                + "CONVERT(end_time, CHAR), "
+                + "employee_shifts.work_place "
                 + "FROM testdb.employee_shifts "
                 + "WHERE id = " + DbS.chara(pId);
 
@@ -860,12 +862,12 @@ public class ShiftDAO implements Serializable {
     * @param dao  UserInfoDaoこのテーブルのインスタンス
     */
     public void setEmployeeShift(HashMap<String, String> map, ShiftDAO dao) throws AtareSysException {
-        dao.setId(DbI.chara(map.get("employee_shifts___id")));
-        dao.setName(DbI.chara(map.get("employee_shifts___name")));
-        dao.setEmail(DbI.chara(map.get("employee_shifts___email")));
-        dao.setStartTime(DbI.chara(map.get("employee_shifts___start_time")));
-        dao.setEndTime(DbI.chara(map.get("employee_shifts___end_time")));
-        dao.setWorkPlace(DbI.chara(map.get("employee_shifts___work_place")));
+        dao.setId(DbI.chara(map.get("id")));
+        dao.setName(DbI.chara(map.get("name")));
+        dao.setEmail(DbI.chara(map.get("email")));
+        dao.setStartTime(DbI.chara(map.get("CONVERT(start_time, CHAR)")));
+        dao.setEndTime(DbI.chara(map.get("CONVERT(end_time, CHAR)")));
+        dao.setWorkPlace(DbI.chara(map.get("work_place")));
     }
 
     /** 
@@ -1109,12 +1111,12 @@ public class ShiftDAO implements Serializable {
             daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
         int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql = "select "
-                + "id as employee_shifts___id"
-                + ",name as employee_shifts___name"
-                + ",email as employee_shifts___email"
-                + ",CONVERT(start_time, CHAR) as employee_shifts___start_time"
-                + ",CONVERT(end_time, CHAR) as employee_shifts___end_time"
-                + ",work_place as employee_shifts___work_place"
+                + "employee_shifts.id"
+                + ",employee_shifts.name"
+                + ",employee_shifts.email"
+                + ",CONVERT(start_time, CHAR)"
+                + ",CONVERT(end_time, CHAR)"
+                + ",employee_shifts.work_place"
                 + " from employee_shifts";
 
         String where = myclass.dbWhere();

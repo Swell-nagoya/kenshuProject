@@ -112,12 +112,14 @@ public class ViewUserList extends ControllerBase
             bean = getWebBean();
             searchList();
             forward("ViewUserList.jsp");
+            return;
         }
         else
         {
             formInit();
             searchList();
             forward("ViewUserList.jsp");
+            return;
         }
     }
 
@@ -129,6 +131,7 @@ public class ViewUserList extends ControllerBase
     private void formInit() throws AtareSysException
     {
         WebBean bean = getWebBean();
+        bean.setValue("form_name", "ViewUserList");
         bean.setValue("sort_key", "full_name_kana"); /* 初回のソートキーを入れる */
         bean.setValue("sort_order", "asc");
         bean.setValue("lineCount", SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "ViewUserList", "lineCount", "100"));
@@ -216,8 +219,9 @@ public class ViewUserList extends ControllerBase
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
         bean.setValue("list", listData);
+                
     }
-
+    
     /**
      * ソート順番を求める
      *

@@ -540,22 +540,24 @@ public class ReserveDao implements Serializable {
      * @return true:読み込み成功 false:存在しない
      * @throws AtareSysException フレームワーク共通例外
      */
+    
+    //us以降は不要なため修正
     public boolean dbSelect(String pReserveId) throws AtareSysException {
         String sql = "select "
-                + " reserve.reserve_id as reserve___reserve_id"
-                + ",reserve.user_info_id as reserve___user_info_id"
-                + ",reserve.room_id as reserve___room_id"
-                + ",reserve.reservation_date as reserve___reservation_date"
-                + ",reserve.checkin_time as reserve___checkin_time"
-                + ",reserve.checkout_time as reserve___checkout_time"
-                + ",reserve.input_text as reserve___input_text"
-                + ",reserve.rgb_color as reserve___rgb_color"
-                + ",reserve.input_remark as reserve___input_remark"
-                + ",reserve.insert_date as reserve___insert_date"
-                + ",reserve.insert_user_id as reserve___insert_user_id"
-                + ",reserve.update_date as reserve___update_date"
-                + ",reserve.update_user_id as reserve___update_user_id"
-                + ",reserve.user_reserve_id as reserve___user_reserve_id"
+                + " reserve.reserve_id"
+                + ",reserve.user_info_id"
+                + ",reserve.room_id"
+                + ",reserve.reservation_date"
+                + ",reserve.checkin_time"
+                + ",reserve.checkout_time"
+                + ",reserve.input_text"
+                + ",reserve.rgb_color"
+                + ",reserve.input_remark"
+                + ",reserve.insert_date"
+                + ",reserve.insert_user_id"
+                + ",reserve.update_date"
+                + ",reserve.update_user_id"
+                + ",reserve.user_reserve_id"
                 + " from reserve ";
         sql += ""
                 + " where reserve_id = " + DbS.chara(pReserveId);
@@ -576,20 +578,20 @@ public class ReserveDao implements Serializable {
      */
     public boolean dbSelect(String pReserveId, String pas) throws AtareSysException {
         String sql = "select "
-                + " reserve.reserve_id as reserve___reserve_id"
-                + ",reserve.user_info_id as reserve___user_info_id"
-                + ",reserve.room_id as reserve___room_id"
-                + ",reserve.reservation_date as reserve___reservation_date"
-                + ",reserve.checkin_time as reserve___checkin_time"
-                + ",reserve.checkout_time as reserve___checkout_time"
-                + ",reserve.input_text as reserve___input_text"
-                + ",reserve.rgb_color as reserve___rgb_color"
-                + ",reserve.input_remark as reserve___input_remark"
-                + ",reserve.insert_date as reserve___insert_date"
-                + ",reserve.insert_user_id as reserve___insert_user_id"
-                + ",reserve.update_date as reserve___update_date"
-                + ",reserve.update_user_id as reserve___update_user_id"
-                + ",reserve.user_reserve_id as reserve___user_reserve_id"
+                + " reserve.reserve_id"
+                + ",reserve.user_info_id"
+                + ",reserve.room_id"
+                + ",reserve.reservation_date"
+                + ",reserve.checkin_time"
+                + ",reserve.checkout_time"
+                + ",reserve.input_text"
+                + ",reserve.rgb_color"
+                + ",reserve.input_remark"
+                + ",reserve.insert_date"
+                + ",reserve.insert_user_id"
+                + ",reserve.update_date"
+                + ",reserve.update_user_id"
+                + ",reserve.user_reserve_id"
                 + " from reserve ";
         sql += ""
                 + " where reserve_id = " + DbS.chara(pReserveId)
@@ -632,20 +634,20 @@ public class ReserveDao implements Serializable {
      * @param dao ReserveDaoこのテーブルのインスタンス
      */
     public void setReserveDaoForJoin(HashMap<String, String> map, ReserveDao dao) throws AtareSysException {
-        dao.setReserveId(DbI.chara(map.get("reserve___reserve_id")));
-        dao.setUserInfoId(DbI.chara(map.get("reserve___user_info_id")));
-        dao.setRoomId(DbI.chara(map.get("reserve___room_id")));
-        dao.setReservationDate(DbI.chara(map.get("reserve___reservation_date")));
-        dao.setCheckinTime(DbI.chara(map.get("reserve___checkin_time")));
-        dao.setCheckoutTime(DbI.chara(map.get("reserve___checkout_time")));
-        dao.setInputText(DbI.chara(map.get("reserve___input_text")));
-        dao.setColor(DbI.chara(map.get("reserve___rgb_color")));
-        dao.setInputRemark(DbI.chara(map.get("reserve___input_remark")));
-        dao.setInsertDate(DbI.chara(map.get("reserve___insert_date")));
-        dao.setInsertUserId(DbI.chara(map.get("reserve___insert_user_id")));
-        dao.setUpdateDate(DbI.chara(map.get("reserve___update_date")));
-        dao.setUpdateUserId(DbI.chara(map.get("reserve___update_user_id")));
-        dao.setUserReserveId(DbI.chara(map.get("reserve___user_reserve_id")));
+        dao.setReserveId(DbI.chara(map.get("reserve_id")));
+        dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
+        dao.setRoomId(DbI.chara(map.get("room_id")));
+        dao.setReservationDate(DbI.chara(map.get("reservation_date")));
+        dao.setCheckinTime(DbI.chara(map.get("checkin_time")));
+        dao.setCheckoutTime(DbI.chara(map.get("checkout_time")));
+        dao.setInputText(DbI.chara(map.get("input_text")));
+        dao.setColor(DbI.chara(map.get("rgb_color")));
+        dao.setInputRemark(DbI.chara(map.get("input_remark")));
+        dao.setInsertDate(DbI.chara(map.get("insert_date")));
+        dao.setInsertUserId(DbI.chara(map.get("insert_user_id")));
+        dao.setUpdateDate(DbI.chara(map.get("update_date")));
+        dao.setUpdateUserId(DbI.chara(map.get("update_user_id")));
+        dao.setUserReserveId(DbI.chara(map.get("user_reserve_id")));
     }
 
     /**
@@ -908,25 +910,25 @@ public class ReserveDao implements Serializable {
             daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
         int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql = "select "
-                + " reserve.reserve_id as reserve___reserve_id"
-                + ",reserve.user_info_id as reserve___user_info_id"
-                + ",reserve.room_id as reserve___room_id"
-                + ",reserve.reservation_date as reserve___reservation_date"
-                + ",reserve.checkin_time as reserve___checkin_time"
-                + ",reserve.checkout_time as reserve___checkout_time"
-                + ",reserve.input_text as reserve___input_text"
-                + ",reserve.rgb_color as reserve___rgb_color"
-                + ",reserve.input_remark as reserve___input_remark"
-                + ",reserve.insert_date as reserve___insert_date"
-                + ",reserve.insert_user_id as reserve___insert_user_id"
-                + ",reserve.update_date as reserve___update_date"
-                + ",reserve.update_user_id as reserve___update_user_id"
-                + ",reserve.user_reserve_id as reserve___user_reserve_id"
-                + ",user_info.last_name as user_info___last_name"
-                + ",user_info.middle_name as user_info___middle_name"
-                + ",user_info.first_name as user_info___first_name"
-                + ",user_info.state_flg as user_info___state_flg"
-                + ",room.room_name as room___room_name"
+                + " reserve.reserve_id"
+                + ",reserve.user_info_id"
+                + ",reserve.room_id"
+                + ",reserve.reservation_date"
+                + ",reserve.checkin_time"
+                + ",reserve.checkout_time"
+                + ",reserve.input_text"
+                + ",reserve.rgb_color"
+                + ",reserve.input_remark"
+                + ",reserve.insert_date"
+                + ",reserve.insert_user_id"
+                + ",reserve.update_date"
+                + ",reserve.update_user_id"
+                + ",reserve.user_reserve_id"
+                + ",user_info.last_name"
+                + ",user_info.middle_name"
+                + ",user_info.first_name"
+                + ",user_info.state_flg"
+                + ",room.room_name"
                 + " from reserve "
                 + " join user_info on reserve.user_info_id = user_info.user_info_id "
                 + " join room on reserve.room_id = room.room_id ";

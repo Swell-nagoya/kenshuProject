@@ -524,6 +524,7 @@ private ReserveDao setWebDaoInputInfo() throws AtareSysException {
   ReserveDao reserveDao = new ReserveDao();
   // reservation_dateを変換: YYYY年MM月DD日 → YYYYMMDD
   String reservationDateStr = bean.value("reservation_date");
+  
   SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
   SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyyMMdd");
   Date reservationDate = null;

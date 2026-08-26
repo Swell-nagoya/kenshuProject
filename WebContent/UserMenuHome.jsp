@@ -680,10 +680,10 @@ footer {
                 UserInfoDao user = (UserInfoDao) allUsers;
                 String userId = WebUtil.htmlEscape(user.getUserInfoId());
         %>
-        const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
-        if (checkbox<%=userId%>) {
-            roomElements = document.getElementsByClassName("<%=userId%>");
-            if (checkbox<%=userId%>.checked) {
+        const checkbox<%=WebUtil.htmlEscape(user.getUserInfoId())%> = document.getElementById("<%=WebUtil.htmlEscape(user.getUserInfoId())%>check");
+        if (checkbox<%=WebUtil.htmlEscape(user.getUserInfoId())%>) {
+            roomElements = document.getElementsByClassName("<%=WebUtil.htmlEscape(user.getUserInfoId())%>);
+            if (checkbox<%=WebUtil.htmlEscape(user.getUserInfoId())%>.checked) {
                 for (let i = 0; i < roomElements.length; i++) {
                     roomElements[i].style.display = "block";
                 }
@@ -708,11 +708,11 @@ footer {
                 UserInfoDao user = (UserInfoDao) allUsers;
                 String userId = WebUtil.htmlEscape(user.getUserInfoId());
         %>
-        const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
-        if (checkbox<%=userId%>) {
-            checkbox<%=userId%>.addEventListener('change', () => {
-                roomElements = document.getElementsByClassName("<%=userId%>");
-                if (checkbox<%=userId%>.checked) {
+        const checkbox<%=WebUtil.htmlEscape(user.getUserInfoId())%> = document.getElementById("<%=WebUtil.htmlEscape(user.getUserInfoId())%>check");
+        if (checkbox<%=WebUtil.htmlEscape(user.getUserInfoId())%>) {
+            checkbox<%=WebUtil.htmlEscape(user.getUserInfoId())%>.addEventListener('change', () => {
+                roomElements = document.getElementsByClassName("<%=WebUtil.htmlEscape(user.getUserInfoId())%>");
+                if (checkbox<%=WebUtil.htmlEscape(user.getUserInfoId())%>.checked) {
                     for (let i = 0; i < roomElements.length; i++) {
                         roomElements[i].style.display = "block";
                     }
