@@ -32,24 +32,41 @@ table.list_table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 .list_tr:nth-child(even) { background: #ffffff; }
 </style>
 <script type="text/javascript">
+
+  let reloadRooms;
+
   // 部屋一覧を取得してテーブルを再描画する
-  function reloadRooms() {
-    fetch('ApiRoomListController.do')
-      .then(response => {
-        if (!response.ok) throw new Error("通信エラー");
-        return response.json();
-      })
-      .then(data => {
-        const tbody = document.getElementById('roomListBody');
-        tbody.innerHTML = ''; // 既存の内容をクリア
-        
-        data.forEach(room => {
+  class ReloadRooms {
+
+	init(){
+
+	    fetch('ApiRoomListController.do')
+	      .then(response => {
+	        if (!response.ok) throw new Error("通信エラー");
+	        return response.json();
+	      })
+	      .then(data => {
+	        const tbody = document.getElementById('roomListBody');
+	        tbody.innerHTML = ''; // 既存の内容をクリア
+	        
+	        data.forEach(room => {
+	          this.tableHtml(tbody,room.roomId, room.roomName);
+	        });
+	      })
+	      .catch(error => {
+	        console.error('Error:', error);
+	        alert('一覧の取得に失敗しました。');
+	      });
+	  };
+
+	  tableHtml($tbody,roomId,roomName) {
+
           const tr = document.createElement('tr');
           tr.className = 'list_tr';
           
           const tdName = document.createElement('td');
           tdName.className = 'list_text';
-          tdName.textContent = room.roomName;
+          tdName.textContent = roomName;
           
           const tdBtn = document.createElement('td');
           tdBtn.className = 'list_btn center';
@@ -58,70 +75,94 @@ table.list_table { width: 100%; border-collapse: collapse; margin-top: 10px; }
           const deleteBtn = document.createElement('input');
           deleteBtn.type = 'button';
           deleteBtn.value = '削除 (非同期)';
-          deleteBtn.onclick = function() { deleteRoom(room.roomId); };
+          deleteBtn.onclick = (e) => { 
+		     this.deleteRoom(roomId, e.currentTarget);
+		  };
           
           tdBtn.appendChild(deleteBtn);
           
           tr.appendChild(tdName);
           tr.appendChild(tdBtn);
-          tbody.appendChild(tr);
-        });
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('一覧の取得に失敗しました。');
-      });
-  }
-  
-  // 部屋を削除する
-  function deleteRoom(roomId) {
-    if(!confirm("本当に削除しますか？")) return;
-    
-    fetch('ApiRoomDetailController.do?room_id=' + roomId, {
-      method: 'DELETE'
-    })
-    .then(response => {
-      if(response.ok) {
-        alert("削除しました");
-        reloadRooms(); // 画面リロードせずに再取得
-      } else {
-        alert("削除に失敗しました");
-      }
-    })
-    .catch(error => console.error('Error:', error));
+          $tbody.appendChild(tr);
+	  }
+
+
+	  // 部屋を削除する
+	  deleteRoom(roomId,target) {
+
+			  
+	    if(!confirm("本当に削除しますか？")) return;
+
+	    fetch('ApiRoomDetailController.do?room_id=' + roomId, {
+	      method: 'DELETE'
+	    })
+	    .then(response => {
+	      if(response.ok) {
+	        alert("削除しました");
+			const targetTr = target.closest('.list_tr');
+	        if( targetTr ){
+	        	targetTr.remove();
+	        }
+	      } else {
+	        alert("削除に失敗しました");
+	      }
+	    })
+	    .catch(error => console.error('Error:', error));
+	  }
+
+	  // 部屋を新規追加する
+	  addRoom() {
+	    const $roomName = document.getElementById('newRoomName');
+	    const roomName = $roomName.value;
+	    if(!roomName) {
+	      alert("部屋名を入力してください");
+	      return;
+	    }
+	    
+	    fetch('ApiRoomDetailController.do', {
+	      method: 'POST',
+	      headers: {
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify({ roomName: roomName })
+	    })
+	    .then(response => {
+	      if(response.ok || response.status === 201) {
+	        alert("登録しました");
+	        $roomName.value = '';
+	        return response.json(); 
+	      } else {
+	        
+	        return response.json().then(data => {
+	          throw new Error(data.message || "登録に失敗しました");
+	        }).catch(err => {
+	          throw new Error(err.message || "登録に失敗しました");
+	        });
+	      }
+	    })
+	      .then(data => {
+	          
+	        const roomId = data.roomId; 
+
+	        // roomId が正常に取得できなかった場合
+	        if (!roomId) {
+	            return;
+	        }
+
+	        const tbody = document.getElementById('roomListBody');
+	        this.tableHtml(tbody,roomId, roomName);
+	        
+	    })
+	    .catch(error => console.error('Error:', error));
+	  }
+		
   }
 
-  // 部屋を新規追加する
-  function addRoom() {
-    const roomName = document.getElementById('newRoomName').value;
-    if(!roomName) {
-      alert("部屋名を入力してください");
-      return;
-    }
-    
-    fetch('ApiRoomDetailController.do', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      // GsonがマッピングできるようにJSONのキーを合わせる
-      body: JSON.stringify({ roomName: roomName })
-    })
-    .then(response => {
-      if(response.ok || response.status === 201) {
-        alert("登録しました");
-        document.getElementById('newRoomName').value = '';
-        reloadRooms(); // 画面リロードせずに再取得
-      } else {
-        response.json().then(data => alert("エラー: " + data.message)).catch(() => alert("登録に失敗しました"));
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
 
   // 画面ロード時に自動で一覧取得
   $(document).ready(function(){
-      reloadRooms();
+	  reloadRooms = new ReloadRooms();
+	  reloadRooms.init();
   });
 </script>
 </head>
@@ -135,11 +176,11 @@ table.list_table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     <div class="api-controls">
       <h3>APIテスト操作パネル</h3>
       <p>
-        <input type="button" value="リアルタイム再読み込み" onclick="reloadRooms()" style="background:#00bcd4;"/>
+        <input type="button" value="リアルタイム再読み込み" onclick="reloadRooms.init()" style="background:#00bcd4;"/>
       </p>
       <p>
         新規部屋名: <input type="text" id="newRoomName" size="30" />
-        <input type="button" value="追加 (非同期POST)" onclick="addRoom()" />
+        <input type="button" value="追加 (非同期POST)" onclick="reloadRooms.addRoom()" />
       </p>
     </div>
 
