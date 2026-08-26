@@ -4,6 +4,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.google.gson.Gson;
 
 import jp.patasys.common.AtareSysException;
@@ -25,6 +27,7 @@ public class ApiRoomListController extends ControllerBase {
     @Override
     public void doActionProcess() throws AtareSysException {
         try {
+        	
             // RoomDao を使って一覧取得
             RoomDao dao = new RoomDao();
             dao.setRoomName("%%"); // 全件検索
@@ -65,8 +68,15 @@ public class ApiRoomListController extends ControllerBase {
 
         } catch (Exception e) {
             e.printStackTrace();
+            
             try {
-                this.getResponse().sendError(500, "Internal Server Error");
+            	this.getResponse().setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+             this.getResponse().setContentType("application/json; charset=UTF-8");
+             PrintWriter catchMessage = this.getResponse().getWriter();
+             
+             catchMessage.print("{\"message\": \"システムエラーが発生しました。\"}");
+             catchMessage.flush();
             } catch(Exception ex) {
                 // Ignore
             }

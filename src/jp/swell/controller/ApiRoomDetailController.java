@@ -98,7 +98,13 @@ public class ApiRoomDetailController extends ControllerBase {
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                this.getResponse().sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            	this.getResponse().setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+             this.getResponse().setContentType("application/json; charset=UTF-8");
+             PrintWriter catchMessage = this.getResponse().getWriter();
+             
+             catchMessage.print("{\"message\": \"システムエラーが発生しました。\"}");
+             catchMessage.flush();
             } catch(Exception ex) {
                 // Ignore
             }
