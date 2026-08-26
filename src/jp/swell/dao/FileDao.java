@@ -762,16 +762,12 @@ public class FileDao implements Serializable {
 
 		// WHERE句
 		String where = myclass.dbWhere();
-		System.out.println("WHERE確認：" + where);
 		String order = myclass.dbOrder(sortKey);
-		System.out.println("ORDER確認:" + order);
+		
 
 		int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
 		int limit = daoPageInfo.getLineCount();
 
-		System.out.println("pageNo=" + daoPageInfo.getPageNo());
-		System.out.println("limit=" + limit);
-		System.out.println("offset=" + offset);
 		
 		
 		String sql = "SELECT " + "files.file_id AS files___file_id, " + "files.user_info_id AS files___user_info_id, "
@@ -785,7 +781,7 @@ public class FileDao implements Serializable {
 				+ "JOIN user_info ON files.user_info_id = user_info.user_info_id "
 				+ "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id " + where + order
 				+ " LIMIT " + limit + " OFFSET " + offset;
-		System.out.println("SQL確認:" + sql);
+		
 
 		List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 
@@ -826,8 +822,6 @@ public class FileDao implements Serializable {
 	 */
 	private String dbWhere() throws AtareSysException {
 		StringBuffer where = new StringBuffer(1024);
-		System.out.println("dbWhere user=" + getUserInfoId());
-		System.out.println("dbWhere upload=" + getUploadUserId());
 		
 		if (userIds != null && userIds.length > 0) {
 			where.append(where.length() > 0 ? " OR " : "");
