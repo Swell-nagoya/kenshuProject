@@ -319,16 +319,19 @@ footer {
             <a href="javaScript:go_sort_request('memail')">メールアドレス</a></td>
             <td class="list_label" style="width: 25%"></td>
           </tr>
-          <%
+           <%
           for (Object item : webBean.arrayList("list")) {
               UserInfoDao dao = (UserInfoDao) item;
           %>
-          <tr class="list_tr">
+          
+         
+           <tr class="list_tr">
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
             </td>
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
             </td>
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
+            <td class="list_text"><%=WebUtil.htmlEscape(dao.getMemail())%>
+            </td>
             <td class="list_btn">
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
               <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />

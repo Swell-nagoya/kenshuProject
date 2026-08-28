@@ -346,12 +346,12 @@ public class RoomDao implements Serializable
                 }
 
                 HashMap<String, String> map = new HashMap<>();
-                map.put("room___room_id", rs.getString("room___room_id"));
-                map.put("room___room_name", rs.getString("room___room_name"));
-                map.put("room___insert_date", rs.getString("room___insert_date"));
-                map.put("room___insert_user_id", rs.getString("room___insert_user_id"));
-                map.put("room___update_date", rs.getString("room___update_date"));
-                map.put("room___update_user_id", rs.getString("room___update_user_id"));
+                map.put("room_id", rs.getString("room___room_id"));
+                map.put("room_name", rs.getString("room___room_name"));
+                map.put("insert_date", rs.getString("room___insert_date"));
+                map.put("insert_user_id", rs.getString("room___insert_user_id"));
+                map.put("update_date", rs.getString("room___update_date"));
+                map.put("update_user_id", rs.getString("room___update_user_id"));
 
                 setRoomDaoForJoin(map, this);
                 return true;
@@ -414,12 +414,12 @@ public class RoomDao implements Serializable
      */
     public void setRoomDaoForJoin(HashMap<String, String> map,RoomDao dao)  throws AtareSysException
     {
-        dao.setRoomId(DbI.chara(map.get("room___room_id") != null ? map.get("room___room_id") : ""));
-        dao.setRoomName(DbI.chara(map.get("room___room_name") != null ? map.get("room___room_name") : ""));
-        dao.setInsertDate(DbI.chara(map.get("room___insert_date") != null ? map.get("room___insert_date") : ""));
-        dao.setInsertUserId(DbI.chara(map.get("room___insert_user_id") != null ? map.get("room___insert_user_id") : ""));
-        dao.setUpdateDate(DbI.chara(map.get("room___update_date") != null ? map.get("room___update_date") : ""));
-        dao.setUpdateUserId(DbI.chara(map.get("room___update_user_id") != null ? map.get("room___update_user_id") : ""));
+        dao.setRoomId(DbI.chara(map.get("room_id") != null ? map.get("room_id") : ""));
+        dao.setRoomName(DbI.chara(map.get("room_name") != null ? map.get("room_name") : ""));
+        dao.setInsertDate(DbI.chara(map.get("insert_date") != null ? map.get("insert_date") : ""));
+        dao.setInsertUserId(DbI.chara(map.get("insert_user_id") != null ? map.get("insert_user_id") : ""));
+        dao.setUpdateDate(DbI.chara(map.get("update_date") != null ? map.get("update_date") : ""));
+        dao.setUpdateUserId(DbI.chara(map.get("update_user_id") != null ? map.get("update_user_id") : ""));
     }
     /**
      * room 部屋テーブルにデータを挿入する

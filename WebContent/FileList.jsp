@@ -310,7 +310,12 @@ th {
 				<div class="messages">
 					<%=webBean.dispMessages()%>
 				</div>
-				<div class="errors">
+				<div class="errors"
+				     style="color:red;
+				     font-size: 22px;
+				     font-weight: bold;
+				     text-align: center;
+				     margin : 15px 0;">
 					<%=webBean.dispErrorMessages()%>
 				</div>
 				<table class="select_table">
@@ -380,21 +385,23 @@ th {
 						for (Object item : webBean.arrayList("list")) {
 						    FileDao dao = (FileDao) item;
 						%>
-						<tr
 							<tr style="background-color:<%="received".equals(dao.getFileType() != null ? dao.getFileType() : "") ? "#1565c0" : "white"%>">
-							<td><%=WebUtil.htmlEscape(dao.getFileName())%></td>
-							<td><%=WebUtil.htmlEscape(dao.getUploadDate())%></td>
-							<td><%=WebUtil.htmlEscape(dao.getSendUserName())%></td>
-							<td><%=WebUtil.htmlEscape(dao.getUploadUserName())%></td>
-							<td><input type="button" value="ダウンロード"
-								onclick="go_download('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
+							  <td><%=WebUtil.htmlEscape(dao.getFileName())%></td>
+							  <td><%=WebUtil.htmlEscape(dao.getUploadDate())%></td>
+							  <td><%=WebUtil.htmlEscape(dao.getSendUserName())%></td>
+							  <td><%=WebUtil.htmlEscape(dao.getUploadUserName())%></td>
+							  <td> 
+							    <input type="button" value="ダウンロード"
+								  onclick="go_download('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
 								<input type="button" value="削除"
 								onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
-							</td></tr>
+							</td>
+							</tr>
 
 						<%}%>
-						<%} else {%><tr>
-						<td colspan="4">ファイルがありません</td>
+						<%} else {%>
+						<tr>
+						 <td colspan="4">ファイルがありません</td>
 					</tr>
 					<%}%>
 				

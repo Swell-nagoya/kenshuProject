@@ -785,7 +785,7 @@ public class UserInfoDao implements Serializable {
         Class.forName("com.mysql.jdbc.Driver");
 
         // DBに接続（JDBC URL・ユーザー・パスワードは適宜変更）
-        try (Connection conn = DriverManager.getConnection(
+        try (Connection conn = DriverManager.getConnection(     		
                 "jdbc:mysql://localhost:3306/your_database", "db_user", "db_password");
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user_info");
              ResultSet rs = stmt.executeQuery()) {
@@ -916,18 +916,18 @@ public class UserInfoDao implements Serializable {
      * @param dao  UserInfoDaoこのテーブルのインスタンス
      */
     public void setUserInfoDaoForJoin(HashMap<String, String> map, UserInfoDao dao) throws AtareSysException {
-        dao.setUserInfoId(DbI.chara(map.getOrDefault("user_info___user_info_id", "")));
-        dao.setPassword(DbI.chara(map.getOrDefault("user_info___password", "")));
-        dao.setLastName(DbI.chara(map.getOrDefault("user_info___last_name", "")));
-        dao.setMiddleName(DbI.chara(map.getOrDefault("user_info___middle_name", "")));
-        dao.setFirstName(DbI.chara(map.getOrDefault("user_info___first_name", "")));
-        dao.setMaidenName(DbI.chara(map.getOrDefault("user_info___maiden_name", "")));
-        dao.setLastNameKana(DbI.chara(map.getOrDefault("user_info___last_name_kana", "")));
-        dao.setMiddleNameKana(DbI.chara(map.getOrDefault("user_info___middle_name_kana", "")));
-        dao.setFirstNameKana(DbI.chara(map.getOrDefault("user_info___first_name_kana", "")));
-        dao.setMaidenNameKana(DbI.chara(map.getOrDefault("user_info___maiden_name_kana", "")));
-        dao.setInsertUserId(DbI.chara(map.getOrDefault("user_info___insert_user_id", "")));
-        dao.setMemail(DbI.chara(map.getOrDefault("user_info___memail", "")));
+        dao.setUserInfoId(DbI.chara(map.getOrDefault("user_info_id", "")));
+        dao.setPassword(DbI.chara(map.getOrDefault("password", "")));
+        dao.setLastName(DbI.chara(map.getOrDefault("last_name", "")));
+        dao.setMiddleName(DbI.chara(map.getOrDefault("middle_name", "")));
+        dao.setFirstName(DbI.chara(map.getOrDefault("first_name", "")));
+        dao.setMaidenName(DbI.chara(map.getOrDefault("maiden_name", "")));
+        dao.setLastNameKana(DbI.chara(map.getOrDefault("last_name_kana", "")));
+        dao.setMiddleNameKana(DbI.chara(map.getOrDefault("middle_name_kana", "")));
+        dao.setFirstNameKana(DbI.chara(map.getOrDefault("first_name_kana", "")));
+        dao.setMaidenNameKana(DbI.chara(map.getOrDefault("maiden_name_kana", "")));
+        dao.setInsertUserId(DbI.chara(map.getOrDefault("insert_user_id", "")));
+        dao.setMemail(DbI.chara(map.getOrDefault("memail", "")));
         dao.setAdmin(DbI.chara(map.getOrDefault("user_info___admin", "")));
         dao.setLeaveDate(DbI.chara(map.getOrDefault("user_info___leave_date", "")));
     }
@@ -1393,6 +1393,7 @@ public class UserInfoDao implements Serializable {
         HashMap<String, String> map = rs.get(0);
         setUserInfoDao(map, this);
         String password = Digest.hex(Digest.SHA512, pPassword);
+        String dbPassword = DbI.chara(map.get("password"));
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;
         }

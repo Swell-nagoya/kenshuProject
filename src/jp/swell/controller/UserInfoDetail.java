@@ -54,7 +54,7 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -314,10 +314,13 @@ public class UserInfoDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         UserInfoDao dao = new UserInfoDao();
+        
         if (!dao.dbSelect(bean.value("main_key")))
         {
             return false;
         }
+      
+        
         bean.setValue("user_info_id", dao.getUserInfoId());
         bean.setValue("state_flg", dao.getStateFlg());
         bean.setValue("last_name", dao.getLastName());
