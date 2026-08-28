@@ -3,10 +3,10 @@
  *
  * システム名　　：PATAPATA System
  * サブシステム名：コントローラ
- * 機能名　　　　：user_info ユーザ情報テーブルデータを登録・更新・削除するためのコントローラクラス
+ * 機能名　　　　：user_info ユーザ情報テーブルデータを登録・更新・削除ためのコントローラクラス
  * ファイル名　　：RoomDetail.java
  * クラス名　　　：RoomDetail
- * 概要　　　　　：room 部屋情報テーブルデータを登録・更新・削除するためのコントローラクラス
+ * 概要　　　　　：room 部屋情報テーブルデータを登録・更新・削除ためのコントローラクラス
  * バージョン　　：
  *
  * 改版履歴　　　：
@@ -15,17 +15,21 @@
  */
 package jp.swell.controller;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DbBase;
+import jp.patasys.common.db.GetNumber;
+import jp.patasys.common.http.LoginInfo;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.RoomDao;
 
 /**
- * ：user_info ユーザ情報テーブルデータを登録・更新・削除するためのコントローラクラス
+ * ：user_info ユーザ情報テーブルデータを登録・更新・削除ためのコントローラクラス
  *
  * @author PATAPATA
  * @version 1.0
@@ -44,7 +48,7 @@ public class RoomDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -58,7 +62,6 @@ public class RoomDetail extends ControllerBase
     public void doActionProcess() throws AtareSysException
     {
       WebBean bean = getWebBean();
-
       try {
           String formName = bean.value("form_name");
           String actionCmd = bean.value("action_cmd");
@@ -66,111 +69,229 @@ public class RoomDetail extends ControllerBase
           String mainKey = bean.value("main_key");
           String roomName = bean.value("room_name");
           String beforeName = bean.value("before_name");
-          RoomDao dao = setWeb2Dao2InputInfo();
-          bean.setValue("request_name", "修正する");
-          if (beforeName == null || beforeName.trim().isEmpty()) {
-              beforeName = roomName;
-              bean.setValue("before_name", beforeName);
-          }
+          
+
+          String loggedInUserId = getLoginUserId(); // ログインID
+          LoginInfo loginInfo = getLoginInfo();
+          String loginUserName = loginInfo.getUserName(); // ログインユーザー名
+          
           bean.setValue("before_name", beforeName);
           bean.setValue("room_name", roomName);
-          if ("RoomDetail".equals(formName))
+          
+          if ("RoomList".equals(formName))
+          {
+              if ("go_next".equals(actionCmd))
+              {
+                  if ("ins".equals(requestCmd)) 
+                  {
+
+                      bean.setValue("input_info", Sup.serialize(new RoomDao()));
+                      bean.setValue("request_name", "登録");
+                      forward("RoomDetail.jsp");
+                      return;
+                  }
+                  else if ("update".equals(requestCmd)) 
+                  {
+                      setRoom();
+                      bean.rtrimAllItem();
+                    
+                      if (!setDb2Web())
+                      {
+                          bean.setError("データの取得に失敗しました");
+                          forward("RoomList.jsp");
+                          return;
+                      }
+                      else
+                      {
+                          bean.setValue("request_name", "修正");
+                          bean.setValue("before_name", beforeName);
+                          forward("RoomDetail.jsp");
+                          return;
+                      }
+                  }
+                  else if ("roomReservation".equals(requestCmd)) 
+                  {
+                      setRoom();
+                      bean.rtrimAllItem();
+                    
+                      if (!setDb2Web())
+                      {
+                          bean.setError("データの取得に失敗しました");
+                          forward("RoomList.jsp");
+                          return;
+                      }
+                      else
+                      {
+                          bean.setValue("request_name", "修正");
+                          bean.setValue("before_name", beforeName);
+                          forward("RoomDetail.jsp");
+                          return;
+                      }
+                  }
+                  else if ("delete".equals(requestCmd)) 
+                  {
+                   if (!setDb2Web()) 
+                      {
+                          bean.setError("データの取得に失敗しました");
+                          forward("RoomList.jsp");
+                          return;
+                      }
+                      else
+                      {
+                   	   bean.setMessage("この部屋を削除します。よろしいですか？");
+                       bean.setValue("login_user_name", loginUserName);
+                       bean.setValue("request_name", "削除");
+                       bean.setValue("room_name", roomName);
+                       forward("RoomDetail.jsp");
+                       return;
+                       
+                      }
+                  }
+                  else 
+                  {
+                      forward("RoomList.jsp");
+                      return;
+                  }
+              }
+          } 
+          else if ("RoomDetail".equals(formName))
           {
               if ("go_next".equals(actionCmd))
               {
                   if ("ins".equals(requestCmd))
                   {
-                      bean.setMessage("この内容で登録します。よろしいですか？");
-                      bean.setValue("request_name", "登録する");
-                      bean.setValue("room_name", roomName);
-                      forward("RoomDetail_2.jsp");
+                   RoomDao dao = setWeb2Dao2InputInfo();
+                   
+                   
+                  	insRoomId();
+                   bean.rtrimAllItem();
+                   if (inputCheck(dao)) 
+                   {
+                  
+                       bean.setMessage("この内容で登録します。よろしいですか？");
+                       bean.setValue("request_name", "登録確定");
+                       bean.setValue("room_name", roomName);
+                       forward("RoomDetail.jsp");
+                       return;
+                   }
+                   else 
+                   {
+                       bean.setError("入力内容に誤りがあります");
+                       forward("RoomDetail.jsp");
+                       return;
+                   }
+                   
                   }
                   else if ("update".equals(requestCmd))
                   {
-                      bean.setMessage("この内容で修正します。よろしいですか？");
-                      bean.setValue("request_name", "修正する");
-                      bean.setValue("before_name", beforeName);
-                      bean.setValue("room_name", roomName);
-                      forward("RoomDetail_2.jsp");
+                      
+                      setRoom();
+                      bean.rtrimAllItem();
+                      RoomDao dao = setWeb2Dao2InputInfo();
+                      if (inputCheck(dao)) 
+                      {
+
+                          bean.setMessage("この内容で修正します。よろしいですか？");
+                          bean.setValue("request_name", "修正確定");
+                          forward("RoomDetail.jsp");
+                          return;
+                      }
+                      else 
+                      {
+                        bean.setError("入力内容に誤りがあります");
+                        forward("RoomDetail.jsp");
+                        return;
+                      }
+                      
+                  }
+                  else if ("insConfirm".equals(requestCmd))
+                  {
+                      dbRegistration();
+                      return;
+                  }
+                  else if ("updateConfirm".equals(requestCmd))
+                  {
+                  	
+                      if (checkDataMatching())
+                      {
+                          setInputInfo2Dao2Web();
+                          setWeb2Dao2InputInfo();
+                          dbEdit();
+                          return;
+                      }
+                      else 
+                      {
+                          bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
+                          bean.setValue("request_name", "修正");
+                          setRoom();
+                          setDb2Web();
+                          forward("RoomDetail.jsp");
+                          return;
+                      }
+                  }
+                  else if ("deleteConfirm".equals(requestCmd))
+                  {
+                      
+                      if (checkDataMatching())
+                      {
+                         setInputInfo2Dao2Web();
+                         setWeb2Dao2InputInfo();
+                         dbDelete();
+                         return;
+                      }
+                      else 
+                       {
+                         bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
+                         setRoom();
+                         setDb2Web();
+                         forward("RoomDetail.jsp");
+                         return;
+                       }
                   }
               }
               else if ("return".equals(actionCmd))
               {
-                  forward("RoomList.do");
-              }
-          }
-          else if ("RoomList".equals(formName))
-          {
-              if ("go_next".equals(actionCmd)) 
-              {
-                  if ("ins".equals(requestCmd)) 
-                  {
-                      bean.setValue("request_name", "登録する");
-                      forward("RoomDetail.jsp");
-                  } 
-                  else if ("update".equals(requestCmd)) 
-                  {
-                      if (!setDb2Web())
-                      {
-                          bean.setError("データの取得に失敗しました");
-                          forward("RoomList.jsp");
-                      }
-                      else
-                      {
-                          bean.setValue("request_name", "修正する");
-                          bean.setValue("before_name", beforeName);
-                          forward("RoomDetail.jsp");
-                      }
-                  } 
-                  else if ("deletef".equals(requestCmd)) 
-                  {
-                      if (!dao.dbSelect(mainKey))
-                      {
-                          bean.setError("データの取得に失敗しました");
-                          forward("RoomList.jsp");
-                      }
-                      else
-                      {
-                          bean.setMessage("この部屋を削除します。よろしいですか？");
-                          bean.setValue("request_name", "削除する");
-                          bean.setValue("room_name", roomName);
-                          forward("RoomDetail_2.jsp");
-                      }
-                  }
-              }
-          }
-          else if ("RoomDetail_2".equals(formName))
-          {
-              if ("go_next".equals(actionCmd))
-              {
-                  if ("insEnter".equals(requestCmd))
-                  {
-                      dbRegistration();
-                  }
-                  else if ("updateEnter".equals(requestCmd))
-                  {
-                      dbEdit();
-                  }
-                  else if ("deleteEnter".equals(requestCmd))
-                  {
-                      dbDeletef();
-                  }
+
+               if ("insConfirm".equals(bean.value("request_cmd"))) {
+                bean.setValue("request_cmd", "ins");
+                bean.setValue("request_name", "登録");
+                setInputInfo2Dao2Web();
+                forward("RoomDetail.jsp");
+                return;
+                
+               }
+                else if ("updateConfirm".equals(bean.value("request_cmd"))) 
+               {
+                    bean.setValue("request_cmd", "update");
+                    bean.setValue("request_name", "修正");
+                    setInputInfo2Dao2Web();
+                    setWeb2Dao2InputInfo();
+                    forward("RoomDetail.jsp");
+                    return;
+                
+               } else {
+                forward("RoomList.do");
+                return;
+               }
               }
               redirect("RoomList.do");
+              return;
           }
           else
           {
-              bean.setValue("request_name", "修正する");
+              bean.setValue("request_name", "修正");
               bean.setValue(requestCmd, "update");
               if (!setDb2Web()) {
                   bean.setError("データの取得に失敗しました");
               }
               bean.setMessage("以下の項目を修正してください。");
               forward("RoomList.jsp");
+              return;
           }
       } catch (Exception e) {
           bean.setError("処理中にエラーが発生しました: " + e.getMessage());
           forward("ErrorPage.jsp");
+          return;
       }
     }
     /**
@@ -234,10 +355,10 @@ public class RoomDetail extends ControllerBase
     }
     
     /**
-     * データベースから指定されたレコードを削除するメソッド
+     * データベースから指定されたレコードを削除メソッド
      * @throws AtareSysException
      */
-    public void dbDeletef() throws AtareSysException
+    public void dbDelete() throws AtareSysException
     {
         WebBean bean = getWebBean();
         bean.rtrimAllItem();
@@ -286,24 +407,67 @@ public class RoomDetail extends ControllerBase
      * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
      * @throws AtareSysException
      */
-    private boolean inputCheck(RoomDao pRoomDao) throws AtareSysException
+     boolean inputCheck(RoomDao pRoomDao) throws AtareSysException
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
-        String roomName = bean.value("room_name").trim();
-        String beforeName = bean.value("before_name").trim(); // ← hidden から来る
 
+        String roomName = bean.value("room_name").trim();
+
+        // 部屋名の入力が空の時.
         if (roomName.length() == 0) {
             errors.put("room_name_empty", "部屋名を入力してください。");
         }
-        if (roomName.equalsIgnoreCase(beforeName)) {
-            errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+        
+        if ( "update".equals(bean.value("request_cmd"))) 
+        {
+         String beforeName = bean.value("before_name").trim(); // ← hidden から来る
+
+
+         // 以前と同一の名前で登録をしている時.
+         if (
+              (roomName.isEmpty() && beforeName.isEmpty()) != true &&
+         		   (roomName.equals(beforeName))
+         ) {
+             errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+         }
         }
 
+								// DBの部屋名room.room_nameを全検索.
+        // 今回の登録と一致するかどうか.
+        RoomDao dao = new RoomDao();
+        boolean registeredFlag = dao.getExistRoomsName(roomName);
+
+         if(registeredFlag == false) {
+           errors.put("room_name_duplicate", "同一の部屋名が登録済みです。別の名前を入力してください。");
+         }
+
+        
         return errors.isEmpty();
     }
-   
-   
+
+    /**
+     * 修正・削除をする前にそのレコードが最初に読み込んだ内容と一緒かどうかをチェックする。 途中で修正されていた場合はエラーを返す。
+     * ここまで、厳密なチェックがいらない場合は、この関数の処理を消して、return true にすればよい。
+     *
+     * @return なし
+     * @throws AtareSysException エラー
+     */
+    private boolean checkDataMatching() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        RoomDao dao = new RoomDao();
+        String mainKey = bean.value("main_key"); //RoomIdの取得
+
+        if (!dao.dbSelect(mainKey))
+        {
+            return false;
+        }
+        
+        return Sup.serializeIsEquals(bean.value("select_info"), dao);
+    }
+    
+    
     /**
      * 画面の項目をDAOクラスに格納しそれをシリアライズして、input_infoフィールドに格納する
      *
@@ -311,14 +475,49 @@ public class RoomDetail extends ControllerBase
      * @throws AtareSysException エラー
      */
     private RoomDao setWeb2Dao2InputInfo() throws AtareSysException
-    {
+    { 
+    	   // 現在の日時を取得し、DBに代入
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+     
+        String formattedDateTime = now.format(formatter);
+     
         WebBean bean = getWebBean();
         RoomDao dao = new RoomDao();
+        String mainKey = bean.value("main_key");//RoomIdの取得
+        dao.setRoomId(mainKey);
         dao.setRoomName(bean.value("room_name"));
+        
+        String requestCmd = bean.value("request_cmd");
+        String loggedInUserId = getLoginUserId(); // ログインID
+        LoginInfo loginInfo = getLoginInfo();
+        String loginUserName = loginInfo.getUserName(); // ログインユーザー名
+        
+        
+        // 入力完了時に現在の時刻を代入（user_id, insert_date, update_user_id , update_date）
+        if ("insConfirm".equals(requestCmd))
+        {
+        	 // DBに代入
+          dao.setInsertUserId(loggedInUserId);
+          dao.setInsertDate(formattedDateTime);
+          dao.setUpdateUserId(loggedInUserId);
+          dao.setUpdateDate(formattedDateTime);
+          
+        // 更新完了時に現在の時刻を代入（update_user_id , update_date）
+        } 
+        else if ("updateConfirm".equals(requestCmd)) 
+        {
+         dao.setUpdateUserId(loggedInUserId);
+         dao.setUpdateDate(formattedDateTime);
+        } 
+        else {}
 
         bean.setValue("input_info", Sup.serialize(dao));
         return dao;
     }
+    
+    
+    
     /**
      * 部屋登録処理を行うメソッド
      * @return 登録が成功：true、登録が失敗：false
@@ -345,16 +544,45 @@ public class RoomDetail extends ControllerBase
      * @return なし
      * @throws AtareSysException
      */
-    @SuppressWarnings("unused")
     private void setInputInfo2Dao2Web() throws AtareSysException
     {
         WebBean bean = getWebBean();
         RoomDao dao = (RoomDao) Sup.deserialize(bean.value("input_info"));
-        bean.setValue("room_id", dao.getRoomId());
         bean.setValue("room_name", dao.getRoomName());
-        bean.setValue("insert_date", dao.getInsertDate());
-        bean.setValue("insert_user_id", dao.getInsertUserId());
-        bean.setValue("update_date", dao.getUpdateDate());
-        bean.setValue("update_user_id", dao.getUpdateUserId());
     }
+    
+
+    /**
+     * 既に設定されているroom_idを取得してbeanにセットする
+     *  
+     * @return
+     * @throws AtareSysException
+     */
+    private boolean insRoomId() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        RoomDao dao = new RoomDao();
+        String roomId = GetNumber.getNumberChar("room_id"); // ユーザーIDを新規作成
+        bean.setValue("room_id", roomId);
+        bean.setValue("input_info", Sup.serialize(dao));  // DAOオブジェクトをシリアライズしてWebBeanに保存
+        return true;
+    }
+    
+    private boolean setRoom() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        RoomDao dao = new RoomDao();
+
+        if (!dao.dbSelect(bean.value("main_key")))
+        {
+            return false;
+        }
+        bean.setValue("room_id", dao.getRoomId());
+        bean.setValue("select_info", Sup.serialize(dao)); // 編集前に読み込んだデータを格納しておく
+        bean.setValue("input_info", Sup.serialize(dao));
+   
+        return true;
+    }
+    
+    
 }

@@ -22,12 +22,14 @@ import java.util.LinkedHashMap;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.UserInfoDao;
+import jp.swell.user.UserLoginInfo;
 
 /**
  * ：user_info ユーザ情報テーブルデータをLIST表示するためのコントローラクラス
@@ -49,7 +51,7 @@ public class ViewUserList extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -66,9 +68,12 @@ public class ViewUserList extends ControllerBase
         WebBean bean = getWebBean();
         if ("ViewUserList".equals(bean.value("form_name")))
         {
+            bean.setValue("user_info_id", getLoginUserId());
             bean.trimAllItem();
+            adminSet();
             if ("search".equals(bean.value("action_cmd")))
             {
+            	
                 bean.setValue("pageNo", "1");
                 searchList();
             }
@@ -88,7 +93,7 @@ public class ViewUserList extends ControllerBase
             }
             else if ("sort".equals(bean.value("action_cmd")))
             {
-                searchList();
+             searchList();
             }
             else if ("clear".equals(bean.value("action_cmd")))
             {
@@ -100,27 +105,50 @@ public class ViewUserList extends ControllerBase
                 redirect("MenuAdmin.do");
                 return;
             }
+            else if ("stateFlgUpdateAll".equals(bean.value("action_cmd")))
+            {
+               	dbStateEdit();
+                searchList();
+            }
             else
             {
                 searchList();
             }
             forward("ViewUserList.jsp");
         }
-        else if ("UserInfoDetail_1".equals(bean.value("form_name")) || "UserInfoDetail_2".equals(bean.value("form_name")) || "UserInfoDetail_3".equals(bean.value("form_name")))
+        else if ("UserInfoDetail".equals(bean.value("form_name")))
         {
-            setWebBeanFromSerialize(bean.value("search_info"));
-            bean = getWebBean();
+            adminSet();
             searchList();
             forward("ViewUserList.jsp");
         }
         else
         {
+           	adminSet();
             formInit();
             searchList();
             forward("ViewUserList.jsp");
         }
     }
 
+
+    /**
+     * 最初の画面を表示する。.
+     *
+     * @throws AtareSysException
+     */
+    private void adminSet() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+
+        if (userLoginInfo != null && userLoginInfo.isSystemManager()) {
+            bean.setValue("admin", "1");
+        } else {
+            bean.setValue("admin", "0");
+        }
+        
+    }
     /**
      * 最初の画面を表示する。.
      *
@@ -142,6 +170,9 @@ public class ViewUserList extends ControllerBase
         WebBean bean = getWebBean();
         bean.setValue("list_search_full_name", "");
         bean.setValue("list_search_full_name_kana", "");
+        bean.setValue("list_search_memail", "");
+        bean.setValue("list_search_state", "");
+        bean.setValue("list_search_conditions", "");
         bean.setValue("lineCount", "");
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
@@ -187,10 +218,17 @@ public class ViewUserList extends ControllerBase
             bean.setValue("errors", errors);
             return;
         }
+        
+
         LinkedHashMap<String, String> sortKey = sortKey();
         UserInfoDao dao = new UserInfoDao();
         dao.setSearchName(bean.value("list_search_full_name"));
-
+        dao.setMemail(bean.value("list_search_memail"));
+        dao.setSearchConditions(bean.value("list_search_conditions"));
+        
+        String stateStr = bean.value("list_search_state");
+        dao.setStateFlg((stateStr == null || stateStr.isEmpty()) ? 1 : Integer.parseInt(stateStr));
+        
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount")))
         {
@@ -206,7 +244,25 @@ public class ViewUserList extends ControllerBase
         {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
+
         ArrayList<UserInfoDao> listData = UserInfoDao.dbSelectList(dao, sortKey, daoPageInfo);
+
+
+        ArrayList<String> hitUserIds = new ArrayList<String>();
+        if (listData != null) {
+            for (UserInfoDao rowDao : listData) {
+                if (rowDao.getUserInfoId() != null) {
+                    hitUserIds.add(rowDao.getUserInfoId());
+                }
+            }
+        }
+
+        // 次回ボタンを押したとき、今回の画面表示メンバーを「リセット対象」にするためシリアライズして保存
+        String joinedIds = String.join(",", hitUserIds);
+        String serializedData  = Sup.serialize(joinedIds);
+        
+        bean.setValue("state_flg_all", serializedData);
+
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         bean.setValue("recordCount", daoPageInfo.getRecordCount());
@@ -217,7 +273,6 @@ public class ViewUserList extends ControllerBase
         bean.setValue("search_info", search_info);
         bean.setValue("list", listData);
     }
-
     /**
      * ソート順番を求める
      *
@@ -229,6 +284,7 @@ public class ViewUserList extends ControllerBase
         String key = "";
         LinkedHashMap<String, String> sort_key = new LinkedHashMap<String, String>(); /* この配列にソートキーとソートオーダーを入れる */
         if (bean.value("sort_key").length() == 0 && bean.value("sort_key_old").length() == 0) return null;
+        
         if (bean.value("sort_key_old").length() > 0)
         {
             if (bean.value("sort_key").length() > 0)
@@ -286,6 +342,53 @@ public class ViewUserList extends ControllerBase
         return sort_key;
     }
 
+
+    /**
+     * 利用停止 チェックの有無で　一括登録.
+     * 1「利用中」 8「利用停止」
+     */
+    public void dbStateEdit() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        UserInfoDao dao = new UserInfoDao();
+        // チェックが入った項目のみIDを代入.
+        String[] listStateFlgs = getRequest().getParameterValues("list_state_flg");
+        	
+
+         String state_flg_all_text = bean.value("state_flg_all");
+         state_flg_all_text = (String) Sup.deserialize(state_flg_all_text);
+         
+         String[] state_flg_all_array = null; 
+
+
+         if (state_flg_all_text != null && !state_flg_all_text.equals("")) {
+             state_flg_all_array = state_flg_all_text.split(",");
+         }
+         try {
+          DbBase.dbBeginTran();
+          
+          // 画面表示されている利用停止の値をすべてリセット「1」.
+          if (state_flg_all_array != null) {
+             for (int z = 0; z < state_flg_all_array.length; z++) {
+              String userInfoIdState = state_flg_all_array[z];
+              dao.dbUpdateStateFlg(userInfoIdState,"1");
+             }
+              
+            }
+          // 画面表示されている利用停止の値でチェックが入っているものは「8」.
+          if (listStateFlgs != null) {
+            for (int i = 0; i < listStateFlgs.length; i++) {
+              String userInfoId = listStateFlgs[i];
+              dao.dbUpdateStateFlg(userInfoId,"8");
+            }
+          }
+          DbBase.dbCommitTran();
+        } catch (Exception e) {
+            DbBase.dbRollbackTran();
+            throw e;
+        }
+      
+    }
     /**
      * ページ番号を加算減算する
      *

@@ -153,13 +153,26 @@ public class UserReserveDao implements Serializable {
       return this.userIds;
   }
   
+  private String userName;
+
+
+  // ユーザー名をセットするメソッド
+  public void setUserName(String userName) {
+      this.userName = userName;
+  }
+
+  // ユーザー名を取得するメソッド
+  public String getUserName() {
+      return this.userName;
+  }
+  
   /**
    * データアクセス権限のあるユーザリストを取得する。.
    */
   public ArrayList<String> getAuthorityUserList() {
     return authorityUserList;
   }
-
+  
   /**
    * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
    */
@@ -241,16 +254,18 @@ public class UserReserveDao implements Serializable {
    * @param dao UserReserveDaoこのテーブルのインスタンス
    */
   public void setUserReserveDaoForJoin(HashMap<String, String> map, UserReserveDao dao) throws AtareSysException {
-    dao.setUserReserveId(DbI.chara(map.get("user_reserve___user_reserve_id")));
-    dao.setUserInfoId(DbI.chara(map.get("user_reserve___user_info_id")));
-    dao.setReserveId(DbI.chara(map.get("user_reserve___reserve_id")));
+  	
+  	
+    dao.setUserReserveId(DbI.chara(map.get("user_reserve_id")));
+    dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
+    dao.setReserveId(DbI.chara(map.get("reserve_id")));
     // link_user_idに対応するreserve_idを取得し、セット
     ReserveDao reserve = new ReserveDao();
-    reserve.dbSelect(DbI.chara(map.getOrDefault("user_reserve___reserve_id", "")));
+    reserve.dbSelect(DbI.chara(map.getOrDefault("reserve_id", "")));
     dao.setReserveDaos(reserve);
     // link_user_idに対応するreserve_idを取得し、セット
     ReserveFileDao reserveFile = new ReserveFileDao();
-    reserveFile.dbSelect(DbI.chara(map.getOrDefault("user_reserve___reserve_id", "")));
+    reserveFile.dbSelect(DbI.chara(map.getOrDefault("reserve_id", "")));
     dao.setReserveFileDaos(reserveFile);
   }
   /**
@@ -270,6 +285,7 @@ public class UserReserveDao implements Serializable {
               + "," + DbO.chara(getReserveId())
               + ")";
       int ret = DbBase.dbExec(sql);
+
       if (ret != 1) throw new AtareSysException("dbInsertReserve number or record exception.");
       return true;
   }
@@ -323,6 +339,7 @@ public class UserReserveDao implements Serializable {
     ArrayList<UserReserveDao> userReserves = new ArrayList<>();
     for (HashMap<String, String> map : rs) {
       UserReserveDao userReserve = new UserReserveDao();
+      
         // ReserveDAOのインスタンスにデータを設定
         userReserve.setUserReserveId(map.get("user_reserve_id"));
         userReserve.setUserInfoId(map.get("user_info_id"));
@@ -332,7 +349,41 @@ public class UserReserveDao implements Serializable {
 
     return userReserves; // 取得したルームリストを返す
 }
-  
+
+  /**
+   * データベースからカレンダー用に全ての予約を取得するメソッド
+   * @return userReservesに返す
+   * @throws AtareSysException
+   */
+  public ArrayList<UserReserveDao> getCalendarUserReserves() throws AtareSysException {
+
+   String sql = "SELECT user_reserve.user_reserve_id"
+       + ", user_reserve.user_info_id"
+       + ", user_reserve.reserve_id"
+       + ", user_info.first_name"
+       + ", user_info.middle_name"
+       + ", user_info.last_name"
+       + " FROM user_reserve"
+       + " JOIN user_info ON user_reserve.user_info_id = user_info.user_info_id";
+   List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+   
+   
+   
+   ArrayList<UserReserveDao> userReserves = new ArrayList<>();
+   for (HashMap<String, String> map : rs) {
+     UserReserveDao userReserve = new UserReserveDao();
+     
+       // ReserveDAOのインスタンスにデータを設定
+       userReserve.setUserReserveId(map.get("user_reserve_id"));
+       
+       userReserve.setUserName(map.get("last_name") + map.get("middle_name") + map.get("first_name"));
+       userReserve.setUserInfoId(map.get("user_info_id"));
+       userReserve.setReserveId(map.get("reserve_id"));
+       userReserves.add(userReserve);
+   }
+
+   return userReserves; // 取得したルームリストを返す
+  }
   
   
   /**
@@ -407,12 +458,14 @@ public class UserReserveDao implements Serializable {
       sql += order;
       sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
       rs  =  DbBase.dbSelect(sql);
+
       int cnt = rs.size();
       if(cnt < 1)    return array;
       for(int i=0;i<cnt;i++)
       {
           UserReserveDao  dao  = new UserReserveDao();
           map = rs.get(i);
+          
           dao.setUserReserveDaoForJoin(map,dao);
           array.add(dao);
       }

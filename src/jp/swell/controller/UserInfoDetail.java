@@ -16,13 +16,7 @@
 package jp.swell.controller;
 
 import java.security.SecureRandom;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DbBase;
@@ -33,6 +27,7 @@ import jp.swell.common.ControllerBase;
 import jp.swell.dao.ScheduleDao;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.user.UserLoginInfo;
+import jp.swell.validator.UserInfoValidator;
 
 /**
  * ：user_info ユーザ情報テーブルデータを登録・更新・削除するためのコントローラクラス
@@ -42,6 +37,7 @@ import jp.swell.user.UserLoginInfo;
  */
 public class UserInfoDetail extends ControllerBase
 {
+
     /**
      * jp.patasys.alumni.controller.HttpServlet のメソッドをオーバライドする。
      * オーバライドしない場合は、デフォルトが設定される。.
@@ -54,7 +50,7 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -67,6 +63,7 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doActionProcess() throws AtareSysException {
       WebBean bean = getWebBean();
+      
 
       try {
           if ("ViewUserList".equals(bean.value("form_name"))) 
@@ -77,7 +74,7 @@ public class UserInfoDetail extends ControllerBase
                   {
                       bean.setValue("input_info", Sup.serialize(new UserInfoDao()));
                       bean.setValue("request_name", "登録");
-                      forward("UserInfoDetail_1.jsp");
+                      forward("UserInfoDetail.jsp");
                   } 
                   else if ("update".equals(bean.value("request_cmd"))) 
                   {
@@ -85,11 +82,11 @@ public class UserInfoDetail extends ControllerBase
                       {
                           bean.setError("データの取得に失敗しました");
                           forward("ViewUserList.jsp");
-                      } 
+                      }
                       else 
                       {
                           bean.setValue("request_name", "修正");
-                          forward("UserInfoDetail_1.jsp");
+                          forward("UserInfoDetail.jsp");
                       }
                   }
                   else if ("delete".equals(bean.value("request_cmd"))) 
@@ -99,10 +96,11 @@ public class UserInfoDetail extends ControllerBase
                           bean.setError("データの取得に失敗しました");
                           forward("ViewUserList.jsp");
                       } 
-                      else 
+                      else
                       {
+                          bean.setValue("request_name", "削除");
                           bean.setMessage("退職予定日を入力してください。");
-                          forward("UserInfoDetail_2.jsp");
+                          forward("UserInfoDetail.jsp");
                       }
                   }
                   else if ("check".equals(bean.value("request_cmd"))) 
@@ -115,7 +113,7 @@ public class UserInfoDetail extends ControllerBase
                       else 
                       {
                           bean.setValue("request_name", "メール送信");
-                          forward("UserInfoDetail_3.jsp");
+                          forward("UserInfoDetail.jsp");
                       }
                   }
                   else if ("access".equals(bean.value("request_cmd"))) 
@@ -142,7 +140,7 @@ public class UserInfoDetail extends ControllerBase
               }
           }
           
-          else if ("UserInfoDetail_1".equals(bean.value("form_name"))) 
+          else if ("UserInfoDetail".equals(bean.value("form_name"))) 
           {
               if ("go_next".equals(bean.value("action_cmd"))) 
               {
@@ -155,13 +153,13 @@ public class UserInfoDetail extends ControllerBase
                       if (inputCheck(dao)) 
                       {
                           bean.setMessage("この内容で登録します。よろしいですか？");
-                          bean.setValue("request_name", "登録");
-                          forward("UserInfoDetail_3.jsp"); 
+                          bean.setValue("request_name", "登録確定");
+                          forward("UserInfoDetail.jsp"); 
                       }
                       else 
                       {
                           bean.setError("入力内容に誤りがあります");
-                          forward("UserInfoDetail_1.jsp");
+                          forward("UserInfoDetail.jsp");
                       }
                   } 
                   else if ("update".equals(bean.value("request_cmd"))) 
@@ -173,27 +171,16 @@ public class UserInfoDetail extends ControllerBase
                       {
                         
                           bean.setMessage("この内容で修正します。よろしいですか？");
-                          bean.setValue("request_name", "修正");
-                          forward("UserInfoDetail_3.jsp"); 
+                          bean.setValue("request_name", "修正確定");
+                          forward("UserInfoDetail.jsp"); 
                       }
                       else 
                       {
                         bean.setError("入力内容に誤りがあります");
-                        forward("UserInfoDetail_1.jsp");
+                        forward("UserInfoDetail.jsp");
                       }
                   }
-              } 
-              else if ("return".equals(bean.value("action_cmd"))) 
-              {
-                  forward("ViewUserList.do");
-              }
-          }
-          
-          else if ("UserInfoDetail_2".equals(bean.value("form_name")))  
-          {  
-              if ("go_next".equals(bean.value("action_cmd"))) 
-              {
-                  if ("delete".equals(bean.value("request_cmd"))) 
+                  else if ("delete".equals(bean.value("request_cmd"))) 
                   {
                       setInputInfo2Dao2WebDelete();
                       bean.rtrimAllItem();
@@ -202,90 +189,90 @@ public class UserInfoDetail extends ControllerBase
                       {
                           bean.setMessage("退職予定日を確定します。よろしいですか？");
                           bean.setValue("request_name", "確定");
-                          forward("UserInfoDetail_3.jsp");  
+                          forward("UserInfoDetail.jsp");  
                       }
                       else 
                       {
                           bean.setError("入力内容に誤りがあります");
-                          forward("UserInfoDetail_2.jsp"); 
+                          forward("UserInfoDetail.jsp"); 
                       }
                   }
+                  else if ("insConfirm".equals(bean.value("request_cmd"))) 
+                  {
+                   setInputInfo2Dao2Web();
+                   
+                   if (
+                   		(signUp() == false) || 
+                   		(scheduleInsert() == false)
+                    ) {
+                    forward("ViewUserList.jsp");
+                    return;
+                   }
+
+                   redirect("ViewUserList.do");
+                  }
+                  else if ("updateConfirm".equals(bean.value("request_cmd"))) 
+                  {
+                       if (checkDataMatching())
+                       {
+                           setInputInfo2Dao2Web();
+                           dbEdit();
+                       }
+                       else 
+                       {
+                           bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
+                           setDb2Web();
+                           forward("UserInfoDetail.jsp");
+                       }
+                  }
+                  else if ("deleteConfirm".equals(bean.value("request_cmd"))) 
+                  {
+                    if (checkDataMatching())
+                    {
+                       setInputInfo2Dao2Web();
+                       delete();
+                    }
+                    else 
+                     {
+                       bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
+                       setDb2Web();
+                       forward("UserInfoDetail.jsp");
+                     }
+                   }
               }
               else if ("return".equals(bean.value("action_cmd"))) 
               {
-                  forward("ViewUserList.do");
+               if ("insConfirm".equals(bean.value("request_cmd"))) 
+               {
+                   bean.setValue("request_cmd", "ins");
+                   bean.setValue("request_name", "登録");
+                   setInputInfo2Dao2Web();
+                   forward("UserInfoDetail.jsp");
+               }
+               else if ("updateConfirm".equals(bean.value("request_cmd"))) 
+               {
+                   bean.setValue("request_cmd", "update");
+                   bean.setValue("request_name", "修正");
+                   setInputInfo2Dao2Web();
+                   setWeb2Dao2InputInfo();
+                   forward("UserInfoDetail.jsp");
+               }
+               else if ("deleteConfirm".equals(bean.value("request_cmd"))) 
+               {   
+               	   bean.setValue("request_cmd", "delete");
+                   bean.setValue("request_name", "削除");
+                   setInputInfo2Dao2Web();
+                   setWeb2Dao2InputInfo();
+                   forward("UserInfoDetail.jsp");
+               }
+               else if ("send".equals(bean.value("request_cmd"))) 
+               {
+                   redirect("ViewUserList.do");
+               }else {
+
+                forward("ViewUserList.do");
+               }
               }
-          }
-          
-          else if ("UserInfoDetail_3".equals(bean.value("form_name"))) 
-          {
-              if ("go_next".equals(bean.value("action_cmd"))) 
-              {
-                  if ("ins".equals(bean.value("request_cmd"))) 
-                  {
-                      setInputInfo2Dao2Web();
-                      signUp();
-                      scheduleInsert();
-                      redirect("ViewUserList.do");
-                  }
-                  else if ("update".equals(bean.value("request_cmd"))) 
-                  {
-                      if (checkDataMatching())
-                      {
-                          setInputInfo2Dao2Web();
-                          dbEdit();
-                      }
-                      else 
-                      {
-                          bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
-                          setDb2Web();
-                          forward("UserInfoDetail_1.jsp");
-                      }
-                  }
-                  else if ("delete".equals(bean.value("request_cmd"))) 
-                  {
-                      if (checkDataMatching())
-                      {
-                          setInputInfo2Dao2Web();
-                          delete();
-                      }
-                      else 
-                      {
-                          bean.setError("処理中に別のユーザーがデータを変更しました。再度処理を行ってください。");
-                          setDb2Web();
-                          forward("UserInfoDetail_1.jsp");
-                      }
-                  }
-              }
-              
-              else if ("return".equals(bean.value("action_cmd"))) 
-              {
-                  if ("ins".equals(bean.value("request_cmd"))) 
-                  {
-                      bean.setValue("request_name", "登録");
-                      setInputInfo2Dao2Web();
-                      forward("UserInfoDetail_1.jsp");
-                  }
-                  else if ("update".equals(bean.value("request_cmd"))) 
-                  {
-                      bean.setValue("request_name", "修正");
-                      setInputInfo2Dao2Web();
-                      setWeb2Dao2InputInfo();
-                      forward("UserInfoDetail_1.jsp");
-                  }
-                  else if ("delete".equals(bean.value("request_cmd"))) 
-                  {
-                      bean.setValue("request_name", "修正");
-                      setInputInfo2Dao2Web();
-                      setWeb2Dao2InputInfo();
-                      forward("UserInfoDetail_2.jsp");
-                  }
-                  else if ("send".equals(bean.value("request_cmd"))) 
-                  {
-                      redirect("ViewUserList.do");
-                  }
-              }
-              
           }
           else 
           {
@@ -295,9 +282,9 @@ public class UserInfoDetail extends ControllerBase
                   bean.setError("データの取得に失敗しました");
               }
               bean.setMessage("以下の項目を修正してください。");
-              forward("UserInfoDetail_1.jsp");
+              forward("UserInfoDetail.jsp");
           }
-      } 
+      }
       catch (Exception e) 
       {
           bean.setError("処理中にエラーが発生しました: " + e.getMessage());
@@ -339,7 +326,7 @@ public class UserInfoDetail extends ControllerBase
         bean.setValue("input_info", Sup.serialize(dao));
         return true;
     }
-
+    
     /**
      * 入力チェックを行う。.
      *
@@ -350,180 +337,31 @@ public class UserInfoDetail extends ControllerBase
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
-       
+        UserInfoValidator validator = new UserInfoValidator();
+
+        
         if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd"))) 
         {
-            if (bean.value("last_name").length() == 0 && bean.value("first_name").length() == 0)
-            {
-                errors.put("last_name", "氏名を入力してください。");
-                errors.put("first_name", "");
-            } 
-            else if (bean.value("last_name").length() == 0)
-            {
-                errors.put("last_name", "名字を入力してください。");
-            }
-            else if (bean.value("first_name").length() == 0)
-            {
-                errors.put("first_name", "名前を入力してください。");
-            }
-        
-            if (bean.value("last_name_kana").length() == 0 && bean.value("first_name_kana").length() == 0)
-            {
-                errors.put("last_name_kana", "氏名のよみを入力してください。");
-                errors.put("first_name_kana", "");
-            }
-            else  if (bean.value("last_name_kana").length() == 0)
-            {
-                errors.put("last_name_kana", "名字のよみを入力してください。");
-            }
-            else if (bean.value("first_name_kana").length() == 0)
-            {
-                errors.put("first_name_kana", "名前のよみを入力してください。");
-            }
-        
-            if (bean.value("last_name_kana").length() > 0 || bean.value("first_name_kana").length() > 0)
-            {
-                if (!isHiragana(bean.value("last_name_kana")) && !isHiragana(bean.value("first_name_kana"))) 
-                {
-                    errors.put("last_name_kana", "氏名のよみはひらがなで入力してください。");
-                }
-                else if (!isHiragana(bean.value("last_name_kana"))) 
-                {
-                    errors.put("last_name_kana", "名字のよみはひらがなで入力してください。");
-                }
-                else if (!isHiragana(bean.value("first_name_kana"))) 
-                {
-                    errors.put("first_name_kana", "名前のよみはひらがなで入力してください。");
-                }
-            }    
-        
-            if (bean.value("middle_name").length() != 0)
-            {
-                if (bean.value("middle_name_kana").length() == 0)
-                {
-                    errors.put("middle_name_kana", "ミドルネームよみを入力してください。");
-                }
-                else if (!isHiragana(bean.value("middle_name_kana"))) 
-                {
-                    errors.put("middle_name_kana", "ミドルネームよみはひらがなで入力してください。");
-                }
-            }
-        
-            if (bean.value("maiden_name").length() != 0)
-            {
-                if (bean.value("maiden_name_kana").length() == 0)
-                {
-                    errors.put("maiden_name_kana", "旧姓よみを入力してください。");
-                }
-                else if (!isHiragana(bean.value("maiden_name_kana"))) 
-                {
-                    errors.put("maiden_name_kana", "旧姓よみはひらがなで入力してください。");
-                }
-            }
-            
-            if (bean.value("admin").length() == 0)
-            {
-                errors.put("admin", "ユーザー区分を選択してください。");
-            }
-            
-            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-            Pattern pattern = Pattern.compile(emailRegex);
-            Matcher matcher = pattern.matcher(bean.value("memail"));
-            if (bean.value("memail").length() == 0)
-            {
-                errors.put("memail", "メールアドレスを入力してください。");
-            }
-            else if (!matcher.matches()) // メアドに使用できる半角英数記号以外のチェック
-            {  
-                errors.put("memail", "正しいメールアドレスを入力してください。");
-            }
-            else if ("ins".equals(bean.value("request_cmd"))) 
-            {
-                if (pUserInfoDao.isEmailExists(bean.value("memail")))
-                {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("memail", "このメールアドレスは既に登録されています。");
-                }
-            }
-            else if ("update".equals(bean.value("request_cmd"))) 
-            {
-                if (pUserInfoDao.isEmailExists(bean.value("memail"), bean.value("main_key")))
-                {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("memail", "このメールアドレスは既に登録されています。");
-                }
-            }
- 
-            if (bean.value("insert_user_id").length() != 0)
-            {
-                if (bean.value("insert_user_id").length() < 6 || bean.value("insert_user_id").length() > 12)
-                {
-                    errors.put("insert_user_id", "ＩＤは６文字以上１２文字以下で入力してください。");
-                }
-                else if (!bean.value("insert_user_id").matches("^[a-zA-Z0-9]+$")) // メアドに使用できる半角英数記号以外のチェック
-                {  
-                    errors.put("insert_user_id", "ＩＤは半角英数で入力してください。");
-                }
-                else if ("ins".equals(bean.value("request_cmd"))) 
-                {
-                    if (pUserInfoDao.isIdExists(bean.value("insert_user_id"))) 
-                    {
-                        // 重複している場合のエラーメッセージ設定
-                        errors.put("insert_user_id", "このＩＤは既に登録されています。");
-                    }
-                }
-                else if ("update".equals(bean.value("request_cmd"))) 
-                {
-                    if (pUserInfoDao.isIdExists(bean.value("insert_user_id"), bean.value("main_key"))) 
-                    {
-                        // 重複している場合のエラーメッセージ設定
-                        errors.put("insert_user_id", "このＩＤは既に登録されています。");
-                    }
-                }
-            }
+        	   // 氏名  エラーチェック
+            errors.putAll(validator.nameCheck(bean));
+        	   // 氏名 （かな）エラーチェック
+            errors.putAll(validator.nameKanaCheck(bean));
+            // ミドルネーム エラーチェック
+            errors.putAll(validator.middleNameCheck(bean));
+            // 旧姓 エラーチェック
+            errors.putAll(validator.maidenNameCheck(bean));
+            // 任意ID エラーチェック
+            errors.putAll(validator.insertUserIdCheck(bean,pUserInfoDao));
+            // メールアドレスエラーチェック
+            errors.putAll(validator.memailCheck(bean,pUserInfoDao));
+            // ユーザー区分チェック
+            errors.putAll(validator.adminCheck(bean));
         }
         else if ("delete".equals(bean.value("request_cmd"))) 
         {
-            // 日付フォーマットの指定
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-            String leaveDateStr = bean.value("leave_date");
-
-            // `leave_date` が数字でない場合
-            if (!isNumeric(leaveDateStr)) 
-            {
-                errors.put("leave_date", "数字を入力してください");
-            } 
-            else 
-            {
-                try 
-                {
-                    // `leave_date` が空文字でないかチェック
-                    if (leaveDateStr == null || leaveDateStr.trim().isEmpty()) {
-                        // 空文字の場合はエラーメッセージを設定せずに `true` を返す
-                        return true;
-                    } else {
-                        // `leave_date` を Date 型に変換
-                        Date leaveDate = dateFormat.parse(leaveDateStr);
-
-                        // カレンダーを使用して昨日の日付を取得
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.add(Calendar.DATE, -1); // 昨日の日付に設定
-                        Date yesterday = calendar.getTime(); // 昨日の日付を取得
-
-                        // `leave_date` が昨日以前の日付である場合
-                        if (leaveDate.before(yesterday)) {
-                            errors.put("leave_date", "本日以降の日付を入力してください");
-                        }
-                    }
-                } 
-                catch (ParseException e) 
-                {
-                    // `leave_date` の解析に失敗した場合
-                    errors.put("leave_date", "日付の形式が不正です");
-                }
-            }
+            // 退職予定日 エラーチェック
+            errors.putAll(validator.leaveDateCheck(bean));
         }
-
             
         if (errors.size() > 0)
         {
@@ -532,34 +370,6 @@ public class UserInfoDetail extends ControllerBase
         return true;
     }
     
-    /**
-     * 文字列が数字で構成されているかをチェックするメソッド.
-     *
-     * @param value チェック対象の文字列
-     * @return 文字列が数字で構成されている場合はtrue、それ以外はfalse
-     */
-    private boolean isNumeric(String value) {
-      if (!(value == null || value.trim().isEmpty())) {
-        try {
-          Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-          return false;
-        }
-      }  
-        return true;
-    }
-    
-    /**
-     * 文字列がひらがなで構成されているかをチェックするメソッド.
-     *
-     * @param input チェック対象の文字列
-     * @return 文字列がひらがなで構成されている場合はtrue、それ以外はfalse
-     */
-    private boolean isHiragana(String input) {
-        return input.matches("^[\\u3040-\\u309Fー]+$");
-    }
-    
-
     /**
      * データベース処理を行う。.
      *
@@ -612,14 +422,19 @@ public class UserInfoDetail extends ControllerBase
      */
     private boolean checkDataMatching() throws AtareSysException
     {
-        WebBean bean = getWebBean();
-        UserInfoDao dao = new UserInfoDao();
-        if (!dao.dbSelect(bean.value("main_key")))
-        {
-            return false;
-        }
-        return Sup.serializeIsEquals(bean.value("select_info"), dao);
+    	
+      WebBean bean = getWebBean();
+      UserInfoDao dao = new UserInfoDao();
+      if (!dao.dbSelect(bean.value("main_key")))
+      {
+          return false;
+      }
+      return Sup.serializeIsEquals(bean.value("select_info"), dao);
+      
+     
+     
     }
+    
     
     /**
      * 画面の項目をDAOクラスに格納しそれをシリアライズして、input_infoフィールドに格納する
@@ -684,12 +499,11 @@ public class UserInfoDetail extends ControllerBase
             redirect("ViewUserList.do");
         } catch (Exception e) {
             DbBase.dbRollbackTran();
-            forward("UserPassReset.jsp");
+            forward("ViewUserList.jsp");
         }
         
     }
-   
-    
+
     /**
      * 削除の場合
      * @throws AtareSysException
@@ -829,4 +643,6 @@ public class UserInfoDetail extends ControllerBase
         return false;
       }
     }
+    
+    
 }

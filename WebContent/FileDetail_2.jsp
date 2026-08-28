@@ -30,7 +30,7 @@
 <script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/flatpickr.min.js"></script>
-<title>部屋情報修正</title>
+<title>ファイル登録確認ページ</title>
 <style>
 body {
   font-family: 'Arial', sans-serif;
@@ -179,6 +179,7 @@ function go_submit(action_cmd, request_cmd) {
     document.getElementById('main_form').action='';
     document.getElementById('action_cmd').value=action_cmd;
     document.getElementById('request_cmd').value=request_cmd;
+
     document.getElementById('main_form').submit();
 }
 function go_list(action_cmd , request_cmd) {
@@ -209,12 +210,20 @@ function go_list(action_cmd , request_cmd) {
        <input type="hidden" name="form_name" id="form_name" value="FileDetail_2" />
        <input type="hidden" name="action_cmd" id="action_cmd" value="" />
        <input type="hidden" name="input_name" id="input_name" value="<%=webBean.txt("input_name")%>" />
+       <input type="hidden" name="file_value" id="file_value" value="<%=webBean.txt("file_value")%>" />
+       <input type="hidden" name="fileData" id="fileData" value="<%=webBean.txt("fileData")%>" />
        <input type="hidden" name="request_cmd" id="request_cmd" value="<%=webBean.txt("request_cmd")%>" />
-       <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
+       <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" />
+       <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
+       <input type="hidden" id="expiration_data" name="expiration_data" value="<%=webBean.txt("expiration_data")%>">
+			
+       
+       <input type="hidden" name="destination_user_info_id" id="destination_user_info_id" value="<%=webBean.txt("destination_user_info_id")%>" />
        <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
        <input type="hidden" name="input_info" id="input_info" value="<%=webBean.txt("input_info")%>" />
-       
       
+      
+
        <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
        <div class="errors"><%=webBean.dispErrorMessages()%></div>
       

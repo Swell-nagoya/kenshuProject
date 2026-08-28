@@ -4,7 +4,6 @@ import jp.patasys.common.AtareSysException;
 import jp.patasys.common.http.WebBean;
 import jp.swell.common.ControllerBase;
 import jp.swell.user.UserLoginInfo;
-
 /**
  * ログインコントロールクラス
  *
@@ -14,6 +13,8 @@ import jp.swell.user.UserLoginInfo;
  * @since 1.0
  */
 public class UserLogin extends ControllerBase {
+
+	
     /**
      * jp.patasys.alumni.controller.HttpServlet のメソッドをオーバライドする。
      * オーバライドしない場合は、デフォルトが設定される。.
@@ -38,19 +39,44 @@ public class UserLogin extends ControllerBase {
      */
     @Override
     public void doActionProcess() throws AtareSysException {
+
+
         WebBean bean = getWebBean();
         bean.trimAllItem();
 
+        //usernameのインプットの値を代入
+        String account = bean.value("ac");
+
+        //passwordのインプットの値を代入
+        String password = bean.value("ko");
+     
+        System.out.println("username: " + account);
+        System.out.println("password: " + password);
+
+        
         if ("UserLogin".equals(bean.value("form_name"))) {
+
             // ログインボタンが押されたときの処理
             if ("login".equals(bean.value("action_cmd"))) {
                 this.setLoginInfo(null);
+
                 if (!inputCheck()) {
                     this.forward("/UserLogin.jsp");
                     return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
                 }
+                
+
+                UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+                // 管理メニューへ
+                if (userLoginInfo != null && userLoginInfo.isSystemManager()) {
+                    redirect("MenuAdmin.do");
+                // 一般ユーザー
+                } else {
                     redirect("UserMenu.do");
+                }
                 return;
+                
+                
             } else if ("repassword".equals(bean.value("action_cmd"))) {
                 redirect("SendPassMail.do");
             }
@@ -74,12 +100,16 @@ public class UserLogin extends ControllerBase {
     private boolean inputCheck() throws AtareSysException {
 
         WebBean bean = getWebBean();
+        
+        
         if (bean.value("ac").length() == 0) {
             bean.setError("ac", "未入力");
+            System.out.println("ログイン失敗");
             return false;
         }
         if (bean.value("ko").length() == 0) {
             bean.setError("ko", "未入力");
+            System.out.println("ログイン失敗");
             return false;
         }
 
@@ -89,8 +119,12 @@ public class UserLogin extends ControllerBase {
         }
         if (!userLoginInfo.login(bean.value("ac"), bean.value("ko"))) {
             bean.setError("ac", "usernameかpasswordが違います");
+            System.out.println("ログイン失敗");
             return false;
         }
+
+        System.out.println("ログイン成功");
+        
         userLoginInfo.setUserInfo(userLoginInfo.getUserInfoDao());
         setLoginInfo(userLoginInfo);
         bean.setValue("user_info_id", userLoginInfo.getUserInfoId());

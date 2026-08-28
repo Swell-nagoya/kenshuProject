@@ -68,14 +68,14 @@ public class SendPassMail extends ControllerBase
                         System.err.println("メール送信中にエラーが発生しました: " + e.getMessage());
                     }
                 }
-            forward("UserLogin.jsp");
+                forward("UserLogin.jsp");
             }
             else if ("return".equals(bean.value("action_cmd"))) 
             {
                 forward("UserLogin.jsp");
             }
         }
-        else if ("UserInfoDetail_3".equals(bean.value("form_name")))
+        else if ("UserInfoDetail".equals(bean.value("form_name")))
         {
             if("go_next".equals(bean.value("action_cmd"))) 
             {

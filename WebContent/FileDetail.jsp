@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.Map"%>
 <%@ page import="jp.patasys.common.http.WebBean"%>
 <%@ page import="jp.swell.dao.UserInfoDao"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
@@ -13,28 +13,24 @@
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="java.time.LocalTime"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
-<jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean"
-	scope="request" />
+<jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="keywords" content="">
-		<meta name="description" content="">
-			<meta charset="UTF-8">
-				<link type="text/css" href="jquery-ui/jquery-ui.css"
-					rel="stylesheet" />
-				<link rel="shortcut icon" href="images/favicon.ico"
-					type="image/vnd.microsoft.icon" />
-				<link rel="icon" href="images/favicon.ico"
-					type="image/vnd.microsoft.icon" />
-				<script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
-				<script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
-				<script type="text/javascript"
-					src="jquery.watermark/jquery.watermark.js"></script>
-				<script type="text/javascript" src="js/common.js"></script>
-				<script type="text/javascript" src="js/flatpickr.min.js"></script>
-				<title>アップロード画面</title>
-				<style>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta charset="UTF-8">
+<link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
+<link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
+<link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
+<script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
+<script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
+<script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/flatpickr.min.js"></script>
+<script type="text/javascript" src="js/datePicker.js"></script>
+<title>アップロード画面</title>
+<style>
 body {
 	font-family: 'Arial', sans-serif;
 	background-color: #f9f9f9;
@@ -58,6 +54,10 @@ h1 {
 	color: white; /* リンクの文字色を白に */
 	text-decoration: none; /* 下線を削除 */
 	font-weight: normal;
+}
+
+.text-center {
+  text-align: center;
 }
 
 .container {
@@ -176,8 +176,16 @@ td, th {
 	font-weight: 600;
 }
 
+.errors {
+  color: #FF0000;
+  font-weight: bold;
+}
+.errors:last-child {
+   margin-bottom: 0;
+}
+
 span {
-	color: #f00;
+/*	color: #f00;*/
 	font-size: 16px;
 }
 
@@ -191,7 +199,6 @@ input.error {
 	background-color: #FFCCCC;
 	border: 1px solid #FF0000;
 }
-
 label.error {
 	color: #FF0000;
 }
@@ -202,12 +209,25 @@ const ctx = '<%=request.getContextPath()%>';
 function go_submit(action_cmd) {
   document.getElementById('main_form').action = 'FileDetail.do';
   document.getElementById('action_cmd').value = action_cmd;
+
+
+
   document.getElementById('main_form').submit();
 }
 
 function go_upload(action_cmd) {
   document.getElementById('main_form').action = '';
   document.getElementById('action_cmd').value = action_cmd;
+
+  // file inputのvalueを取得
+  var fileInput = document.getElementById('file');
+  if (fileInput.files.length > 0) {
+	  
+      var fullPath = fileInput.files[0].name;
+      document.getElementById('file_value').value = fullPath;
+  }
+
+  
   document.getElementById('main_form').submit();
 }
 
@@ -242,6 +262,33 @@ function openUserWindow(action_cmd) {
   document.body.removeChild(form);
 }
 
+$(function(){
+	$("#expiration_data_input").datepicker();
+    $("#expiration_data_input").on("change",function() {
+        var value = $(this).val();
+        var value1 = value.replaceAll("-","");
+        $("#reservation_date").val(value1);
+    });
+});
+
+
+$(document).ready(function() {
+    // 予約日、チェックイン時間、チェックアウト時間の入力フィールドで入力が行われた時に関数を実行
+    $('#expiration_data_input').on('input', function() {
+        // 現在の入力フィールドの name 属性を fieldName 変数に格納し、値を value 変数に格納
+        var fieldName = $(this).attr('name');
+        var value = $(this).val();
+
+        // 現在のフィールドが expiration_dataである場合に、以下の処理を実行する条件を指定
+        if (fieldName === 'expiration_data') {
+            if (isNumeric(value)) { // 数字であるかどうかを判断
+                $(this).removeClass('error'); // クラス削除
+                $('#error_' + fieldName).text(''); // エラーメッセージ非表示
+            }
+        }
+    });
+});
+
 function receiveSelectedUsers(users, type) {
   let selectedUsersDiv;
   let userIds = [];
@@ -271,9 +318,11 @@ function receiveSelectedUsers(users, type) {
     document.getElementById('destination_user_info_id').value = userIds.join(',');
   }
 }
+
 </script>
 </head>
 <body>
+
 	<div class="container">
 		<div class="new-btn">
 			<input type="button" value="　戻る　" onclick="go_submit('return')" />
@@ -290,26 +339,48 @@ function receiveSelectedUsers(users, type) {
 			<input type="hidden" name="action_cmd" id="action_cmd" value="" />
 			<input type="hidden" name="list" id="list"
 				value="<%=webBean.txt("list")%>" />
+			<input type="hidden" name="file_value" id="file_value"
+				value="" />
 			<input type="hidden" name="name" id="name"
 				value="<%=webBean.txt("name")%>" />
 			<input type="hidden" name="destination_user_info_id"
 				id="destination_user_info_id">
-
+            <%
+              Map<String, String> itemErrors = webBean.getItemErrors();
+            %>   
 				<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
-				<div class="errors"><%=webBean.dispErrorMessages()%></div> <!-- ファイルアップロードフォーム -->
+				<div class="errors text-center"><%=webBean.dispErrorMessages()%></div> <!-- ファイルアップロードフォーム -->
 				<div class="left">
 					<table class="file__form--name">
 						<tr>
 							<td class="style_head3 style_head_size" style="width: 40%">ファイル名</td>
 							<td class="input-text" style="width: 60%"><input type="text"
 								name="input_name" id="input_name"
-								value="<%=webBean.txt("file_name")%>" class="ime_disabled"
-								placeholder="入力" /></td>
+								value="<%=webBean.txt("input_name")%>" class="ime_disabled"
+								placeholder="入力" />
+                                 <%
+                                  if (itemErrors.containsKey("input_name_empty")) { 
+                                 %>
+            					 <div class="field-error errors"><%=itemErrors.get("input_name_empty")%></div>
+                                 <%
+                                  }
+                                 %>
+                            </td>
 						</tr>
 						<tr>
 							<td class="style_head3 style_head_size" style="width: 40%">ファイルリンク</td>
 							<td class="input-text" style="width: 60%"><input type="file"
-								name="file" id="file" class="ime_disabled" /></td>
+								name="file" id="file" class="ime_disabled" />
+								
+								
+                                 <%
+                                  if (itemErrors.containsKey("file_value_empty")) { 
+                                 %>
+            					 <div class="field-error errors"><%=itemErrors.get("file_value_empty")%></div>
+                                 <%
+                                  }
+                                 %>
+								</td>
 						</tr>
 						<!-- 送信元ユーザー選択 -->
 						<tr>
@@ -337,8 +408,23 @@ function receiveSelectedUsers(users, type) {
 								id="error_destination_user_info_id" class="error"><%=webBean.dispError("destination_user_info_id")%></span>
 							</td>
 						</tr>
+						<!-- 送信先ユーザー選択 -->
+						<tr>
+							<td class="style_head3 style_head_size" style="width: 40%">ファイル期限</td>
+							<td class="input-text" style="width: 60%">
+                              <input type="text" name="expiration_data"id="expiration_data_input" value="<%=webBean.txt("expiration_data")%>" class="expiration_data" readonly/>
+                                 <%
+                                  if (itemErrors.containsKey("expiration_data_empty")) { 
+                                 %>
+            					 <div class="field-error errors"><%=itemErrors.get("expiration_data_empty")%></div>
+                                 <%
+                                  }
+                                 %>
+							</td>
+						</tr>
 					</table>
 				</div>
+            <div class="field-error errors"></div>
 				<div class="button">
 					<input type="button" onclick="go_upload('upload')" value="登録" />
 				</div>

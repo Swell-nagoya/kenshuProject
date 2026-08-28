@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
@@ -49,7 +50,7 @@ public class RoomList extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -105,13 +106,25 @@ public class RoomList extends ControllerBase
             {
                 redirect("MenuAdmin.do");
             }
+            else if ("statusUpdate".equals(bean.value("action_cmd")))
+            {
+               	dbStatusUpdateEdit();
+                searchList();
+                forward("RoomList.jsp");
+            }
+            else if ("statusUpdateAll".equals(bean.value("action_cmd")))
+            {
+               	dbStatusUpdateAllEdit();
+                searchList();
+                forward("RoomList.jsp");
+            }
             else
             {
                 searchList();
                 forward("RoomList.jsp");
             }
         }
-        else if ("RoomDetail".equals(bean.value("form_name")) || "UserInfoDetail_2".equals(bean.value("form_name")) || "UserInfoDetail_3".equals(bean.value("form_name")))
+        else if ("RoomDetail".equals(bean.value("form_name")))
         {
             setWebBeanFromSerialize(bean.value("search_info"));
             bean = getWebBean();
@@ -144,6 +157,7 @@ public class RoomList extends ControllerBase
     private void formClear() throws AtareSysException
     {
         WebBean bean = getWebBean();
+        bean.setValue("list_search_status", "");
         bean.setValue("list_search_room_name", "");
         bean.setValue("lineCount", "");
         String search_info = Sup.serialize(bean);
@@ -186,7 +200,12 @@ public class RoomList extends ControllerBase
         LinkedHashMap<String, String> sortKey = sortKey();
         RoomDao dao = new RoomDao();
         dao.setRoomName("%" + bean.value("list_search_room_name")+ "%");
+        
 
+        String statusStr = bean.value("list_search_status");
+        dao.setStatus((statusStr == null || statusStr.isEmpty()) ? 1 : Integer.parseInt(statusStr));
+        
+        
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount")))
         {
@@ -203,6 +222,21 @@ public class RoomList extends ControllerBase
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
         ArrayList<RoomDao> listData = RoomDao.dbSelectList(dao, sortKey, daoPageInfo);
+        
+        
+        // 表示中の部屋情報のIDをすべて取得
+        String room_id_show_all = "";
+        for(int i = 0;i < listData.size();i++) {
+        if( listData.get(i).getRoomId() != null ) {
+          if( room_id_show_all != null && room_id_show_all != "" ) {
+          	room_id_show_all += ",";
+          }
+          room_id_show_all += listData.get(i).getRoomId();
+         }
+        }
+        
+        bean.setValue("room_id_show_all", Sup.serialize(room_id_show_all));
+        
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         bean.setValue("recordCount", daoPageInfo.getRecordCount());
@@ -281,6 +315,74 @@ public class RoomList extends ControllerBase
         bean.setValue("sort_order", sort_key.get(key));
         return sort_key;
     }
+
+    /**
+     * 利用ステータス　個別登録.
+     * 1「利用可能」 8「メンテナンス中」
+     */
+    public void dbStatusUpdateEdit() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        RoomDao dao = new RoomDao();
+
+        String search_info = String.valueOf(Sup.deserialize(bean.value("search_info")));
+
+       	String roomId = bean.value("main_key");
+        String list_status = "list_status_" + roomId;
+        String roomStatus =	bean.value(list_status);
+
+        try {
+         DbBase.dbBeginTran();
+         // 画面表示されている利用停止の値でチェックが入っているものは「8」.
+         if (roomId != null) {
+             dao.dbUpdateStatus(roomId,roomStatus);
+         }
+         DbBase.dbCommitTran();
+       } catch (Exception e) {
+         DbBase.dbRollbackTran();
+         throw e;
+       }
+    }
+    
+    /**
+     * 利用ステータス　一括登録.
+     * 1「利用可能」 8「メンテナンス中」
+     */
+    public void dbStatusUpdateAllEdit() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        RoomDao dao = new RoomDao();
+        // チェックが入った項目のみIDを代入.
+        String[] listStatusFlgs = getRequest().getParameterValues("list_status_flg");
+        String room_id_show_all_text = bean.value("room_id_show_all");
+        room_id_show_all_text = (String) Sup.deserialize(room_id_show_all_text);
+        
+
+        String[] room_id_show_all_array = null; 
+
+
+        if (room_id_show_all_text != null && !room_id_show_all_text.equals("")) {
+         	room_id_show_all_array = room_id_show_all_text.split(",");
+        }
+        
+        try {
+          DbBase.dbBeginTran();
+          
+          // 画面表示されている利用停止の値でチェックが入っているものは「8」.
+          if (listStatusFlgs != null) {
+            for (int i = 0; i < listStatusFlgs.length; i++) {
+              String status = listStatusFlgs[i];
+               dao.dbUpdateStatus(status,"8");
+            }
+          }
+          DbBase.dbCommitTran();
+        } catch (Exception e) {
+            DbBase.dbRollbackTran();
+            throw e;
+        }
+      
+    }
+    
 
     /**
      * ページ番号を加算減算する

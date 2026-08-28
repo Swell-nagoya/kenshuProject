@@ -196,6 +196,13 @@ th {
 	color: #fff;
 	text-align: center;
 }
+.expiration_remaining_date {
+	color: #FF0000;
+	font-weight: bold;
+    text-shadow: 0 0 2px #fff,
+                 0 0 2px #fff;
+}
+
 </style>
 <script type="text/javascript">
 	
@@ -236,12 +243,30 @@ th {
 		document.getElementById('main_form').submit();
 	}
 
-	function go_detail_1(action_cmd, request_cmd, main_key) {
-		document.getElementById('main_form').action = '';
+	
+	function go_detail(action_cmd, request_cmd) {
+		document.getElementById('main_form').action = 'FileDetail.do';
 		document.getElementById('action_cmd').value = action_cmd;
 		document.getElementById('request_cmd').value = request_cmd;
-		document.getElementById('main_key').value = main_key;
+
+
+		// 本日の日付を取得する
+		const today = new Date();
+		// 1週間後の日付を取得し、代入する
+		const oneWeekLater = new Date(today);
+		oneWeekLater.setDate(oneWeekLater.getDate() + 7);
+		
+		const year = oneWeekLater.getFullYear();
+		const month = String(oneWeekLater.getMonth() + 1).padStart(2, '0');
+		const day = oneWeekLater.getDate();
+		// 年月日の表示を代入
+	    const formattedDate = year + "年" + month + "月" + day + "日";
+	     // hidden フィールドに値をセット
+	    $('#expiration_data').val(formattedDate);
+
+	    
 		document.getElementById('main_form').submit();
+	  
 	}
 
 	function go_detail_2(action_cmd, request_cmd, main_key, file_name) {
@@ -253,20 +278,43 @@ th {
 		document.getElementById('main_form').submit();
 	}
 
-	function go_download(action_cmd, request_cmd, main_key, file_name) {
-		document.getElementById('main_form').action = 'FileDetail.do';
+	function go_download( action_cmd, main_key, file_name) {
+		document.getElementById('main_form').action = 'FileList.do';
 		document.getElementById('action_cmd').value = action_cmd;
-		document.getElementById('request_cmd').value = request_cmd;
 		document.getElementById('main_key').value = main_key;
 		document.getElementById('file_name').value = file_name;
 		document.getElementById('main_form').submit();
 	}
 
-	function go_detail(action_cmd, request_cmd) {
-		document.getElementById('main_form').action = 'FileDetail.do';
-		document.getElementById('action_cmd').value = action_cmd;
-		document.getElementById('request_cmd').value = request_cmd;
-		document.getElementById('main_form').submit();
+	
+	// サブ画面処理
+	function openFileSeparateWindow(formTarget, formName, main_key) {
+		// コントローラー設定
+		const form = document.createElement('form');
+		form.method = 'POST';
+		form.action = 'FileSeparateWindow.do';
+		form.target = formTarget;
+		// form_name設定
+		const formNameInput = document.createElement('input');
+		formNameInput.type = 'hidden';
+		formNameInput.name = 'form_name';
+		formNameInput.value = formName;
+		form.appendChild(formNameInput);
+		// ファイルのID
+		const roomIdInput = document.createElement('input');
+		roomIdInput.type = 'hidden';
+		roomIdInput.name = 'main_key';
+		roomIdInput.value = main_key;
+		form.appendChild(roomIdInput);
+		document.body.appendChild(form);
+
+
+		
+		// サブ画面表示処理
+		window.open('', formTarget, 'width=600,height=600');
+		form.submit();
+
+		document.body.removeChild(form);
 	}
 </script>
 </head>
@@ -305,7 +353,9 @@ th {
 				value="<%=webBean.txt("file_name")%>" />
 			<input type="hidden" name="file_id" id="file_id"
 				value="<%=webBean.txt("file_id")%>" />
-
+			<input type="hidden" id="expiration_data" name="expiration_data" value="">
+			
+			
 			<div class="left">
 				<div class="messages">
 					<%=webBean.dispMessages()%>
@@ -340,8 +390,7 @@ th {
 				%>
 				<div class="pagenation">
 					<input type="text" name="pageNo" id="pageNo" maxlength="3" size='1'
-						value="<%=webBean.txt("pageNo")%>" class="right ime_disabled" />
-					/
+						value="<%=webBean.txt("pageNo")%>" class="right ime_disabled" />  /
 					<%=webBean.html("maxPageNo")%>
 					ページ〚全
 					<%=webBean.html("recordCount")%>件〛<br />
@@ -368,6 +417,8 @@ th {
 					<%
 					}
 					%>
+					
+					
 				</div>
 				<table border="1">
 					<tr>
@@ -375,20 +426,78 @@ th {
 						<th>アップロード日時</th>
 						<th>送信先ユーザー</th>
 						<th>アップロードユーザー</th>
+						<th>ダウンロード期限</th>
 						<th>ダウンロード</th>
+					</tr>
 						<%
 						for (Object item : webBean.arrayList("list")) {
 						    FileDao dao = (FileDao) item;
+							String expirationToDate = WebUtil.htmlEscape(dao.getExpirationToDate());
 						%>
-						<tr
-							<tr style="background-color:<%="received".equals(dao.getFileType() != null ? dao.getFileType() : "") ? "#1565c0" : "white"%>">
+						<tr style="background-color:<%="received".equals(dao.getFileType() != null ? dao.getFileType() : "") ? "#1565c0" : "white"%>">
 							<td><%=WebUtil.htmlEscape(dao.getFileName())%></td>
 							<td><%=WebUtil.htmlEscape(dao.getUploadDate())%></td>
 							<td><%=WebUtil.htmlEscape(dao.getSendUserName())%></td>
 							<td><%=WebUtil.htmlEscape(dao.getUploadUserName())%></td>
-							<td><input type="button" value="ダウンロード"
-								onclick="go_download('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
-								<input type="button" value="削除"
+							<td>
+							<%
+							if ((expirationToDate != null ) && !(expirationToDate.isEmpty())) {
+								int expirationToDateInt = Integer.parseInt(expirationToDate.trim());
+
+								if ( expirationToDateInt > 0 ){
+									out.println("<span class='expiration_remaining_date'>" + "期限 " + expirationToDate + " 日前です" + "</span>");
+									out.println("<br>");
+					
+								} else if(expirationToDateInt == 0) {
+									out.println("<span class='expiration_remaining_date'>" + "期限当日です" + "</span>");
+									out.println("<br>");
+					
+								} else {
+									out.println("<span class='expiration_remaining_date'>" + "期限オーバーです" + "</span>");
+									out.println("<br>");
+								}
+							}
+							%>
+							<%=WebUtil.htmlEscape(dao.getExpirationDate())%>
+							</td>
+							<td>
+							
+							<%
+							// 本日がダウンロード期限よりも前か
+							if ((expirationToDate != null ) && !(expirationToDate.isEmpty())) {
+								int expirationToDateInt = Integer.parseInt(expirationToDate.trim());
+
+								if ( expirationToDateInt > 0 ){
+							%>
+									<input type="button" value="ダウンロード"
+										onclick="go_download('download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
+							
+									<input type="button" value="ダウンロード履歴"
+										onclick="openFileSeparateWindow('File_Downloads', 'FileDownloads','<%=WebUtil.txtEscape(dao.getFileId())%>');" />
+								
+									<%
+									// PDF、jpgまたはpngまたはgif
+									if (
+											(WebUtil.htmlEscape(dao.getFilePath()).contains(".pdf") ) ||
+											(WebUtil.htmlEscape(dao.getFilePath()).contains(".jpg") ) ||
+											(WebUtil.htmlEscape(dao.getFilePath()).contains(".png") ) ||
+											(WebUtil.htmlEscape(dao.getFilePath()).contains(".gif") )
+										
+										) {
+									%>
+									<input type="button" value="プレビュー"
+										onclick="openFileSeparateWindow('File_Preview', 'FilePreview','<%=WebUtil.txtEscape(dao.getFileId())%>');" />
+									<%
+									}
+									%>
+									
+							<%
+								}
+								
+							}
+							%>
+							
+							<input type="button" value="削除"
 								onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
 							</td></tr>
 
@@ -397,7 +506,6 @@ th {
 						<td colspan="4">ファイルがありません</td>
 					</tr>
 					<%}%>
-				
 				
 				</table>
 			</div>

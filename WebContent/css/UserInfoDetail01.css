@@ -1,0 +1,240 @@
+@charset "UTF-8";
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 10px;
+}
+
+header {
+  position: relative;
+  background: #00bcd4; /* ヘッダーの背景色 */
+  width: 100%; /* 幅を画面いっぱいに */
+  height: 70px;
+  margin: 15px auto; /* 不要な余白を排除 */
+  display: flex; /* Flexboxを有効にする */
+  justify-content: center; /* 水平方向に中央揃え */
+  align-items: center; /* 垂直方向に中央揃え */
+}
+
+h1 {
+  font-size: 50px;
+  color: white; /* リンクの文字色を白に */
+  text-decoration: none; /* 下線を削除 */
+  font-weight: normal;
+}
+
+.container {
+  position: relative; /* ボタンを基準に配置するため */
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 90%; /* コンテナの幅を画面幅に揃える */
+  margin: 20px auto; /* 中央寄せ */
+  
+}
+
+.left {
+  margin-bottom: 20px;
+  text-align: center;
+  display: flex;
+  justify-content: center;  /* 横方向で中央に配置 */
+  align-items: center;      /* 縦方向で中央に配置 */
+}
+
+.input-table{
+  width: 60%;
+}
+
+/* ボタンの共通スタイル */
+input[type="button"] {
+  border-radius: 10px; /* 角を丸くする */
+  color: #fff; /* 文字色 */
+  cursor: pointer; /* カーソルをポインタにする */
+  background: #90a0b0; /* デフォルトの背景色 */
+}
+
+/* ホバー時のスタイル */
+input[type="button"]:hover {
+  background-color: #4baea8; /* ホバー時の背景色 */
+}
+
+.new-btn {
+  position: absolute;
+  right: 10px; /* 右端に10pxの余白を取る */
+  top: 5px;   
+}
+
+/* .new-btnのスタイル */
+.new-btn input {
+  background: #fff; /* 背景色を白に */
+  color: #000; /* 文字色を黒に */
+}
+
+ .button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button input[type="button"] {
+  padding: 0px 50px; /* ボタンの内側余白 */
+  font-size: 24px; /* 文字サイズ */
+  border: 2px solid #fff; /* ボタンの枠線 */
+  background-color: #00bcd4; /* 上書きの背景色 */
+}
+
+.button input[type="button"]:hover {
+  background-color: #4baea8; /* ホバー時の背景色 */
+}
+
+
+.required-note {
+  position: absolute;
+  top: 110px;
+  right: 20px;
+  font-weight: bold;
+  font-size: 18px;
+  color: #f00;
+}
+
+.Form-Item {
+  border-top: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-width: 480px) {
+  .Form-Item {
+    padding: 10px;
+    flex-wrap: wrap;
+  }
+}
+
+.Form-Item:nth-child(5) {
+  border-bottom: 1px solid #ddd;
+}
+
+.Form-Item-Label {
+  flex: 0 0 150px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+@media screen and (max-width: 480px) {
+  .Form-Item-Label {
+    font-size: 16px;
+    flex: 0 0 100%;
+  }
+}
+
+.Form-Item-Label-Required {
+  border-radius: 4px;
+  margin-right: 8px;
+  padding: 2px 6px;
+  background: #5bc8ac;
+  color: #fff;
+  font-size: 16px;
+  text-align: center;
+}
+
+input[type="text"]{
+  border: 1px solid #696969;
+  border-radius: 4px;
+  padding: 5px;
+  background: #FFF;
+}
+
+input[type="email"]{
+  border: 1px solid #696969;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.email-container input {
+  width: 100%;
+  max-width: 400px;
+  margin-right: 0; 
+}
+
+select, .Form-Item-Input, .Form-Item-Textarea, .email-container input{
+  font-size: 16px;
+  width: 100%;
+  max-width: 400px;
+}
+
+@media screen and (max-width: 480px) {
+  select, .Form-Item-Input, .Form-Item-Textarea, .email-container input{
+    font-size: 16px;
+  }
+}
+
+.errors, .messages {
+  margin-bottom: 20px;
+  font-size: 16px
+}
+
+
+input::placeholder {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.style_head3 {
+  padding-left: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.style_head_size {
+  height: 30px;
+  vertical-align: middle;
+  display: table-cell;
+  background: #00bcd4;
+  color: #fff;
+}
+
+td.input-text {
+  text-align: left;
+  background: #fff;
+}
+
+table {
+  border-collapse: collapse; 
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+td, th {
+  border: 1px solid #ddd; 
+  padding: 5px;
+}
+
+.label {
+  font-weight: 600;
+}
+
+span {
+  color: #f00;
+  font-size: 16px;
+}
+
+span.error{
+  color: #f00;
+  background-color: transparent;
+}
+
+input.error {
+  color: #FF0000;
+  background-color: #FFCCCC;
+  border: 1px solid #FF0000;
+}
+
+label.error {
+  color: #FF0000; 
+
+}

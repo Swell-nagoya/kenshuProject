@@ -50,7 +50,7 @@ public class UserYoyakuDetail extends ControllerBase {
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -136,9 +136,7 @@ public class UserYoyakuDetail extends ControllerBase {
         forward("UserMenuReserve.jsp");
       }
     }
-
-    else if ("UserInfoDetail_1".equals(bean.value("form_name")) || "UserInfoDetail_2".equals(bean.value("form_name"))
-        || "UserInfoDetail_3".equals(bean.value("form_name"))) {
+    else if ("UserInfoDetail".equals(bean.value("form_name"))) {
       setWebBeanFromSerialize(bean.value("search_info"));
       bean = getWebBean();
       searchList();

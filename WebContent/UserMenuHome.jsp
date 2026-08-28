@@ -438,15 +438,145 @@ footer {
                 dateCell = document.getElementById("date<%=WebUtil.htmlEscape(reserve.getReservationDate())%>");
                 if (dateCell) {
                     <%
-                    if (WebUtil.htmlEscape(reserve.getUserInfoId()).equals(webBean.txt("user_info_id"))) {
+                    // 1. 変数から値を取り出し、前後のスペースを取り除く（nullなら空文字にする）
+                    String rawCheckin = (formatCheckinTime != null) ? formatCheckinTime.trim() : "";
+                    String rawCheckout = (formatCheckoutTime != null) ? formatCheckoutTime.trim() : "";
+
+                    // 2. ゴミデータ（&n:bs や &nbsp; など）が入っている場合は空文字にリセットする判定
+                    if (rawCheckin.equals("&n:bs") || rawCheckin.equals("&nbsp;") || rawCheckin.isEmpty()) {
+                        rawCheckin = "";
+                    }
+                    if (rawCheckout.equals("&n:bs") || rawCheckout.equals("&nbsp;") || rawCheckout.isEmpty()) {
+                        rawCheckout = "";
+                    }
+
+                    // 3. 出力用の変数を用意
+                    String displayCheckinTime = "";
+                    String displayCheckoutTime = "";
+                    String displayTime = "";
+                    
+
+                    // 4. 両方とも無事に値（有効な時間）が残った場合のみ、ハイフンで繋ぐ
+                    if (!rawCheckin.isEmpty() ) {
+                    	  displayCheckinTime = checkinTime.substring(0, 2) + checkinTime.substring(2, 4);
+                    	  displayTime = WebUtil.htmlEscape(rawCheckin);
+                    }
+
+                    // 4. 両方とも無事に値（有効な時間）が残った場合のみ、ハイフンで繋ぐ
+                    if (!rawCheckout.isEmpty()) {
+                       displayCheckoutTime =  checkoutTime.substring(0, 2) + checkoutTime.substring(2, 4);
+                   	   displayTime += "-" + WebUtil.htmlEscape(rawCheckout);
+                    }
                     %>
-                        dateCell.innerHTML += 
-                            '<div class="myreserve room<%=WebUtil.htmlEscape(reserve.getRoomId())%> <%=WebUtil.htmlEscape(reserve.getUserInfoId())%>"><%=WebUtil.htmlEscape(formatCheckinTime)%>-<%=WebUtil.htmlEscape(formatCheckoutTime)%> <%=WebUtil.htmlEscape(reserve.getRoomName())%></div>';
+                    <%
+                    String userNames = "";
+                    String userInfoIds = "";
+                    String reserveId = reserve.getReserveId();
+                    // データベースのuser_reserveが空でないかの確認
+                    if (webBean.arrayList("userReserves") != null && !webBean.arrayList("userReserves").isEmpty()) {
+                  
+                      for (Object userReserveItem : webBean.arrayList("userReserves")) {
+                         UserReserveDao userReserve = (UserReserveDao) userReserveItem;
+                         String userReserveUserInfoId = userReserve.getUserInfoId();
+                         String userReserveUserReserveId = userReserve.getUserReserveId();
+                         String userReserveReserveId = userReserve.getReserveId();
+                         
+                         String userReserveUserName = userReserve.getUserName();
+                         
+                         
+                         // reserve.reserve_id と user_reserve.reserve_idが一致するとき
+                         if( reserveId != null && reserveId.equals(userReserveReserveId) ){
+
+                          if( !userNames.equals("") ){
+                               userNames += ",";
+                          }
+
+                           userNames += userReserveUserName;
+                          
+                           if( !userInfoIds.equals("") ){
+                         	   userInfoIds += ",";
+                           }
+                           userInfoIds += userReserveUserInfoId;
+                         }
+                      }
+                    }
+                    %>
+                    <%
+                    if (WebUtil.htmlEscape(reserve.getUserInfoId()).equals(webBean.txt("user_info_id"))) {
+                      %>
+                        dateCell.innerHTML += '<div class="myreserve room<%= WebUtil.htmlEscape(reserve.getRoomId()) %> <%= WebUtil.htmlEscape(reserve.getUserInfoId()) %>" '
+                        <% if ( !"".equals(reserve.getRoomId())) { %>
+                        + 'date-roomid="<%= WebUtil.htmlEscape(reserve.getRoomId()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getUserInfoId())) { %>
+                        + 'date-userinfoId="<%= WebUtil.htmlEscape(reserve.getUserInfoId()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getUserName())) { %>
+                        + 'date-username="<%= WebUtil.htmlEscape(reserve.getUserName()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(displayCheckinTime)) { %>
+                        + 'date-checkin-time="<%= WebUtil.htmlEscape(displayCheckinTime) %>"'
+                        <% } %>
+                        <% if ( !"".equals(displayCheckoutTime)) { %>
+                        + 'date-checkout-time="<%= WebUtil.htmlEscape(displayCheckoutTime) %>"'
+                        <% } %>
+                        <% if ( !"".equals(userInfoIds)) { %>
+                        + 'date-userinfoids="<%= WebUtil.htmlEscape(userInfoIds) %>"'
+                        <% } %>
+                        <% if ( !"".equals(userNames)) { %>
+                        + 'date-usernames="<%= WebUtil.htmlEscape(userNames) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getInputText())) { %>
+                        + 'date-inputText="<%= WebUtil.htmlEscape(reserve.getInputText()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getColor())) { %>
+                        + 'date-rgbcolor="<%= WebUtil.htmlEscape(reserve.getColor()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getInputRemark())) { %>
+                          + 'date-inputRemark="<%= WebUtil.htmlEscape(reserve.getInputRemark()) %>"'
+                        <% } %>
+                        + '>'
+                        + '<%= displayTime %> <%= WebUtil.htmlEscape(reserve.getRoomName()) %>'
+                        + '</div>';
                     <%
                     } else if (webBean.txt("admin").equals("admin")) {
                     %>
-                        dateCell.innerHTML += 
-                            '<div class="reserved room<%=WebUtil.htmlEscape(reserve.getRoomId())%> <%=WebUtil.htmlEscape(reserve.getUserInfoId())%>"><%=WebUtil.htmlEscape(formatCheckinTime)%>-<%=WebUtil.htmlEscape(formatCheckoutTime)%> <%=WebUtil.htmlEscape(reserve.getRoomName())%><br><%=WebUtil.htmlEscape(reserve.getUserName())%></div>';
+                        dateCell.innerHTML += '<div class="reserved room<%= WebUtil.htmlEscape(reserve.getRoomId()) %> <%= WebUtil.htmlEscape(reserve.getUserInfoId()) %>" '
+                        <% if ( !"".equals(reserve.getRoomId())) { %>
+                        + 'date-roomid="<%= WebUtil.htmlEscape(reserve.getRoomId()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getUserInfoId())) { %>
+                        + 'date-userinfoId="<%= WebUtil.htmlEscape(reserve.getUserInfoId()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getUserName())) { %>
+                        + 'date-username="<%= WebUtil.htmlEscape(reserve.getUserName()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(displayCheckinTime)) { %>
+                        + 'date-checkin-time="<%= WebUtil.htmlEscape(displayCheckinTime) %>"'
+                        <% } %>
+                        <% if ( !"".equals(displayCheckoutTime)) { %>
+                        + 'date-checkout-time="<%= WebUtil.htmlEscape(displayCheckoutTime) %>"'
+                        <% } %>
+                        <% if ( !"".equals(userInfoIds)) { %>
+                        + 'date-userinfoids="<%= WebUtil.htmlEscape(userInfoIds) %>"'
+                        <% } %>
+                        <% if ( !"".equals(userNames)) { %>
+                        + 'date-usernames="<%= WebUtil.htmlEscape(userNames) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getInputText())) { %>
+                        + 'date-inputText="<%= WebUtil.htmlEscape(reserve.getInputText()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getColor())) { %>
+                        + 'date-rgbcolor="<%= WebUtil.htmlEscape(reserve.getColor()) %>"'
+                        <% } %>
+                        <% if ( !"".equals(reserve.getInputRemark())) { %>
+                        + 'date-inputRemark="<%= WebUtil.htmlEscape(reserve.getInputRemark()) %>"'
+                        <% } %>
+                        +'>'
+                        + '<%= displayTime %> <%= WebUtil.htmlEscape(reserve.getRoomName()) %>'
+                        + '<br>'
+                        + '<%= WebUtil.htmlEscape(reserve.getUserName()) %>'
+                        + '</div>';
                     <%
                     }
                     %>
@@ -479,7 +609,7 @@ footer {
             	  dateInWeek.setDate(firstDateInWeek.getDate() + i);
 
             	  const className = getDayClass(dateInWeek); // ← ここで祝日・曜日判定
-            	weekCalendarHTML += '<th class = "weekDay ' + className + '">' + monthDays[i] + '</th>';
+            	  weekCalendarHTML += '<th class = "weekDay ' + className + '">' + monthDays[i] + '</th>';
             }
             
             weekCalendarHTML += '</tr><tr><th class = "timeCell">0時</th>';
@@ -678,7 +808,22 @@ footer {
         if (webBean.arrayList("users") != null && !webBean.arrayList("users").isEmpty()) {
             for (Object allUsers : webBean.arrayList("users")) {
                 UserInfoDao user = (UserInfoDao) allUsers;
-                String userId = WebUtil.htmlEscape(user.getUserInfoId());
+                
+                // IDを取得
+                String rawUserId = user.getUserInfoId();
+
+                // ID情報が取得できないとき
+                if (rawUserId == null || rawUserId.trim().isEmpty()) {
+                    continue;
+                }
+                
+                // エスケープ処理
+                String userId = WebUtil.htmlEscape(rawUserId);
+
+                // エスケープ後に "&nbsp;" が含まれていたらスキップ
+                if (userId == null || userId.contains("&nbsp;")) {
+                    continue;
+                }
         %>
         const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
         if (checkbox<%=userId%>) {
@@ -699,14 +844,29 @@ footer {
         %>
     }
 
-    //チェックボックスを押したときにイベントが起きるように設定する関数
+  //チェックボックスを押したときにイベントが起きるように設定する関数
     function changeReserveDisplay() {
         let roomElements;
         <%
         if (webBean.arrayList("users") != null && !webBean.arrayList("users").isEmpty()) {
             for (Object allUsers : webBean.arrayList("users")) {
                 UserInfoDao user = (UserInfoDao) allUsers;
-                String userId = WebUtil.htmlEscape(user.getUserInfoId());
+                
+                // IDを取得
+                String rawUserId = user.getUserInfoId();
+                
+                // ID情報が取得できないとき
+                if (rawUserId == null || rawUserId.trim().isEmpty()) {
+                    continue;
+                }
+                
+                // エスケープ処理
+                String userId = WebUtil.htmlEscape(rawUserId);
+                
+                // エスケープ後に "&nbsp;" が含まれていたらスキップ
+                if (userId == null || userId.contains("&nbsp;")) {
+                    continue;
+                }
         %>
         const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
         if (checkbox<%=userId%>) {
@@ -880,9 +1040,86 @@ footer {
         const formattedDate = selectedDate.substr(0, 4) + "年" + selectedDate.substr(4, 2) + "月" + selectedDate.substr(6, 2) + "日";
          // hidden フィールドに値をセット
         $('#reservation_date').val(formattedDate);
-        //予約画面に移行
-        go_detail('reserve', '');
+
+        // room.room_id
+        let roomId = $(e.target).attr('date-roomid');
+        if(roomId){
+            valFun("room_id", roomId);
+        }
+
+        // reserve.user_info_id
+        let userInfoId = $(e.target).attr('date-userinfoId');
+        if(userInfoId){
+            valFun("user_info_id", userInfoId);
+        }
+
+        let userName = $(e.target).attr('date-username');
+        if(userName){
+            valFun("user_name", userName);
+        }
+
+        // reserve.checkin_time
+        let checkinTime = $(e.target).attr('date-checkin-time');
+        if(checkinTime){
+            valFun("checkin_time", checkinTime);
+        }
+
+        // reserve.checkout_time
+        let checkoutTime = $(e.target).attr('date-checkout-time');
+        if(checkoutTime){
+            valFun("checkout_time", checkoutTime);
+        }
+        
+        let userInfoIds = $(e.target).attr('date-userinfoids');
+        if(userInfoIds){
+            valFun("user_info_ids", userInfoIds);
+        }
+        
+        let userNames = $(e.target).attr('date-usernames');
+        if(userNames){
+          valFun("user_names", userNames);
+        }
+
+        // reserve.input_text
+        let inputText = $(e.target).attr('date-inputtext');
+        if(inputText){
+            valFun("input_text", inputText);
+        }
+
+        // reserve.rgb_color
+        let rgbColor = $(e.target).attr('date-rgbcolor');
+        if(rgbColor){
+            valFun("rgb_color", rgbColor);
+        }
+        // reserve.input_remark
+        let inputRemark = $(e.target).attr('date-inputremark');
+        if(inputRemark){
+            valFun("input_remark", inputRemark);
+        }
+        
+        // 予約画面に移行
+        // 予約編集
+        if($(e.target).hasClass("myreserve")){
+        	go_detail('edit', '');
+        // 新規予約
+        } else {
+        	go_detail('reserve', '');
+        }
     });
+    
+    function valFun(inputIdName, data){
+        if(data !== "undefined" && data !== ""){
+           if( $("#" + inputIdName).length > 0 ) {
+        	   $("#" + inputIdName).val(data);
+           }
+        }else{
+            if( $("#"+ inputIdName).length > 0 ) {
+
+           	   $("#" + inputIdName).val();
+              }
+        }
+    }
+    
     
     //サブカレンダーのセルにクリックイベントを追加
     $(document).on('click', '.subCalendar td', function(e) {
@@ -1020,14 +1257,19 @@ String actionCmd = (String) request.getParameter("action_cmd");
             <input type="hidden" name="file_id" id="file_id" value="<%=webBean.txt("file_id")%>"/>
             <input type="hidden" name="request_cmd" id="request_cmd" value=""/>
             <input type="hidden" name="date" id="date" value="<%= new java.util.Date() %>" />
-            <input type="hidden" name="user_info_id" id="user_info_id" value="<%= String.join(",", webBean.txt("user_info_ids")) %>">
-            <input type="hidden" name="user_name" id="user_name" value="<%= String.join(",", webBean.txt("user_names")) %>">
+            <input type="hidden" name="user_info_ids" id="user_info_ids" value="<%= webBean.txt("user_info_ids") %>">
+            <input type="hidden" name="user_names" id="user_names" value="<%= webBean.txt("user_names") %>">
             <input type="hidden" name="selected_user_ids" id="selected_user_ids" value="<%= webBean.txt("selected_user_ids") %>">
+            <input type="hidden" name="input_text" id="input_text" value="<%= webBean.txt("input_text") %>">
+            <input type="hidden" name="rgb_color" id="rgb_color" value="<%= webBean.txt("rgb_color") %>">
+            <input type="hidden" name="input_remark" id="input_remark" value="<%= webBean.txt("input_remark") %>">
+            
             <input type="hidden" id="room_id" name="room_id" value="">
             <input type="hidden" id="reservation_date" name="reservation_date" value="">
             <input type="hidden" id="checkin_time" name="checkin_time" value="">
             <input type="hidden" id="checkout_time" name="checkout_time" value="">
             <input type="hidden" id="calendar_type" name="calendar_type" value="calendar">
+            <input type="hidden" id="previous_page" name="previous_page" value="UserMenu" />
 
             <header>
                 <div id="title">

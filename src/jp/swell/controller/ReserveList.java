@@ -63,6 +63,7 @@ public class ReserveList extends ControllerBase {
             // 検索クリアする条件を追加
             else if ("clear".equals(bean.value("action_cmd"))) {
                 formClear();
+                searchReserve();
 
                 // 予約情報管理画面移行する条件を追加
             } else if ("list".equals(bean.value("action_cmd"))) {
@@ -79,7 +80,7 @@ public class ReserveList extends ControllerBase {
                 bean.setValue("pageNo", "1");
                 searchReserve();
 
-            }
+            }else
             {
                 searchReserve();
             }
@@ -87,9 +88,7 @@ public class ReserveList extends ControllerBase {
             forward("ReserveList.jsp");
         }
 
-        else if ("UserInfoDetail_1".equals(bean.value("form_name"))
-                || "UserInfoDetail_2".equals(bean.value("form_name"))
-                || "UserInfoDetail_3".equals(bean.value("form_name"))) {
+        else if ("UserInfoDetail".equals(bean.value("form_name"))) {
             setWebBeanFromSerialize(bean.value("search_info"));
             bean = getWebBean();
             searchReserve();
@@ -138,7 +137,6 @@ public class ReserveList extends ControllerBase {
     private void formClear() throws AtareSysException {
         WebBean bean = getWebBean();
         bean.setValue("list_search", "");
-        bean.setValue("lineCount", "");
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
     }

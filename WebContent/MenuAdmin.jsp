@@ -105,6 +105,8 @@ input[type="button"]:hover {
 							onclick="go_submit('file')" value="ファイル情報一覧" /> <input
 							type="button" id="calendar-btn" name="calendar-btn"
 							onclick="go_submit('calendar')" value="カレンダー" /> <input
+							type="button" id="schedule-btn" name="schedule-btn"
+							onclick="go_submit('schedule')" value="スケジュール" /> <input
 							type="button" id="Shift-btn" name="Shift-btn"
 							onclick="go_submit('Shift')" value="シフト管理" /> <input
 							type="button" id="Contact-btn" name="Contact-btn"

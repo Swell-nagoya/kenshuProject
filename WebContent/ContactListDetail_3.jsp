@@ -12,7 +12,6 @@
 <title>連絡先情報確認</title>
 
 <style type="text/css">
-/* UserInfoDetail_3 と同一トーン */
 body {
 	font-family: 'Arial', sans-serif;
 	background: #f9f9f9;

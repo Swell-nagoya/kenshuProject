@@ -585,7 +585,7 @@ function submitSelection(actionCmd, main_key) {
       <input type="button" value="　戻る　" onclick="go_menu('menu')" />
     </div>
 <header>
-    <h1>スケジュール管理 </h1>
+    <h1>スケジュール管理</h1>
 </header>
     <form id="main_form" method="post" action="">
 
@@ -630,7 +630,6 @@ function submitSelection(actionCmd, main_key) {
               </td>
             </tr>
           </table>
-
           <%
           if (webBean.arrayList("users").size() > 0) {
           %>
@@ -639,7 +638,7 @@ function submitSelection(actionCmd, main_key) {
           </div>
           <table class="list_table">
             <tr class="list_title">
-              <td class="list_label"><a href="javaScript:go_sort_request('last_name_kana')">閲覧可能にするユーザーを選択してください</a>
+              <td class="list_label"><a href="javaScript:go_sort_request('last_name')">閲覧可能にするユーザーを選択してください</a>
               </td>
             </tr>
             <tr class="list_tr">

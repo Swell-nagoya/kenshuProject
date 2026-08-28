@@ -74,13 +74,13 @@ public class UserMenuReserve extends ControllerBase {
 
           else if ("reserve".equals(bean.value("action_cmd")))
           {
-            searchList();
+              searchList();
           }
           else if ("edit".equals(bean.value("action_cmd")))
           {
               forward("UserMenuReserve.jsp");
               return; // メソッドを終了
-          }
+          }else
           {
               searchList();
           }
@@ -88,7 +88,7 @@ public class UserMenuReserve extends ControllerBase {
           forward("UserMenuReserve.jsp");
       }
 
-      else if ("UserInfoDetail_1".equals(bean.value("form_name")) || "UserInfoDetail_2".equals(bean.value("form_name")) || "UserInfoDetail_3".equals(bean.value("form_name")))
+      else if ("UserInfoDetail".equals(bean.value("form_name")))
       {
           setWebBeanFromSerialize(bean.value("search_info"));
           bean = getWebBean();

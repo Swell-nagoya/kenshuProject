@@ -176,6 +176,30 @@ public class UserInfoDao implements Serializable {
         this.password = password;
     }
 
+    
+
+    /**
+     * file_name
+     */
+    private String fileName = "";
+
+    /**
+     * 
+     * @return fileName
+     */
+    public String getFileName() {
+        return fileName;
+    }
+
+    /**
+     * 
+     * @param fileName セットする fileName
+     */
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    
     /**
      * lastName  姓
      */
@@ -588,6 +612,7 @@ public class UserInfoDao implements Serializable {
         return memail;
     }
 
+
     /**
      * 携帯Eメールをセットする。.
      * @param memail 携帯Eメール
@@ -596,6 +621,26 @@ public class UserInfoDao implements Serializable {
         this.memail = memail;
     }
 
+    /**
+     * memail  検索条件（AND・OR）
+     */
+    private String search_conditions = "";
+    /**
+     * 検索条件を取得する。.
+     * @return  search_conditions 検索条件
+     */
+    public String getSearchConditions() {
+        return search_conditions;
+    }
+    /**
+     * 検索条件をセットする。.
+     * @param search_conditions 検索条件
+     */
+    public void setSearchConditions(String search_conditions) {
+        this.search_conditions = search_conditions;
+    }
+
+    
     /**
      * adminFlag　管理者権限
      */
@@ -807,6 +852,7 @@ public class UserInfoDao implements Serializable {
      */
     public UserInfoDao() {
         fieldsArray.put("user_info_id", "user_info.user_info_id");
+        fieldsArray.put("state_flg", "user_info.state_flg");
         fieldsArray.put("password", "user_info.password");
         fieldsArray.put("last_name", "user_info.last_name");
         fieldsArray.put("middle_name", "user_info.middle_name");
@@ -817,7 +863,12 @@ public class UserInfoDao implements Serializable {
         fieldsArray.put("first_name_kana", "user_info.first_name_kana");
         fieldsArray.put("maiden_name_kana", "user_info.maiden_name_kana");
         fieldsArray.put("insert_user_id", "user_info.insert_user_id");
+        fieldsArray.put("memail", "user_info.memail"); 
         fieldsArray.put("admin", "user_info.admin");
+
+        fieldsArray.put("full_name", "user_info.first_name,user_info.last_name");
+        fieldsArray.put("full_name_kana", "user_info.first_name_kana,user_info.last_name_kana");
+        
     }
 
     /**
@@ -895,7 +946,7 @@ public class UserInfoDao implements Serializable {
      * @param dao  UserInfoDaoこのテーブルのインスタンス
      */
     public void setUserInfoDao(HashMap<String, String> map, UserInfoDao dao) throws AtareSysException {
-        dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
+       	dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
         dao.setPassword(DbI.chara(map.get("password")));
         dao.setLastName(DbI.chara(map.get("last_name")));
         dao.setMiddleName(DbI.chara(map.get("middle_name")));
@@ -916,20 +967,24 @@ public class UserInfoDao implements Serializable {
      * @param dao  UserInfoDaoこのテーブルのインスタンス
      */
     public void setUserInfoDaoForJoin(HashMap<String, String> map, UserInfoDao dao) throws AtareSysException {
-        dao.setUserInfoId(DbI.chara(map.getOrDefault("user_info___user_info_id", "")));
-        dao.setPassword(DbI.chara(map.getOrDefault("user_info___password", "")));
-        dao.setLastName(DbI.chara(map.getOrDefault("user_info___last_name", "")));
-        dao.setMiddleName(DbI.chara(map.getOrDefault("user_info___middle_name", "")));
-        dao.setFirstName(DbI.chara(map.getOrDefault("user_info___first_name", "")));
-        dao.setMaidenName(DbI.chara(map.getOrDefault("user_info___maiden_name", "")));
-        dao.setLastNameKana(DbI.chara(map.getOrDefault("user_info___last_name_kana", "")));
-        dao.setMiddleNameKana(DbI.chara(map.getOrDefault("user_info___middle_name_kana", "")));
-        dao.setFirstNameKana(DbI.chara(map.getOrDefault("user_info___first_name_kana", "")));
-        dao.setMaidenNameKana(DbI.chara(map.getOrDefault("user_info___maiden_name_kana", "")));
-        dao.setInsertUserId(DbI.chara(map.getOrDefault("user_info___insert_user_id", "")));
-        dao.setMemail(DbI.chara(map.getOrDefault("user_info___memail", "")));
-        dao.setAdmin(DbI.chara(map.getOrDefault("user_info___admin", "")));
-        dao.setLeaveDate(DbI.chara(map.getOrDefault("user_info___leave_date", "")));
+    	
+
+        dao.setStateFlg(Integer.parseInt(DbI.chara(map.getOrDefault("state_flg", ""))));
+       	dao.setUserInfoId(DbI.chara(map.getOrDefault("user_info_id", "")));
+        dao.setPassword(DbI.chara(map.getOrDefault("password", "")));
+        dao.setLastName(DbI.chara(map.getOrDefault("last_name", "")));
+        dao.setMiddleName(DbI.chara(map.getOrDefault("middle_name", "")));
+        dao.setFirstName(DbI.chara(map.getOrDefault("first_name", "")));
+        dao.setMaidenName(DbI.chara(map.getOrDefault("maiden_name", "")));
+        dao.setLastNameKana(DbI.chara(map.getOrDefault("last_name_kana", "")));
+        dao.setMiddleNameKana(DbI.chara(map.getOrDefault("middle_name_kana", "")));
+        dao.setFirstNameKana(DbI.chara(map.getOrDefault("first_name_kana", "")));
+        dao.setMaidenNameKana(DbI.chara(map.getOrDefault("maiden_name_kana", "")));
+        dao.setInsertUserId(DbI.chara(map.getOrDefault("insert_user_id", "")));
+        dao.setMemail(DbI.chara(map.getOrDefault("memail", "")));
+        dao.setAdmin(DbI.chara(map.getOrDefault("admin", "")));
+        dao.setLeaveDate(DbI.chara(map.getOrDefault("leave_date", "")));
+        
     }
 
     /** 
@@ -1013,6 +1068,25 @@ public class UserInfoDao implements Serializable {
                 + " where user_info_id = " + DbS.chara(userInfoId)
                 + "";
         int ret = DbBase.dbExec(sql);
+        
+        if (ret != 1)
+            throw new AtareSysException("dbUpdate number or record exception.");
+        return true;
+    }
+
+    /**
+     * user_info ユーザ情報テーブルのデータを更新する。(ステータスを更新).
+     *
+     * @return true:成功 false:失敗
+     * @throws AtareSysException フレームワーク共通例外
+     */
+    public boolean dbUpdateStateFlg(String userInfoId, String stateFlag) throws AtareSysException {
+        String sql = "update user_info set "
+                + " state_flg = " + DbO.chara(stateFlag)
+                + " where user_info_id = " + DbS.chara(userInfoId)
+                + "";
+        int ret = DbBase.dbExec(sql);
+        
         if (ret != 1)
             throw new AtareSysException("dbUpdate number or record exception.");
         return true;
@@ -1109,6 +1183,7 @@ public class UserInfoDao implements Serializable {
         // ＩＤが存在するかのカウントを行う
         String sql = "SELECT COUNT(*) FROM user_info "
                 + "WHERE insert_user_id = " + DbS.chara(id);
+        
 
         // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
@@ -1130,10 +1205,11 @@ public class UserInfoDao implements Serializable {
      */
     public boolean isIdExists(String id, String pUserInfoId) throws AtareSysException {
         // ＩＤが存在するかのカウントを行う
-        String sql = "SELECT COUNT(*) FROM user_info "
+        String sql = "SELECT COUNT(*) "
+              		+ "FROM user_info "
                 + "WHERE insert_user_id = " + DbS.chara(id)
                 + "and user_info_id NOT IN (" + DbS.chara(pUserInfoId) + ")";
-
+        
         // SQL 実行して結果を取得する
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
 
@@ -1183,19 +1259,21 @@ public class UserInfoDao implements Serializable {
      * @throws AtareSysException エラー
      */
     static public ArrayList<UserInfoDao> dbSelectList(UserInfoDao myclass, LinkedHashMap<String, String> sortKey,
-            DaoPageInfo daoPageInfo) throws AtareSysException {
+        DaoPageInfo daoPageInfo) throws AtareSysException {
         ArrayList<UserInfoDao> array = new ArrayList<UserInfoDao>();
 
         // レコードの総件数を求める*/
         String sql = "select count(*) as count"
                 + " from user_info "
                 + myclass.dbWhere();
+
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         if (0 == rs.size())
             return array;
         HashMap<String, String> map = rs.get(0);
         int len = Integer.parseInt(map.get("count"));
         daoPageInfo.setRecordCount(len);
+
         if (len == 0)
             return array;
         if (-1 == daoPageInfo.getLineCount())
@@ -1208,6 +1286,7 @@ public class UserInfoDao implements Serializable {
         int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql = "select "
                 + "user_info.user_info_id as user_info___user_info_id"
+                + ",user_info.state_flg as user_info___state_flg"
                 + ",user_info.password as user_info___password"
                 + ",user_info.last_name as user_info___last_name"
                 + ",user_info.middle_name as user_info___middle_name"
@@ -1228,20 +1307,27 @@ public class UserInfoDao implements Serializable {
         sql += where;
         sql += order;
         sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
-
         rs = DbBase.dbSelect(sql);
+        
+             
+               
         int cnt = rs.size();
+
         if (cnt < 1)
             return array;
+        
+          for (int i = 0; i < cnt; i++) {
+           map = rs.get(i);
 
-        for (int i = 0; i < cnt; i++) {
-            map = rs.get(i);
-            UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
-            array.add(dao);
-        }
-        return array;
+           UserInfoDao dao = new UserInfoDao();
+           dao.setUserInfoDaoForJoin(map, dao);
+           array.add(dao);
+          }
+        
+          return array;
     }
+    
+    
 
     /**
      * user_info ユーザ情報テーブルの検索条件を設定する。.
@@ -1256,74 +1342,88 @@ public class UserInfoDao implements Serializable {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date today = new Date();
         String todayStr = dateFormat.format(today);
-
+        String searchConditions = getSearchConditions(); //	検索条件(AND/OR)
+        
         if (getUserInfoId().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.user_info_id = " + DbS.chara(getUserInfoId()));
         }
 
+        if (getStateFlg() == 8) {
+
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
+            where.append("user_info.state_flg = " + DbS.chara(getStateFlg()));
+        }
+
         if (getLastName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.last_name = " + DbS.chara(getLastName()));
         }
 
         if (getMiddleName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.middle_name = " + DbS.chara(getMiddleName()));
         }
 
         if (getFirstName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.first_name = " + DbS.chara(getFirstName()));
         }
 
         if (getMaidenName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.maiden_name = " + DbS.chara(getMaidenName()));
         }
         if (getSearchFullName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
                     + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, '')" + ") LIKE "
                     + DbS.chara("%" + getSearchFullName() + "%"));
         }
 
         if (getLastNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.last_name_kana = " + DbS.chara(getLastNameKana()));
         }
 
         if (getMiddleNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.middle_name_kana = " + DbS.chara(getMiddleNameKana()));
         }
 
         if (getFirstNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.first_name_kana = " + DbS.chara(getFirstNameKana()));
         }
 
         if (getMaidenNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.maiden_name_kana = " + DbS.chara(getMaidenNameKana()));
         }
         if (getSearchFullNameKana().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append(
                     "CONCAT(" + "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
                             + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')"
                             + ") LIKE " + DbS.chara("%" + getSearchFullNameKana() + "%"));
         }
         if (getSearchName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
                     + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, ''), " +
                     "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
                     + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')" + ") LIKE "
                     + DbS.chara("%" + getSearchName() + "%"));
         }
+
+        if (getMemail().length() > 0) {
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
+            where.append("user_info.memail LIKE " + DbS.chara("%" + getMemail() + "%"));
+        }
+        
+        
         if (userIds != null && userIds.length > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
+            where.append(where.length() > 0 ? " " + searchConditions + " " : "");
             where.append("user_info.user_info_id IN (");
 
             // userIdsArrayに含まれる各IDをSQLのIN句に追加する
@@ -1335,7 +1435,12 @@ public class UserInfoDao implements Serializable {
             }
             where.append(")");
         }
-        where.append(where.length() > 0 ? " AND " : "");
+       
+        if (where.length() > 0) {
+         where.insert(0, "(");
+         where.append(") AND ");
+        }        
+        
         where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
 
         if (where.length() > 0) {
@@ -1432,6 +1537,7 @@ public class UserInfoDao implements Serializable {
             if (isStateFlgNine && isLeaveDateBeforeToday) {
                 continue;
             }
+            
             // ユーザーDAOのインスタンスにデータを設定
             user.setUserInfoId(map.get("user_info_id"));
             user.setStateFlg(Integer.parseInt(stateFlg));
@@ -1645,5 +1751,7 @@ public class UserInfoDao implements Serializable {
         // TODO 自動生成されたメソッド・スタブ
         return null;
     }
+    
+    
 
 }

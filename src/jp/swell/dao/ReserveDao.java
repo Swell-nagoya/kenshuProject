@@ -500,6 +500,27 @@ public class ReserveDao implements Serializable {
         this.selectMonth = selectMonth;
     }
 
+
+    public String fullName = "";
+
+    /**
+     * フルネーム（last_name + first_name) を取得する。
+     * @return fullName フルネーム（last_name + first_name)
+     */
+    public String getFullName() {
+        return fullName;
+    }
+
+    /**
+     * フルネーム（last_name + first_name)をセットする。
+     * @return fullName フルネーム（last_name + first_name)
+     */
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+    
+    
+    
     /**
      * ソートフィールドのチェック時に使う。SQLインジェクション対策用。.
      */
@@ -632,20 +653,49 @@ public class ReserveDao implements Serializable {
      * @param dao ReserveDaoこのテーブルのインスタンス
      */
     public void setReserveDaoForJoin(HashMap<String, String> map, ReserveDao dao) throws AtareSysException {
-        dao.setReserveId(DbI.chara(map.get("reserve___reserve_id")));
-        dao.setUserInfoId(DbI.chara(map.get("reserve___user_info_id")));
-        dao.setRoomId(DbI.chara(map.get("reserve___room_id")));
-        dao.setReservationDate(DbI.chara(map.get("reserve___reservation_date")));
-        dao.setCheckinTime(DbI.chara(map.get("reserve___checkin_time")));
-        dao.setCheckoutTime(DbI.chara(map.get("reserve___checkout_time")));
-        dao.setInputText(DbI.chara(map.get("reserve___input_text")));
-        dao.setColor(DbI.chara(map.get("reserve___rgb_color")));
-        dao.setInputRemark(DbI.chara(map.get("reserve___input_remark")));
-        dao.setInsertDate(DbI.chara(map.get("reserve___insert_date")));
-        dao.setInsertUserId(DbI.chara(map.get("reserve___insert_user_id")));
-        dao.setUpdateDate(DbI.chara(map.get("reserve___update_date")));
-        dao.setUpdateUserId(DbI.chara(map.get("reserve___update_user_id")));
-        dao.setUserReserveId(DbI.chara(map.get("reserve___user_reserve_id")));
+        dao.setReserveId(DbI.chara(map.get("reserve_id")));
+        dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
+        dao.setRoomId(DbI.chara(map.get("room_id")));
+        dao.setReservationDate(DbI.chara(map.get("reservation_date")));
+        dao.setCheckinTime(DbI.chara(map.get("checkin_time")));
+        dao.setCheckoutTime(DbI.chara(map.get("checkout_time")));
+        dao.setInputText(DbI.chara(map.get("input_text")));
+        dao.setColor(DbI.chara(map.get("rgb_color")));
+        dao.setInputRemark(DbI.chara(map.get("input_remark")));
+        dao.setInsertDate(DbI.chara(map.get("insert_date")));
+        dao.setInsertUserId(DbI.chara(map.get("insert_user_id")));
+        dao.setUpdateDate(DbI.chara(map.get("update_date")));
+        dao.setUpdateUserId(DbI.chara(map.get("update_user_id")));
+        dao.setUserReserveId(DbI.chara(map.get("user_reserve_id")));
+    }
+
+    /**
+     * RoomYoyakuDao にreserve情報テーブルから読み込んだデータを設定する。.
+     *
+     * @param map 読み込んだテーブルの１レコードが入っているHashMap
+     * @param dao RoomYoyakuDaoこのテーブルのインスタンス
+     */
+    public void setRoomYoyakuDaoForJoin(HashMap<String, String> map, ReserveDao dao) throws AtareSysException {
+        dao.setReserveId(DbI.chara(map.get("reserve_id")));
+        dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
+        dao.setRoomId(DbI.chara(map.get("room_id")));
+        String roomNameAttr = map.get("room_name");
+        if (roomNameAttr != null) {
+            dao.setRoomName(DbI.chara(roomNameAttr));
+        }
+        dao.setFullName(map.get("last_name") + map.get("first_name"));
+        
+        dao.setReservationDate(DbI.chara(map.get("reservation_date")));
+        dao.setCheckinTime(DbI.chara(map.get("checkin_time")));
+        dao.setCheckoutTime(DbI.chara(map.get("checkout_time")));
+        dao.setInputText(DbI.chara(map.get("input_text")));
+        dao.setColor(DbI.chara(map.get("rgb_color")));
+        dao.setInputRemark(DbI.chara(map.get("input_remark")));
+        dao.setInsertDate(DbI.chara(map.get("insert_date")));
+        dao.setInsertUserId(DbI.chara(map.get("insert_user_id")));
+        dao.setUpdateDate(DbI.chara(map.get("update_date")));
+        dao.setUpdateUserId(DbI.chara(map.get("update_user_id")));
+        dao.setUserReserveId(DbI.chara(map.get("user_reserve_id")));
     }
 
     /**
@@ -687,6 +737,7 @@ public class ReserveDao implements Serializable {
                 + "," + DbO.chara(getUserReserveId())
                 + ")";
         int ret = DbBase.dbExec(sql);
+
         if (ret != 1)
             throw new AtareSysException("dbInsertReserve number or record exception.");
         return true;
@@ -810,6 +861,9 @@ public class ReserveDao implements Serializable {
     public ArrayList<ReserveDao> getCalendarReserves() throws AtareSysException {
         String sql = "SELECT reserve_id"
                 + ", reserve.user_info_id"
+                + ", reserve.input_text"
+                + ", reserve.rgb_color"
+                + ", reserve.input_remark"
                 + ", last_name"
                 + ", middle_name"
                 + ", first_name"
@@ -824,11 +878,17 @@ public class ReserveDao implements Serializable {
                 + "ORDER BY reservation_date ASC, checkin_time ASC;";
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         ArrayList<ReserveDao> reserves = new ArrayList<>();
+
         for (HashMap<String, String> map : rs) {
             ReserveDao reserve = new ReserveDao();
             // ReserveDAOのインスタンスにデータを設定
             reserve.setReserveId(map.get("reserve_id"));
             reserve.setUserInfoId(map.get("user_info_id"));
+
+            reserve.setInputText(map.get("input_text"));
+            reserve.setColor(map.get("rgb_color"));
+            reserve.setInputRemark(map.get("input_remark"));
+            
             reserve.setUserName(map.get("last_name") + map.get("middle_name") + map.get("first_name"));
             reserve.setRoomId(map.get("room_id"));
             reserve.setRoomName(map.get("room_name"));
@@ -951,6 +1011,94 @@ public class ReserveDao implements Serializable {
         }
         return array;
     }
+    
+
+    /**
+     * user_info ユーザ情報テーブルを検索し指定されたレコードのリストを返す
+     * @param myclass        検索条件をUserInfoDaoのインスタンスに入れて渡す
+     * @param sortKey     ソート順を配列で渡す　キー値は項目名　値はソート順 "ASC" "DESC"
+     * @param daoPageInfo   取得したいページの番やライン数を入れる。結果がここに帰ってくる
+     *                       ライン数に-1を入れると全件取得になる
+     * @return 取得したUserInfoDaoの配列
+     * @throws AtareSysException エラー
+     */
+    static public ArrayList<ReserveDao> dbSelectListRoomYoyaku(ReserveDao myclass,
+            DaoPageInfo daoPageInfo) throws AtareSysException {
+        ArrayList<ReserveDao> array = new ArrayList<ReserveDao>();
+
+        /* レコードの総件数を求める */
+        String sql = "select count(*) as count"
+                + " from reserve "
+                + " join user_info on reserve.user_info_id = user_info.user_info_id "
+                + " join room on reserve.room_id = room.room_id "
+                + myclass.dbWhereRoomYoyaku();
+        
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        if (0 == rs.size())
+            return array;
+        HashMap<String, String> map = rs.get(0);
+
+
+
+        int len = Integer.parseInt(map.get("count"));
+        daoPageInfo.setRecordCount(len);
+        
+        if (len == 0)
+            return array;
+        if (-1 == daoPageInfo.getLineCount())
+            daoPageInfo.setLineCount(len);
+        daoPageInfo.setMaxPageNo((int) Math.ceil((double) len / (double) (daoPageInfo.getLineCount())));
+        if (daoPageInfo.getPageNo() < 1)
+            daoPageInfo.setPageNo(1);
+        if (daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo())
+            daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
+        int start = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
+        sql = "select "
+                + " reserve.reserve_id as reserve___reserve_id"
+                + ",reserve.user_info_id as reserve___user_info_id"
+                + ",reserve.room_id as reserve___room_id"
+                + ",reserve.reservation_date as reserve___reservation_date"
+                + ",reserve.checkin_time as reserve___checkin_time"
+                + ",reserve.checkout_time as reserve___checkout_time"
+                + ",reserve.input_text as reserve___input_text"
+                + ",reserve.rgb_color as reserve___rgb_color"
+                + ",reserve.input_remark as reserve___input_remark"
+                + ",reserve.insert_date as reserve___insert_date"
+                + ",reserve.insert_user_id as reserve___insert_user_id"
+                + ",reserve.update_date as reserve___update_date"
+                + ",reserve.update_user_id as reserve___update_user_id"
+                + ",reserve.user_reserve_id as reserve___user_reserve_id"
+                + ",user_info.last_name as user_info___last_name"
+                + ",user_info.middle_name as user_info___middle_name"
+                + ",user_info.first_name as user_info___first_name"
+                + ",user_info.state_flg as user_info___state_flg"
+                + ",room.room_name as room___room_name"
+                + " from reserve "
+                + " join user_info on reserve.user_info_id = user_info.user_info_id "
+                + " join room on reserve.room_id = room.room_id ";
+        String where = myclass.dbWhereRoomYoyaku();
+        String order = " ORDER BY reserve.reservation_date ASC";
+        sql += where;
+        sql += order;
+        sql += " limit " + daoPageInfo.getLineCount() + " offset " + start + ";";
+        rs = DbBase.dbSelect(sql);
+
+        
+        int cnt = rs.size();
+        if (cnt < 1)
+            return array;
+
+        for (int i = 0; i < cnt; i++) {
+            map = rs.get(i);
+            {
+            	   ReserveDao dao = new ReserveDao();
+                dao.setRoomYoyakuDaoForJoin(map, dao);
+                
+                array.add(dao);
+            }
+        }
+        return array;
+    }
 
     /**
      * user_info ユーザ情報テーブルの検索条件を設定する。.
@@ -995,6 +1143,26 @@ public class ReserveDao implements Serializable {
     }
 
     /**
+     * user_info ユーザ情報と部屋情報の部屋IDを検索条件に設定する。.
+     *
+     * @return String where句の文字列
+     * @throws AtareSysException フレームワーク共通例外
+     */
+    private String dbWhereRoomYoyaku() throws AtareSysException {
+        StringBuilder where = new StringBuilder(" where 1=1 ");
+
+        // ユーザーが退会済み（state_flg = 9）じゃないことを追加
+        where.append(" and user_info.state_flg != '9'");
+        if (getRoomId() != null && !getRoomId().isEmpty()) {
+         where.append(" and room.room_id = ").append(DbS.chara(getRoomId()));
+        }
+        // 部屋のチェックアウト時間が今現在よりも前の場合
+        where.append(" and STR_TO_DATE(concat(reserve.reservation_date, LPAD(reserve.checkout_time, 4, '0')), '%Y%m%d%H%i') >= now()");
+        
+        return where.toString();
+    }
+
+    /**
      * user_info ユーザ情報テーブルの並べ替え順序を設定する。.
      *
      * @param sortKey
@@ -1021,4 +1189,5 @@ public class ReserveDao implements Serializable {
         return str;
     }
 
+    
 }

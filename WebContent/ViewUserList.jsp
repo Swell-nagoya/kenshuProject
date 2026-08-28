@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="UTF8" ?>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-  pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="jp.swell.dao.UserInfoDao"%>
 <%@ page import="jp.patasys.common.http.WebUtil"%>
 <%@ page import="jp.patasys.common.http.HtmlParts"%>
 <%@ page import="jp.swell.constant.UserInfoState"%>
 <%@ page import="java.util.ArrayList"%>
-<jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean"
-  scope="request" />
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<meta http-equiv="Content-Script-Type" content="text/javascript" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
 <link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
 <link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
 <link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
@@ -22,8 +17,11 @@
 <script type="text/javascript" src="jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript" src="jquery.watermark/jquery.watermark.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/common-page.js"></script>
+<link rel="stylesheet" type="text/css" href="css/common-page.css">
 <title>ユーザー情報一覧</title>
 <style type="text/css">
+
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f9f9f9;
@@ -75,11 +73,18 @@ h1 a:hover {
   margin: 0 auto;
 }
 
+table,
+.table-wrap {
+  margin-top: 20px;
+}
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
 }
+table:first-child {
+  margin-top: 0;
+}
+
 th {
   background-color: #f2f2f2;
   padding: 10px;
@@ -88,15 +93,67 @@ td {
   padding: 10px;
   border-bottom: 1px solid #ddd;
 }
+.table-wrap {
+  overflow: auto;
+  max-height: 500px;
+  border-top: 1px #a0a0a0 solid;
+  border-bottom: 1px #a0a0a0 solid;
+}
+.table-wrap > table {
+  width: 100%;
+  min-width: 800px;
+}
+
+.select_table tr,
+.list_table tr {
+  padding: 0;
+}
+.select_table th,
+.select_table td,
+.list_table th,
+.list_table td {
+  border: 1px #a0a0a0 solid;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.select_table input[type="radio"] {
+  margin: 3px 0 0 5px;
+}
+.select_table input[type="radio"] + label {
+  display: inline-block;
+  margin: 3px 0 0 0;
+  padding-left: 5px;
+}
+
+
+.select_table input[type="radio"] + label:has() {
+  letter-spacing: -.4em;
+}
+.select_table input[type="radio"] + label:has() > * {
+  letter-spacing: normal;
+}
+.select_table input[type="checkbox"],
+.select_table input[type="radio"],
+.select_table input[type="radio"] + label {
+  cursor: pointer;
+}
 
 .search_label {
+  padding: 4px 10px;
   background: #00bcd4;
   color: #fff;
   text-align: center;
+  font-size: 16px;
+  font-weight: normal;
 }
 
 .search_text, .search_line, .list_btn {
   text-align: center;
+}
+
+.search_line.search_conditions {
+  text-align: left;
 }
 
 .search_text input {
@@ -113,45 +170,47 @@ td {
   margin-bottom: 10px;
 }
 
-.select_table td {
-  border-collapse: collapse;
-  border: 1px #a0a0a0 solid;
-  padding: 2px;
-}
-
-.list_label {
-  background: #00bcd4;
-  color: #fff;
-  text-align: center;
-}
-
-.list_label a {
-  color: #fff;
-  text-decoration: none;
-}
-
-.list_table td {
-  border-collapse: collapse;
-  border: 1px #a0a0a0 solid;
-  padding: 2px;
-}
-
 #pageNo {
   text-align: center;
   border-radius: 5px;
 }
 
 
-.list_tr:nth-child(odd) {
-  background: #efefef;
-}
-
 /* ボタンの共通スタイル */
 input[type="button"] {
+  margin: 2px;
   border-radius: 10px; /* 角を丸くする */
   color: #fff; /* 文字色 */
   cursor: pointer; /* カーソルをポインタにする */
   background: #90a0b0; /* デフォルトの背景色 */
+}
+
+.button_area {
+  margin-top: 20px;
+}
+.button_area > [class^="button_"] {
+  margin: 10px 10px 0 10px!important;
+}
+.button_send,
+input[type="button"].button_send {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 5px 25px;
+  border-radius: 18px;
+  color: #000;
+  cursor: pointer;
+  background: #fff;
+  font-weight: 500;
+  font-size: 14px;
+  border: 2px solid #ff7f50;
+  transition: background 0.3s ease-in-out;
+  
+}
+
+.button_send:hover,
+input[type="button"].button_send:hover {
+  background-color: #ff7f50;
+  color: #fff;
 }
 
 .new-btn {
@@ -174,11 +233,86 @@ input[type="button"]:hover {
 footer {
   width: 100%;
 }
+
+
+/*.list_table*/
+.list_table .fixed {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.list_table th {
+  padding: 0;
+}
+.list_table td {
+  padding: 5px 10px;
+}
+.list_table > thead > tr > th {
+  font-size: 16px;
+}
+.table-wrap .list_table > thead > tr > th {
+  border-top: none;
+}
+.table-wrap .list_table > tbody > tr:last-child td {
+  border-bottom: none;
+}
+.list_table input[type="checkbox"] {
+  cursor: pointer;
+}
+.list_table input[type="button"] {
+  margin: 3px 2px;
+}
+
+.list_table thead > tr > .statas,
+.list_table tbody > tr > .statas {
+  width: 12%;
+}
+.list_table thead > tr > .full_name,
+.list_table tbody > tr > .full_name {
+  width: 22%;
+}
+.list_table thead > tr > .full_name_kana,
+.list_table tbody > tr > .full_name_kana {
+  width: 22%;
+}
+.list_table thead > tr > .memail,
+.list_table tbody > tr > .memail {
+  width: 22%;
+}
+.list_table thead > tr > .search_button,
+.list_table tbody > tr > .search_button {
+  width: 22%;
+}
+
+.list_title  {
+  border-left: 1px #a0a0a0 solid;
+  border-right: 1px #a0a0a0 solid;
+}
+
+.list_label {
+  padding: 3px 7px;
+  background: #00bcd4;
+  color: #fff;
+  text-align: center;
+  font-weight: normal;
+}
+
+.list_label a {
+  color: #fff;
+  text-decoration: none;
+}
+.list_tr:nth-child(odd) {
+  background: #efefef;
+}
+
+.list_tr:nth-child(even) {
+  background: #fff;
+}
 </style>
-  <script type="text/javascript">
-    
-  <%--検索条件入力でenterキーが押された場合の処理--%>
-    jQuery(function($) {
+<script type="text/javascript">
+  jQuery(function($) {
+      <%--検索条件入力でenterキーが押された場合の処理--%>
+      /*
       $(".select_table input").keydown(function(e) {
         if (e.which == 13) {
           go_submit('search');
@@ -189,12 +323,48 @@ footer {
           go_submit('jump');
         }
       });
+*/
+
+      // 検索チェック時：value値の操作
+      const list_search_cheack = new ListSearchCheack();
+      list_search_cheack.event(); 
+      list_search_cheack.chackFun(list_search_cheack.getListSearchState());
     });
-  <%--テーブルを一行ごとにいろを変える--%>
+    /*
     $(document).ready(function() {
       $('table.list_table tr:even').addClass('even');
       $('table.list_table tr:odd').addClass('odd');
     });
+    */
+    <%--利用停止チェックボックスの状態判定、value適応--%>
+    class ListSearchCheack {
+    	  constructor() {
+    	    // ソート順番（昇順、降順）
+    	    this.list_search_state = "#list_search_state";
+    	    this.$list_search_state = $(this.list_search_state);
+    	  }
+    	  event() {
+    		if (this.$list_search_state.length === 0) return;
+    	    // 変更イベントを監視
+    	    this.$list_search_state.on('change', (e) => {
+    	    	this.chackFun(e.currentTarget);
+    	    });
+    	 }
+         getListSearchState(){
+             return this.list_search_state;
+         }
+     	 chackFun(target){
+   	      let check = $(target).prop("checked");
+   	      // アカウント利用停止中
+   	      if (check === true) {
+	        this.$list_search_state.val("8");
+	      // アカウント利用中
+	      } else {
+	        this.$list_search_state.val("1");
+	      }
+         }
+    }
+    <%--テーブルを一行ごとにいろを変える--%>
     function go_submit(action_cmd) {
       document.getElementById('main_form').action = 'ViewUserList.do';
       document.getElementById('action_cmd').value = action_cmd;
@@ -224,33 +394,37 @@ footer {
       document.getElementById('main_form').submit();
     }
     function copyToClipboard(str) {
-
-      navigator.clipboard.writeText(str)
+      navigator.clipboard.writeText(str);
     }
-  </script>
-</head>
+</script>
+</head> 
+
+  
 <body>
-    <div class="container">
+  <div class="container">
     <div class="new-btn">
-      <input type="button" value="新規登録" onclick="go_detail('go_next','ins')" />
+      <% //管理者 
+      if( "1".equals(webBean.txt("admin")) ) { %>
+      <input type="button" value="新規登録" onclick="go_detail('go_next','ins')" /><% } %>
       <input type="button" value="　戻る　" onclick="go_submit('return')" />
     </div>
     <header>
         <h1>
-            <a href="javascript:void(0)" value="" onclick="go_menu('top')">ユーザー情報一覧</a>
+            <a href="javascript:void(0)" onclick="go_menu('top')">ユーザー情報一覧</a>
         </h1>
     </header>
     <form id="main_form" method="post" action="">
-    
-      <input type="hidden" name="form_name" id="form_name"    value="ViewUserList" /> 
-      <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
-      <input type="hidden" name="request_cmd" id="request_cmd" value="" /> 
-      <input type="hidden" name="main_key" id="main_key" value="" /> 
+      <input type="hidden" name="form_name" id="form_name" value="ViewUserList" />
+      <input type="hidden" name="action_cmd" id="action_cmd" value="" />
+      <input type="hidden" name="request_cmd" id="request_cmd" value="" />
+      <input type="hidden" name="main_key" id="main_key" value="" />
       <input type="hidden" name="sort_key_old" id="sort_key_old" value="<%=webBean.txt("sort_key_old")%>" /> 
       <input type="hidden" name="sort_key" id="sort_key" value="" /> 
       <input type="hidden" name="sort_order" id="sort_order"value="<%=webBean.txt("sort_order")%>" />
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" /> 
       <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
+      <input type="hidden" name="state_flg_all" id="state_flg_all" value="<%=webBean.txt("state_flg_all")%>">
+     
       <div class="left">
         <div class="messages">
           <%=webBean.dispMessages()%>
@@ -260,18 +434,35 @@ footer {
         </div>
         <table class="select_table">
           <tr>
-            <td class="search_label center" style="width: 50%">氏名</td>
-            <td class="search_label center" style="width: 20%">表示件数</td>
-            <td class="search_label center" style="width: 30%"></td>
+            <th class="search_label center statas" style="width: 6%">利用<br>停止</th>
+            <th class="search_label center full_name" style="width: 31%">氏名</th>
+            <th class="search_label center memail" style="width: 31%">メールアドレス</th>
+            <th class="search_label center items_displayed" style="width: 10%">表示件数</th>
+            <th class="search_label center items_displayed" style="width: 8%">検索条件</th>
+            <th class="search_label center" style="width: 10%"></th>
           </tr>
           <tr>
-            <td class="search_text center">
-              <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>" class="ime_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
+          <td class="search_text center statas">
+          <input type="checkbox"  name="list_search_state"  id="list_search_state" value="8" class="search_active <%=webBean.dispErrorCSS("list_search_state")%>" 
+         <% if("8".equals(webBean.txt("list_search_state"))) { %> checked<% } %> /> 
+           <%=webBean.dispError("list_search_state")%>
+           </td>
+            <td class="search_text center full_name">
+              <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>" class="full_name_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
             </td>
-            <td class="search_line center">
+            <td class="search_text center memail">
+              <input type="email" name="list_search_memail" id="list_search_memail" size="30" maxlength="100" value="<%=webBean.txt("list_search_memail")%>" class="memail_active <%=webBean.dispErrorCSS("list_search_memail")%>"/> <%=webBean.dispError("list_search_memail")%>
+            </td>
+            <td class="search_line center items_displayed">
               <input type="text" name="lineCount" id="lineCount" size="2" maxlength="5" value="<%=webBean.txt("lineCount")%>" class="right ime_disabled" />件
             </td>
-            <td class="search_text center">
+            <td class="search_line center search_conditions">
+              <input type="radio" id="search_conditions_and" name="list_search_conditions" value="AND" <% if ( !"OR".equals(webBean.txt("list_search_conditions")) ) { %> checked<% } %>/>
+              <label for="search_conditions_and">AND</label>
+              <input type="radio" id="search_conditions_or" name="list_search_conditions" value="OR" <% if ( "OR".equals(webBean.txt("list_search_conditions")) ) { %> checked<% } %>/>
+              <label for="search_conditions_or">OR</label>
+            </td>
+            <td class="search_text center search_button">
               <input type="button" value="検索" onclick="go_submit('search')" /> 
               <input type="button" value="クリア" onclick="go_submit('clear')" /></td>
           </tr>
@@ -309,37 +500,80 @@ footer {
           }
           %>
         </div>
-        <table class="list_table">
-          <tr class="list_title">
-            <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('last_name_kana')">氏名</a></td>
-            <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('last_name_kana')">氏名よみ（かな）</a></td>
-            <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('memail')">メールアドレス</a></td>
-            <td class="list_label" style="width: 25%"></td>
-          </tr>
-          <%
-          for (Object item : webBean.arrayList("list")) {
-              UserInfoDao dao = (UserInfoDao) item;
-          %>
-          <tr class="list_tr">
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
-            </td>
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
-            </td>
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
-            <td class="list_btn">
-              <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-              <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-              <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-              <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-            </td>
-          </tr>
-          <%
+        <div class="table-wrap">
+          <table class="list_table">
+            <thead>
+              <tr class="list_title">
+                <th class="list_label fixed statas js-table_sort_label<%= "state_flg".equals(webBean.txt("sort_key_old")) ? ("desc".equals(webBean.txt("sort_order")) ? " is-desc" : " is-asc") : "" %>">
+                  <a href="javaScript:go_sort_request('state_flg')">利用<br>停止</a>
+                </th>
+                <th class="list_label fixed full_name js-table_sort_label<%= "full_name".equals(webBean.txt("sort_key_old")) ? ("desc".equals(webBean.txt("sort_order")) ? " is-desc" : " is-asc") : "" %>">
+                  <a href="javaScript:go_sort_request('full_name')">氏名</a>
+                </th>
+                <th class="list_label fixed full_name_kana js-table_sort_label<%= "full_name_kana".equals(webBean.txt("sort_key_old")) ? ("desc".equals(webBean.txt("sort_order")) ? " is-desc" : " is-asc") : "" %>" >
+                  <a href="javaScript:go_sort_request('full_name_kana')">氏名よみ（かな）</a>
+                </th>
+                <th class="list_label fixed memail js-table_sort_label<%= "memail".equals(webBean.txt("sort_key_old")) ? ("desc".equals(webBean.txt("sort_order")) ? " is-desc" : " is-asc") : "" %>">
+                  <a href="javaScript:go_sort_request('memail')">メールアドレス</a>
+                </th>
+                <th class="list_label search_button fixed"></th>
+              </tr>
+            </thead>
+            <tbody>
+            <%
+              // 【追記】サーブレットから送信されたチェック済みのID配列を取得
+              String[] listStateFlgs = (String[]) request.getAttribute("checkedFlgs");
+              java.util.List<String> checkedList = listStateFlgs != null ? java.util.Arrays.asList(listStateFlgs) : new java.util.ArrayList<>();
+            %>
+            <%
+            for (Object item : webBean.arrayList("list")) {
+                UserInfoDao dao = (UserInfoDao) item;
+            %>
+            <tr class="list_tr">
+              <td class="list_input statas">
+                <input type="checkbox" name="list_state_flg" id="state_flg_<%=WebUtil.txtEscape(dao.getUserInfoId())%>" class="js-state_flg_check" value="<%=WebUtil.txtEscape(dao.getUserInfoId())%>" <% if(dao.getStateFlg() == 8){ %> checked<%}%><% if(!"1".equals(webBean.txt("admin")) ) { %> disabled<% } %>>
+              
+              </td>
+              <td class="list_text full_name">
+                <%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
+              </td>
+              <td class="list_text full_name_kana"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
+              </td>
+              <td class="list_text memail"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
+              <td class="list_btn search_button">
+               <% //管理者
+                if( "1".equals(webBean.txt("admin")) ) { %>
+                <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
+                <% } %>
+                <% //管理者
+                if( "1".equals(webBean.txt("admin")) ) { %>
+                <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
+                <% } %>
+                <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
+                <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');">
+              </td>
+            </tr>
+            <%
+            }
+            %>
+            </tbody>
+          </table>
+          
+        </div>
+        <!-- ./table-wrap -->
+        <% //管理者
+          if( "1".equals(webBean.txt("admin")) ) { %>
+        <div class="button_area">
+          <input type="button" value="全選択" class="button_check_all js-check_all" data-target="js-state_flg_check" />
+          <input type="button" value="一括登録" class="button_send" onclick="go_submit('stateFlgUpdateAll');" />
+        </div>
+        <%
           }
-          %>
-        </table>
+        %>
+        <!-- ./button_area --><%
+        } else {
+        %>
+          <p>ユーザー情報がありません</p>
         <%
         }
         %>

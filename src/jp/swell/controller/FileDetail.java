@@ -1,24 +1,21 @@
 package jp.swell.controller;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.text.ParseException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import com.ibm.icu.text.SimpleDateFormat;
-
-import jp.patasys.common.AtareSysCalendar;
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
 import jp.patasys.common.db.DbBase;
@@ -30,9 +27,9 @@ import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.FileDao;
+import jp.swell.dao.UserFileDao;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.user.UserLoginInfo;
-
 /**
  * ファイル情報を登録・更新・削除するためのコントローラクラス
  */
@@ -43,7 +40,7 @@ public class FileDetail extends ControllerBase {
      */
     @Override
     public void doInit() {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -52,6 +49,7 @@ public class FileDetail extends ControllerBase {
     @Override
     public void doActionProcess() throws AtareSysException {
         WebBean bean = getWebBean();
+        try {
         UserLoginInfo login = (UserLoginInfo)getLoginInfo();
         // 追加：JSP 上で使うためのログインユーザー名・ID
         bean.setValue("loginUserName", login.getLastName() + " " + login.getFirstName());
@@ -63,27 +61,42 @@ public class FileDetail extends ControllerBase {
         String requestCmd = bean.value("request_cmd");
 
         // 共通取得
-        String inputName = bean.value("input_name");
         String mainKey = bean.value("main_key");
         String fileName = bean.value("file_name");
         FileDao dao = setWeb2Dao2InputInfo();
+        
 
         if ("FileDetail".equals(form)) {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
-                try {
-                    setWeb2Dao2InputInfo(getRequest());
-                    bean.setValue("request_name", "登録する");
-                    bean.setMessage("この内容で登録します。よろしいですか？");
-                    bean.setValue("input_name", inputName);
-                    forward("FileDetail_2.jsp");
-                } catch (IOException | ServletException e) {
-                    throw new AtareSysException(e);
-                }
+             System.out.println("hit");
+            	
+            	  if(inputCheck(dao)) {
+
+                 byte[] fileData = (byte[]) bean.object("file");
+                 bean.setValue("fileData", java.util.Base64.getEncoder().encodeToString(fileData));
+                 
+                 
+            	    dao.setUserInfoId(bean.value("user_info_id"));
+                 bean.setValue("input_info", Sup.serialize(dao));
+
+                 bean.setValue("request_name", "登録する");
+                 bean.setMessage("この内容で登録します。よろしいですか？");
+                 forward("FileDetail_2.jsp");
+            	}
+             else 
+             {
+                 bean.setError("入力内容に誤りがあります");
+                 forward("FileDetail.jsp");
+             }
+                   
+
 
              // ② sub ボタン押下 → サブ画面（ユーザー選択）へ（送信先のみ）
             } else if ("sub".equals(actionCmd)) {
                 searchUserList();
+                
+                
                 bean.setValue("request_name", "送信先");
                 forward("FileUserList.jsp");
                 return;   // 忘れずに戻す
@@ -101,10 +114,6 @@ public class FileDetail extends ControllerBase {
                     searchList();
                     forward("FileDetail.jsp");
 
-                } else if ("download".equals(requestCmd)) {
-                    dao.dbSelect(mainKey);
-                    downloadFileWrite(dao);
-
                 } else if ("deletef".equals(requestCmd)) {
                     if (!dao.dbSelect(mainKey)) {
                         bean.setError("データの取得に失敗しました");
@@ -121,15 +130,18 @@ public class FileDetail extends ControllerBase {
         } else if ("FileDetail_2".equals(form)) {
             if ("go_next".equals(actionCmd)) {
                 if ("insEnter".equals(requestCmd)) {
+                   try {
+                   	  dbEdit(getRequest());
+                   } catch (IOException | ServletException e) {
+                      throw new AtareSysException(e);
+                   }
                     searchList();
                     redirect("FileList.do");
 
-                } else if ("download".equals(requestCmd)) {
-                    dao.dbSelect(mainKey);
-                    downloadFileWrite(dao);
 
                 } else if ("deleteEnter".equals(requestCmd)) {
-                    dbDeletef();
+                     bean.rtrimAllItem();
+                	    forward(dbDeletef(mainKey));
                 }
 
             } else if ("return".equals(actionCmd)) {
@@ -147,6 +159,10 @@ public class FileDetail extends ControllerBase {
                 redirect("FileList.do");
             }
         }
+        } catch (Exception e) {
+         bean.setError("処理中にエラーが発生しました: " + e.getMessage());
+         forward("ErrorPage.jsp");
+     }
     }
 
     /**
@@ -172,11 +188,12 @@ public class FileDetail extends ControllerBase {
         } else {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
+        System.out.println(sortKey);
 
         ArrayList<FileDao> fileList = FileDao.dbSelectList(fileDao, sortKey, daoPageInfo);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
-        bean.setValue("recordCount", fileList.size()); // ファイルリストのサイズ
+        bean.setValue("recordCount", fileList.size());
         bean.setValue("maxPageNo", (fileList.size() / Integer.parseInt(bean.value("lineCount")) + 1));
 
         // ルーム情報の取得とセット
@@ -203,6 +220,7 @@ public class FileDetail extends ControllerBase {
 
         // WebBean にセット
         bean.setValue("user_data", pageUsers);
+        
         bean.setValue("pageNo", String.valueOf(pageNo));
         bean.setValue("maxPageNo", String.valueOf(maxPage));
 
@@ -231,7 +249,7 @@ public class FileDetail extends ControllerBase {
 
         // 全ユーザーを取得
         List<UserInfoDao> allUsers = new UserInfoDao().getAllUsers();
-
+        
         // 現在のページ番号を取得（未設定時は 1）
         int pageNo = 1;
         try {
@@ -251,11 +269,48 @@ public class FileDetail extends ControllerBase {
         int toIndex = Math.min(fromIndex + pageSize, total);
         List<UserInfoDao> pageUsers = new ArrayList<>(allUsers.subList(fromIndex, toIndex));
 
+
+        // ユーザーをすべて取得 
+        String allUserName = null;
+
+         int index = 0;
+
+         for (UserInfoDao user : allUsers) {
+             String userInfoId = user.getUserInfoId();
+             String lastName = user.getLastName();
+             String firstName = user.getFirstName();
+
+             if(index == 0) {
+              	allUserName = "{";
+             } else {
+               allUserName += ",{";
+             }
+             
+             
+             allUserName +=  "id:";
+
+             allUserName += '"' + userInfoId + '"';
+             
+             allUserName += " ,name:";
+             // 2. 文字列を作成し、配列の現在の位置に格納する
+             allUserName += '"' + lastName + " " + firstName + '"';
+               
+             allUserName += "}";
+             
+             index++;
+             
+         }
+
+        bean.setValue("allUserName", allUserName);
+
+
+         
         // ページング結果を WebBean に格納
         bean.setValue("user_data", pageUsers);
         bean.setValue("pageNo", String.valueOf(pageNo));
         bean.setValue("maxPageNo", String.valueOf(maxPage));
         bean.setValue("selectedIds", selectedIds);
+     
     }
 
     /**
@@ -307,34 +362,37 @@ public class FileDetail extends ControllerBase {
         bean.setValue("sort_order", sort_key.get(key));
         return sort_key;
     }
-
-    private FileDao setWeb2Dao2InputInfo() throws AtareSysException {
-        WebBean bean = getWebBean();
-        FileDao dao = new FileDao();
-        dao.setFileName(bean.value("file_name"));
-
-        bean.setValue("input_info", Sup.serialize(dao));
-        return dao;
-    }
-
     /**
      * 画面の項目をDAOクラスに格納しそれをシリアライズして、input_infoフィールドに格納する。.
      *
-     * @return なし
+     * @return dao 
+     * @throws AtareSysException フレームワーク共通例外
+     */
+    FileDao setWeb2Dao2InputInfo() throws AtareSysException {
+     WebBean bean = getWebBean();
+     FileDao dao = new FileDao();
+     dao.setUserInfoId(bean.value("user_info_id"));
+
+
+     bean.setValue("input_info", Sup.serialize(dao));
+     bean.setValue("dao", dao);
+     return dao;
+    }
+    /**
+     * ファイルアップロード
+     *
+     * @return dao
      * @throws ServletException 
      * @throws IOException 
      * @throws AtareSysException フレームワーク共通例外
      */
-    private UserInfoDao setWeb2Dao2InputInfo(HttpServletRequest request)
+    private FileDao dbEdit(HttpServletRequest request)
             throws AtareSysException, IOException, ServletException {
         WebBean bean = getWebBean();
-        UserInfoDao dao = new UserInfoDao();
-        dao.setUserInfoId(bean.value("user_info_id"));
+        FileDao dao = new FileDao();
 
         FileUpload(request, dao.getUserInfoId());
 
-        bean.setValue("input_info", Sup.serialize(dao));
-        bean.setValue("dao", dao);
         return dao;
     }
 
@@ -349,9 +407,13 @@ public class FileDetail extends ControllerBase {
      */
     private ArrayList<FileDao> FileUpload(HttpServletRequest request, String pUserInfoId)
             throws AtareSysException, IOException, ServletException {
+    	
+    	
         WebBean bean = getWebBean();
         ArrayList<FileDao> fileDaos = new ArrayList<>();
 
+        
+        
         // 送信元ユーザーIDを取得
         String sourceUserInfoIdsString = bean.value("user_info_id"); // 送信元ユーザーIDを取得
         String[] sourceUserInfoIds = sourceUserInfoIdsString.split(",");
@@ -363,46 +425,105 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        // user.dir でカレントディレクトリ（プロジェクトのルート）を取得
+        String projectPath = System.getProperty("user.dir");
+
+        String projectPathResult = projectPath.replace("\\", "/");
+        
+        
+        String filePath = projectPathResult + "/WebContent/upload"; //保存先フォルダのパス設定
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
         FileUtil fileUtil = new FileUtil();
-        byte[] fileData = (byte[]) bean.object("file");
-        String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
-        String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
-        String fileName = bean.value("input_name") + fileExtension; // ファイル名を取得
-        String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8); //system_file_id生成
+        
+        String base64String = bean.value("fileData");
 
+        byte[] fileData = java.util.Base64.getDecoder().decode(base64String);
+     
+     
+
+        String file_value = bean.value("file_value");
+        String fileExtension = file_value.replaceAll("^.*\\.", "");
+        
+        //String mimeType = getMimeTypeFromBytes(fileData); //ファイルデータからmimetypeを取得
+        //String fileExtension = getExtensionFromMimeType(mimeType); //拡張子取得
+
+        String mimeType = getExtensionFromFileMimeType(fileExtension); //ファイルデータからmimetypeを取得
+        String fileName = bean.value("input_name") + "." + fileExtension; // ファイル名を取得
+        String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8); //system_file_id生成
+        
+        
         // 拡張子を一度だけ追加
         if (fileExtension != null && !fileExtension.isEmpty()) {
-            systemFileName += fileExtension;
+            systemFileName += "." + fileExtension;
         }
-
+        
+        
         // 完全なファイルパスの生成
         String fullPath = filePath + "/" + systemFileName;
+        
+
+        if ( "/".equals(fullPath) ) {
+          return null;
+        }
+        
         if (!fileUtil.outputFile(fullPath, fileData)) {
             return null;
         }
 
+/*
         // アップロード期限を設定
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.WEEK_OF_YEAR, 1); // 現在の日時に1週間追加
         java.util.Date expirationDate = calendar.getTime(); // Date型を取得
 
+        // expirationDateをString型に変換
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String expirationDateString = sdf.format(expirationDate);
+*/      
+
         // 各送信先ユーザーに対してデータベースにファイル情報を登録
+        String fileId = UUID.randomUUID().toString().substring(0, 13);
+        FileDao fileDao = new FileDao();
+        String expirationDate = bean.value("expiration_data");
+        
+
+//      元のフォーマット定義と解析（日付のみを取得）
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+        LocalDate parsedDate = LocalDate.parse(expirationDate, inputFormatter);
+
+//      現在の「時間・分・秒」のみを取得
+        LocalTime nowTime = LocalTime.now();
+
+//      解析した日付と、現在の時間を結合する
+        LocalDateTime combinedDateTime = parsedDate.atTime(nowTime);
+
+//      目的の "yyyy/MM/dd HH:mm:ss" 形式に変換
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        String expirationDateString = combinedDateTime.format(outputFormatter);
+     
+      /*
+        fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
+        expirationDateString);
+        */
+        // fileテーブルにユーザー情報を挿入
+       /* fileDao.dbFileInsert(fileId, sourceUserInfoIdsString, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
+        expirationDateString);
+*/
+        fileDao.dbFileInsert(fileId, sourceUserInfoIdsString, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
+          expirationDateString);
+
+        fileDaos.add(fileDao);
+
+        UserFileDao userFileDao = new UserFileDao();
+        
         for (String userInfoId : destinationUserInfoIds) { // 送信先ユーザーIDを使用
-            String fileId = UUID.randomUUID().toString().substring(0, 13);
-            FileDao fileDao = new FileDao();
-
-            // expirationDateをString型に変換
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String expirationDateString = sdf.format(expirationDate);
-
-            fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
-                    expirationDateString);
-            fileDaos.add(fileDao);
+          // user_filesテーブルにユーザー情報を挿入
+          userFileDao.dbUserFileInsert(userInfoId,fileId);
         }
+        
+
         return fileDaos;
     }
 
@@ -411,28 +532,40 @@ public class FileDetail extends ControllerBase {
      * @param fileData
      * @return
      */
+    /*
     private String getMimeTypeFromBytes(byte[] fileData) {
-        if (fileData.length >= 4) {
-            String header = new String(fileData, 0, 4);
-
+        if (fileData.length >= 8) {
+         String header = new String(fileData, 0, 8, java.nio.charset.StandardCharsets.ISO_8859_1);
+         
+         
             if (header.startsWith("\u00D0\u00CF\u0011")) { // Wordファイルの判定
                 return "application/msword"; // .doc
+            } else if (header.startsWith("\u00D0\u00CF\u0011")) {
+                return "application/vnd.ms-excel"; // .xls
+            } else if (header.startsWith("\u00FF\u00D8")) {
+                return "image/jpeg"; // JPEG画像
+            } else if (header.startsWith("\u0089PNG\r\n\u001A\n")) {
+                return "image/png"; // PNG画像
+            } else if (header.startsWith("GIF87a") || header.startsWith("GIF89a")) {
+                return "image/gif"; // GIF画像
+            } else if (header.startsWith("\u00D0\u00CF\u0011\u00E0")) {
+                return "application/msword"; 
             } else if (header.startsWith("PK")) { // Word 2007以降のファイル
                 return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; // .docx
             } else if (header.startsWith("PK")) { // Excelファイルの判定
                 return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // .xlsx
-            } else if (header.startsWith("\u00D0\u00CF\u0011")) {
-                return "application/vnd.ms-excel"; // .xls
             }
         }
         return ""; // デフォルト
     }
+    */
 
     /**
      * MIMEタイプから拡張子を取得するメソッド
      * @param mimeType
      * @return
      */
+    /*
     private String getExtensionFromMimeType(String mimeType) {
         switch (mimeType) {
         case "application/msword":
@@ -445,151 +578,145 @@ public class FileDetail extends ControllerBase {
             return ".xlsx"; // Excel 2007+
         case "application/pdf":
             return ".pdf"; // PDFファイル
+        case "image/jpeg":
+            return ".jpg"; // JPEG画像
+        case "image/png":
+            return ".png"; // PNG画像
+        case "image/gif":
+            return ".gif"; // GIF画像
         default:
             return ""; // デフォルトは空文字
         }
     }
+    */
+
+    private String getExtensionFromFileMimeType(String fileExtension) {
+
+        switch (fileExtension) {
+        case "doc":
+            return "application/msword";
+        case "docx":
+         return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        case "xls":
+         return "application/vnd.ms-excel";
+        case "xlsx":
+            return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        case "pptx":
+            return"application/vnd.openxmlformats-officedocument.presentationml.presentation";
+        case "pdf":
+            return "application/pdf";
+        case "png":
+            return "image/png";
+        case "jpg":
+            return "image/jpeg";
+        case "jpeg":
+            return "image/jpeg";
+        case "txt":
+            return "text/plain"; 
+        default:
+             return "application/octet-stream"; // デフォルトは空文字
+        }
+    }
+    
 
     /**
      * データベースから指定されたレコードを削除するメソッド
+     * @return 
      * @throws AtareSysException
      */
-    public void dbDeletef() throws AtareSysException {
+    public String dbDeletef(String mainKey) throws AtareSysException {
         WebBean bean = getWebBean();
         bean.rtrimAllItem();
         FileDao dao = setWeb2Dao2InputInfo();
-        String mainKey = bean.value("main_key"); // fileIdの取得
-        UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo(); // 現在のユーザー情報を取得
+        
+        UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
 
         try {
             // ファイルの存在を確認
             if (!dao.dbSelect(mainKey)) {
+
                 bean.setError("ファイルが見つかりませんでした。");
-                forward("FileList.jsp");
-                return;
+                return "FileList.jsp";
             }
 
             // ファイル情報を取得
             FileDao fileData = dao; // ここは前の行で dao を設定したので、そのまま使用
 
             String fileOwnerId = fileData.getUploadUserId(); // ファイルの所有者ID
-
+            
             // 所有者が現在のユーザーと一致するか確認
             if (!userLoginInfo.getUserInfoId().equals(fileOwnerId)) {
                 bean.setError("このファイルを削除する権限がありません。");
-                forward("FileDetail_3.jsp");
-                return;
+                return "FileDetail_3.jsp";
             }
 
             // 所有者が一致する場合は削除処理を実行
             DbBase.dbBeginTran();
             dao.dbDelete(mainKey);
             DbBase.dbCommitTran();
-            redirect("FileList.do");
+            
+
+            // ファイルのパスを取得
+            String filePath = fileData.getFilePath();
+            // アップロードした実体ファイルを削除
+            try {
+                Files.deleteIfExists(Paths.get(filePath));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+            return "FileList.do";
         } catch (Exception e) {
             DbBase.dbRollbackTran();
-            forward("FileDetail.jsp");
+            return "FileDetail.jsp";
         }
     }
+    
+    
 
     /**
-     * ファイルをダウンロードしてきた時の処理
+     * 入力チェックを行う。.
      *
-     * @return なし
-     * @throws AtareSysException フレームワーク共通例外
+     * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
+     * @throws AtareSysException
      */
-    private void downloadFileWrite(FileDao dao) throws AtareSysException {
-        // ファイルを保存するフォルダ名を取得
-        ServletOutputStream out = null; // 出力ストリームを初期化
-        String baseFileName = dao.getFileName(); // 基本ファイル名を取得
-        String mimeType = dao.getMimeType(); // MIMEタイプを取得
-        String filePath = dao.getFilePath();// フルファイルパスを取得
-
-        try {
-            // 期限チェック
-            if (isExpired(dao.getExpirationDate())) {
-                // 期限が過ぎている場合の処理
-                this.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, "このファイルのダウンロードは期限が切れています。");
-                return; // 処理を中止
-            }
-
-            // ユーザーエージェントを取得
-            String ua = this.getRequest().getHeader("user-agent");
-            String attachmentFileName = ""; // 添付ファイル名を初期化
-
-            // ブラウザによってファイル名の設定を分岐
-            if (ua.indexOf("MSIE") == -1) {
-                // Firefox, Opera 11など
-                attachmentFileName = String.format(Locale.JAPAN, "attachment; filename*=utf-8'jp'%s",
-                        URLEncoder.encode(baseFileName, "utf-8"));
-            } else {
-                // IE7, 8, 9用の処理
-                attachmentFileName = String.format(Locale.JAPAN, "attachment; filename=\"%s\"",
-                        new String(baseFileName.getBytes("MS932"), "ISO8859_1"));
-            }
-
-            // レスポンスの文字エンコーディングを設定
-            this.getResponse().setCharacterEncoding("UTF-8");
-
-            // 現在日時を取得し、レスポンスのヘッダーに設定
-            Calendar now = AtareSysCalendar.getInstance();
-            Calendar exp = AtareSysCalendar.getInstance();
-            exp.set(1970, 0, 1, 0, 0, 0); // 過去の日付を設定（無期限のキャッシュを防ぐ）
-            this.getResponse().setDateHeader("Last-Modified", now.getTime().getTime());
-            this.getResponse().setDateHeader("Expires", exp.getTime().getTime());
-            this.getResponse().setHeader("pragma", "no-cache");
-            this.getResponse().setHeader("Cache-Control", "no-cache");
-
-            // コンテンツタイプを設定（例: Excelファイル）
-            this.getResponse().setContentType(mimeType);
-
-            // 添付ファイル名をレスポンスヘッダーに設定
-            this.getResponse().setHeader("Content-Disposition", attachmentFileName);
-
-            // レスポンスの出力ストリームを取得
-            out = this.getResponse().getOutputStream();
-
-            // ファイルを出力ストリームに書き込み
-            FileUtil fileUtil = new FileUtil();
-            fileUtil.inputFile(filePath, out);
-
-            out.flush(); // 出力ストリームをフラッシュ
-        } catch (IOException e) {
-            // I/Oエラーが発生した場合
-            e.printStackTrace();
-            throw new AtareSysException(e.getMessage()); // カスタム例外を投げる
-        } finally {
-            try {
-                // 出力ストリームを閉じる
-                if (out != null) {
-                    out.close();
-                }
-            } catch (Exception e) {
-                // クローズ時にエラーが発生した場合
-                e.printStackTrace();
-                throw new AtareSysException(e.getMessage()); // カスタム例外を投げる
-            }
+     boolean inputCheck(FileDao pFileDao) throws AtareSysException {
+       	
+        WebBean bean = getWebBean();
+        HashMap<String, String> errors = bean.getItemErrors();
+        
+        
+        // ファイル名の入力
+        String inputName = bean.value("input_name").trim();
+        if (inputName.length() == 0) {
+          errors.put("input_name_empty", "ファイル名を入力してください。");
         }
+        
+        // ファイルのリンク
+        String fileValue = bean.value("file_value").trim();
+        if (fileValue.length() == 0) {
+          errors.put("file_value_empty", "ファイルリンクを入力してください。");
+        }
+        
+        // ダウンロードの有効期限が本日よりも後か判定
+        String expirationData = bean.value("expiration_data");
+        String resultData = expirationData.replaceAll("[年月日]", "");
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formattedDate = today.format(formatter);
+        
+        
+        int comparison = resultData.compareTo(formattedDate);
+
+        if (comparison < 0) {
+          errors.put("expiration_data_empty", "本日または後日を登録してください。");
+       
+        }
+        
+        
+        return errors.isEmpty();
     }
+    
+    
 
-    /**
-     * ファイルの期限が切れているかをチェック
-     *
-     * @param expirationDate 期限日
-     * @return 期限切れの場合はtrue、そうでなければfalse
-     */
-    private boolean isExpired(String expirationDateString) {
-        if (expirationDateString == null || expirationDateString.isEmpty()) {
-            return false; // 期限が設定されていない場合は未期限とする
-        }
-
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date expirationDate = sdf.parse(expirationDateString);
-            return expirationDate.before(new Date()); // 現在の日時と比較
-        } catch (ParseException e) {
-            e.printStackTrace(); // 解析エラーの処理
-            return false; // 解析に失敗した場合、期限切れとしない
-        }
-    }
 }

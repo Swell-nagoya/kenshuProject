@@ -46,7 +46,7 @@ public class UserMenu extends ControllerBase
     public void doActionProcess() throws AtareSysException
     {
         WebBean bean = getWebBean();
-
+        
         if ("UserMenuHome".equals(bean.value("form_name")))
         {
             bean.trimAllItem();
@@ -153,8 +153,8 @@ public class UserMenu extends ControllerBase
                 bean.setValue("reserves", reserves);
                 forward("UserMenuHome.jsp");
             }
-        }   
-        else if ("UserInfoDetail_1".equals(bean.value("form_name")) || "UserInfoDetail_2".equals(bean.value("form_name")) || "UserInfoDetail_3".equals(bean.value("form_name")))
+        }
+        else if ("UserInfoDetail".equals(bean.value("form_name")))
         {
             setWebBeanFromSerialize(bean.value("search_info"));
             bean = getWebBean();
@@ -164,17 +164,34 @@ public class UserMenu extends ControllerBase
             bean.setValue("reserves", reserves);
             forward("UserMenuHome.jsp");
         }
+        else if ("RoomYoyaku".equals(bean.value("form_name")))
+        {
+            bean.trimAllItem();
+            // 新規予約する条件を追加
+            if ("reserve".equals(bean.value("action_cmd")))
+            {
+               searchList();
+               //setWebDaoInputInfo();
+               forward("UserMenuReserve.jsp");
+               return; // メソッドを終了
+            }
+        }
         else
         {
             formInit();
             searchList();
-            bean.setValue("schedule", "メイン");
             ReserveDao reserveDao = new ReserveDao();
             ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
             bean.setValue("reserves", reserves);
+            
             RoomDao roomDao = new RoomDao();
             ArrayList<RoomDao> rooms = roomDao.getAllRooms();
             bean.setValue("rooms", rooms);
+            
+            UserReserveDao userReserveDao = new UserReserveDao();
+            ArrayList<UserReserveDao> userReserves = userReserveDao.getCalendarUserReserves();
+            bean.setValue("userReserves", userReserves);
+            
             forward("UserMenuHome.jsp");
         }
     }
@@ -285,7 +302,7 @@ private void searchList() throws AtareSysException
 
     // ユーザー情報の取得とセット
     UserInfoDao userInfoDao = new UserInfoDao();
-    ArrayList<UserInfoDao> users = userInfoDao.getAllUsers();
+    ArrayList<UserInfoDao> users = userInfoDao.getAllUsers(); //koko
     
     // ユーザセレクトの一覧を取得とセット
     ScheduleDao scheduleDao = new ScheduleDao();
