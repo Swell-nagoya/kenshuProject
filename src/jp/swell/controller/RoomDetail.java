@@ -69,7 +69,6 @@ public class RoomDetail extends ControllerBase
           RoomDao dao = setWeb2Dao2InputInfo();
           bean.setValue("request_name", "修正する");
           if (beforeName == null || beforeName.trim().isEmpty()) {
-              beforeName = roomName;
               bean.setValue("before_name", beforeName);
           }
           bean.setValue("before_name", beforeName);
@@ -156,7 +155,11 @@ public class RoomDetail extends ControllerBase
                       dbDeletef();
                   }
               }
-              redirect("RoomList.do");
+              else if ("return".equals(bean.value("action_cmd"))) 
+              {
+            	  redirect("RoomList.do");
+              }
+              //redirect("RoomList.do");
           }
           else
           {
