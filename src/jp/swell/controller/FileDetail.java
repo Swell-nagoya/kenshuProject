@@ -14,7 +14,6 @@ import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.ibm.icu.text.SimpleDateFormat;
 
@@ -43,7 +42,7 @@ public class FileDetail extends ControllerBase {
      */
     @Override
     public void doInit() {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -71,27 +70,73 @@ public class FileDetail extends ControllerBase {
         if ("FileDetail".equals(form)) {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
-                try {
-                    setWeb2Dao2InputInfo(getRequest());
-                    bean.setValue("request_name", "登録する");
-                    bean.setMessage("この内容で登録します。よろしいですか？");
-                    bean.setValue("input_name", inputName);
-                    forward("FileDetail_2.jsp");
-                } catch (IOException | ServletException e) {
-                    throw new AtareSysException(e);
-                }
+            	String destinationIds = bean.value("destination_user_info_id");
+            	
+            	//送信先ユーザーが選択されているか確認
+            	if (destinationIds == null || destinationIds.trim().isEmpty()) {
+            		bean.setError(
+            				"destination_user_info_id",
+            				"ユーザーを選択して下さい。"
+            		);
+            		
+            		forward("FileDetail.jsp");
+            		return;
+            	}
+            	
+            	//ファイル名チェック
+            	if (inputName == null || inputName.trim().isEmpty()) {
+            		bean.setError(
+            				"input_name",
+            				"ファイル名を入力してください。"
+            	    );
+            		
+            		forward("FileDetail.jsp");
+            		return;
+            	}
+            	
+            	//ファイル本体のチェック
+            	byte[] uploadData = (byte[]) bean.object("file");
+            	
+            	if (uploadData == null || uploadData.length == 0) {
+            		bean.setError(
+            				"file",
+            				"アップロードするファイルを選択してください。"
+            		);
+            		
+            		forward("FileDetail.jsp");
+            		return;
+            	}
+            	
+            	try {
+            		setWeb2Dao2InputInfo(getRequest());
+            		
+            		bean.setValue(
+            				"request_name",
+            				"登録する"
+            		);
+            		
+            		bean.setMessage("この内容で登録します。よろしいですか？");
+            		bean.setValue("input_name",inputName);
+            		
+            		forward("FileDetail_2.jsp");
+            		return;
+            		
+            	} catch (IOException | ServletException e ) {
+            		throw new AtareSysException(e);
+            	}
 
              // ② sub ボタン押下 → サブ画面（ユーザー選択）へ（送信先のみ）
             } else if ("sub".equals(actionCmd)) {
                 searchUserList();
                 bean.setValue("request_name", "送信先");
                 forward("FileUserList.jsp");
-                return;   // 忘れずに戻す
+                return;
 
 
                 // ③ return ボタン押下 → 一覧画面へ戻す
             } else if ("return".equals(actionCmd)) {
                 forward("FileList.do");
+                return;
             }
 
         } else if ("FileList".equals(form)) {
@@ -102,8 +147,36 @@ public class FileDetail extends ControllerBase {
                     forward("FileDetail.jsp");
 
                 } else if ("download".equals(requestCmd)) {
-                    dao.dbSelect(mainKey);
+                	if(!dao.dbSelect(mainKey)) {
+                		bean.setError("ファイルが見つかりません。");
+                		
+                		forward("FileList.jsp");
+                		return;
+                	}
+                	
+                	//ログインしているユーザー
+                	UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
+                	String loginUserId = loginInfo.getUserInfoId();
+                	
+                
+                	boolean destinationUser = loginUserId.equals(dao.getUserInfoId());
+                	boolean uploadUser = loginUserId.equals(dao.getUploadUserId());
+
+                	//送信先&アップロード本人ではない場合拒否
+                	if(!destinationUser && !uploadUser) {
+                		redirect("FileList.do?download_error=permission" + "&downloadable_only=1");
+                		return;
+                	}
+                	
+                	//期限切れ
+                	if (isExpired(dao.getExpirationDate())) {
+                		redirect("FileList.do?download_error=expired" + "&downloadable_only=1");
+                		return;
+                	}
+                	
+                	//権限がある場合だけダウンロード
                     downloadFileWrite(dao);
+                    return;
 
                 } else if ("deletef".equals(requestCmd)) {
                     if (!dao.dbSelect(mainKey)) {
@@ -363,7 +436,7 @@ public class FileDetail extends ControllerBase {
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/git/training/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        String filePath = "C:/Git/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
@@ -506,13 +579,7 @@ public class FileDetail extends ControllerBase {
         String filePath = dao.getFilePath();// フルファイルパスを取得
 
         try {
-            // 期限チェック
-            if (isExpired(dao.getExpirationDate())) {
-                // 期限が過ぎている場合の処理
-                this.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, "このファイルのダウンロードは期限が切れています。");
-                return; // 処理を中止
-            }
-
+        	
             // ユーザーエージェントを取得
             String ua = this.getRequest().getHeader("user-agent");
             String attachmentFileName = ""; // 添付ファイル名を初期化

@@ -293,7 +293,7 @@ public class FileDao implements Serializable {
      * @return フルネームを返す
      */
     public String getSendUserName() {
-        return lastName + " " + firstName;
+        return valueOrEmpty(lastName) + " " + valueOrEmpty(firstName);
     }
 
     /**
@@ -322,7 +322,7 @@ public class FileDao implements Serializable {
     /**
      * uploaderFirstName アップロードユーザー名前
      */
-    private String uploaderFirstName;
+    private String uploaderFirstName = "";
 
     /**
      * uploaderFirstName アップロードユーザー名前を取得します。
@@ -345,7 +345,7 @@ public class FileDao implements Serializable {
     /**
      * uploaderLastName アップロードユーザー名字
      */
-    private String uploaderLastName;
+    private String uploaderLastName = "";
 
     /**
      * uploaderLastName アップロードユーザー名字を取得します。
@@ -393,7 +393,7 @@ public class FileDao implements Serializable {
      * @return アップロードユーザーフルネームを返す
      */
     public String getUploadUserName() {
-        return uploaderLastName + " " + uploaderFirstName;
+        return valueOrEmpty(uploaderLastName) + " " + valueOrEmpty(uploaderFirstName);
     }
 
     private String[] userIds;
@@ -418,6 +418,9 @@ public class FileDao implements Serializable {
         this.fileType = fileType;
     }
 
+    private static String valueOrEmpty(String value) {
+    	return value != null ? value : "";
+    }
     /**
      * files ファイルテーブルを検索し fileテーブルの１行を取得します。.
      *
@@ -527,21 +530,30 @@ public class FileDao implements Serializable {
      * @param dao  FileDaoこのテーブルのインスタンス
      */
     public void setFileDaoForJoin(HashMap<String, String> map, FileDao dao) throws AtareSysException {
-        dao.setFileId(DbI.chara(map.get("files___file_id") != null ? map.get("files___file_id") : ""));
-        dao.setUserInfoId(DbI.chara(map.get("files___user_info_id") != null ? map.get("files___user_info_id") : ""));
-        dao.setFileName(DbI.chara(map.get("files___file_name") != null ? map.get("files___file_name") : ""));
-        dao.setFilePath(DbI.chara(map.get("files___file_path") != null ? map.get("files___file_path") : ""));
-        dao.setUploadDate(DbI.chara(map.get("files___upload_date") != null ? map.get("files___upload_date") : ""));
-        dao.setFileKey(DbI.chara(map.get("files___file_key") != null ? map.get("files___file_key") : ""));
-        dao.setMimeType(DbI.chara(map.get("files___mime_type") != null ? map.get("files___mime_type") : ""));
-        dao.setSystemFileName(
-                DbI.chara(map.get("files___system_file_name") != null ? map.get("files___system_file_name") : ""));
-        dao.setUploadUserId(
-                DbI.chara(map.get("files___upload_user_id") != null ? map.get("files___upload_user_id") : ""));
-        dao.setExpirationDate(
-                DbI.chara(map.get("files___expiration_date") != null ? map.get("files___expiration_date") : ""));
-        dao.setUploaderFirstName(map.get("uploader_first_name"));
-        dao.setUploaderLastName(map.get("uploader_last_name"));
+        dao.setFileId(DbI.chara(mapValue(map, "files___file_id", "file_id")));
+        dao.setUserInfoId(DbI.chara(mapValue(map, "files___user_info_id", "user_info_id")));
+        dao.setFileName(DbI.chara(mapValue(map, "files___file_name", "file_name")));
+        dao.setFilePath(DbI.chara(mapValue(map, "files___file_path", "file_path")));
+        dao.setUploadDate(DbI.chara(mapValue(map, "files___upload_date", "upload_date")));
+        dao.setFileKey(DbI.chara(mapValue(map, "files___file_key", "file_key")));
+        dao.setMimeType(DbI.chara(mapValue(map, "files___mime_type", "mime_type")));      
+        dao.setSystemFileName(DbI.chara(mapValue(map,"files___system_file_name","system_file_name")));
+        dao.setUploadUserId(DbI.chara(mapValue(map,"files___upload_user_id","upload_user_id")));
+        dao.setExpirationDate(DbI.chara(mapValue(map,"files___expiration_date","expiration_date")));
+    }
+    
+    private static String mapValue(
+    		HashMap<String,String> map,
+    		String aliasKey,
+    		String normalKey) {
+    	
+    	String value = map.get(aliasKey);
+    	
+    	if (value == null) {
+    		value = map.get(normalKey);
+    	}
+    	
+    	return value != null ? value : "";
     }
 
     /**
@@ -659,6 +671,8 @@ public class FileDao implements Serializable {
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         ArrayList<FileDao> files = new ArrayList<>();
         for (HashMap<String, String> map : rs) {
+        	//System.out.println("FileDaoの取得列名 = " + map.keySet());
+        	
             FileDao dao = new FileDao();
             // ルームDAOのインスタンスにデータを設定
             dao.setUserInfoId(map.get("file_id"));
@@ -679,6 +693,7 @@ public class FileDao implements Serializable {
 
     public static ArrayList<FileDao> dbSelectList(FileDao myclass, LinkedHashMap<String, String> sortKey,
             DaoPageInfo daoPageInfo) throws AtareSysException {
+    	  System.out.println("FileDao.dbSelectListを開始しました");
         ArrayList<FileDao> resultList = new ArrayList<>();
 
         // WHERE句
@@ -710,12 +725,31 @@ public class FileDao implements Serializable {
                 + " LIMIT " + limit + " OFFSET " + offset;
 
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        
+        System.out.println("FileDao検索件数 = " + rs.size());
 
         for (HashMap<String, String> map : rs) {
+        	
+        	//System.out.println("FileDaoの取得列名 =" + map.keySet());
+        	
             FileDao dao = new FileDao();
             dao.setFileDaoForJoin(map, dao);
-            dao.setFirstName(map.get("user_first_name"));
-            dao.setLastName(map.get("user_last_name"));
+            dao.setFirstName(valueOrEmpty(map.get("first_name")));
+            dao.setLastName(valueOrEmpty(map.get("last_name")));
+            
+            UserInfoDao uploaderDao = new UserInfoDao();
+            
+            if (uploaderDao.dbSelect(dao.getUploadUserId())) {
+            	dao.setUploaderFirstName(
+            		uploaderDao.getFirstName()
+            	);
+            	dao.setUploaderLastName(
+            		uploaderDao.getLastName()
+            	);
+            } else {
+            	dao.setUploaderFirstName("");
+                dao.setUploaderLastName("");
+            }
             resultList.add(dao);
         }
 
