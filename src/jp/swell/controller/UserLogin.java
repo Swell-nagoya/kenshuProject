@@ -14,6 +14,7 @@ import jp.swell.user.UserLoginInfo;
  * @since 1.0
  */
 public class UserLogin extends ControllerBase {
+	
     /**
      * jp.patasys.alumni.controller.HttpServlet のメソッドをオーバライドする。
      * オーバライドしない場合は、デフォルトが設定される。.
@@ -46,11 +47,25 @@ public class UserLogin extends ControllerBase {
             if ("login".equals(bean.value("action_cmd"))) {
                 this.setLoginInfo(null);
                 if (!inputCheck()) {
+                	
                     this.forward("/UserLogin.jsp");
                     return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
                 }
-                    redirect("UserMenu.do");
-                return;
+                
+                //管理者権限チェック
+                
+                UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
+                if (userLoginInfo == null) {
+                    userLoginInfo = new UserLoginInfo();
+                }
+                
+                if (userLoginInfo.isAdmin()){
+                    redirect("MenuAdmin.do");
+                    return;
+                } else {
+                	redirect("UserMenu.do");
+                	return;
+                }
             } else if ("repassword".equals(bean.value("action_cmd"))) {
                 redirect("SendPassMail.do");
             }
@@ -82,15 +97,18 @@ public class UserLogin extends ControllerBase {
             bean.setError("ko", "未入力");
             return false;
         }
+        
+        System.out.println("UserLogin.java_アカウント名"+bean.value("ac")+"パスワード"+bean.value("ko"));
 
         UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
         if (userLoginInfo == null) {
             userLoginInfo = new UserLoginInfo();
         }
         if (!userLoginInfo.login(bean.value("ac"), bean.value("ko"))) {
-            bean.setError("ac", "usernameかpasswordが違います");
+            bean.setError("error", "usernameかpasswordが違います");
             return false;
         }
+        
         userLoginInfo.setUserInfo(userLoginInfo.getUserInfoDao());
         setLoginInfo(userLoginInfo);
         bean.setValue("user_info_id", userLoginInfo.getUserInfoId());
@@ -107,5 +125,5 @@ public class UserLogin extends ControllerBase {
         clearLoginInfo(); // ログイン情報をクリア
         redirect("UserLogin.do"); // ログインページにリダイレクト
     }
-
+   
 }

@@ -250,6 +250,9 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
     @Override
     public boolean login(String pAccount, String pPassword) {
         try {
+        	
+        	System.out.println("UserLoginInfo.java_アカウント名"+pAccount+"パスワード"+pPassword);
+        	
             userInfoDao = new UserInfoDao();
             boolean flg = userInfoDao.login(pAccount, pPassword);
             if (!flg) {
@@ -262,4 +265,5 @@ public class UserLoginInfo extends LoginInfo implements java.io.Serializable {
             return false;
         }
     }
+    
 }

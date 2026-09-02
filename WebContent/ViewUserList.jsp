@@ -320,8 +320,10 @@ footer {
             <td class="list_label" style="width: 25%"></td>
           </tr>
           <%
+          
           for (Object item : webBean.arrayList("list")) {
               UserInfoDao dao = (UserInfoDao) item;
+              
           %>
           <tr class="list_tr">
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
