@@ -77,8 +77,8 @@ input[type="button"]:hover {
 	<%
 	jp.swell.user.UserLoginInfo loginInfo = (jp.swell.user.UserLoginInfo) session.getAttribute("LoginInfo");
 	if (loginInfo == null || !"1".equals(loginInfo.getAdmin())) {
-	    response.sendRedirect("UserMenuHome.do");
-	    return;
+		response.sendRedirect("UserMenuHome.do");
+		return;
 	}
 	%>
 	<form method="post" id="admin_form" action="" class="admin__form">
@@ -113,7 +113,6 @@ input[type="button"]:hover {
 					</div>
 				</div>
 			</div>
-		</div>
 		</div>
 	</form>
 </body>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
   pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <%@ page import="jp.swell.dao.UserInfoDao"%>
 <%@ page import="jp.swell.dao.RoomDao"%>
 <%@ page import="jp.swell.dao.ReserveDao"%>

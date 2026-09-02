@@ -215,6 +215,9 @@ footer {
       document.getElementById('action_cmd').value = action_cmd;
       document.getElementById('request_cmd').value = request_cmd;
       document.getElementById('main_key').value = main_key;
+
+
+      
       document.getElementById('main_form').submit();
     }
     function go_detail(action_cmd, request_cmd) {
@@ -324,9 +327,9 @@ footer {
               UserInfoDao dao = (UserInfoDao) item;
           %>
           <tr class="list_tr">
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
+            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>&nbsp;<%=WebUtil.htmlEscape(dao.getMiddleName())%>&nbsp;<%=WebUtil.htmlEscape(dao.getFirstName())%>
             </td>
-            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
+            <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>&nbsp;<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>&nbsp;<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
             </td>
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
             <td class="list_btn">
