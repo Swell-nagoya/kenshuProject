@@ -80,7 +80,7 @@ public class UserInfoDetail extends ControllerBase
                       forward("UserInfoDetail_1.jsp");
                   } 
                   else if ("update".equals(bean.value("request_cmd"))) 
-                  {
+                  { System.out.println(bean.value("main_key"));
                       if (!setDb2Web()) 
                       {
                           bean.setError("データの取得に失敗しました");
@@ -171,7 +171,6 @@ public class UserInfoDetail extends ControllerBase
                       UserInfoDao dao = setWeb2Dao2InputInfo();
                       if (inputCheck(dao)) 
                       {
-                        
                           bean.setMessage("この内容で修正します。よろしいですか？");
                           bean.setValue("request_name", "修正");
                           forward("UserInfoDetail_3.jsp"); 
@@ -198,13 +197,14 @@ public class UserInfoDetail extends ControllerBase
                       setInputInfo2Dao2WebDelete();
                       bean.rtrimAllItem();
                       UserInfoDao dao = setWeb2Dao2InputInfo();
+                      
                       if (inputCheck(dao)) 
                       {
                           bean.setMessage("退職予定日を確定します。よろしいですか？");
                           bean.setValue("request_name", "確定");
                           forward("UserInfoDetail_3.jsp");  
                       }
-                      else 
+                      else
                       {
                           bean.setError("入力内容に誤りがあります");
                           forward("UserInfoDetail_2.jsp"); 
@@ -337,6 +337,7 @@ public class UserInfoDetail extends ControllerBase
 
         bean.setValue("select_info", Sup.serialize(dao)); // 編集前に読み込んだデータを格納しておく
         bean.setValue("input_info", Sup.serialize(dao));
+        System.out.println("");
         return true;
     }
 
@@ -702,7 +703,7 @@ public class UserInfoDetail extends ControllerBase
         String leaveDate = bean.value("leave_date");     // leave_dateの取得
 
         try {
-          dao.dbUpdate(userInfoId);
+        	dao.dbUpdate(userInfoId);
           if (leaveDate == null || leaveDate.trim().isEmpty()) {
             dao.dbCancelDelete(userInfoId);
             redirect("ViewUserList.do");

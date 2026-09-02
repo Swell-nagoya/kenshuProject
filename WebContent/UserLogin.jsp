@@ -132,6 +132,7 @@
              <div class="main__text">
                  <p>usernameとpasswordを入力してください</p>
                  <p style="color:red;"><%=webBean.object("1")%></p>
+                 <p style="color:red;"><%=webBean.object("ac")%></p>
              </div>
             <form method="post" id="main_form" action="" class="main__form">
                 <input type="hidden" name="form_name" id="form_name" value="UserLogin" />

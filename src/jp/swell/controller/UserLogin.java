@@ -47,7 +47,7 @@ public class UserLogin extends ControllerBase {
 			if ("login".equals(bean.value("action_cmd"))) {
 				this.setLoginInfo(null);
 				if (!inputCheck()) {
-					this.forward("/UserLogin.jsp");
+					this.forward("UserLogin.jsp");
 					return; // 入力チェックが失敗した場合は、これ以降の処理を行わない
 				}
 				UserLoginInfo userLoginInfo = (UserLoginInfo) getLoginInfo();
@@ -83,11 +83,11 @@ public class UserLogin extends ControllerBase {
 
 		WebBean bean = getWebBean();
 		if (bean.value("ac").length() == 0) {
-			bean.setValue("ac", "未入力");
+			bean.setValue("ac", "未入力です");
 			return false;
 		}
 		if (bean.value("ko").length() == 0) {
-			bean.setValue("ko", "未入力");
+			bean.setValue("ko", "未入力です");
 			return false;
 		}
 
