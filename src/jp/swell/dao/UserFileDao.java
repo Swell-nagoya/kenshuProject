@@ -193,6 +193,33 @@ public class UserFileDao implements Serializable {
     }
 
     /**
+     * 指定ユーザーが指定ファイルの送信先として登録されているか確認する。
+     */
+    public boolean hasDownloadAuthority(String pUserInfoId, String pFileId) throws AtareSysException {
+        String sql = "select user_files_id from user_files "
+                + "where user_info_id = " + DbS.chara(pUserInfoId)
+                + " and file_id = " + DbS.chara(pFileId);
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+
+        System.out.println(
+                "権限確認 userId=" + pUserInfoId
+                + ", fileId=" + pFileId
+                + ", 検索件数=" + rs.size()
+        );
+
+        return !rs.isEmpty();
+    }
+
+    // 指定ファイルに送信先が1人以上残っているか確認する。
+    public boolean hasAnyRecipient(String pFileId) throws AtareSysException {
+        String sql = "select user_files_id from user_files "
+                + "where file_id = " + DbS.chara(pFileId)
+                + " limit 1";
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
+        return !rs.isEmpty();
+    }
+
+    /**
      * user_file ユーザーファイルテーブルのデータを更新する。.
      *
      * @return true:成功 false:失敗
@@ -218,13 +245,13 @@ public class UserFileDao implements Serializable {
      * @return true:成功 false:失敗
      * @throws AtareSysException エラー
      */
-    public boolean dbDeleteUserFile(String pFileId) throws AtareSysException
+    public boolean dbDeleteUserFile(String pFileId,String pUserInfoId) throws AtareSysException
     {
         String sql="delete from user_files "
-        + " where file_id = " + DbS.chara(pFileId);
+        + " where file_id = " + DbS.chara(pFileId)
+        + " and user_info_id = " + DbS.chara(pUserInfoId);
         int ret = DbBase.dbExec(sql);
-        if(ret<1) throw new AtareSysException("dbDelete number or record exception.") ;
-        return true;
+        return ret == 1;
     }
 
 

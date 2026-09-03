@@ -1,5 +1,6 @@
 package jp.swell.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.ParseException;
@@ -29,6 +30,7 @@ import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.FileDao;
+import jp.swell.dao.UserFileDao;
 import jp.swell.dao.UserInfoDao;
 import jp.swell.user.UserLoginInfo;
 
@@ -71,6 +73,9 @@ public class FileDetail extends ControllerBase {
             // ① upload ボタン押下 → 確認画面へ
             if ("upload".equals(actionCmd)) {
             	String destinationIds = bean.value("destination_user_info_id");
+	            if (destinationIds != null) {
+	            	destinationIds = destinationIds.replace('\u00A0', ' ').trim();
+	            }
             	
             	//送信先ユーザーが選択されているか確認
             	if (destinationIds == null || destinationIds.trim().isEmpty()) {
@@ -159,7 +164,9 @@ public class FileDetail extends ControllerBase {
                 	String loginUserId = loginInfo.getUserInfoId();
                 	
                 
-                	boolean destinationUser = loginUserId.equals(dao.getUserInfoId());
+	                	UserFileDao userFileDao = new UserFileDao();
+	                	boolean destinationUser = loginUserId.equals(dao.getUserInfoId())
+	                			|| userFileDao.hasDownloadAuthority(loginUserId, mainKey);
                 	boolean uploadUser = loginUserId.equals(dao.getUploadUserId());
 
                 	//送信先&アップロード本人ではない場合拒否
@@ -194,8 +201,8 @@ public class FileDetail extends ControllerBase {
         } else if ("FileDetail_2".equals(form)) {
             if ("go_next".equals(actionCmd)) {
                 if ("insEnter".equals(requestCmd)) {
-                    searchList();
                     redirect("FileList.do");
+                    return;
 
                 } else if ("download".equals(requestCmd)) {
                     dao.dbSelect(mainKey);
@@ -302,8 +309,13 @@ public class FileDetail extends ControllerBase {
             selectedIds = "";
         }
 
-        // 全ユーザーを取得
+        // 全ユーザーを取得し、IDが空の無効なデータだけ候補から除外する
         List<UserInfoDao> allUsers = new UserInfoDao().getAllUsers();
+        allUsers.removeIf(user -> {
+            String userId = user.getUserInfoId();
+            return userId == null
+                    || userId.replace('\u00A0', ' ').trim().isEmpty();
+        });
 
         // 現在のページ番号を取得（未設定時は 1）
         int pageNo = 1;
@@ -431,12 +443,21 @@ public class FileDetail extends ControllerBase {
 
         // 送信先ユーザーIDを取得
         String destinationUserInfoIdsString = bean.value("destination_user_info_id"); // 送信先ユーザーID
+        destinationUserInfoIdsString = destinationUserInfoIdsString.replace('\u00A0', ' ').trim();
         String[] destinationUserInfoIds = destinationUserInfoIdsString.split(",");
 
         // 送信元ユーザーのIDを取得
         String senderUserId = sourceUserInfoIds.length > 0 ? sourceUserInfoIds[0] : null; // 最初のユーザーを送信元として選択
 
-        String filePath = "C:/Git/kenshuProject/WebContent/upload"; //保存先フォルダのパス設定
+        String filePath = getRequest().getServletContext().getRealPath("/upload"); // アップロード先のパスを取得
+        if (filePath == null) {
+			throw new AtareSysException("アップロード先のパスが取得できません。");
+		}
+        File uploadDirctory = new File(filePath);
+        if (!uploadDirctory.exists() && !uploadDirctory.mkdirs()) {
+			throw new AtareSysException("アップロード先フォルダを作成できませんでした。");
+		}
+        
         String skey = GetNumber.getRandomNo(16); //file_key生成
 
         // ファイルデータを取得
@@ -453,7 +474,7 @@ public class FileDetail extends ControllerBase {
         }
 
         // 完全なファイルパスの生成
-        String fullPath = filePath + "/" + systemFileName;
+        String fullPath = new File(uploadDirctory, systemFileName).getPath();
         if (!fileUtil.outputFile(fullPath, fileData)) {
             return null;
         }
@@ -463,19 +484,36 @@ public class FileDetail extends ControllerBase {
         calendar.add(Calendar.WEEK_OF_YEAR, 1); // 現在の日時に1週間追加
         java.util.Date expirationDate = calendar.getTime(); // Date型を取得
 
-        // 各送信先ユーザーに対してデータベースにファイル情報を登録
-        for (String userInfoId : destinationUserInfoIds) { // 送信先ユーザーIDを使用
-            String fileId = UUID.randomUUID().toString().substring(0, 13);
-            FileDao fileDao = new FileDao();
+        //ファイルIDは1回だけ作る
+        String fileId = UUID.randomUUID().toString().substring(0,13);
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        
+        String expirationDateString = sdf.format(expirationDate);
 
-            // expirationDateをString型に変換
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String expirationDateString = sdf.format(expirationDate);
-
-            fileDao.dbFileInsert(fileId, userInfoId, fullPath, fileName, mimeType, systemFileName, senderUserId, skey,
-                    expirationDateString);
-            fileDaos.add(fileDao);
-        }
+        String legacyUserInfoId = senderUserId.trim();
+        
+        //filesには1件だけ登録
+        FileDao fileDao = new FileDao();
+        
+        fileDao.dbFileInsert(fileId, legacyUserInfoId, fullPath, fileName, mimeType,
+                systemFileName, senderUserId, skey, expirationDateString);
+        
+        fileDaos.add(fileDao);
+        
+        //user_filesには送信先ユーザーごとに登録
+        for (String destinationUserId : destinationUserInfoIds) {
+			if (destinationUserId != null) {
+				destinationUserId = destinationUserId.replace('\u00A0', ' ').trim();
+			}
+			if (destinationUserId == null || destinationUserId.isEmpty()) {
+				continue;
+				}
+			System.out.println("送信先ID確認 = [" + destinationUserId + "]");
+			UserFileDao userFileDao = new UserFileDao();
+			
+			userFileDao.dbUserFileInsert(destinationUserId, fileId);
+		}
         return fileDaos;
     }
 
@@ -545,23 +583,41 @@ public class FileDetail extends ControllerBase {
             // ファイル情報を取得
             FileDao fileData = dao; // ここは前の行で dao を設定したので、そのまま使用
 
+            String loginUserId = userLoginInfo.getUserInfoId();
             String fileOwnerId = fileData.getUploadUserId(); // ファイルの所有者ID
+            UserFileDao userFileDao = new UserFileDao();
 
-            // 所有者が現在のユーザーと一致するか確認
-            if (!userLoginInfo.getUserInfoId().equals(fileOwnerId)) {
+            boolean uploadUser = loginUserId.equals(fileOwnerId);
+            boolean destinationUser = loginUserId.equals(fileData.getUserInfoId())
+                    || userFileDao.hasDownloadAuthority(loginUserId, mainKey);
+
+            // アップロード本人でも送信先本人でもない場合は拒否
+            if (!uploadUser && !destinationUser) {
                 bean.setError("このファイルを削除する権限がありません。");
                 forward("FileDetail_3.jsp");
                 return;
             }
 
-            // 所有者が一致する場合は削除処理を実行
             DbBase.dbBeginTran();
-            dao.dbDelete(mainKey);
+            String destinationUserId = bean.value("destination_user_info_id");
+
+            // 受信者は、画面から渡されたIDに関係なく自分の紐付けだけを削除する
+            if (!uploadUser) {
+                destinationUserId = loginUserId;
+            }
+
+            boolean deleted = userFileDao.dbDeleteUserFile(mainKey, destinationUserId);
+
+            // 旧形式のデータ、または最後の送信先を消した場合はファイル本体も削除する
+            if (!deleted || !userFileDao.hasAnyRecipient(mainKey)) {
+                dao.dbDelete(mainKey);
+            }
             DbBase.dbCommitTran();
             redirect("FileList.do");
         } catch (Exception e) {
             DbBase.dbRollbackTran();
-            forward("FileDetail.jsp");
+            e.printStackTrace();
+            redirect("FileList.do");
         }
     }
 

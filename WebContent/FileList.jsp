@@ -244,12 +244,13 @@ th {
 		document.getElementById('main_form').submit();
 	}
 
-	function go_detail_2(action_cmd, request_cmd, main_key, file_name) {
+	function go_detail_2(action_cmd, request_cmd, main_key, file_name, destination_user_id) {
 		document.getElementById('main_form').action = 'FileDetail.do';
 		document.getElementById('action_cmd').value = action_cmd;
 		document.getElementById('request_cmd').value = request_cmd;
 		document.getElementById('main_key').value = main_key;
 		document.getElementById('file_name').value = file_name;
+		document.getElementById('destination_user_info_id').value = destination_user_id;
 		document.getElementById('main_form').submit();
 	}
 
@@ -305,6 +306,8 @@ th {
 				value="<%=webBean.txt("file_name")%>" />
 			<input type="hidden" name="file_id" id="file_id"
 				value="<%=webBean.txt("file_id")%>" />
+			<input type="hidden" name="destination_user_info_id" id="destination_user_info_id"
+				value=""/>
 
 			<div class="left">
 				<div class="messages">
@@ -388,7 +391,7 @@ th {
 							<td><input type="button" value="ダウンロード"
 								onclick="go_download('go_next','download','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
 								<input type="button" value="削除"
-								onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>');" />
+								onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getFileId())%>','<%=WebUtil.txtEscape(dao.getFileName())%>','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
 							</td></tr>
 
 						<%}%>

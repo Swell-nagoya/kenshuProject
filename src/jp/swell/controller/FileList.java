@@ -333,12 +333,17 @@ public class FileList extends ControllerBase {
 		}
 
 		try {
+			String normalizedDate = expirationDateString.trim().replace("/", "-");
+			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			
+			sdf.setLenient(false);
 
-			Date expirationDate = sdf.parse(expirationDateString);
+			Date expirationDate = sdf.parse(normalizedDate);
 
 			return expirationDate.before(new Date());
 		} catch (ParseException e) {
+			System.out.println("期限の変換に失敗しました = [" + expirationDateString + "]");
 			return false;
 		}
 	}
