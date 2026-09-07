@@ -130,7 +130,7 @@
          <div id="main">
              <h1>LOGIN</h1>
              <div class="main__text">
-                 <p>usernameとpasswordを入力してください。</p>
+                 <p>usernameとpasswordを入力してください</p>
                  <p style="color:red;"><%=webBean.object("1")%></p>
                  <p style="color:red;"><%=webBean.object("ac")%></p>
              </div>
