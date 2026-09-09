@@ -14,9 +14,6 @@
 package jp.swell.dao;
 
 import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -328,40 +325,21 @@ public class RoomDao implements Serializable
      */
     public boolean dbSelect(String pRoomId) throws AtareSysException {
         String sql = "SELECT "
-                + "room.room_id as room___room_id, "
-                + "room.room_name as room___room_name, "
-                + "room.insert_date as room___insert_date, "
-                + "room.insert_user_id as room___insert_user_id, "
-                + "room.update_date as room___update_date, "
-                + "room.update_user_id as room___update_user_id "
+                + "room_id, "
+                + "room_name, "
+                + "insert_date, "
+                + "insert_user_id, "
+                + "update_date, "
+                + "update_user_id "
                 + "FROM room "
-                + "WHERE room_id = ?";
-
-        try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)) {
-            pstmt.setString(1, pRoomId);
-
-            try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
-                if (!rs.next()) {
-                    return false;
-                }
-
-                HashMap<String, String> map = new HashMap<>();
-                map.put("room___room_id", rs.getString("room___room_id"));
-                map.put("room___room_name", rs.getString("room___room_name"));
-                map.put("room___insert_date", rs.getString("room___insert_date"));
-                map.put("room___insert_user_id", rs.getString("room___insert_user_id"));
-                map.put("room___update_date", rs.getString("room___update_date"));
-                map.put("room___update_user_id", rs.getString("room___update_user_id"));
-
-                setRoomDaoForJoin(map, this);
-                return true;
-            } catch (SQLException e) {
-                throw new AtareSysException("データベースクエリの実行中にエラーが発生しました: " + e.getMessage(), e);
-            }
-        } catch (SQLException e) {
-            throw new AtareSysException("データベース接続中にエラーが発生しました: " + e.getMessage(), e);
-        }
+                + "WHERE room_id = "+ DbS.chara(pRoomId);
+        List<HashMap<String, String>> rs1 = DbBase.dbSelect(sql);
+      if(0==rs1.size())   return false;
+      HashMap<String, String> map = rs1.get(0);
+      setRoomDaoForJoin(map,this);
+      return true;
     }
+
 
     /**
      * room 部屋テーブルを検索しroom 部屋テーブルの１行を取得します。.
@@ -373,12 +351,12 @@ public class RoomDao implements Serializable
     public boolean dbSelect(String pRoomId,String roomName) throws AtareSysException
     {
         String sql =  "select "
-                + " room.room_id as room___room_id"
-                + ",room.room_name as room___room_name"
-                + ",room.insert_date as room___insert_date"
-                + ",room.insert_user_id as room___insert_user_id"
-                + ",room.update_date as room___update_date"
-                + ",room.update_user_id as room___update_user_id"
+                + " room_id "
+                + ",room_name "
+                + ",insert_date "
+                + ",insert_user_id "
+                + ",update_date "
+                + ",update_user_id"
         + " from room ";
         sql += ""
         + " where room_id = " + DbS.chara(pRoomId)
@@ -414,12 +392,12 @@ public class RoomDao implements Serializable
      */
     public void setRoomDaoForJoin(HashMap<String, String> map,RoomDao dao)  throws AtareSysException
     {
-        dao.setRoomId(DbI.chara(map.get("room___room_id") != null ? map.get("room___room_id") : ""));
-        dao.setRoomName(DbI.chara(map.get("room___room_name") != null ? map.get("room___room_name") : ""));
-        dao.setInsertDate(DbI.chara(map.get("room___insert_date") != null ? map.get("room___insert_date") : ""));
-        dao.setInsertUserId(DbI.chara(map.get("room___insert_user_id") != null ? map.get("room___insert_user_id") : ""));
-        dao.setUpdateDate(DbI.chara(map.get("room___update_date") != null ? map.get("room___update_date") : ""));
-        dao.setUpdateUserId(DbI.chara(map.get("room___update_user_id") != null ? map.get("room___update_user_id") : ""));
+        dao.setRoomId(DbI.chara(map.get("room_id") != null ? map.get("room_id") : ""));
+        dao.setRoomName(DbI.chara(map.get("room_name") != null ? map.get("room_name") : ""));
+        dao.setInsertDate(DbI.chara(map.get("insert_date") != null ? map.get("insert_date") : ""));
+        dao.setInsertUserId(DbI.chara(map.get("insert_user_id") != null ? map.get("insert_user_id") : ""));
+        dao.setUpdateDate(DbI.chara(map.get("update_date") != null ? map.get("update_date") : ""));
+        dao.setUpdateUserId(DbI.chara(map.get("update_user_id") != null ? map.get("update_user_id") : ""));
     }
     /**
      * room 部屋テーブルにデータを挿入する
@@ -459,10 +437,10 @@ public class RoomDao implements Serializable
      */
     public boolean dbUpdate(String pRoomId) throws AtareSysException
     {
-        String sql = "update room set "
+        String sql = "update room set"
         + " room_name = " + DbO.chara(getRoomName())
         + " where room_id = " + DbS.chara(pRoomId)
-        + "";
+        + ";";
         int ret =DbBase.dbExec(sql);
         if (ret != 1) throw new AtareSysException("dbupdate number or record exception");
         return true;
@@ -478,10 +456,8 @@ public class RoomDao implements Serializable
     public boolean dbDelete(String pRoomId) throws AtareSysException
     {
         String sql = "UPDATE room set "
-        + "is_deleted = true WHERE room_id = " //"delete from room where "以前までは物理削除になっていた   //"UPDATE room set is_deleted = true"論理削除に変更
-        + DbS.chara(pRoomId)
-        +"";
-        
+        + "is_deleted = 1 WHERE room_id = " //"delete from room where "以前までは物理削除になっていた   //"UPDATE room set is_deleted = true"論理削除に変更
+        + DbS.chara(pRoomId);
         int ret =DbBase.dbExec(sql);
         
         if (ret != 1)
@@ -531,12 +507,12 @@ public class RoomDao implements Serializable
         if(daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo()) daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
         int start  =   (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql =  "select "
-                + " room.room_id room___room_id"
-                + ",room.room_name room___room_name"
-                + ",room.insert_date as room___insert_date"
-                + ",room.insert_user_id as room___insert_user_id"
-                + ",room.update_date as room___update_date"
-                + ",room.update_user_id as room___update_user_id"
+                + " room_id"
+                + ", room_name"
+                + ", insert_date"
+                + ", insert_user_id"
+                + ", update_date"
+                + ", update_user_id"
                 + " from room ";
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);
