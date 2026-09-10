@@ -23,7 +23,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -1337,7 +1336,7 @@ public class UserInfoDao implements Serializable {
             where.append(")");
         }
         where.append(where.length() > 0 ? " AND " : "");
-        where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
+        where.append("state_flg != '9'");
 
         if (where.length() > 0) {
             return "where " + where.toString();
@@ -1423,18 +1422,8 @@ public class UserInfoDao implements Serializable {
 
             // `state_flg` が "9" かつ `leave_date` が本日より前の場合は表示しない
             boolean isStateFlgNine = "9".equals(stateFlg);
-            boolean isLeaveDateBeforeToday = false;
 
-            if (leaveDateStr != null && leaveDateStr.length() >= 8) {
-                try {
-                    Date leaveDate = dateFormat.parse(leaveDateStr);
-                    isLeaveDateBeforeToday = !leaveDate.after(today);
-                } catch (ParseException e) {
-                    // `leave_date` の解析に失敗した場合は無視する
-                    e.printStackTrace();
-                }
-            }
-            if (isStateFlgNine && isLeaveDateBeforeToday) {
+            if (isStateFlgNine) {
                 continue;
             }
      

@@ -85,7 +85,7 @@ public class UserInfoDetail extends ControllerBase
                       {
                           bean.setError("データの取得に失敗しました");
                           forward("ViewUserList.jsp");
-                      } 
+                      }
                       else 
                       {
                           bean.setValue("request_name", "修正");
@@ -700,21 +700,10 @@ public class UserInfoDetail extends ControllerBase
         WebBean bean = getWebBean();
         UserInfoDao dao = setWeb2Dao2InputInfo();
         String userInfoId = bean.value("user_info_id");//userIdの取得
-        String leaveDate = bean.value("leave_date");     // leave_dateの取得
 
-        try {
-        	dao.dbUpdate(userInfoId);
-          if (leaveDate == null || leaveDate.trim().isEmpty()) {
-            dao.dbCancelDelete(userInfoId);
-            redirect("ViewUserList.do");
-          }
-          else {
             dao.dbDelete(userInfoId);
+            DbBase.dbCommitTran();
             redirect("ViewUserList.do");
-          }
-        }catch (Exception e) {
-          forward("ViewUserList.do");
-        }
     }
     
     /**

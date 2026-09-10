@@ -458,7 +458,7 @@ public class RoomDao implements Serializable
         String sql = "UPDATE room set "
         + "is_deleted = 1 WHERE room_id = " //"delete from room where "以前までは物理削除になっていた   //"UPDATE room set is_deleted = true"論理削除に変更
         + DbS.chara(pRoomId);
-        int ret =DbBase.dbExec(sql);
+        int ret = DbBase.dbExec(sql);
         
         if (ret != 1)
         	throw new AtareSysException("dbDelete number or record exception");
