@@ -178,14 +178,14 @@ td
 <script type="text/javascript">
 function go_submit(action_cmd, request_cmd)
 {
-    document.getElementById('main_form').action='';
+    document.getElementById('main_form').action='RoomDetail.do';
     document.getElementById('action_cmd').value=action_cmd;
     document.getElementById('request_cmd').value=request_cmd;
     document.getElementById('main_form').submit();
 }
 function go_list(action_cmd)
 {
-    document.getElementById('main_form').action = '';
+    document.getElementById('main_form').action = 'RoomDetail.do';
     document.getElementById('action_cmd').value = action_cmd;
     document.getElementById('main_form').submit();
 }
@@ -219,20 +219,19 @@ function go_list(action_cmd)
        
        <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
        <div class="errors"><%=webBean.dispErrorMessages()%></div>
-       
        <div class="left">
-         <% if ("修正する".equals(val)) { %>
+         <% if ("updateEnter".equals(actionType)) { %>
          <table class="room__form--name">
            <tr class="table-header">
-             <td>修正前</td>
-             <td>修正後</td>
+             <td style="width: 30%">修正前</td>
+             <td style="width: 30%">修正後</td>
            </tr>
            <tr class="table-date">
-             <td><%=webBean.txt("before_name")%></td>
-             <td><%=webBean.txt("room_name")%></td>
+             <td style="width: 30%"><%=webBean.txt("before_name")%></td>
+             <td style="width: 30%"><%=webBean.txt("room_name")%></td>
            </tr>
          </table>
-         <% } else if ("登録する".equals(val)) {%>
+         <% } else if ("insEnter".equals(actionType)) {%>
          <table class="room__form--name">
            <tr class="table-header">
              <td>部屋名</td>
@@ -241,7 +240,7 @@ function go_list(action_cmd)
              <td><%=webBean.txt("room_name")%></td>
            </tr>
           </table>
-          <%} else if ("削除する".equals(val)) {%> <%--削除する追加--%>
+          <%} else if ("deleteEnter".equals(actionType)) {%> <%--削除する追加--%>
          <table class="room__form--name">
            <tr class="table-header">
              <td>削除</td> 
@@ -253,7 +252,7 @@ function go_list(action_cmd)
          <%} %>
         </div>
           <div class="button">
-            <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next','<%=actionType%>')" value="<%=val%>"/>
+            <input type="button" id="bt" name="reg-btn"  onclick="<%=actionBtn%>('go_next','<%=actionType%>')" value="<%=val%>"/>
           </div>
       </form>
     </div>

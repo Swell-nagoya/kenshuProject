@@ -67,13 +67,7 @@ public class RoomDetail extends ControllerBase
           String roomName = bean.value("room_name");
           String beforeName = bean.value("before_name");
           RoomDao dao = setWeb2Dao2InputInfo();
-          bean.setValue("request_name", "修正する");
-          if (beforeName == null || beforeName.trim().isEmpty()) {
-              beforeName = roomName;
-              bean.setValue("before_name", beforeName);
-          }
-          bean.setValue("before_name", beforeName);
-          bean.setValue("room_name", roomName);
+
           if ("RoomDetail".equals(formName))
           {
               if ("go_next".equals(actionCmd))
@@ -101,7 +95,7 @@ public class RoomDetail extends ControllerBase
           }
           else if ("RoomList".equals(formName))
           {
-              if ("go_next".equals(actionCmd)) 
+              if ("go_next".equals(actionCmd))
               {
                   if ("ins".equals(requestCmd)) 
                   {
@@ -300,7 +294,11 @@ public class RoomDetail extends ControllerBase
             errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
         }
 
-        return errors.isEmpty();
+        if (errors.size() > 0)
+        {
+            return false;
+        }
+        return true;
     }
    
    

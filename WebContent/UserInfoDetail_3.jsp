@@ -185,12 +185,13 @@ table {
 </head>
 <body>
    <%
-     String maidenName = webBean.txt("maiden_name").trim();
-     String insertUserId = webBean.txt("insert_user_id").trim();
-     String val = webBean.txt("request_name");
-     String actionType =  val.equals("登録") ? "ins" : val.equals("修正") ? "update" : val.equals("確定") ? "delete" : val.equals("メール送信") ? "send" : "unknown";
-     String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
-     String header =  val.equals("登録") ? "登録確定" : val.equals("修正") ? "情報編集確定" : val.equals("確定") ? "情報削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
+   String maidenName = webBean.txt("maiden_name").trim();
+   String insertUserId = webBean.txt("insert_user_id").trim();
+   String val = webBean.txt("request_name");
+   String actionType =  val.equals("登録") ? "ins" : val.equals("修正") ? "update" : val.equals("確定") ? "delete" : val.equals("メール送信") ? "send" : "unknown";
+   String actionBtn =  val.equals("メール送信") ? "go_mail" : "go_submit";
+   String header =  val.equals("登録") ? "登録確定" : val.equals("修正") ? "情報編集確定" : val.equals("確定") ? "情報削除確定" : val.equals("メール送信") ? "情報確認" : "unknown";
+
    %>
   <div class="container">
     <div class="new-btn">

@@ -23,7 +23,7 @@
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta name="viewport" content="width=device-width" , initial-scale=1.0">
+<meta name="viewport" content="width=device-width , initial-scale=1.0">
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta charset="UTF-8">

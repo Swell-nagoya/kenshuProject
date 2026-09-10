@@ -380,7 +380,7 @@ th {
 						for (Object item : webBean.arrayList("list")) {
 						    FileDao dao = (FileDao) item;
 						%>
-						<tr
+						<tr>
 							<tr style="background-color:<%="received".equals(dao.getFileType() != null ? dao.getFileType() : "") ? "#1565c0" : "white"%>">
 							<td><%=WebUtil.htmlEscape(dao.getFileName())%></td>
 							<td><%=WebUtil.htmlEscape(dao.getUploadDate())%></td>
