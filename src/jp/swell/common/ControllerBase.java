@@ -17,6 +17,7 @@ public abstract class ControllerBase extends HttpServlet {
         if (userLoginInfo != null) {
             bean.setValue("menu_cmd", bean.value("menu_cmd"));
             bean.setValue("login_user", userLoginInfo.getUserInfoId());
+            bean.setValue("login_user_is_admin", userLoginInfo.isAdmin() ? "1" : "0");
         }
         doActionProcess();
     }

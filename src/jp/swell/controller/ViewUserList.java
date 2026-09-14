@@ -131,6 +131,7 @@ public class ViewUserList extends ControllerBase
         WebBean bean = getWebBean();
         bean.setValue("sort_key", "full_name_kana"); /* 初回のソートキーを入れる */
         bean.setValue("sort_order", "asc");
+        bean.setValue("search_mode", "and"); /* 検索条件の結合方法の初期値 */
         bean.setValue("lineCount", SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "ViewUserList", "lineCount", "100"));
     }
 
@@ -147,6 +148,7 @@ public class ViewUserList extends ControllerBase
         bean.setValue("list_search_status", "");
         bean.setValue("sort_key", "full_name_kana"); /* 初回のソートキーを入れる */
         bean.setValue("sort_order", "asc");
+        bean.setValue("search_mode", "and");
         bean.setValue("lineCount", "");
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
@@ -163,6 +165,7 @@ public class ViewUserList extends ControllerBase
         HashMap<String, String> errors = bean.getItemErrors();
         CommonDoActionProcess.checkMaxLength(errors, "list_search_full_name", bean.value("list_search_full_name"), 100, "氏名");
         CommonDoActionProcess.checkMaxLength(errors, "list_search_full_name_kana", bean.value("list_search_full_name_kana"), 100, "氏名よみ");
+        CommonDoActionProcess.checkMaxLength(errors, "list_search_memail", bean.value("list_search_memail"), 100, "メールアドレス");
         return errors;
     }
 
@@ -186,7 +189,8 @@ public class ViewUserList extends ControllerBase
         dao.setSearchMemail(bean.value("list_search_memail"));
         dao.setSearchAdmin(bean.value("list_search_admin"));
         dao.setSearchStatus(bean.value("list_search_status"));
-        
+        dao.setSearchMode(bean.value("search_mode"));
+
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount")))
         {

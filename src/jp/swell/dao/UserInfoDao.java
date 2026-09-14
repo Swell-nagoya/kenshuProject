@@ -818,7 +818,27 @@ public class UserInfoDao implements Serializable {
     public void setSearchStatus(String searchStatus) {
     	this.searchStatus = searchStatus;
     }
-    
+
+    /**
+     * 検索条件(氏名・メールアドレス・区分・ステータス)の結合方法。"and"または"or"。
+     */
+    private String searchMode = "and";
+
+    /**
+     * 検索条件の結合方法を取得する
+     */
+    public String getSearchMode() {
+    	return searchMode;
+    }
+
+    /**
+     * 検索条件の結合方法をセットする
+     * @param searchMode 検索条件の結合方法("and"または"or")
+     */
+    public void setSearchMode(String searchMode) {
+    	this.searchMode = searchMode;
+    }
+
     /**
      *  データアクセス権限のあるユーザリストを取得する。.
      */
@@ -1117,6 +1137,24 @@ public class UserInfoDao implements Serializable {
     }
 
     /**
+     * user_info ユーザ情報テーブルの区分(admin)のみを更新する(一括編集用)
+     *
+     * @param pUserInfoId ユーザ情報ID
+     * @param admin 区分("1":管理者, "0":一般)
+     * @return true:成功 false:失敗
+     * @throws AtareSysException エラー
+     */
+    public boolean dbUpdateAdmin(String userInfoId, String admin) throws AtareSysException {
+        String sql = "update user_info set "
+                + " admin = " + DbS.chara(admin)
+                + " where user_info_id = " + DbS.chara(userInfoId);
+        int ret = DbBase.dbExec(sql);
+        if (ret != 1)
+            throw new AtareSysException("dbUpdateAdmin number or record exception.");
+        return true;
+    }
+
+    /**
      * メールアドレスの重複確認を行うメソッド(新規登録時)
      * @param email 確認するメールアドレス
      * @return メールアドレスが重複していれば true、そうでなければ false
@@ -1381,14 +1419,6 @@ public class UserInfoDao implements Serializable {
                             + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')"
                             + ") LIKE " + DbS.chara("%" + getSearchFullNameKana() + "%"));
         }
-        if (getSearchName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
-            where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
-                    + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, ''), " +
-                    "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
-                    + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')" + ") LIKE "
-                    + DbS.chara("%" + getSearchName() + "%"));
-        }
         if (userIds != null && userIds.length > 0) {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("user_info.user_info_id IN (");
@@ -1402,9 +1432,19 @@ public class UserInfoDao implements Serializable {
             }
             where.append(")");
         }
+
+        // 氏名・メールアドレス・区分・ステータスは、検索モード(and/or)に応じて結合する
+        ArrayList<String> groupConditions = new ArrayList<String>();
+        
+        if (getSearchName().length() > 0) {
+            groupConditions.add("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
+                    + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, ''), " +
+                    "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
+                    + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')" + ") LIKE "
+                    + DbS.chara("%" + getSearchName() + "%"));
+        }
         if(getSearchMemail().length() > 0) {
-        	where.append(where.length() > 0 ? " AND " : "");
-        	where.append("user_info.memail LIKE " + DbS.chara("%" + getSearchMemail() + "%"));
+        	groupConditions.add("user_info.memail LIKE " + DbS.chara("%" + getSearchMemail() + "%"));
         }
         if(getSearchAdmin().length() > 0) {
         	String adminInfo1 = "1";
@@ -1413,15 +1453,22 @@ public class UserInfoDao implements Serializable {
         		adminInfo1 = "0";
         		adminInfo2 = "general";
         	}
-        	
-        	where.append(where.length() > 0 ? " AND " : "");
-        	where.append("(user_info.admin LIKE " + DbS.chara("%" + adminInfo1 + "%") + "OR "
+
+        	groupConditions.add("(user_info.admin LIKE " + DbS.chara("%" + adminInfo1 + "%") + "OR "
         			+ "user_info.admin LIKE " + DbS.chara("%" + adminInfo2 + "%") + ")");
         }
         if(getSearchStatus().length() > 0) {
-        	where.append(where.length() > 0 ? " AND " : "");
-        	where.append("user_info.state_flg LIKE " + DbS.chara("%" + getSearchStatus() + "%"));
-        	
+        	groupConditions.add("user_info.state_flg LIKE " + DbS.chara("%" + getSearchStatus() + "%"));
+        }
+        if (!groupConditions.isEmpty()) {
+            String joiner = "or".equalsIgnoreCase(getSearchMode()) ? " OR " : " AND ";
+            StringBuffer group = new StringBuffer();
+            for (int i = 0; i < groupConditions.size(); i++) {
+                group.append(i > 0 ? joiner : "");
+                group.append(groupConditions.get(i));
+            }
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("(").append(group).append(")");
         }
         /*where.append(where.length() > 0 ? " AND " : "");
         // where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");

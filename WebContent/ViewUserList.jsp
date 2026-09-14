@@ -338,6 +338,13 @@ footer {
     	    return;
     	  }
 
+    	  var adminSelect = document.getElementById('bulk_admin_value');
+    	  var adminLabel = adminSelect.options[adminSelect.selectedIndex].text;
+
+    	  if (!confirm('選択したユーザーの区分を「' + adminLabel + '」に一括変更します。よろしいですか？')) {
+    	    return;
+    	  }
+
     	  document.getElementById('main_form').action = 'UserInfoDetail.do';
     	  document.getElementById('action_cmd').value = 'go_next';
     	  document.getElementById('request_cmd').value = 'bulk_update';
@@ -352,7 +359,7 @@ footer {
     	    return;
     	  }
 
-    	  if (!confirm('選択したユーザーを一括削除します。よろしいですか？')) {
+    	  if (!confirm('選択したユーザーを退職にします。よろしいですか？')) {
     	    return;
     	  }
 
@@ -400,11 +407,12 @@ footer {
         </div>
         <table class="select_table">
           <tr>
-            <td class="search_label center" style="width: 25%">氏名</td>
-            <td class="search_label center" style="width: 25%">メールアドレス</td>
+            <td class="search_label center" style="width: 20%">氏名</td>
+            <td class="search_label center" style="width: 20%">メールアドレス</td>
             <td class="search_label center" style="width: 10%">区分</td>
             <td class="search_label center" style="width: 10%">ステータス</td>
             <td class="search_label center" style="width: 10%">表示件数</td>
+            <td class="search_label center" style="width: 10%">検索条件</td>
             <td class="search_label center" style="width: 20%"></td>
           </tr>
           <tr>
@@ -442,9 +450,16 @@ footer {
               <input type="text" name="lineCount" id="lineCount" size="2" maxlength="5" value="<%=webBean.txt("lineCount")%>" class="right ime_disabled" />件
             </td>
             
+            <!-- 検索条件 -->
+            <td class="search_text center">
+            <label><input type="radio" name="search_mode" value="and"
+                <%= "or".equals(webBean.value("search_mode")) ? "" : "checked=\"checked\"" %> />AND</label><br />
+            <label><input type="radio" name="search_mode" value="or"
+                <%= "or".equals(webBean.value("search_mode")) ? "checked=\"checked\"" : "" %> />OR</label>
+            </td>
             
             <td class="search_text center">
-              <input type="button" value="検索" onclick="go_submit('search')" /> 
+              <input type="button" value="検索" onclick="go_submit('search')" />
               <input type="button" value="クリア" onclick="go_submit('clear')" /></td>
           </tr>
         </table>
@@ -563,8 +578,14 @@ footer {
             </td>
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getMemail())%></td>
             <td class="list_btn">
+              <%
+              if ("1".equals(webBean.value("login_user_is_admin"))) {
+              %>
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
               <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+              <%
+              }
+              %>
               <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
               <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
             </td>
@@ -578,8 +599,18 @@ footer {
         %>
       </div>
       <div class="pagenation">
+        <%
+        if ("1".equals(webBean.value("login_user_is_admin"))) {
+        %>
+        <select name="bulk_admin_value" id="bulk_admin_value">
+          <option value="1">管理者</option>
+          <option value="0">一般</option>
+        </select>
         <input type="button" value="選択したユーザーを一括編集" onclick="go_bulk_edit();" />
         <input type="button" value="選択したユーザーを一括削除" onclick="go_bulk_delete();" />
+        <%
+        }
+        %>
       </div>
     </form>
   </div>

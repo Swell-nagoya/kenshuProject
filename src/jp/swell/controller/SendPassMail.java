@@ -119,14 +119,13 @@ public class SendPassMail extends ControllerBase
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
        
-        if (bean.value("memail").length() == 0)
+        if (!CommonDoActionProcess.checkEmailFormat(errors, "memail", bean.value("memail")))
         {
-            errors.put("memail", "メールアドレスを入力してください。");
-        }
-        else if (!(pUserInfoDao.isEmailExists(bean.value("memail")))) 
-        {
-            // メールアドレス登録されていない場合のエラーメッセージ設定
-            errors.put("memail", "このメールアドレスは登録されていません。");
+            if (!(pUserInfoDao.isEmailExists(bean.value("memail"))))
+            {
+                // メールアドレス登録されていない場合のエラーメッセージ設定
+                errors.put("memail", "このメールアドレスは登録されていません。");
+            }
         }
         if (errors.size() > 0)
         {
