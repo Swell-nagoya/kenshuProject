@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
@@ -99,6 +100,32 @@ public class ViewUserList extends ControllerBase
             {
                 redirect("MenuAdmin.do");
                 return;
+            }
+            else if ("bulk_update".equals(bean.value("action_cmd")))
+            {
+                if (getSelectedUserInfoIds().length == 0)
+                {
+                    bean.setError("対象ユーザーを選択してください。");
+                    searchList();
+                }
+                else
+                {
+                    bulkUpdateAdmin();
+                    return;
+                }
+            }
+            else if ("bulk_delete".equals(bean.value("action_cmd")))
+            {
+                if (getSelectedUserInfoIds().length == 0)
+                {
+                    bean.setError("対象ユーザーを選択してください。");
+                    searchList();
+                }
+                else
+                {
+                    bulkDelete();
+                    return;
+                }
             }
             else
             {
@@ -313,5 +340,118 @@ public class ViewUserList extends ControllerBase
         ret = Integer.parseInt(pageNo);
         ret += add;
         return String.valueOf(ret);
+    }
+
+    /**
+     * 選択されたユーザーID配列を取得する。
+     */
+    private String[] getSelectedUserInfoIds()
+    {
+        WebBean bean = getWebBean();
+        String selectedIds = bean.value("select_user_info_ids");
+
+        if (selectedIds == null || selectedIds.trim().length() == 0)
+        {
+            return new String[0];
+        }
+
+        String[] rawIds = selectedIds.split(",");
+        ArrayList<String> idList = new ArrayList<String>();
+
+        for (int i = 0; i < rawIds.length; i++)
+        {
+            String id = rawIds[i].trim();
+            if (id.length() > 0 && !idList.contains(id))
+            {
+                idList.add(id);
+            }
+        }
+
+        return idList.toArray(new String[idList.size()]);
+    }
+
+    /**
+     * 一括修正の場合。
+     * 選択したユーザーの区分(管理者/一般)をまとめて変更する。
+     * @throws AtareSysException
+     */
+    private void bulkUpdateAdmin() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String[] userInfoIds = getSelectedUserInfoIds();
+        String admin = bean.value("bulk_admin_value");
+
+        if (!"1".equals(admin) && !"0".equals(admin))
+        {
+            bean.setError("区分を選択してください。");
+            searchList();
+            forward("ViewUserList.jsp");
+            return;
+        }
+
+        try
+        {
+            DbBase.dbBeginTran();
+
+            for (int i = 0; i < userInfoIds.length; i++)
+            {
+                String userInfoId = userInfoIds[i].trim();
+                if (userInfoId.length() == 0)
+                {
+                    continue;
+                }
+
+                UserInfoDao dao = new UserInfoDao();
+                dao.dbUpdateAdmin(userInfoId, admin);
+            }
+
+            DbBase.dbCommitTran();
+            redirect("ViewUserList.do");
+        }
+        catch (Exception e)
+        {
+            DbBase.dbRollbackTran();
+            bean.setError("ユーザーデータの一括修正に失敗しました。");
+            searchList();
+            forward("ViewUserList.jsp");
+        }
+    }
+
+    /**
+     * 一括削除の場合。
+     * 選択したユーザーのステータスをまとめて退職(9)にする。
+     * @throws AtareSysException
+     */
+    private void bulkDelete() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String[] userInfoIds = getSelectedUserInfoIds();
+
+        try
+        {
+            DbBase.dbBeginTran();
+
+            for (int i = 0; i < userInfoIds.length; i++)
+            {
+                String userInfoId = userInfoIds[i].trim();
+                if (userInfoId.length() == 0)
+                {
+                    continue;
+                }
+
+                UserInfoDao dao = new UserInfoDao();
+                dao.dbDelete(userInfoId);
+            }
+
+            DbBase.dbCommitTran();
+            redirect("ViewUserList.do");
+        }
+        catch (Exception e)
+        {
+            DbBase.dbRollbackTran();
+            bean.setError("ユーザーデータの一括削除に失敗しました。");
+            searchList();
+            forward("ViewUserList.jsp");
+        }
     }
 }

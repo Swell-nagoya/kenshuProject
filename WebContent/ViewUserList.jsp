@@ -345,9 +345,8 @@ footer {
     	    return;
     	  }
 
-    	  document.getElementById('main_form').action = 'UserInfoDetail.do';
-    	  document.getElementById('action_cmd').value = 'go_next';
-    	  document.getElementById('request_cmd').value = 'bulk_update';
+    	  document.getElementById('main_form').action = 'ViewUserList.do';
+    	  document.getElementById('action_cmd').value = 'bulk_update';
     	  document.getElementById('main_form').submit();
     	}
 
@@ -363,9 +362,8 @@ footer {
     	    return;
     	  }
 
-    	  document.getElementById('main_form').action = 'UserInfoDetail.do';
-    	  document.getElementById('action_cmd').value = 'go_next';
-    	  document.getElementById('request_cmd').value = 'bulk_delete';
+    	  document.getElementById('main_form').action = 'ViewUserList.do';
+    	  document.getElementById('action_cmd').value = 'bulk_delete';
     	  document.getElementById('main_form').submit();
     	}
 
@@ -502,40 +500,12 @@ footer {
               <input type="checkbox" id="select_user_info_id_all" onclick="toggleUserCheckAll(this);" />
             </td>
             <%
-            String fullNameOrder = "";
-            String lastNameKanaOrder = "";
-            String memailOrder = "";
-            if("full_name".equals(webBean.value("sort_key_old"))){
-            	if("asc".equals(webBean.value("sort_order"))) {
-            		fullNameOrder = "▲";
-            	}else{
-            		fullNameOrder = "▼";
-            	}
-	        	lastNameKanaOrder = "";
-	        	memailOrder = "";
-            }else if("full_name_kana".equals(webBean.value("sort_key_old"))) {
-	        	if("asc".equals(webBean.value("sort_order"))) {
-	        		lastNameKanaOrder = "▲";
-	        	}else {
-	        		lastNameKanaOrder = "▼";
-	        	}
-	        	fullNameOrder = "";
-	        	memailOrder = "";
-	        	
-	        }else if("memail".equals(webBean.value("sort_key_old"))) {
-	        	if("asc".equals(webBean.value("sort_order"))) {
-	        		memailOrder = "▲";
-	        	}else {
-	        		memailOrder = "▼";
-	        	}
-	        	fullNameOrder = "";
-	        	lastNameKanaOrder = "";
-	        	
-	        }else {
-	        	fullNameOrder = "";
-	        	lastNameKanaOrder = "";
-	        	memailOrder = "";
-	        }%>
+            String sortKeyOld = webBean.value("sort_key_old");
+            String sortIcon = "asc".equals(webBean.value("sort_order")) ? "▲" : "▼";
+            String fullNameOrder = "full_name".equals(sortKeyOld) ? sortIcon : "";
+            String lastNameKanaOrder = "full_name_kana".equals(sortKeyOld) ? sortIcon : "";
+            String memailOrder = "memail".equals(sortKeyOld) ? sortIcon : "";
+            %>
             <td class="list_label" style="width: 23%">
             <a href="javaScript:go_sort_request('full_name')"><%= fullNameOrder %> 氏名</a></td>
             <td class="list_label" style="width: 23%">

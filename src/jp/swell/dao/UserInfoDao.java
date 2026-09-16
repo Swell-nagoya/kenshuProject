@@ -763,7 +763,7 @@ public class UserInfoDao implements Serializable {
     /**
      * searchMemail 検索メールアドレス
      */
-    private String searchMemail;
+    private String searchMemail = "";
     
     /**
      * 検索メールアドレスを取得する
