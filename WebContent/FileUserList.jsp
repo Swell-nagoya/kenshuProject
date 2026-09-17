@@ -172,30 +172,97 @@ input[type="button"]:hover {
 	display: inline-block;
 }
 </style>
-				<script type="text/javascript">
-// 元の go_submit / go_upload はそのまま残す
-function go_submit(action_cmd) {
-  document.getElementById('main_form').action = '';
-  document.getElementById('action_cmd').value = action_cmd;
-  document.getElementById('main_form').submit();
-}
-function go_upload(action_cmd) {
-  document.getElementById('main_form').action = '';
-  document.getElementById('action_cmd').value = action_cmd;
-  document.getElementById('main_form').submit();
+<script type="text/javascript">
+function splitValues(value) {
+  if (!value) return [];
+  return value.split(',').map(function(v) { return v.trim(); }).filter(function(v) { return v.length > 0; });
 }
 
-// 子画面で「選択」ボタン押下時の処理
-function submitSelection() {
-  const selected = [];
-  document.querySelectorAll('input[name="user_id"]:checked').forEach(cb => {
-    selected.push({
-      id: cb.value,
-      name: cb.nextElementSibling.innerText,
-      type: 'sub'
-    });
+function getSelectedMap() {
+  const ids = splitValues(document.getElementById('selectedIds').value);
+  const names = splitValues(document.getElementById('selectedNames').value);
+  const map = {};
+  ids.forEach(function(id, index) {
+    map[id] = names[index] || '';
   });
-  if (selected.length) {
+  return map;
+}
+
+function setSelectedMap(map) {
+  const ids = [];
+  const names = [];
+  Object.keys(map).forEach(function(id) {
+    if (!id) return;
+    ids.push(id);
+    names.push(map[id] || '');
+  });
+  document.getElementById('selectedIds').value = ids.join(',');
+  document.getElementById('selectedNames').value = names.join(',');
+}
+
+function reflectCurrentPageToHidden() {
+  const map = getSelectedMap();
+
+  document.querySelectorAll('input[name="user_id"]').forEach(function(cb) {
+    if (cb.checked) {
+      map[cb.value] = cb.getAttribute('data-user-name') || '';
+    } else {
+      delete map[cb.value];
+    }
+  });
+
+  setSelectedMap(map);
+}
+
+function restoreSelectionFromOpener() {
+  if (document.getElementById('selectedIds').value) return;
+
+  try {
+    if (!window.opener || window.opener.closed) return;
+
+    const parentIds = window.opener.document.getElementById('destination_user_info_id');
+    if (parentIds && parentIds.value) {
+      document.getElementById('selectedIds').value = parentIds.value;
+    }
+  } catch (e) {
+    // 親画面を参照できない場合は何もしない
+  }
+}
+
+function applyHiddenToCurrentPage() {
+  const map = getSelectedMap();
+
+  document.querySelectorAll('input[name="user_id"]').forEach(function(cb) {
+    if (map.hasOwnProperty(cb.value)) {
+      cb.checked = true;
+      if (!map[cb.value]) {
+        map[cb.value] = cb.getAttribute('data-user-name') || '';
+      }
+    }
+  });
+
+  setSelectedMap(map);
+}
+
+function goPage(p) {
+  reflectCurrentPageToHidden();
+  document.getElementById('pageNo').value = p;
+  document.getElementById('pagerForm').submit();
+}
+
+function submitSelection() {
+  reflectCurrentPageToHidden();
+
+  const map = getSelectedMap();
+  const selected = Object.keys(map).map(function(id) {
+    return {
+      id: id,
+      name: map[id],
+      type: 'sub'
+    };
+  });
+
+  if (window.opener && !window.opener.closed && typeof window.opener.receiveSelectedUsers === 'function') {
     window.opener.receiveSelectedUsers(selected, 'sub');
   }
   window.close();
@@ -205,141 +272,92 @@ function toggleCheckbox(div) {
   const cb = div.querySelector('input[type="checkbox"]');
   if (!cb) return;
   cb.checked = !cb.checked;
+  reflectCurrentPageToHidden();
 }
+
+window.onload = function() {
+};
 </script>
 </head>
 <body>
 	<%
 	int pageNo = Integer.parseInt(webBean.txt("pageNo", 1));
 	int maxPageNo = Integer.parseInt(webBean.txt("maxPageNo", 1));
+	String selectedIds = webBean.txt("selectedIds");
+	String selectedNames = webBean.txt("selectedNames");
+	if (selectedIds == null) selectedIds = "";
+	if (selectedNames == null) selectedNames = "";
+	List<String> stay = Arrays.asList(selectedIds.split(","));
 	%>
 
-	<form id="pagerTop" class="pager" method="post" target="FileUserList"
-		action="<%=request.getContextPath()%>/FileDetail.do"
-		style="text-align: center; margin: 10px 0;">
+	<form id="pagerForm" class="pager" method="post" target="FileUserList"
+		action="<%=request.getContextPath()%>/FileDetail.do">
 		<input type="hidden" name="form_name" value="FileDetail" />
 		<input type="hidden" name="action_cmd" value="sub" />
-		<input type="hidden" name="pageNo" value="<%=pageNo%>" />
-		<!-- チェック保持用 -->
+		<input type="hidden" name="pageNo" id="pageNo" value="<%=pageNo%>" />
 		<input type="hidden" name="selectedIds" id="selectedIds"
-			value="<%=webBean.txt("selectedIds")%>" />
+			value="<%=WebUtil.htmlEscape(selectedIds)%>" />
+		<input type="hidden" name="selectedNames" id="selectedNames"
+			value="<%=WebUtil.htmlEscape(selectedNames)%>" />
+
 		<button type="button" onclick="goPage(<%=pageNo - 1%>)"
-			<%=pageNo <= 1 ? "disabled" : ""%>>← 戻る</button>
+			<%=pageNo <= 1 ? "disabled=\"disabled\"" : ""%>>← 戻る</button>
 		<span><%=pageNo%> / <%=maxPageNo%> ページ</span>
 		<button type="button" onclick="goPage(<%=pageNo + 1%>)"
-			<%=pageNo >= maxPageNo ? "disabled" : ""%>>次へ →</button>
+			<%=pageNo >= maxPageNo ? "disabled=\"disabled\"" : ""%>>次へ →</button>
 	</form>
-	<script>
-	function goPage(p) {
-		  // 選択されたチェック状態を保持
-		  const prev = (document.getElementById('selectedIds').value || "")
-		    .split(',').filter(x => x);
-		  const curr = Array.from(
-		    document.querySelectorAll('input[name="user_id"]:checked')
-		  ).map(cb => cb.value);
-		  const merged = [...new Set([...prev, ...curr])];
-
-		  // 両方の hidden に反映させる（上下両方の selectedIds）
-		  const topSelected = document.querySelector('#pagerTop #selectedIds');
-		  const bottomSelected = document.querySelector('#pagerBottom #selectedIds');
-		  if (topSelected) topSelected.value = merged.join(',');
-		  if (bottomSelected) bottomSelected.value = merged.join(',');
-
-		  // フォームの送信
-		  const f = document.getElementById("pagerTop") || document.getElementById("pagerBottom");
-		  f.pageNo.value = p;
-		  f.submit();
-		}
-  </script>
-
 
 	<div class="container">
 		<div id="contents">
 			<div id="main">
-				<form method="post" id="main_form" action="" class="main__form">
-					<input type="hidden" name="form_name" id="form_name"
-						value="FileDetail" />
-					<input type="hidden" name="action_cmd" id="action_cmd" value="" />
-					<input type="hidden" name="list" id="list"
-						value="<%=webBean.txt("list")%>" />
-					<input type="hidden" name="name" id="name"
-						value="<%=webBean.txt("name")%>" />
-					<input type="hidden" name="user_info_id" id="user_info_id">
+				<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
+				<div class="errors"><%=webBean.dispErrorMessages()%></div>
 
-						<div class="style_head3 messages"><%=webBean.dispMessages()%></div>
-						<div class="errors"><%=webBean.dispErrorMessages()%></div> <!-- 送り先ユーザー（複数選択可） -->
-						<div class="file__form--name">
-							<h2>送り先ユーザー</h2>
-							<div class="user-container">
-								<%
-								String sel = webBean.value("selectedIds");
-								if (sel == null)
-								    sel = "";
-								List<String> stay = Arrays.asList(sel.split(","));
-								for (Object o : webBean.arrayList("user_data")) {
-								    UserInfoDao dao = (UserInfoDao) o;
-								    String userId = WebUtil.htmlEscape(dao.getUserInfoId());
-								    String fullName = WebUtil.htmlEscape(dao.getLastName())
-								    + " "
-								    + WebUtil.htmlEscape(dao.getFirstName());
-								    boolean isChecked = stay.contains(userId);
-								%>
-								<div class="user-item" style="cursor: pointer;"
-									onclick="toggleCheckbox(this)">
-									<input type="checkbox" name="user_id" id="dest_<%=userId%>"
-										value="<%=userId%>" class="user-checkbox"
-										<%=isChecked ? "checked" : ""%>
-										onclick="event.stopPropagation();" /> <label
-										for="dest_<%=userId%>" onclick="event.stopPropagation();">
-										<%=fullName%></label>
-								</div>
-								<%
-								}
-								%>
-								<%
-								if (webBean.arrayList("user_data").isEmpty()) {
-								%>
-								<p>送信先ユーザーがありません</p>
-								<%
-								}
-								%>
-
-							</div>
-							<form id="pagerBottom" method="post" target="FileUserList"
-								action="<%=request.getContextPath()%>/FileDetail.do"
-								style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px auto; flex-wrap: nowrap; width: 100%; max-width: 800px;">
-								<input type="hidden" name="form_name" value="FileDetail" />
-								<input type="hidden" name="action_cmd" value="sub" />
-								<input type="hidden" name="pageNo" value="<%=pageNo%>" />
-								<input type="hidden" name="selectedIds" id="selectedIds"
-									value="<%=webBean.txt("selectedIds")%>" />
-
-								<button type="button"
-									style="width: 100px; height: 40px; text-align: center; white-space: nowrap;"
-									onclick="goPage(<%=pageNo - 1%>)"
-									<%=pageNo <= 1 ? "disabled" : ""%>>← 戻る</button>
-
-								<span
-									style="display: inline-block; min-width: 120px; text-align: center;">
-									<%=pageNo%> / <%=maxPageNo%> ページ
-								</span>
-
-								<button type="button"
-									style="width: 100px; height: 40px; text-align: center; white-space: nowrap;"
-									onclick="goPage(<%=pageNo + 1%>)"
-									<%=pageNo >= maxPageNo ? "disabled" : ""%>>次へ →</button>
-							</form>
-
-							<!-- 選択ボタンが不要ならこの<div>ごと削除 -->
-							<div>
-								<input type="button" value="選択" onclick="submitSelection()"
-									class="select-button" />
-							</div>
+				<div class="file__form--name">
+					<h2>送り先ユーザー</h2>
+					<div class="user-container">
+						<%
+						for (Object o : webBean.arrayList("user_data")) {
+						    UserInfoDao dao = (UserInfoDao) o;
+						    String userId = WebUtil.htmlEscape(dao.getUserInfoId());
+						    String fullName = WebUtil.htmlEscape(dao.getLastName()) + " " + WebUtil.htmlEscape(dao.getFirstName());
+						    boolean isChecked = false;
+						%>
+						<div class="user-item" onclick="toggleCheckbox(this)">
+							<input type="checkbox" name="user_id" id="dest_<%=userId%>"
+								value="<%=userId%>" data-user-name="<%=fullName%>"
+								<%=isChecked ? "checked=\"checked\"" : ""%>
+								onclick="event.stopPropagation(); reflectCurrentPageToHidden();" />
+							<label for="dest_<%=userId%>" onclick="event.stopPropagation();"><%=fullName%></label>
 						</div>
+						<%
+						}
+						%>
+
+						<%
+						if (webBean.arrayList("user_data").isEmpty()) {
+						%>
+						<p>送信先ユーザーがありません</p>
+						<%
+						}
+						%>
+					</div>
+
+					<div class="pager">
+						<button type="button" onclick="goPage(<%=pageNo - 1%>)"
+							<%=pageNo <= 1 ? "disabled=\"disabled\"" : ""%>>← 戻る</button>
+						<span><%=pageNo%> / <%=maxPageNo%> ページ</span>
+						<button type="button" onclick="goPage(<%=pageNo + 1%>)"
+							<%=pageNo >= maxPageNo ? "disabled=\"disabled\"" : ""%>>次へ →</button>
+					</div>
+
+					<div style="text-align: center;">
+						<input type="button" value="選択" onclick="submitSelection()"
+							class="select-button" />
+					</div>
+				</div>
 			</div>
-			</form>
 		</div>
-	</div>
 	</div>
 </body>
 </html>

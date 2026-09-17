@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
@@ -49,7 +50,7 @@ public class ViewUserList extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -100,6 +101,32 @@ public class ViewUserList extends ControllerBase
                 redirect("MenuAdmin.do");
                 return;
             }
+            else if ("bulk_update".equals(bean.value("action_cmd")))
+            {
+                if (getSelectedUserInfoIds().length == 0)
+                {
+                    bean.setError("対象ユーザーを選択してください。");
+                    searchList();
+                }
+                else
+                {
+                    bulkUpdateAdmin();
+                    return;
+                }
+            }
+            else if ("bulk_delete".equals(bean.value("action_cmd")))
+            {
+                if (getSelectedUserInfoIds().length == 0)
+                {
+                    bean.setError("対象ユーザーを選択してください。");
+                    searchList();
+                }
+                else
+                {
+                    bulkDelete();
+                    return;
+                }
+            }
             else
             {
                 searchList();
@@ -131,6 +158,7 @@ public class ViewUserList extends ControllerBase
         WebBean bean = getWebBean();
         bean.setValue("sort_key", "full_name_kana"); /* 初回のソートキーを入れる */
         bean.setValue("sort_order", "asc");
+        bean.setValue("search_mode", "and"); /* 検索条件の結合方法の初期値 */
         bean.setValue("lineCount", SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "ViewUserList", "lineCount", "100"));
     }
 
@@ -142,6 +170,12 @@ public class ViewUserList extends ControllerBase
         WebBean bean = getWebBean();
         bean.setValue("list_search_full_name", "");
         bean.setValue("list_search_full_name_kana", "");
+        bean.setValue("list_search_memail", "");
+        bean.setValue("list_search_admin", "");
+        bean.setValue("list_search_status", "");
+        bean.setValue("sort_key", "full_name_kana"); /* 初回のソートキーを入れる */
+        bean.setValue("sort_order", "asc");
+        bean.setValue("search_mode", "and");
         bean.setValue("lineCount", "");
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
@@ -156,20 +190,9 @@ public class ViewUserList extends ControllerBase
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
-        if (bean.value("list_search_full_name").length() > 0)
-        {
-            if (100 < bean.value("list_search_full_name").length())
-            {
-                errors.put("list_search_full_name", "氏名の入力内容が長すぎます。");
-            }
-        }
-        if (bean.value("list_search_full_name_kana").length() > 0)
-        {
-            if (100 < bean.value("list_search_full_name_kana").length())
-            {
-                errors.put("list_search_full_name_kana", "氏名よみの入力内容が長すぎます。");
-            }
-        }
+        CommonDoActionProcess.checkMaxLength(errors, "list_search_full_name", bean.value("list_search_full_name"), 100, "氏名");
+        CommonDoActionProcess.checkMaxLength(errors, "list_search_full_name_kana", bean.value("list_search_full_name_kana"), 100, "氏名よみ");
+        CommonDoActionProcess.checkMaxLength(errors, "list_search_memail", bean.value("list_search_memail"), 100, "メールアドレス");
         return errors;
     }
 
@@ -190,6 +213,10 @@ public class ViewUserList extends ControllerBase
         LinkedHashMap<String, String> sortKey = sortKey();
         UserInfoDao dao = new UserInfoDao();
         dao.setSearchName(bean.value("list_search_full_name"));
+        dao.setSearchMemail(bean.value("list_search_memail"));
+        dao.setSearchAdmin(bean.value("list_search_admin"));
+        dao.setSearchStatus(bean.value("list_search_status"));
+        dao.setSearchMode(bean.value("search_mode"));
 
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount")))
@@ -313,5 +340,118 @@ public class ViewUserList extends ControllerBase
         ret = Integer.parseInt(pageNo);
         ret += add;
         return String.valueOf(ret);
+    }
+
+    /**
+     * 選択されたユーザーID配列を取得する。
+     */
+    private String[] getSelectedUserInfoIds()
+    {
+        WebBean bean = getWebBean();
+        String selectedIds = bean.value("select_user_info_ids");
+
+        if (selectedIds == null || selectedIds.trim().length() == 0)
+        {
+            return new String[0];
+        }
+
+        String[] rawIds = selectedIds.split(",");
+        ArrayList<String> idList = new ArrayList<String>();
+
+        for (int i = 0; i < rawIds.length; i++)
+        {
+            String id = rawIds[i].trim();
+            if (id.length() > 0 && !idList.contains(id))
+            {
+                idList.add(id);
+            }
+        }
+
+        return idList.toArray(new String[idList.size()]);
+    }
+
+    /**
+     * 一括修正の場合。
+     * 選択したユーザーの区分(管理者/一般)をまとめて変更する。
+     * @throws AtareSysException
+     */
+    private void bulkUpdateAdmin() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String[] userInfoIds = getSelectedUserInfoIds();
+        String admin = bean.value("bulk_admin_value");
+
+        if (!"1".equals(admin) && !"0".equals(admin))
+        {
+            bean.setError("区分を選択してください。");
+            searchList();
+            forward("ViewUserList.jsp");
+            return;
+        }
+
+        try
+        {
+            DbBase.dbBeginTran();
+
+            UserInfoDao dao = new UserInfoDao();
+            for (int i = 0; i < userInfoIds.length; i++)
+            {
+                String userInfoId = userInfoIds[i].trim();
+                if (userInfoId.length() == 0)
+                {
+                    continue;
+                }
+
+                dao.dbUpdateAdmin(userInfoId, admin);
+            }
+
+            DbBase.dbCommitTran();
+            redirect("ViewUserList.do");
+        }
+        catch (Exception e)
+        {
+            DbBase.dbRollbackTran();
+            bean.setError("ユーザーデータの一括修正に失敗しました。");
+            searchList();
+            forward("ViewUserList.jsp");
+        }
+    }
+
+    /**
+     * 一括削除の場合。
+     * 選択したユーザーのステータスをまとめて退職(9)にする。
+     * @throws AtareSysException
+     */
+    private void bulkDelete() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String[] userInfoIds = getSelectedUserInfoIds();
+
+        try
+        {
+            DbBase.dbBeginTran();
+
+            UserInfoDao dao = new UserInfoDao();
+            for (int i = 0; i < userInfoIds.length; i++)
+            {
+                String userInfoId = userInfoIds[i].trim();
+                if (userInfoId.length() == 0)
+                {
+                    continue;
+                }
+
+                dao.dbDelete(userInfoId);
+            }
+
+            DbBase.dbCommitTran();
+            redirect("ViewUserList.do");
+        }
+        catch (Exception e)
+        {
+            DbBase.dbRollbackTran();
+            bean.setError("ユーザーデータの一括削除に失敗しました。");
+            searchList();
+            forward("ViewUserList.jsp");
+        }
     }
 }

@@ -16,13 +16,7 @@
 package jp.swell.controller;
 
 import java.security.SecureRandom;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DbBase;
@@ -54,7 +48,7 @@ public class UserInfoDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -105,7 +99,7 @@ public class UserInfoDetail extends ControllerBase
                           forward("UserInfoDetail_2.jsp");
                       }
                   }
-                  else if ("check".equals(bean.value("request_cmd"))) 
+                  else if ("check".equals(bean.value("request_cmd")))
                   {
                       if (!setDb2Web()) 
                       {
@@ -142,12 +136,12 @@ public class UserInfoDetail extends ControllerBase
               }
           }
           
-          else if ("UserInfoDetail_1".equals(bean.value("form_name"))) 
+          else if ("UserInfoDetail_1".equals(bean.value("form_name")))
           {
-              if ("go_next".equals(bean.value("action_cmd"))) 
+              if ("go_next".equals(bean.value("action_cmd")))
               {
-                  
-                  if ("ins".equals(bean.value("request_cmd"))) 
+
+                  if ("ins".equals(bean.value("request_cmd")))
                   {
                       insUserPass();
                       bean.rtrimAllItem();
@@ -182,18 +176,18 @@ public class UserInfoDetail extends ControllerBase
                         forward("UserInfoDetail_1.jsp");
                       }
                   }
-              } 
-              else if ("return".equals(bean.value("action_cmd"))) 
+              }
+              else if ("return".equals(bean.value("action_cmd")))
               {
                   forward("ViewUserList.do");
               }
           }
-          
-          else if ("UserInfoDetail_2".equals(bean.value("form_name")))  
-          {  
-              if ("go_next".equals(bean.value("action_cmd"))) 
+
+          else if ("UserInfoDetail_2".equals(bean.value("form_name")))
+          {
+              if ("go_next".equals(bean.value("action_cmd")))
               {
-                  if ("delete".equals(bean.value("request_cmd"))) 
+                  if ("delete".equals(bean.value("request_cmd")))
                   {
                       setInputInfo2Dao2WebDelete();
                       bean.rtrimAllItem();
@@ -211,15 +205,15 @@ public class UserInfoDetail extends ControllerBase
                       }
                   }
               }
-              else if ("return".equals(bean.value("action_cmd"))) 
+              else if ("return".equals(bean.value("action_cmd")))
               {
                   forward("ViewUserList.do");
               }
           }
-          
-          else if ("UserInfoDetail_3".equals(bean.value("form_name"))) 
+
+          else if ("UserInfoDetail_3".equals(bean.value("form_name")))
           {
-              if ("go_next".equals(bean.value("action_cmd"))) 
+              if ("go_next".equals(bean.value("action_cmd")))
               {
                   if ("ins".equals(bean.value("request_cmd"))) 
                   {
@@ -257,8 +251,8 @@ public class UserInfoDetail extends ControllerBase
                       }
                   }
               }
-              
-              else if ("return".equals(bean.value("action_cmd"))) 
+
+              else if ("return".equals(bean.value("action_cmd")))
               {
                   if ("ins".equals(bean.value("request_cmd"))) 
                   {
@@ -280,7 +274,7 @@ public class UserInfoDetail extends ControllerBase
                       setWeb2Dao2InputInfo();
                       forward("UserInfoDetail_2.jsp");
                   }
-                  else if ("send".equals(bean.value("request_cmd"))) 
+                  else if ("send".equals(bean.value("request_cmd")))
                   {
                       redirect("ViewUserList.do");
                   }
@@ -351,177 +345,67 @@ public class UserInfoDetail extends ControllerBase
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
        
-        if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd"))) 
+        if ("ins".equals(bean.value("request_cmd")) || "update".equals(bean.value("request_cmd")))
         {
-            if (bean.value("last_name").length() == 0 && bean.value("first_name").length() == 0)
+            CommonDoActionProcess.checkNameAndKana(errors,
+                    bean.value("last_name"), bean.value("first_name"),
+                    bean.value("last_name_kana"), bean.value("first_name_kana"));
+
+            CommonDoActionProcess.checkOptionalKana(errors, "middle_name_kana",
+                    bean.value("middle_name"), bean.value("middle_name_kana"), "ミドルネーム");
+
+            CommonDoActionProcess.checkOptionalKana(errors, "maiden_name_kana",
+                    bean.value("maiden_name"), bean.value("maiden_name_kana"), "旧姓");
+
+            CommonDoActionProcess.checkRequired(errors, "admin", bean.value("admin"), "ユーザー区分を選択してください。");
+
+
+            if (!CommonDoActionProcess.checkEmailFormat(errors, "memail", bean.value("memail")))
             {
-                errors.put("last_name", "氏名を入力してください。");
-                errors.put("first_name", "");
-            } 
-            else if (bean.value("last_name").length() == 0)
-            {
-                errors.put("last_name", "名字を入力してください。");
-            }
-            else if (bean.value("first_name").length() == 0)
-            {
-                errors.put("first_name", "名前を入力してください。");
-            }
-        
-            if (bean.value("last_name_kana").length() == 0 && bean.value("first_name_kana").length() == 0)
-            {
-                errors.put("last_name_kana", "氏名のよみを入力してください。");
-                errors.put("first_name_kana", "");
-            }
-            else  if (bean.value("last_name_kana").length() == 0)
-            {
-                errors.put("last_name_kana", "名字のよみを入力してください。");
-            }
-            else if (bean.value("first_name_kana").length() == 0)
-            {
-                errors.put("first_name_kana", "名前のよみを入力してください。");
-            }
-        
-            if (bean.value("last_name_kana").length() > 0 || bean.value("first_name_kana").length() > 0)
-            {
-                if (!isHiragana(bean.value("last_name_kana")) && !isHiragana(bean.value("first_name_kana"))) 
+                if ("ins".equals(bean.value("request_cmd")))
                 {
-                    errors.put("last_name_kana", "氏名のよみはひらがなで入力してください。");
-                }
-                else if (!isHiragana(bean.value("last_name_kana"))) 
-                {
-                    errors.put("last_name_kana", "名字のよみはひらがなで入力してください。");
-                }
-                else if (!isHiragana(bean.value("first_name_kana"))) 
-                {
-                    errors.put("first_name_kana", "名前のよみはひらがなで入力してください。");
-                }
-            }    
-        
-            if (bean.value("middle_name").length() != 0)
-            {
-                if (bean.value("middle_name_kana").length() == 0)
-                {
-                    errors.put("middle_name_kana", "ミドルネームよみを入力してください。");
-                }
-                else if (!isHiragana(bean.value("middle_name_kana"))) 
-                {
-                    errors.put("middle_name_kana", "ミドルネームよみはひらがなで入力してください。");
-                }
-            }
-        
-            if (bean.value("maiden_name").length() != 0)
-            {
-                if (bean.value("maiden_name_kana").length() == 0)
-                {
-                    errors.put("maiden_name_kana", "旧姓よみを入力してください。");
-                }
-                else if (!isHiragana(bean.value("maiden_name_kana"))) 
-                {
-                    errors.put("maiden_name_kana", "旧姓よみはひらがなで入力してください。");
-                }
-            }
-            
-            if (bean.value("admin").length() == 0)
-            {
-                errors.put("admin", "ユーザー区分を選択してください。");
-            }
-            
-            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-            Pattern pattern = Pattern.compile(emailRegex);
-            Matcher matcher = pattern.matcher(bean.value("memail"));
-            if (bean.value("memail").length() == 0)
-            {
-                errors.put("memail", "メールアドレスを入力してください。");
-            }
-            else if (!matcher.matches()) // メアドに使用できる半角英数記号以外のチェック
-            {  
-                errors.put("memail", "正しいメールアドレスを入力してください。");
-            }
-            else if ("ins".equals(bean.value("request_cmd"))) 
-            {
-                if (pUserInfoDao.isEmailExists(bean.value("memail")))
-                {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("memail", "このメールアドレスは既に登録されています。");
-                }
-            }
-            else if ("update".equals(bean.value("request_cmd"))) 
-            {
-                if (pUserInfoDao.isEmailExists(bean.value("memail"), bean.value("main_key")))
-                {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("memail", "このメールアドレスは既に登録されています。");
-                }
-            }
- 
-            if (bean.value("insert_user_id").length() != 0)
-            {
-                if (bean.value("insert_user_id").length() < 6 || bean.value("insert_user_id").length() > 12)
-                {
-                    errors.put("insert_user_id", "ＩＤは６文字以上１２文字以下で入力してください。");
-                }
-                else if (!bean.value("insert_user_id").matches("^[a-zA-Z0-9]+$")) // メアドに使用できる半角英数記号以外のチェック
-                {  
-                    errors.put("insert_user_id", "ＩＤは半角英数で入力してください。");
-                }
-                else if ("ins".equals(bean.value("request_cmd"))) 
-                {
-                    if (pUserInfoDao.isIdExists(bean.value("insert_user_id"))) 
+                    if (pUserInfoDao.isEmailExists(bean.value("memail")))
                     {
                         // 重複している場合のエラーメッセージ設定
-                        errors.put("insert_user_id", "このＩＤは既に登録されています。");
+                        errors.put("memail", "このメールアドレスは既に登録されています。");
                     }
                 }
-                else if ("update".equals(bean.value("request_cmd"))) 
+                else if ("update".equals(bean.value("request_cmd")))
                 {
-                    if (pUserInfoDao.isIdExists(bean.value("insert_user_id"), bean.value("main_key"))) 
+                    if (pUserInfoDao.isEmailExists(bean.value("memail"), bean.value("main_key")))
                     {
                         // 重複している場合のエラーメッセージ設定
-                        errors.put("insert_user_id", "このＩＤは既に登録されています。");
+                        errors.put("memail", "このメールアドレスは既に登録されています。");
+                    }
+                }
+            }
+
+            if (bean.value("insert_user_id").length() != 0)
+            {
+                if (!CommonDoActionProcess.checkIdFormat(errors, "insert_user_id", bean.value("insert_user_id"), 6, 12, "ＩＤ"))
+                {
+                    if ("ins".equals(bean.value("request_cmd")))
+                    {
+                        if (pUserInfoDao.isIdExists(bean.value("insert_user_id")))
+                        {
+                            // 重複している場合のエラーメッセージ設定
+                            errors.put("insert_user_id", "このＩＤは既に登録されています。");
+                        }
+                    }
+                    else if ("update".equals(bean.value("request_cmd")))
+                    {
+                        if (pUserInfoDao.isIdExists(bean.value("insert_user_id"), bean.value("main_key")))
+                        {
+                            // 重複している場合のエラーメッセージ設定
+                            errors.put("insert_user_id", "このＩＤは既に登録されています。");
+                        }
                     }
                 }
             }
         }
-        else if ("delete".equals(bean.value("request_cmd"))) 
+        else if ("delete".equals(bean.value("request_cmd")))
         {
-            // 日付フォーマットの指定
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-            String leaveDateStr = bean.value("leave_date");
-
-            // `leave_date` が数字でない場合
-            if (!isNumeric(leaveDateStr)) 
-            {
-                errors.put("leave_date", "数字を入力してください");
-            } 
-            else 
-            {
-                try 
-                {
-                    // `leave_date` が空文字でないかチェック
-                    if (leaveDateStr == null || leaveDateStr.trim().isEmpty()) {
-                        // 空文字の場合はエラーメッセージを設定せずに `true` を返す
-                        return true;
-                    } else {
-                        // `leave_date` を Date 型に変換
-                        Date leaveDate = dateFormat.parse(leaveDateStr);
-
-                        // カレンダーを使用して昨日の日付を取得
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.add(Calendar.DATE, -1); // 昨日の日付に設定
-                        Date yesterday = calendar.getTime(); // 昨日の日付を取得
-
-                        // `leave_date` が昨日以前の日付である場合
-                        if (leaveDate.before(yesterday)) {
-                            errors.put("leave_date", "本日以降の日付を入力してください");
-                        }
-                    }
-                } 
-                catch (ParseException e) 
-                {
-                    // `leave_date` の解析に失敗した場合
-                    errors.put("leave_date", "日付の形式が不正です");
-                }
-            }
+            CommonDoActionProcess.checkDateOnOrAfterToday(errors, "leave_date", bean.value("leave_date"));
         }
 
             
@@ -532,34 +416,6 @@ public class UserInfoDetail extends ControllerBase
         return true;
     }
     
-    /**
-     * 文字列が数字で構成されているかをチェックするメソッド.
-     *
-     * @param value チェック対象の文字列
-     * @return 文字列が数字で構成されている場合はtrue、それ以外はfalse
-     */
-    private boolean isNumeric(String value) {
-      if (!(value == null || value.trim().isEmpty())) {
-        try {
-          Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-          return false;
-        }
-      }  
-        return true;
-    }
-    
-    /**
-     * 文字列がひらがなで構成されているかをチェックするメソッド.
-     *
-     * @param input チェック対象の文字列
-     * @return 文字列がひらがなで構成されている場合はtrue、それ以外はfalse
-     */
-    private boolean isHiragana(String input) {
-        return input.matches("^[\\u3040-\\u309Fー]+$");
-    }
-    
-
     /**
      * データベース処理を行う。.
      *
@@ -630,6 +486,11 @@ public class UserInfoDetail extends ControllerBase
     private UserInfoDao setWeb2Dao2InputInfo() throws AtareSysException {
       WebBean bean = getWebBean();
       UserInfoDao dao = new UserInfoDao();
+      
+      // 新規登録以外
+      if (!"ins".equals(bean.value("request_cmd"))) {
+          bean.setValue("user_info_id", bean.value("main_key")); 
+      }
 
       dao.setUserInfoId(bean.value("user_info_id"));
       dao.setLastName(bean.value("last_name"));
@@ -688,8 +549,6 @@ public class UserInfoDetail extends ControllerBase
         }
         
     }
-   
-    
     /**
      * 削除の場合
      * @throws AtareSysException
@@ -712,10 +571,11 @@ public class UserInfoDetail extends ControllerBase
             redirect("ViewUserList.do");
           }
         }catch (Exception e) {
-          forward("ViewUserList.do");
+        	bean.setError("ユーザーデータの削除に失敗しました。");
+        	forward("ViewUserList.jsp");
         }
     }
-    
+
     /**
      * input_infoフィールドからクラスを取り出し、画面の項目に値を設定する
      *

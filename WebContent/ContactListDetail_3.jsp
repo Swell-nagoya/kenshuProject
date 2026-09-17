@@ -123,7 +123,7 @@ th {
 	}
 	function go_back() {
 		const f = document.getElementById('main_form');
-		f.action = 'ContactListDetail.do';
+		f.action = 'ContactList.do';
 		document.getElementById('action_cmd').value = 'return';
 		f.submit();
 	}

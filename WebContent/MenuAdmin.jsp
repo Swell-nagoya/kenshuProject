@@ -76,8 +76,8 @@ input[type="button"]:hover {
 <body>
 	<%
 	jp.swell.user.UserLoginInfo loginInfo = (jp.swell.user.UserLoginInfo) session.getAttribute("LoginInfo");
-	if (loginInfo == null || !"1".equals(loginInfo.getAdmin())) {
-	    response.sendRedirect("UserMenuHome.do");
+	if (loginInfo == null || (!"1".equals(loginInfo.getAdmin()) && !"admin".equals(loginInfo.getAdmin()))) {
+	    response.sendRedirect("UserMenu.do");
 	    return;
 	}
 	%>

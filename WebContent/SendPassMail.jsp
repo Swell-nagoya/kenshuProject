@@ -159,6 +159,7 @@ function go_submit(action_cmd){
       <input type="hidden" name="action_cmd" id="action_cmd" value="" />
   
       <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
+      <div class="style_head3 messages"><%=webBean.dispErrorMessages()%></div>
       
       <div class="left">
         <div class="main__text">
