@@ -393,6 +393,7 @@ public class ViewUserList extends ControllerBase
         {
             DbBase.dbBeginTran();
 
+            UserInfoDao dao = new UserInfoDao();
             for (int i = 0; i < userInfoIds.length; i++)
             {
                 String userInfoId = userInfoIds[i].trim();
@@ -401,7 +402,6 @@ public class ViewUserList extends ControllerBase
                     continue;
                 }
 
-                UserInfoDao dao = new UserInfoDao();
                 dao.dbUpdateAdmin(userInfoId, admin);
             }
 
@@ -431,6 +431,7 @@ public class ViewUserList extends ControllerBase
         {
             DbBase.dbBeginTran();
 
+            UserInfoDao dao = new UserInfoDao();
             for (int i = 0; i < userInfoIds.length; i++)
             {
                 String userInfoId = userInfoIds[i].trim();
@@ -439,7 +440,6 @@ public class ViewUserList extends ControllerBase
                     continue;
                 }
 
-                UserInfoDao dao = new UserInfoDao();
                 dao.dbDelete(userInfoId);
             }
 
