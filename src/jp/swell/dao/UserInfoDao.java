@@ -684,7 +684,33 @@ public class UserInfoDao implements Serializable {
      * searchFullName 検索用氏名
      */
     private String searchFullName = "";
+    
     /**
+     * 管理者検索
+     */
+    private String searchAdmin = "" ;
+    
+    /*管理者権限の取得*/
+   
+    public String getSearchAdmin() {
+    	return searchAdmin;
+    }
+    
+    /*検索用管理者権限の設定*/
+    
+    public void setSearchAdmin(String searchAdmin) {
+    	this.searchAdmin = searchAdmin;
+    }
+    
+    private String searchState = "";
+    
+    public String getSearchState() {
+    	return searchState;
+    }
+    public void setSearchState (String searchState) {
+    	this.searchState = searchState;
+    }
+     /**
      * searchFullName 検索用氏名かな
      */
     private String searchFullNameKana = "";
@@ -726,6 +752,7 @@ public class UserInfoDao implements Serializable {
     public void setSearchFullNameKana(String searchFullNameKana) {
         this.searchFullNameKana = searchFullNameKana;
     }
+    
 
     private String[] userIds;
 
@@ -928,7 +955,7 @@ public class UserInfoDao implements Serializable {
         dao.setMaidenNameKana(DbI.chara(map.getOrDefault("maiden_name_kana", "")));
         dao.setInsertUserId(DbI.chara(map.getOrDefault("insert_user_id", "")));
         dao.setMemail(DbI.chara(map.getOrDefault("memail", "")));
-        dao.setAdmin(DbI.chara(map.getOrDefault("user_info___admin", "")));
+        dao.setAdmin(DbI.chara(map.getOrDefault("admin", "")));
         dao.setLeaveDate(DbI.chara(map.getOrDefault("user_info___leave_date", "")));
     }
 
@@ -1249,7 +1276,7 @@ public class UserInfoDao implements Serializable {
      * @return String where句の文字列
      * @throws AtareSysException フレームワーク共通例外
      */
-    String dbWhere() throws AtareSysException {
+    public String dbWhere() throws AtareSysException {
         StringBuffer where = new StringBuffer(1024);
 
         // 本日の日付を取得
@@ -1335,9 +1362,29 @@ public class UserInfoDao implements Serializable {
             }
             where.append(")");
         }
+        
+        //管理者権限での検索
+        
+        if(getSearchAdmin().length()>0) {
+        	where.append(where.length()> 0 ? "AND" : "");
+        	where.append("user_info.admin =" + DbS.chara(getSearchAdmin()));
+        }
+        
+        if("1".equals(getSearchState()) || "9".equals(getSearchState())) {
+        	where.append(where.length() > 0 ? " AND " : "");
+        	where.append("user_info.state_flg = " + DbS.chara(getSearchState()));
+        }
+        
+        if(getSearchState().length()== 0)
+        {
+        
         where.append(where.length() > 0 ? " AND " : "");
         where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
-
+        
+        }
+ 
+        
+       
         if (where.length() > 0) {
             return "where " + where.toString();
         }
@@ -1350,7 +1397,7 @@ public class UserInfoDao implements Serializable {
      * @param sortKey
      * @return Stringソート句の文字列
      */
-    String dbOrder(LinkedHashMap<String, String> sortKey) {
+    public String dbOrder(LinkedHashMap<String, String> sortKey) {
         String str = "";
         if (sortKey == null)
             return "";
@@ -1644,7 +1691,6 @@ public class UserInfoDao implements Serializable {
 
     public List<UserInfoDao> selectListWithPaging(int offset, int i) {
         // TODO 自動生成されたメソッド・スタブ
-        return null;
-    }
+        return null;}
 
 }

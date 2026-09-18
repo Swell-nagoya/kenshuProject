@@ -374,11 +374,11 @@ public class ContactListDetail extends ControllerBase {
                 errors.put("first_name_kana", "名前のよみを入力してください。");
             }
             if (bean.value("last_name_kana").length() > 0 || bean.value("first_name_kana").length() > 0) {
-                if (!isHiragana(bean.value("last_name_kana")) && !isHiragana(bean.value("first_name_kana"))) {
+                if (!UserInfoValidator.isHiragana(bean.value("last_name_kana")) && !UserInfoValidator.isHiragana(bean.value("first_name_kana"))) {
                     errors.put("last_name_kana", "氏名のよみはひらがなで入力してください。");
-                } else if (!isHiragana(bean.value("last_name_kana"))) {
+                } else if (!UserInfoValidator.isHiragana(bean.value("last_name_kana"))) {
                     errors.put("last_name_kana", "名字のよみはひらがなで入力してください。");
-                } else if (!isHiragana(bean.value("first_name_kana"))) {
+                } else if (!UserInfoValidator.isHiragana(bean.value("first_name_kana"))) {
                     errors.put("first_name_kana", "名前のよみはひらがなで入力してください。");
                 }
             }
@@ -387,7 +387,7 @@ public class ContactListDetail extends ControllerBase {
             if (bean.value("middle_name").length() != 0) {
                 if (bean.value("middle_name_kana").length() == 0) {
                     errors.put("middle_name_kana", "ミドルネームよみを入力してください。");
-                } else if (!isHiragana(bean.value("middle_name_kana"))) {
+                } else if (!UserInfoValidator.isHiragana(bean.value("middle_name_kana"))) {
                     errors.put("middle_name_kana", "ミドルネームよみはひらがなで入力してください。");
                 }
             }
@@ -419,9 +419,7 @@ public class ContactListDetail extends ControllerBase {
     }
 
     /** ひらがな判定（ーを許容） */
-    private boolean isHiragana(String input) {
-        return input != null && input.matches("^[\\u3040-\\u309Fー]+$");
-    }
+    
 
     /** 新規登録（エラーは WebBean に詰め返して false） */
     private boolean signUp() throws AtareSysException {

@@ -386,15 +386,15 @@ public class UserInfoDetail extends ControllerBase
         
             if (bean.value("last_name_kana").length() > 0 || bean.value("first_name_kana").length() > 0)
             {
-                if (!isHiragana(bean.value("last_name_kana")) && !isHiragana(bean.value("first_name_kana"))) 
+                if (!UserInfoValidator.isHiragana(bean.value("last_name_kana")) && !UserInfoValidator.isHiragana(bean.value("first_name_kana"))) 
                 {
                     errors.put("last_name_kana", "氏名のよみはひらがなで入力してください。");
                 }
-                else if (!isHiragana(bean.value("last_name_kana"))) 
+                else if (!UserInfoValidator.isHiragana(bean.value("last_name_kana"))) 
                 {
                     errors.put("last_name_kana", "名字のよみはひらがなで入力してください。");
                 }
-                else if (!isHiragana(bean.value("first_name_kana"))) 
+                else if (!UserInfoValidator.isHiragana(bean.value("first_name_kana"))) 
                 {
                     errors.put("first_name_kana", "名前のよみはひらがなで入力してください。");
                 }
@@ -406,7 +406,7 @@ public class UserInfoDetail extends ControllerBase
                 {
                     errors.put("middle_name_kana", "ミドルネームよみを入力してください。");
                 }
-                else if (!isHiragana(bean.value("middle_name_kana"))) 
+                else if (!UserInfoValidator.isHiragana(bean.value("middle_name_kana"))) 
                 {
                     errors.put("middle_name_kana", "ミドルネームよみはひらがなで入力してください。");
                 }
@@ -418,7 +418,7 @@ public class UserInfoDetail extends ControllerBase
                 {
                     errors.put("maiden_name_kana", "旧姓よみを入力してください。");
                 }
-                else if (!isHiragana(bean.value("maiden_name_kana"))) 
+                else if (!UserInfoValidator.isHiragana(bean.value("maiden_name_kana"))) 
                 {
                     errors.put("maiden_name_kana", "旧姓よみはひらがなで入力してください。");
                 }
@@ -429,16 +429,11 @@ public class UserInfoDetail extends ControllerBase
                 errors.put("admin", "ユーザー区分を選択してください。");
             }
             
-            String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-            Pattern pattern = Pattern.compile(emailRegex);
-            Matcher matcher = pattern.matcher(bean.value("memail"));
-            if (bean.value("memail").length() == 0)
+            String emailError=
+            		UserInfoValidator.validateEmail(bean.value("memail"));
+            if (emailError.length() >0)
             {
-                errors.put("memail", "メールアドレスを入力してください。");
-            }
-            else if (!matcher.matches()) // メアドに使用できる半角英数記号以外のチェック
-            {  
-                errors.put("memail", "正しいメールアドレスを入力してください。");
+            	errors.put("memail", emailError);
             }
             else if ("ins".equals(bean.value("request_cmd"))) 
             {
@@ -457,33 +452,33 @@ public class UserInfoDetail extends ControllerBase
                 }
             }
  
-            if (bean.value("insert_user_id").length() != 0)
-            {
-                if (bean.value("insert_user_id").length() < 6 || bean.value("insert_user_id").length() > 12)
-                {
-                    errors.put("insert_user_id", "ＩＤは６文字以上１２文字以下で入力してください。");
-                }
-                else if (!bean.value("insert_user_id").matches("^[a-zA-Z0-9]+$")) // メアドに使用できる半角英数記号以外のチェック
-                {  
-                    errors.put("insert_user_id", "ＩＤは半角英数で入力してください。");
-                }
-                else if ("ins".equals(bean.value("request_cmd"))) 
-                {
-                    if (pUserInfoDao.isIdExists(bean.value("insert_user_id"))) 
-                    {
-                        // 重複している場合のエラーメッセージ設定
-                        errors.put("insert_user_id", "このＩＤは既に登録されています。");
-                    }
-                }
-                else if ("update".equals(bean.value("request_cmd"))) 
-                {
-                    if (pUserInfoDao.isIdExists(bean.value("insert_user_id"), bean.value("main_key"))) 
-                    {
-                        // 重複している場合のエラーメッセージ設定
-                        errors.put("insert_user_id", "このＩＤは既に登録されています。");
-                    }
-                }
-            }
+          if (bean.value("insert_user_id").length() !=0)
+          {
+        	  
+        	  String userIdError =
+        			  UserInfoValidator.validateUserId(
+        					  bean.value("insert_user_id"));
+        	  if (userIdError.length() > 0)
+        	  {
+        		  errors.put("insert_user_id", userIdError);
+        		  
+        	  }
+        	  else if("ins".equals(bean.value("request_cmd")))
+        	  {
+        		  if(pUserInfoDao.isIdExists(
+        				  bean.value("insert_user_id")))
+        		  {
+        			  errors.put("insert_user_id"," このIDは既に登録されています。");
+        		  }
+        	  }
+        	  else if("update".equals(bean.value("request_cmd")))
+        	  { 
+        		  if(pUserInfoDao.isIdExists( bean.value("insert_user_id"),bean.value("main_key")))
+        		  {
+        			  errors.put("insert_user_id", "このIDは既に登録されています。");
+        		  }
+        	  }
+          }
         }
         else if ("delete".equals(bean.value("request_cmd"))) 
         {
@@ -558,9 +553,6 @@ public class UserInfoDetail extends ControllerBase
      * @param input チェック対象の文字列
      * @return 文字列がひらがなで構成されている場合はtrue、それ以外はfalse
      */
-    private boolean isHiragana(String input) {
-        return input.matches("^[\\u3040-\\u309Fー]+$");
-    }
     
 
     /**

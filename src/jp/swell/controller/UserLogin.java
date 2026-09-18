@@ -37,6 +37,8 @@ public class UserLogin extends ControllerBase {
 	public void doActionProcess() throws AtareSysException {
 		WebBean bean = getWebBean();
 		bean.trimAllItem();
+		
+		
 
 		if ("UserLogin".equals(bean.value("form_name"))) {
 			// ログインボタンが押されたときの処理
@@ -49,6 +51,8 @@ public class UserLogin extends ControllerBase {
 				}
 
 				UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
+				
+				
 
 				if ("1".equals(loginInfo.getAdmin())) {
 					redirect("MenuAdmin.do");

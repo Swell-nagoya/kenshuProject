@@ -673,16 +673,25 @@ footer {
     //チェックボックスで予約の表示・非表示を操作する関数
     function reserveDisplay() {
         let roomElements;
+        let checkbox;
         <%
         if (webBean.arrayList("users") != null && !webBean.arrayList("users").isEmpty()) {
             for (Object allUsers : webBean.arrayList("users")) {
                 UserInfoDao user = (UserInfoDao) allUsers;
-                String userId = WebUtil.htmlEscape(user.getUserInfoId());
+                String userId = user.getUserInfoId();
+        
+        if (userId == null || userId.trim().isEmpty()){
+          continue;
+        }
+        
+        userId = WebUtil.htmlEscape(userId);
         %>
-        const checkbox<%=userId%> = document.getElementById("<%=userId%>check");
-        if (checkbox<%=userId%>) {
+        
+        checkbox = document.getElementById("<%=userId%>check");
+        
+        if (checkbox) {
             roomElements = document.getElementsByClassName("<%=userId%>");
-            if (checkbox<%=userId%>.checked) {
+            if (checkbox.checked) {
                 for (let i = 0; i < roomElements.length; i++) {
                     roomElements[i].style.display = "block";
                 }

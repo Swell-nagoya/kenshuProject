@@ -855,7 +855,7 @@ public class FileDao implements Serializable {
 			  
 		   if(getUserInfoId().length() >0 ) {
 		     where.append(where.length() >0 ? " AND " : "");
-			 where.append("file.user_info_id =" + DbS.chara(getUploadUserId()));
+			 where.append("files.user_info_id =" + DbS.chara(getUploadUserId()));
 		   }
 
 		   if (getUploadUserId().length() > 0) {

@@ -34,7 +34,7 @@ public class MenuAdmin extends ControllerBase {
         UserLoginInfo loginInfo = (UserLoginInfo) getLoginInfo();
         if (!"1".equals(loginInfo.getAdmin())) {
             redirect("UserMenuHome.do");
-            return;
+                        return;
         }
 
         // フォーム名が 'admin' であるか確認

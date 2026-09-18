@@ -311,7 +311,7 @@ td, th {
 				</table>
 			</div>
 			<div class="button">
-				<input type="button" id="submitButton" value="<%=val%>"
+				<input type="button" id="submitButton" value="<%= header%>"
 					onclick="<%=actionBtn%>('go_next','<%=actionType%>','<%=webBean.txt("user_info_id")%>')" />
 			</div>
 		</form>

@@ -16,6 +16,7 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
 <link type="text/css" href="jquery-ui/jquery-ui.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" />
 <link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
 <link rel="icon" href="images/favicon.ico" type="image/vnd.microsoft.icon" />
 <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
@@ -46,7 +47,7 @@ h1 a {
   font-weight: normal;
 }
 
-h1 a:hover {
+h1 a:hover 
   color: #4baea8; /* ホバー時に下線を表示する場合 */
 }
 
@@ -78,7 +79,7 @@ h1 a:hover {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 0;
 }
 th {
   background-color: #f2f2f2;
@@ -109,8 +110,29 @@ td {
   border-radius: 5px;
 }
 
-.pagenation, .select_table {
+.search_buttons {
+  text-align: center;
+  padding: 8px 0 18px 0;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #ccc;
+}
+  
+.search_buttons input[ type="button"]{
+  min-width: 90px;
+  padding: 8px 18px ;
+  margin: 0 15px;
+  font-size:15px;
+  font-weight: bold;
+}
+
+.select_table {
   margin-bottom: 10px;
+
+}
+
+.pagenation {
+  margin-top: 30px;
+  margin-bottom: 0 ;
 }
 
 .select_table td {
@@ -174,6 +196,8 @@ input[type="button"]:hover {
 footer {
   width: 100%;
 }
+
+ 
 </style>
   <script type="text/javascript">
     
@@ -200,6 +224,12 @@ footer {
       document.getElementById('action_cmd').value = action_cmd;
       document.getElementById('main_form').submit();
     }
+    function go_bulk(action_cmd) {
+      const ids =Array.from(
+    		  document.querySelectorAll('input[name="selected_user_ids"]:checked')).map(e=> e.value);
+              document.getElementById('selected_user_ids_csv').value = ids.join(',');
+              go_submit(action_cmd);
+              }
     function go_sort_request(key) {
       document.getElementById('sort_key').value = key;
       document.getElementById('action_cmd').value = 'sort';
@@ -232,7 +262,10 @@ footer {
 <body>
     <div class="container">
     <div class="new-btn">
+    
+    <% if ("1".equals(webBean.value("login_admin"))){ %>
       <input type="button" value="新規登録" onclick="go_detail('go_next','ins')" />
+      <% } %>
       <input type="button" value="　戻る　" onclick="go_submit('return')" />
     </div>
     <header>
@@ -241,7 +274,7 @@ footer {
         </h1>
     </header>
     <form id="main_form" method="post" action="">
-    
+   
       <input type="hidden" name="form_name" id="form_name"    value="ViewUserList" /> 
       <input type="hidden" name="action_cmd" id="action_cmd" value="" /> 
       <input type="hidden" name="request_cmd" id="request_cmd" value="" /> 
@@ -251,6 +284,7 @@ footer {
       <input type="hidden" name="sort_order" id="sort_order"value="<%=webBean.txt("sort_order")%>" />
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" /> 
       <input type="hidden" name="user_info_id" id="user_info_id" value="<%=webBean.txt("user_info_id")%>" />
+      <input type="hidden" name="selected_user_ids_csv" id="selected_user_ids_csv" value=""/>
       <div class="left">
         <div class="messages">
           <%=webBean.dispMessages()%>
@@ -258,24 +292,47 @@ footer {
         <div class="errors">
           <%=webBean.dispErrorMessages()%>
         </div>
-        <table class="select_table">
-          <tr>
-            <td class="search_label center" style="width: 50%">氏名</td>
-            <td class="search_label center" style="width: 20%">表示件数</td>
-            <td class="search_label center" style="width: 30%"></td>
-          </tr>
-          <tr>
-            <td class="search_text center">
-              <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>" class="ime_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
-            </td>
-            <td class="search_line center">
-              <input type="text" name="lineCount" id="lineCount" size="2" maxlength="5" value="<%=webBean.txt("lineCount")%>" class="right ime_disabled" />件
-            </td>
-            <td class="search_text center">
-              <input type="button" value="検索" onclick="go_submit('search')" /> 
-              <input type="button" value="クリア" onclick="go_submit('clear')" /></td>
-          </tr>
-        </table>
+        <div class="search_area">
+          <table class="select_table">
+            <tr>
+              <td class="search_label center" style="width: 25%">氏名</td>
+              <td class="search_text center" style="width: 75%">
+                <input type="text" name="list_search_full_name" id="list_search_full_name" size="30" maxlength="100" value="<%=webBean.txt("list_search_full_name")%>" class="ime_active <%=webBean.dispErrorCSS("list_search_full_name")%>" placeholder="検索"/> <%=webBean.dispError("list_search_full_name")%>
+              </td>
+             </tr>
+             <tr>
+                <td class="search_label center">表示件数</td>
+                <td class="search_text center">
+                <input type="text" name="lineCount" id="lineCount" size="2" maxlength="5" value="<%=webBean.txt("lineCount")%>" class="right ime_disabled" />件
+              </td>
+            </tr>
+            <tr>
+              <td class="search_label center">管理者権限</td>
+              <td class="search_text center" colspan="2">
+            　　  <select name="list_search_admin" id="list_search_admin">
+            　　　　  <option value="">すべて</option>
+            　　　　  <option value="admin">管理者</option>
+            　　　　  <option value="general">一般ユーザー</option>
+            　　  </select>
+           　  </td>
+           </tr>
+         </div>
+         <tr>
+           <td class="search_label center">ステータス</td>
+           <td class="search_text center" >
+           　 <select  name="list_search_state" id="list_search_state">
+               <option value="">すべて</option>
+               <option value="1">有効</option>
+               <option value="9">無効</option>
+             </select>
+           </td>
+         </tr>
+         </table>
+           <div class="search_buttons">
+             <input type="button" value="検索" onclick="go_submit('search')" />
+             <input type="button" value="クリア" onclick="go_submit('clear')"/>
+           </div>
+           </tr>
         <%
         if (webBean.arrayList("list").size() > 0) {
         %>
@@ -285,6 +342,7 @@ footer {
           <%=webBean.html("maxPageNo")%>
           ページ〚全
           <%=webBean.html("recordCount")%>件〛<br />
+          </br>
           <%
           if (!"1".equals(webBean.value("pageNo"))) {
           %>
@@ -310,11 +368,28 @@ footer {
           %>
         </div>
         <table class="list_table">
+          </br>
+         <div class="sort_help">
+           *氏名をクリックすると昇順・降順切り替えられます。
+         </div>
           <tr class="list_title">
+          　　<% if("1".equals(webBean.value("login_admin"))) { %>
+            <td class="list_label">選択</td>
+            <% } %>
             <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('last_name_kana')">氏名</a></td>
+            <a href="javaScript:go_sort_request('last_name_kana')">氏名
+            <% if ("last_name_kana".equals(webBean.value("sort_key_old"))) { %>
+              <% if ("asc".equals(webBean.value("sort_order"))){ %>
+                   <i class="fa-solid fa-angles-up"></i>
+              <% }else{ %>
+             　    <i class="fa-solid fa-angles-down"></i>
+              <% } %>
+            <% } else{  %>
+              <i class="fa-solid fa-sort"></i>
+            <% } %>
+           </a></td>
             <td class="list_label" style="width: 25%">
-            <a href="javaScript:go_sort_request('last_name_kana')">氏名よみ（かな）</a></td>
+            <a href="javaScript:go_sort_request('last_name_kana')" >氏名よみ（かな）</a></td>
             <td class="list_label" style="width: 25%">
             <a href="javaScript:go_sort_request('memail')">メールアドレス</a></td>
             <td class="list_label" style="width: 25%"></td>
@@ -326,6 +401,10 @@ footer {
           
          
            <tr class="list_tr">
+           <% if("1".equals(webBean.value("login_admin"))){ %>
+             <td class="list_text center">
+               <input type="checkbox" name="selected_user_ids" value="<%=WebUtil.htmlEscape(dao.getUserInfoId()) %>" /></td>
+           <% } %>
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastName())%>・<%=WebUtil.htmlEscape(dao.getMiddleName())%>・<%=WebUtil.htmlEscape(dao.getFirstName())%>
             </td>
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getLastNameKana())%>・<%=WebUtil.htmlEscape(dao.getMiddleNameKana())%>・<%=WebUtil.htmlEscape(dao.getFirstNameKana())%>
@@ -333,16 +412,29 @@ footer {
             <td class="list_text"><%=WebUtil.htmlEscape(dao.getMemail())%>
             </td>
             <td class="list_btn">
+            <% if("1".equals(webBean.value("login_admin"))) { %>
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
               <input type="button" value="削除" onclick="go_detail_1('go_next','delete','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
-              <input type="button" value="確認" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+              <% } %>
+              <input type="button" value="確認" style="<%="1".equals(webBean.value("login_admin")) ?"" : "width:50% !important; font-size:15px; letter-spacing:10px; display:inline-block;" %>" onclick="go_detail_1('go_next','check','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+              <% if ("1".equals(webBean.value("login_admin"))) { %>
               <input type="button" value="閲覧管理" onclick="go_detail_1('go_next','access','<%=WebUtil.txtEscape(dao.getUserInfoId())%>');" />
+            <% } %>
             </td>
           </tr>
           <%
           }
           %>
         </table>
+        </br>
+        <% if ("1".equals(webBean.value("login_admin"))) { %>
+        
+          <div class="center">
+            <input type="button" value="選択ユーザーを有効化" onclick="go_bulk('bulk_enable')" />
+            <input type="button" value="選択ユーザーを無効化" onclick="go_bulk('bulk_disable')"/>
+          </div>
+         <% } %>
+        
         <%
         }
         %>
