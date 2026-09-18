@@ -244,7 +244,7 @@ public class ViewUserList extends ControllerBase {
 					// 新たなソートキー
 					key = bean.value("sort_key");
 					sort_key.put(key, "asc");
-				} 
+				}  
 			} else {
 				// 引き継ぎ
 				key = bean.value("sort_key_old");

@@ -1396,7 +1396,7 @@ public class UserInfoDao implements Serializable {
      *
      * @param sortKey
      * @return Stringソート句の文字列
-     */ 
+     */  
     public String dbOrder(LinkedHashMap<String, String> sortKey) {
         String str = "";
         if (sortKey == null)

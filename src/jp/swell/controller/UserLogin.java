@@ -38,7 +38,7 @@ public class UserLogin extends ControllerBase {
 		WebBean bean = getWebBean();
 		bean.trimAllItem();
 		
-		
+		 
 
 		if ("UserLogin".equals(bean.value("form_name"))) { 
 			// ログインボタンが押されたときの処理

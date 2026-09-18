@@ -225,7 +225,7 @@ footer {
       document.getElementById('main_form').submit();
     }
     function go_bulk(action_cmd) { 
-      const ids =Array.from(
+      const ids =Array.from( 
     		  document.querySelectorAll('input[name="selected_user_ids"]:checked')).map(e=> e.value);
               document.getElementById('selected_user_ids_csv').value = ids.join(',');
               go_submit(action_cmd);

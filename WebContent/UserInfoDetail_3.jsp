@@ -276,7 +276,7 @@ td, th {
 					</tr>
 					<%
           // actionTypeが"ins"の場合のみ表示
-          if ("ins".equals(actionType)) { 
+          if ("ins".equals(actionType)) {  
           %>
 					<tr> 
 						<td class="style_head3 style_head_size" style="width: 30%">
