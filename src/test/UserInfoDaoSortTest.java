@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 
 import org.junit.jupiter.api.Test;
 
-import jp.swell.dao.UserInfoDao;
+import jp.swell.dao.UserInfoDao; 
 
 class UserInfoDaoSortTest {
 

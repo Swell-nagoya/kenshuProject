@@ -17,7 +17,7 @@ public class MenuAdmin extends ControllerBase {
      * この処理にはログインが必要かどうか デフォルト true.
      * この処理はhttpでなければならないか デフォルト false.
      * この処理はhttps でなければならないか デフォルト false.
-     * この処理はクライアントのキャッシュを認めるか デフォルト false. 等を設定する。
+     * この処理はクライアントのキャッシュを認めるか デフォルト false. 等を設定する。 
      * doActionの前に呼ばれる。
      */
     @Override

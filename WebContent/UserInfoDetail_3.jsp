@@ -278,7 +278,7 @@ td, th {
           // actionTypeが"ins"の場合のみ表示
           if ("ins".equals(actionType)) { 
           %>
-					<tr>
+					<tr> 
 						<td class="style_head3 style_head_size" style="width: 30%">
 							パスワード</td>
 						<td class="input-text" style="width: 70%"><%= webBean.txt("password") %>

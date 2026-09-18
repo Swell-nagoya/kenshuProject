@@ -40,7 +40,7 @@ public class UserLogin extends ControllerBase {
 		
 		
 
-		if ("UserLogin".equals(bean.value("form_name"))) {
+		if ("UserLogin".equals(bean.value("form_name"))) { 
 			// ログインボタンが押されたときの処理
 
 			if ("login".equals(bean.value("action_cmd"))) {

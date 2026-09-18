@@ -23,7 +23,7 @@ import jp.swell.user.UserLoginInfo;
 public class UserInfoValidator {
 	
 	public static String validateUserId(String userId) {
-		
+		 
 		if(userId == null || userId.length() == 0) {
 			return "";
 		}

@@ -179,7 +179,7 @@ public class FileList extends ControllerBase {
      
     fileDao.setUserInfoId(userLoginInfo.getUserInfoId());
     fileDao.setUploadUserId(userLoginInfo.getUserInfoId());
-    fileDao.setSearchFileName(bean.value("list_serach_file_name"));
+    fileDao.setSearchFileName(bean.value("list_search_file_name"));
     
    
      ArrayList<FileDao> fileList =

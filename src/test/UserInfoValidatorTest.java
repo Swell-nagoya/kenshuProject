@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import jp.swell.controller.UserInfoValidator;
+import jp.swell.controller.UserInfoValidator; 
 
 class UserInfoValidatorTest {
 	
