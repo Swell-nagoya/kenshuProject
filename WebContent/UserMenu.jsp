@@ -436,7 +436,6 @@ footer {
                 String formatCheckoutTime = checkoutTime.substring(0, 2) + ":" + checkoutTime.substring(2, 4);
                 %>
                 dateCell = document.getElementById("date<%=WebUtil.htmlEscape(reserve.getReservationDate())%>");
-                console.log( "予約日=[<%= WebUtil.htmlEscape(reserve.getReservationDate()) %>]","dateCell=",detaCell);
                 if (dateCell) {
                     
                 	<%

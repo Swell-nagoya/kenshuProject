@@ -361,7 +361,6 @@ jQuery(function($)
           for(Object item : webBean.arrayList("list"))
           {
               RoomDao dao = (RoomDao)item;
-              System.out.println("JSP dao.getRoomId() = [" +dao.getRoomId() +"]");
           %>
           <tr class="list_tr">
             <td class="list_text" style="text-align:center;">

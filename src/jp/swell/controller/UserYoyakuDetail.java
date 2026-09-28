@@ -236,8 +236,7 @@ public class UserYoyakuDetail extends ControllerBase {
 				+ " " + u.getFirstName() + "]" );
 			}
 		}
-		System.out.println("ユーザー総件数　=[" + daoPageInfo.getRecordCount() + "]");
-		System.out.println("今回取得件数　= [" + listData.size() + "]");
+		
 		bean.setValue("lineCount", daoPageInfo.getLineCount());
 		bean.setValue("pageNo", daoPageInfo.getPageNo());
 		bean.setValue("recordCount", daoPageInfo.getRecordCount());
@@ -407,7 +406,7 @@ public class UserYoyakuDetail extends ControllerBase {
 
 			// 予約詳細をデータベースに保存
 			reserveDao.dbInsertReserve();
-           System.out.println("予約登録　userInfoIds =" + java.util.Arrays.toString(reserveDao.getUserInfoIds()));
+           
 			for (String userInfoId : reserveDao.getUserInfoIds()) {
 				// UserReserveDaoを作成
 				UserReserveDao userReserveDao = new UserReserveDao();
