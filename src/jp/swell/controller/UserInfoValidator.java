@@ -60,5 +60,21 @@ public static boolean isHiragana(String input)
 	return input != null
 			&& input.matches("^[\\u3040-\\u309F-]+$");
 }
+
+public static String validateEmailDuplicate (String email, String requestCmd, String mainKey, UserInfoDao pUserInfoDao ) throws AtareSysException {
+	
+	if ("ins".equals(requestCmd )) { 
+		if (pUserInfoDao.isEmailExists(email)) {
+			return "このメールアドレスは既に登録されています。";
+		}
+	}else if ("update".equals(requestCmd)) {
+		if (pUserInfoDao.isEmailExists(email,mainKey)) {
+			return "このメールアドレスは既に登録されています。";
+			
+		}
+	}
+	return "";
 }
+}
+
 

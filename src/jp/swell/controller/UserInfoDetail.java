@@ -435,23 +435,16 @@ public class UserInfoDetail extends ControllerBase
             {
             	errors.put("memail", emailError);
             }
-            else if ("ins".equals(bean.value("request_cmd"))) 
+            
+            else
             {
-                if (pUserInfoDao.isEmailExists(bean.value("memail")))
-                {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("memail", "このメールアドレスは既に登録されています。");
-                }
+            	String duplicateError = UserInfoValidator.validateEmailDuplicate(bean.value("memail"),bean.value("request_cmd"),bean.value("main_key"),pUserInfoDao);
+            	
+            	if(duplicateError.length() >0)
+            	{
+            		errors.put("memail", duplicateError);
+            	}
             }
-            else if ("update".equals(bean.value("request_cmd"))) 
-            {
-                if (pUserInfoDao.isEmailExists(bean.value("memail"), bean.value("main_key")))
-                {
-                    // 重複している場合のエラーメッセージ設定
-                    errors.put("memail", "このメールアドレスは既に登録されています。");
-                }
-            }
- 
           if (bean.value("insert_user_id").length() !=0)
           {
         	  
