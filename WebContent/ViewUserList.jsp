@@ -8,6 +8,18 @@
 <%@ page import="java.util.ArrayList"%>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean"
   scope="request" />
+  
+<% 
+String sortIcon = "fa-solid fa-sort";
+
+if("last_name_kana".equals(webBean.value("sort_key_old"))) {
+  if("asc".equals(webBean.value("sort_order"))) {
+    sortIcon = "fa-solid fa-angles-up";
+  } else {
+    sortIcon = "fa-solid fa-angles-down";
+  }
+}
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -378,15 +390,7 @@ footer {
             <% } %>
             <td class="list_label" style="width: 25%">
             <a href="javaScript:go_sort_request('last_name_kana')">氏名
-            <% if ("last_name_kana".equals(webBean.value("sort_key_old"))) { %>
-              <% if ("asc".equals(webBean.value("sort_order"))){ %>
-                   <i class="fa-solid fa-angles-up"></i>
-              <% }else{ %>
-             　    <i class="fa-solid fa-angles-down"></i>
-              <% } %>
-            <% } else{  %>
-              <i class="fa-solid fa-sort"></i>
-            <% } %>
+            <i class="<%= sortIcon %>"></i>
            </a></td>
             <td class="list_label" style="width: 25%">
             <a href="javaScript:go_sort_request('last_name_kana')" >氏名よみ（かな）</a></td>

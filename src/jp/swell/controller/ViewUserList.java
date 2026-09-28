@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
@@ -90,8 +91,21 @@ public class ViewUserList extends ControllerBase {
 					String[] ids = csv.split(",");
 					UserInfoDao dao = new UserInfoDao();
 
-					for (String id : ids) {
-						dao.dbCancelDelete(id);
+					try
+					{
+						DbBase.dbBeginTran();
+						
+						for (String id : ids)
+						{
+							dao.dbCancelDelete(id);
+						}
+						DbBase.dbCommitTran();
+					}
+					catch (AtareSysException e)
+					{
+						DbBase.dbRollbackTran();
+						e.printStackTrace();
+						throw new AtareSysException(e.getMessage());
 					}
 				}
 				searchList();
@@ -102,8 +116,22 @@ public class ViewUserList extends ControllerBase {
 					String[] ids = csv.split(",");
 					UserInfoDao dao = new UserInfoDao();
 
-					for (String id : ids) {
-						dao.dbDelete(id);
+					try
+					{
+						DbBase.dbBeginTran();
+						
+						for (String id : ids)
+						{
+							dao.dbDelete(id);
+						}
+						
+						DbBase.dbCommitTran();
+					}
+					catch (AtareSysException e)
+					{
+						DbBase.dbRollbackTran();
+						e.printStackTrace();
+						throw new AtareSysException(e.getMessage());
 					}
 				}
 				searchList();
