@@ -79,7 +79,16 @@ public class ReserveList extends ControllerBase {
                 bean.setValue("pageNo", "1");
                 searchReserve();
 
+            }else if("search".equals(bean.value("action_cmd"))){
+            	bean.setValue("pageNo", "1");
+            	searchReserve();
+            }else if("room_reserve".equals(bean.value("action_cmd"))){
+            	System.out.println("room_reserve 到達");
+            	System.out.println("roomId = [" +bean.value("main_key") + "]");
+            	searchReserve();
             }
+            
+            
             {
                 searchReserve();
             }
@@ -161,6 +170,7 @@ public class ReserveList extends ControllerBase {
         // 予約情報の検索
         LinkedHashMap<String, String> sortKey = sortKey();
         ReserveDao dao = new ReserveDao();
+        dao.setRoomId(bean.value("room_id"));
         dao.setReservationDate(bean.value("list_search"));
         dao.setRoomName(bean.value("list_search"));
         dao.setUserName(bean.value("list_search"));

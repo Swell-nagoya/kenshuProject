@@ -269,7 +269,9 @@ public class UserReserveDao implements Serializable {
               + "," + DbO.chara(getUserInfoId())
               + "," + DbO.chara(getReserveId())
               + ")";
+      System.out.println("user_reserve INSERT SQL= [" + sql + "]");
       int ret = DbBase.dbExec(sql);
+      System.out.println("user_reserve INSERT ret = [" + ret + "]");
       if (ret != 1) throw new AtareSysException("dbInsertReserve number or record exception.");
       return true;
   }

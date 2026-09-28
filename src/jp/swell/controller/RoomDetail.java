@@ -266,6 +266,7 @@ public class RoomDetail extends ControllerBase
         bean.setValue("room_id", dao.getRoomId());
         bean.setValue("room_name", dao.getRoomName());
         bean.setValue("before_name", dao.getRoomName());
+        bean.setValue("status", dao.getStatus());
         bean.setValue("insert_date", dao.getInsertDate());
         bean.setValue("insert_user_id", dao.getInsertUserId());
         bean.setValue("update_date", dao.getUpdateDate());
@@ -282,26 +283,30 @@ public class RoomDetail extends ControllerBase
      * @return errors HashMapにエラーフィールドをキーとしてエラーメッセージを返す
      * @throws AtareSysException
      */
-    private boolean inputCheck(RoomDao pRoomDao) throws AtareSysException
+     private boolean inputCheck(RoomDao pRoomDao) throws AtareSysException
     {
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
         String roomName = bean.value("room_name").trim();
-        String beforeName = bean.value("before_name").trim(); // ← hidden から来る
-        String requestCmd = bean.value("request_cmd");
-
-        if (roomName.isEmpty()) {
-           errors.put("room_name_empty", "部屋名を入力してください。");
-        }
+        String excludeRoomId = bean.value("main_key").trim();
         
-        if("update".equalsIgnoreCase(requestCmd)) {
-          if (roomName.equalsIgnoreCase(beforeName)) {
-              errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
-          }
-        }
-
-        return errors.isEmpty();
+        checkRoomName(roomName, excludeRoomId, pRoomDao, errors);
+   			 
+   	    return errors.isEmpty();
     }
+     
+     public void checkRoomName( String roomName, String excludeRoomId, RoomDao pRoomDao, HashMap<String, String> errors) throws AtareSysException {
+    	
+    	 if (roomName.isEmpty()) {
+    		 errors.put("room_name_empty", "部屋名を入力してください。");
+    	 }
+    	 
+    	 if (!roomName.isEmpty()) {
+    		 if (pRoomDao.isRoomNameExists(roomName, excludeRoomId)) {
+    			 errors.put("room_name_duplicate", "この部屋名は既に登録されています。");
+    		 }
+    	 }
+     }
    
    
     /**
@@ -315,6 +320,7 @@ public class RoomDetail extends ControllerBase
         WebBean bean = getWebBean();
         RoomDao dao = new RoomDao();
         dao.setRoomName(bean.value("room_name"));
+        dao.setStatus(bean.value("status"));
 
         bean.setValue("input_info", Sup.serialize(dao));
         return dao;

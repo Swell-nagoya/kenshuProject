@@ -837,7 +837,7 @@ public class ReserveDao implements Serializable {
             reserve.setCheckoutTime(map.get("checkout_time"));
             reserves.add(reserve);
         }
-
+        
         return reserves; // 取得したルームリストを返す
     }
 
@@ -963,6 +963,10 @@ public class ReserveDao implements Serializable {
 
         // ユーザーが退会済み（state_flg = 9）じゃないことを追加
         where.append(" and user_info.state_flg != '9'");
+        
+        if (getRoomId() !=null && !getRoomId().isEmpty()) {
+        	where.append("AND reserve.room_id= ").append(DbS.chara(getRoomId()));
+        }
 
         if (getReservationDate() != null && !getReservationDate().isEmpty()) {
             where.append(" AND reserve.reservation_date LIKE ").append(DbS.chara("%" + getReservationDate() + "%"));

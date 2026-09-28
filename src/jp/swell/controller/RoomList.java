@@ -101,6 +101,19 @@ public class RoomList extends ControllerBase
                 searchList();
                 forward("RoomList.jsp");
             }
+            else if ("bulk_maintenance".equals(bean.value("action_cmd")))
+            {
+            	String selectedRoomIdCsv =bean.value("selected_room_ids_csv");
+            	
+            	String[] roomIds =selectedRoomIdCsv.split(",");
+            	
+            	RoomDao dao = new RoomDao();
+            	
+            	dao.dbBulkMaintenance(roomIds);
+            	
+            	searchList();
+            	forward("RoomList.jsp");
+            }
             else if ("return".equals(bean.value("action_cmd")))
             {
                 redirect("MenuAdmin.do");

@@ -53,6 +53,8 @@ public class RoomDao implements Serializable
      * roomName
      */
     private String roomName = "";
+    
+    private String status ="1";
     /**
      * insertDate 入力日時
      */
@@ -157,7 +159,19 @@ public class RoomDao implements Serializable
     public void setRoomName(String roomName) {
         this.roomName = roomName;
     }
-
+    /**
+     * @return status
+     */
+    public String getStatus() {
+    	return status;
+    }
+    
+    /**
+     * @param status　セットする　states
+     */
+    public void setStatus(String status) {
+    	this.status = status;
+    }
     /**
      * @return insertDate
      */
@@ -333,7 +347,8 @@ public class RoomDao implements Serializable
                 + "room.insert_date as room___insert_date, "
                 + "room.insert_user_id as room___insert_user_id, "
                 + "room.update_date as room___update_date, "
-                + "room.update_user_id as room___update_user_id "
+                + "room.update_user_id as room___update_user_id, "
+                + "room.status as room__status "
                 + "FROM room "
                 + "WHERE room_id = ?";
 
@@ -352,6 +367,7 @@ public class RoomDao implements Serializable
                 map.put("insert_user_id", rs.getString("room___insert_user_id"));
                 map.put("update_date", rs.getString("room___update_date"));
                 map.put("update_user_id", rs.getString("room___update_user_id"));
+                map.put("status",rs.getString("room__status"));
 
                 setRoomDaoForJoin(map, this);
                 return true;
@@ -390,6 +406,31 @@ public class RoomDao implements Serializable
         return true;
     }
 
+    
+    
+    public boolean isRoomNameExists(String roomName, String excludeRoomId) throws AtareSysException {
+    	
+    	String sql = "SELECT room_id "
+    			   + "FROM room "
+    			   + "WHERE room_name = ? ";
+    	if (excludeRoomId != null && !excludeRoomId.isEmpty()) {
+    		sql += "AND room_id <> ? ";
+    	}
+    	
+    	try (PreparedStatement pstmt = (PreparedStatement) DbBase.getDbConnection().prepareStatement(sql)){
+    		pstmt.setString(1, roomName);
+    		
+    		if (excludeRoomId != null && !excludeRoomId.isEmpty()) {
+    			pstmt.setString(2, excludeRoomId);
+    		}
+    		
+    		try (ResultSet rs = (ResultSet) pstmt.executeQuery()) {
+    			return rs.next();
+    		}
+    	}catch (SQLException e) {
+    		throw new AtareSysException( "部屋名の重複チェック中にエラーが発生しました　: " + e.getMessage(), e);
+    	}
+    }
     /**
      * RoomDao にroom 部屋テーブルから読み込んだデータを設定する。.
      *
@@ -404,6 +445,7 @@ public class RoomDao implements Serializable
         dao.setInsertUserId(DbI.chara(map.get("insert_user_id")));
         dao.setUpdateDate(DbI.chara(map.get("update_date")));
         dao.setUpdateUserId(DbI.chara(map.get("update_user_id")));
+        dao.setUpdateUserId(DbI.chara(map.get("status")));
     }
 
     /**
@@ -420,6 +462,7 @@ public class RoomDao implements Serializable
         dao.setInsertUserId(DbI.chara(map.get("insert_user_id") != null ? map.get("insert_user_id") : ""));
         dao.setUpdateDate(DbI.chara(map.get("update_date") != null ? map.get("update_date") : ""));
         dao.setUpdateUserId(DbI.chara(map.get("update_user_id") != null ? map.get("update_user_id") : ""));
+        dao.setStatus(DbI.chara(map.get("status") != null ? map.get("status") : "1"));
     }
     /**
      * room 部屋テーブルにデータを挿入する
@@ -437,6 +480,7 @@ public class RoomDao implements Serializable
         + ",insert_user_id"
         + ",update_date"
         + ",update_user_id"
+        + ",status"
         + " ) values ( "
         + DbO.chara(getRoomId())
         + "," + DbO.chara(getRoomName())
@@ -444,6 +488,7 @@ public class RoomDao implements Serializable
         + "," + (getInsertUserId().isEmpty() ? "null" : DbO.chara(getInsertUserId()))
         + "," + (getUpdateDate().isEmpty() ? "null" : DbO.chara(getUpdateDate()))
         + "," + (getUpdateUserId().isEmpty() ? "null" : DbO.chara(getUpdateUserId()))
+        + "," + DbO.chara(getStatus())
         + " )";
         int ret = DbBase.dbExec(sql);
         if(ret!=1) throw new AtareSysException("dbInsert number or record exception.") ;
@@ -461,12 +506,47 @@ public class RoomDao implements Serializable
     {
         String sql = "update room set "
         + " room_name = " + DbO.chara(getRoomName())
+        + ", status= " + DbO.chara(getStatus())
         + " where room_id = " + DbS.chara(pRoomId)
         + "";
         int ret =DbBase.dbExec(sql);
         if (ret != 1) throw new AtareSysException("dbupdate number or record exception");
         return true;
     }
+    /**
+     * 選択した複数の部屋をメンテナンス中（status=8)に更新する
+     * 
+     * @param roomIds  部屋ID
+     * @return true:成功　false:失敗
+     * @throws AtareSysException
+     */
+    
+    public boolean dbBulkMaintenance(String[] roomIds) throws AtareSysException {
+    	if(roomIds == null || roomIds.length == 0) {
+    		return false;
+    		
+    	}
+    	
+    	String sql = "update room set status = 8 where room_id in (";
+    	
+    	for (int i = 0; i < roomIds.length; i++) {
+    		sql += DbS.chara(roomIds[i]);
+    	
+    	if(i < roomIds.length - 1) {
+    	  sql+= ",";	
+    	}
+    }
+    
+    sql += ")";
+    
+    int ret = DbBase.dbExec(sql);
+    
+    if (ret != roomIds.length) {
+    	throw new AtareSysException("dbBulkMaintenance number or record exception.");
+    	
+    }
+    return true;
+}
 
     /**
      * room ルームテーブルからデータを削除する

@@ -56,6 +56,7 @@ public class UserMenu extends ControllerBase
                 bean.setValue("schedule", "メイン");
                 ReserveDao reserveDao = new ReserveDao();
                 ArrayList<ReserveDao> reserves = reserveDao.getCalendarReserves();
+                
                 bean.setValue("reserves", reserves);
                 forward("UserMenuHome.jsp");
             }
@@ -297,6 +298,14 @@ private void searchList() throws AtareSysException
     daoPageInfo.setLineCount(100);
     userReserveDao.setUserInfoId(getLoginUserId());
     ArrayList<UserReserveDao> userReserveDaos = UserReserveDao.dbSelectList(userReserveDao, sortKey, daoPageInfo);
+    ArrayList<ReserveDao>reserves =new ArrayList<ReserveDao>();
+    for (UserReserveDao userReserve : userReserveDaos) {
+    	ReserveDao reserveDao = new ReserveDao();
+    	if (reserveDao.dbSelect(userReserve.getReserveId())) {
+    		reserves.add(reserveDao);
+    	}
+    }
+    
 
     // ファイルを取得とセット
     FileDao fileDao = new FileDao();
@@ -312,6 +321,7 @@ private void searchList() throws AtareSysException
     bean.setValue("users", users);
     bean.setValue("scheduleDaos", scheduleDaos);
     bean.setValue("userReserveDaos", userReserveDaos);
+    bean.setValue("reserves", reserves);
     bean.setValue("fileDaos", fileDaos);
     bean.setValue("linkUserReserveDaos", linkUserReserveDaos);
 }

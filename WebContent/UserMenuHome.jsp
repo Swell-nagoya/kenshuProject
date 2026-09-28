@@ -437,13 +437,14 @@ footer {
                 %>
                 dateCell = document.getElementById("date<%=WebUtil.htmlEscape(reserve.getReservationDate())%>");
                 if (dateCell) {
+       
                     <%
                     if (WebUtil.htmlEscape(reserve.getUserInfoId()).equals(webBean.txt("user_info_id"))) {
                     %>
                         dateCell.innerHTML += 
                             '<div class="myreserve room<%=WebUtil.htmlEscape(reserve.getRoomId())%> <%=WebUtil.htmlEscape(reserve.getUserInfoId())%>"><%=WebUtil.htmlEscape(formatCheckinTime)%>-<%=WebUtil.htmlEscape(formatCheckoutTime)%> <%=WebUtil.htmlEscape(reserve.getRoomName())%></div>';
                     <%
-                    } else if (webBean.txt("admin").equals("admin")) {
+                    } else if (webBean.txt("admin").equals("1")) {
                     %>
                         dateCell.innerHTML += 
                             '<div class="reserved room<%=WebUtil.htmlEscape(reserve.getRoomId())%> <%=WebUtil.htmlEscape(reserve.getUserInfoId())%>"><%=WebUtil.htmlEscape(formatCheckinTime)%>-<%=WebUtil.htmlEscape(formatCheckoutTime)%> <%=WebUtil.htmlEscape(reserve.getRoomName())%><br><%=WebUtil.htmlEscape(reserve.getUserName())%></div>';

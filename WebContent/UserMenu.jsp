@@ -423,6 +423,7 @@ footer {
     function insertReserve() {
         let dateCell;
         <%
+
         // データベースの予約情報が空でないかの確認
         if (webBean.arrayList("reserves") != null && !webBean.arrayList("reserves").isEmpty()) {
           // 予約情報を取るためのループ処理
@@ -435,20 +436,31 @@ footer {
                 String formatCheckoutTime = checkoutTime.substring(0, 2) + ":" + checkoutTime.substring(2, 4);
                 %>
                 dateCell = document.getElementById("date<%=WebUtil.htmlEscape(reserve.getReservationDate())%>");
+                console.log( "予約日=[<%= WebUtil.htmlEscape(reserve.getReservationDate()) %>]","dateCell=",detaCell);
                 if (dateCell) {
-                    <%
+                    
+                	<%
                     if (WebUtil.htmlEscape(reserve.getUserInfoId()).equals(webBean.txt("user_info_id"))) {
                     %>
                         dateCell.innerHTML += 
                             '<div class="myreserve room<%=WebUtil.htmlEscape(reserve.getRoomId())%> <%=WebUtil.htmlEscape(reserve.getUserInfoId())%>"><%=WebUtil.htmlEscape(formatCheckinTime)%>-<%=WebUtil.htmlEscape(formatCheckoutTime)%> <%=WebUtil.htmlEscape(reserve.getRoomName())%></div>';
+                            
+                           
                     <%
-                    } else if (webBean.txt("admin").equals("admin")) {
+                    } else if (webBean.txt("admin").equals("1")) {
                     %>
                         dateCell.innerHTML += 
                             '<div class="reserved room<%=WebUtil.htmlEscape(reserve.getRoomId())%> <%=WebUtil.htmlEscape(reserve.getUserInfoId())%>"><%=WebUtil.htmlEscape(formatCheckinTime)%>-<%=WebUtil.htmlEscape(formatCheckoutTime)%> <%=WebUtil.htmlEscape(reserve.getRoomName())%><br><%=WebUtil.htmlEscape(reserve.getUserName())%></div>';
                     <%
+                    }else{
+                    %>
+                    dateCell.innerHTML +='<div class="reservedroom<%WebUtil.htmlEscape(reserve.getRoomId())%>">'
+                    + '<%=formatCheckinTime%>-<%=formatCheckoutTime%>予約済み'
+                    + '</div>';
+                    <%
                     }
                     %>
+                
                 }
             <%
             }
@@ -616,7 +628,7 @@ footer {
                     checkinTimeMinutes = parseInt(checkinTime.slice(0, 2)) * 60 + parseInt(checkinTime.slice(2, 4));
                     checkoutTimeMinutes = parseInt(checkoutTime.slice(0, 2)) * 60 + parseInt(checkoutTime.slice(2, 4));
                     cellNumbers = (checkoutTimeMinutes - checkinTimeMinutes) / 15;
-                    <%
+                     <%
                     if (WebUtil.htmlEscape(reserve.getUserInfoId()).equals(webBean.txt("user_info_id"))) {
                     %>
                         for (let i = 0; i < cellNumbers; i ++) {

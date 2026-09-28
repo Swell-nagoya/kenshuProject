@@ -165,6 +165,28 @@ footer {
 width: 100%;
 }
 
+
+.bulk_action {
+  text-align:center;
+  margin-top:20px;
+  margin-bottom:30px;
+}
+
+.bulk_button {
+  min-width:320px;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 20px;
+  background-color: #19b7c5;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.bulk_button:hover {
+  opacity: 0.85;
+}
 </style>
 <script type="text/javascript">
 <%--検索条件入力でenterキーが押された場合の処理--%>
@@ -232,6 +254,36 @@ jQuery(function($)
     document.getElementById('request_cmd').value=request_cmd;
     document.getElementById('main_form').submit();
   }
+  
+  function go_reserve(room_id)
+  {
+    var form =document.getElementById("main_form");
+    var actionCmd = document.getElementById("action_cmd");
+    var mainKey= document.getElementById("room_id");
+    
+    document.getElementById("form_name").value ="ReserveList";
+    
+    actionCmd.value = "room_reserve";
+    mainKey.value = room_id;
+    
+    form.action ="ReserveList.do";
+    form.submit();
+  }
+  function go_bulk_maintenance() {
+    const checked = document.querySelectorAll('input[name="selected_room_ids"]:checked');
+    
+    if(checked.length ===0){
+      alert("部屋を１件以上選択してください。");
+      return;
+      }
+      const ids = Array.from(checked).map(function(item){
+        return item.value;
+      });
+      document.getElementById("selected_room_ids_csv").value = ids.join(",");
+      document.getElementById("action_cmd").value = "bulk_maintenance";
+      document.getElementById("main_form").action = "RoomList.do";
+      document.getElementById("main_form").submit();
+    }
 </script>
 </head>
 <body>
@@ -249,6 +301,7 @@ jQuery(function($)
    
       <input type="hidden" name="form_name" id="form_name" value="RoomList"/>
       <input type="hidden" name="action_cmd" id="action_cmd" value=""/>
+      <input type="hidden" name="selected_room_ids_csv" id="selected_room_ids_csv" value=""/>
       <input type="hidden" name="request_cmd" id="request_cmd" value=""/>
       <input type="hidden" name="main_key" id="main_key" value=""/>
       <input type="hidden" name="room_name" id="room_name" value="<%=webBean.txt("room_name")%>" />
@@ -300,19 +353,25 @@ jQuery(function($)
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 70%"><a href="javaScript:go_sort_request('room_name')">部屋名</a></td>
+            <td class="list_label" style="width: 10%"> 選択</td>
+            <td class="list_label" style="width: 60%"><a href="javaScript:go_sort_request('room_name')">部屋名</a></td>
             <td class="list_label" style="width: 30%"></td>
           </tr>
           <%
           for(Object item : webBean.arrayList("list"))
           {
               RoomDao dao = (RoomDao)item;
+              System.out.println("JSP dao.getRoomId() = [" +dao.getRoomId() +"]");
           %>
           <tr class="list_tr">
-            <td class="list_text">
-              <%=WebUtil.htmlEscape(dao.getRoomName())%>
+            <td class="list_text" style="text-align:center;">
+            <input type="checkbox" name="selected_room_ids" value="<%=WebUtil.htmlEscape(dao.getRoomId())%>"/>
+            </td>
+            
+            <td class="list_text"> <%=WebUtil.htmlEscape(dao.getRoomName())%>
             </td>
             <td class="list_btn">
+            　　<input type="button" value="予約確認" onclick="go_reserve('<%=WebUtil.txtEscape(dao.getRoomId())%>')" />
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
               <input type="button" value="削除" onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
             </td>
@@ -320,7 +379,10 @@ jQuery(function($)
           <%}%>
         </table>
         <%}%>
-      </div>
+        <div class="bulk_action">
+          <input type ="button" class="bulk_button" value="選択した部屋をメンテナンス中にする" onclick="go_bulk_maintenance()"/>
+        </div>
+       </div>
     </form>
   </div>
 </body>
