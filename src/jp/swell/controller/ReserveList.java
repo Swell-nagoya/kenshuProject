@@ -83,8 +83,8 @@ public class ReserveList extends ControllerBase {
             	bean.setValue("pageNo", "1");
             	searchReserve();
             }else if("room_reserve".equals(bean.value("action_cmd"))){
-            	System.out.println("room_reserve 到達");
-            	System.out.println("roomId = [" +bean.value("main_key") + "]");
+            	
+            	bean.setValue("room_id", bean.value("main_key"));
             	searchReserve();
             }
             

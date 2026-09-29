@@ -258,16 +258,19 @@ jQuery(function($)
   function go_reserve(room_id)
   {
     var form =document.getElementById("main_form");
-    var actionCmd = document.getElementById("action_cmd");
-    var mainKey= document.getElementById("room_id");
+    
     
     document.getElementById("form_name").value ="ReserveList";
+    document.getElementById("action_cmd").value = "room_reserve";
+    document.getElementById("main_key").value = room_id;
     
-    actionCmd.value = "room_reserve";
-    mainKey.value = room_id;
+    window.open("" , "reserveWindow" );
     
+    form.target = "reserveWindow"
     form.action ="ReserveList.do";
     form.submit();
+    
+    form.target = "";
   }
   function go_bulk_maintenance() {
     const checked = document.querySelectorAll('input[name="selected_room_ids"]:checked');
