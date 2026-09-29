@@ -109,7 +109,7 @@ public class FileList extends ControllerBase {
         bean.setValue("sort_key", "file_name"); /* 初回のソートキーを入れる */
         bean.setValue("sort_order", "asc");
         bean.setValue("lineCount",
-                SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "RoomList", "lineCount", "100"));
+                SystemUserInfoValue.getUserInfoValue(getLoginUserId(), "FileList", "lineCount", "100"));
     }
 
     /**
@@ -182,31 +182,34 @@ public class FileList extends ControllerBase {
         }
 
         // マージしてセット
-        ArrayList<FileDao> fileList = new ArrayList<>();
-        fileList.addAll(receivedFiles);
-        fileList.addAll(sentFiles);
+        ArrayList<FileDao> allFiles = new ArrayList<>();
+        allFiles.addAll(receivedFiles);
+        allFiles.addAll(sentFiles);
+        
+        //ページング
+        int lineCount = daoPageInfo.getLineCount();
+        int pageNo = daoPageInfo.getPageNo();
+        
+        int recordCount = allFiles.size();
+        int fromIndex = (pageNo - 1) * lineCount;
+        int toIndex = Math.min(fromIndex + lineCount, recordCount);
 
+        ArrayList<FileDao> fileList = new ArrayList<>();
+        
+        if (fromIndex < recordCount) {
+            fileList.addAll(allFiles.subList(fromIndex, toIndex));
+        }
+        
         bean.setValue("list", fileList);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         // 受信件数だけでは recordCount が正確に反映されない可能性があるため、明示的に再セット
-        bean.setValue("recordCount", fileList.size());
-        bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) fileList.size() / daoPageInfo.getLineCount())));
+        bean.setValue("recordCount", allFiles.size());
+        bean.setValue("maxPageNo", Math.max(1, (int) Math.ceil((double) recordCount / lineCount)));
 
         SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
+}
 
-        if (!Validate.isInteger(bean.value("lineCount"))) {
-            bean.setValue("lineCount", "20");
-        }
-        daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
-        SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "FileList", "lineCount", bean.value("lineCount"));
-        if (!Validate.isInteger(bean.value("pageNo"))) {
-            daoPageInfo.setPageNo(1);
-        } else {
-            daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
-        }
-
-    }
 
     /**
      * ソート順番を求める

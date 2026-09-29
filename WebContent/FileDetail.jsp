@@ -206,7 +206,7 @@ function go_submit(action_cmd) {
 }
 
 function go_upload(action_cmd) {
-  document.getElementById('main_form').action = '';
+  document.getElementById('main_form').action = 'FileDetail.do';
   document.getElementById('action_cmd').value = action_cmd;
   document.getElementById('main_form').submit();
 }
@@ -236,7 +236,7 @@ function openUserWindow(action_cmd) {
   document.body.appendChild(form);
 
   // サブ画面表示処理
-  window.open('', 'FileUserList', 'width=600,height=400');
+  window.open('/FileUserList.jsp', 'FileUserList', 'width=600,height=400');
   form.submit();
 
   document.body.removeChild(form);
