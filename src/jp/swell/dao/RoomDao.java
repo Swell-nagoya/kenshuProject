@@ -412,7 +412,8 @@ public class RoomDao implements Serializable
     	
     	String sql = "SELECT room_id "
     			   + "FROM room "
-    			   + "WHERE room_name = ? ";
+    			   + "WHERE room_name = ? "
+    	           + "AND is_deleted = 0 ";
     	if (excludeRoomId != null && !excludeRoomId.isEmpty()) {
     		sql += "AND room_id <> ? ";
     	}
