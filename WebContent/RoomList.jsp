@@ -357,7 +357,8 @@ jQuery(function($)
         <table class="list_table">
           <tr class="list_title">
             <td class="list_label" style="width: 10%"> 選択</td>
-            <td class="list_label" style="width: 60%"><a href="javaScript:go_sort_request('room_name')">部屋名</a></td>
+            <td class="list_label" style="width: 40%"><a href="javaScript:go_sort_request('room_name')">部屋名</a></td>
+            <td class="list_label" style="width: 20%">利用ステース</td>
             <td class="list_label" style="width: 30%"></td>
           </tr>
           <%
@@ -372,6 +373,28 @@ jQuery(function($)
             
             <td class="list_text"> <%=WebUtil.htmlEscape(dao.getRoomName())%>
             </td>
+            <td class="list_text">
+              <%
+              String roomStatus= dao.getStatus();
+              if("1".equals(roomStatus)){
+              %>
+                利用可能
+              <%
+                }else if("2".equals(roomStatus)){
+              %>
+                利用不可
+              <%
+                } else if("8".equals(roomStatus)) {
+              %>
+                メンテナンス中
+              <%
+                }else {
+              %>
+                未設定
+              <%
+                }
+              %>
+              </td>
             <td class="list_btn">
             　　<input type="button" value="予約確認" onclick="go_reserve('<%=WebUtil.txtEscape(dao.getRoomId())%>')" />
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />

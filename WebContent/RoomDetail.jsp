@@ -135,6 +135,10 @@ input[type="button"]:hover {
   border-radius: 4px;
 }
 
+.room_form_status{
+  margin-top: 15px;
+  text-align:center;
+ }
 </style>
 <script type="text/javascript">
 function go_submit(action_cmd, request_cmd) {
@@ -200,9 +204,17 @@ function go_list(action_cmd) {
             <div class="left">
               <div class="room__form--name">
                 <input type="text" id="room_name" name="room_name" class="ime_disabled" value="<%=webBean.txt("room_name")%>" placeholder="RoomName" size="25" maxlength="255" />
-              </div>
-            </div>
-            <div class="button">
+                
+                <div class="room_form-status">
+                  <label for="status">利用ステータス</label>
+              
+                  <select name="status" id="status">
+                    <option value="1"<%= !"1".equals(webBean.value("status")) ? "selected" : "" %>>利用可能</option>
+                    <option value="2" <%= "2".equals(webBean.value("status"))?"selected" : "" %>> 利用不可　</option>
+                    <option value="8" <%= "8".equals(webBean.value("status"))? "selected" : "" %>>メンテナンス中</option>
+                  </select>
+                </div>
+              <div class="button">
                 <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>')" value="<%=val%>"/>
             </div>
           </form>

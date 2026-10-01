@@ -617,6 +617,7 @@ public class RoomDao implements Serializable
                 + ",room.insert_user_id as room___insert_user_id"
                 + ",room.update_date as room___update_date"
                 + ",room.update_user_id as room___update_user_id"
+                + ",room.status as room___status"
                 + " from room ";
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);
