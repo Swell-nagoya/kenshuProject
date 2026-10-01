@@ -192,6 +192,17 @@ width: 100%;
 <%--検索条件入力でenterキーが押された場合の処理--%>
 jQuery(function($)
 {
+  $("#select_all_rooms").on("change",function(){
+    $('input[name="selected_room_ids"]').prop("checked",this.checked);
+  });
+  
+  $('input[name="selected_room_ids"]').on("change", function(){
+    var all = $('input[name="selected_room_ids"]');
+    var checked = all.filter(":checked");
+    
+    $("#select_all_rooms").prop("checked",all.length > 0 && all.length === checked.length);
+  });
+  
   $(".select_table input").keydown(function (e)
   {
     if(e.which == 13)
@@ -356,7 +367,9 @@ jQuery(function($)
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 10%"> 選択</td>
+            <td class="list_label" style="width: 10%">
+              <input type="checkbox" id="select_all_rooms" aria-label="部屋を全選択・全解除"/> 選択
+            </td>
             <td class="list_label" style="width: 40%"><a href="javaScript:go_sort_request('room_name')">部屋名</a></td>
             <td class="list_label" style="width: 20%">利用ステース</td>
             <td class="list_label" style="width: 30%"></td>
