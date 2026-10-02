@@ -209,7 +209,7 @@ function go_list(action_cmd) {
                   <label for="status">利用ステータス</label>
               
                   <select name="status" id="status">
-                    <option value="1"<%= !"1".equals(webBean.value("status")) ? "selected" : "" %>>利用可能</option>
+                    <option value="1"<%= "1".equals(webBean.value("status")) ? "selected" : "" %>>利用可能</option>
                     <option value="2" <%= "2".equals(webBean.value("status"))?"selected" : "" %>> 利用不可　</option>
                     <option value="8" <%= "8".equals(webBean.value("status"))? "selected" : "" %>>メンテナンス中</option>
                   </select>
