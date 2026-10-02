@@ -10,6 +10,7 @@
 <%@ page import="jp.patasys.common.http.HtmlParts"%>
 <%@ page import="jp.patasys.common.http.WebBean" %>
 <%@ page import="jp.swell.constant.UserInfoState"%>
+<%@ page import="jp.swell.constant.RoomState"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.text.SimpleDateFormat" %>
@@ -216,6 +217,7 @@ function go_list(action_cmd)
        <input type="hidden" name="request_name" id="request_name" value="<%=webBean.txt("request_name")%>" /> 
        <input type="hidden" name="main_key" id="main_key" value="<%=webBean.txt("main_key")%>" />
        <input type="hidden" name="before_name" id="before_name" value="<%=webBean.txt("before_name") %>" />
+       <input type="hidden" name="status" id="status" value="<%=webBean.txt("status")%>" />
        
        <div class="style_head3 messages"><%=webBean.dispMessages()%></div>
        <div class="errors"><%=webBean.dispErrorMessages()%></div>
@@ -231,6 +233,12 @@ function go_list(action_cmd)
              <td><%=webBean.txt("before_name")%></td>
              <td><%=webBean.txt("room_name")%></td>
            </tr>
+           <tr class="table-header">
+             <td colspan="2">利用ステータス</td>
+           </tr>
+           <tr class="table-date">
+             <td colspan="2"><%=new RoomState().getStateName(webBean.txt("status"))%></td>
+           </tr>
          </table>
          <% } else if ("登録する".equals(val)) {%>
          <table class="room__form--name">
@@ -239,6 +247,12 @@ function go_list(action_cmd)
            </tr>
            <tr class="table-date">
              <td><%=webBean.txt("room_name")%></td>
+           </tr>
+           <tr class="table-header">
+             <td>利用ステータス</td>
+           </tr>
+           <tr class="table-date">
+             <td><%=new RoomState().getStateName(webBean.txt("status"))%></td>
            </tr>
           </table>
           <%} else if ("削除する".equals(val)) {%> <%--削除する追加--%>

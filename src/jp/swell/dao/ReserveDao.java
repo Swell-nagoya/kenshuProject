@@ -979,6 +979,10 @@ public class ReserveDao implements Serializable {
             where.append(" AND room.room_name LIKE ").append(DbS.chara("%" + getRoomName() + "%"));
         }
 
+        if (getRoomId() != null && !getRoomId().isEmpty()) {
+            where.append(" AND reserve.room_id = ").append(DbS.chara(getRoomId()));
+        }
+
         if (getCheckinTime() != null && !getCheckinTime().isEmpty()) {
             where.append(" AND reserve.checkin_time LIKE ").append(DbS.chara("%" + getCheckinTime() + "%"));
         }

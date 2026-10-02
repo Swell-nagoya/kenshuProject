@@ -139,6 +139,7 @@ public class ReserveList extends ControllerBase {
         WebBean bean = getWebBean();
         bean.setValue("list_search", "");
         bean.setValue("lineCount", "");
+        bean.setValue("room_id", "");
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
     }
@@ -166,6 +167,7 @@ public class ReserveList extends ControllerBase {
         dao.setUserName(bean.value("list_search"));
         dao.setCheckinTime(bean.value("list_search"));
         dao.setCheckoutTime(bean.value("list_search"));
+        dao.setRoomId(bean.value("room_id"));
 
         // ユーザー情報の取得とセット
         UserInfoDao userInfoDao = new UserInfoDao();
@@ -193,6 +195,18 @@ public class ReserveList extends ControllerBase {
         // ルーム情報の取得とセット
         RoomDao roomDao = new RoomDao();
         ArrayList<RoomDao> rooms = roomDao.getAllRooms();
+
+        // 部屋で絞り込んでいる場合、画面表示用に部屋名を求める
+        String filterRoomName = "";
+        if (bean.value("room_id").length() > 0) {
+            for (RoomDao room : rooms) {
+                if (room.getRoomId().equals(bean.value("room_id"))) {
+                    filterRoomName = room.getRoomName();
+                    break;
+                }
+            }
+        }
+        bean.setValue("filter_room_name", filterRoomName);
 
         // 予約情報の取得とセット
         ReserveDao reserveDao = new ReserveDao();

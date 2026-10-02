@@ -202,6 +202,15 @@ function go_list(action_cmd) {
                 <input type="text" id="room_name" name="room_name" class="ime_disabled" value="<%=webBean.txt("room_name")%>" placeholder="RoomName" size="25" maxlength="255" />
               </div>
             </div>
+            <div class="left">
+              <div class="room__form--name">
+                <select id="status" name="status" class="ime_disabled">
+                  <option value="1" <%= (webBean.value("status").isEmpty() || "1".equals(webBean.value("status"))) ? "selected=\"selected\"" : "" %>>利用可</option>
+                  <option value="2" <%= "2".equals(webBean.value("status")) ? "selected=\"selected\"" : "" %>>使用中</option>
+                  <option value="3" <%= "3".equals(webBean.value("status")) ? "selected=\"selected\"" : "" %>>メンテナンス中</option>
+                </select>
+              </div>
+            </div>
             <div class="button">
                 <input type="button" id="bt" name="reg-btn"  onclick="go_submit('go_next', '<%=actionType%>')" value="<%=val%>"/>
             </div>

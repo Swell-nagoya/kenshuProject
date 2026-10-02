@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
@@ -104,6 +105,19 @@ public class RoomList extends ControllerBase
             else if ("return".equals(bean.value("action_cmd")))
             {
                 redirect("MenuAdmin.do");
+            }
+            else if ("bulk_maintenance".equals(bean.value("action_cmd")))
+            {
+                if (getSelectedRoomIds().length == 0)
+                {
+                    bean.setError("対象の部屋を選択してください。");
+                    searchList();
+                    forward("RoomList.jsp");
+                }
+                else
+                {
+                    bulkUpdateStatus();
+                }
             }
             else
             {
@@ -303,5 +317,81 @@ public class RoomList extends ControllerBase
         ret = Integer.parseInt(pageNo);
         ret += add;
         return String.valueOf(ret);
+    }
+
+    /**
+     * 選択された部屋ID配列を取得する。
+     */
+    private String[] getSelectedRoomIds()
+    {
+        WebBean bean = getWebBean();
+        String selectedIds = bean.value("select_room_ids");
+
+        if (selectedIds == null || selectedIds.trim().length() == 0)
+        {
+            return new String[0];
+        }
+
+        String[] rawIds = selectedIds.split(",");
+        ArrayList<String> idList = new ArrayList<String>();
+
+        for (int i = 0; i < rawIds.length; i++)
+        {
+            String id = rawIds[i].trim();
+            if (id.length() > 0 && !idList.contains(id))
+            {
+                idList.add(id);
+            }
+        }
+
+        return idList.toArray(new String[idList.size()]);
+    }
+
+    /**
+     * 一括更新の場合。選択した部屋のステータスをまとめて指定の値に変更する。
+     * @throws AtareSysException
+     */
+    private void bulkUpdateStatus() throws AtareSysException
+    {
+        WebBean bean = getWebBean();
+        String[] roomIds = getSelectedRoomIds();
+        String status = bean.value("bulk_status_value");
+
+        if (!jp.swell.constant.RoomState.Available.equals(status)
+                && !jp.swell.constant.RoomState.InUse.equals(status)
+                && !jp.swell.constant.RoomState.Maintenance.equals(status))
+        {
+            bean.setError("ステータスを選択してください。");
+            searchList();
+            forward("RoomList.jsp");
+            return;
+        }
+
+        try
+        {
+            DbBase.dbBeginTran();
+
+            RoomDao dao = new RoomDao();
+            for (int i = 0; i < roomIds.length; i++)
+            {
+                String roomId = roomIds[i].trim();
+                if (roomId.length() == 0)
+                {
+                    continue;
+                }
+
+                dao.dbUpdateStatus(roomId, status);
+            }
+
+            DbBase.dbCommitTran();
+            redirect("RoomList.do");
+        }
+        catch (Exception e)
+        {
+            DbBase.dbRollbackTran();
+            bean.setError("部屋データの一括更新に失敗しました。");
+            searchList();
+            forward("RoomList.jsp");
+        }
     }
 }

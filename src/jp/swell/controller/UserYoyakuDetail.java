@@ -80,6 +80,13 @@ public class UserYoyakuDetail extends ControllerBase {
         searchList();
       }
 
+      // 部屋一覧から特定の部屋を選択した状態で新規予約画面を開く
+      else if ("reserveFromRoom".equals(bean.value("action_cmd"))) {
+        searchList();
+        forward("UserMenuReserve.jsp");
+        return; // メソッドを終了
+      }
+
       // 部屋の情報を新規登録する条件を追加
       else if ("insertRoom".equals(bean.value("form_name"))) {
         insertRoomInfo();
