@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
+import jp.patasys.common.db.DbBase;
 import jp.patasys.common.db.SystemUserInfoValue;
 import jp.patasys.common.http.WebBean;
 import jp.patasys.common.util.Sup;
@@ -110,8 +111,14 @@ public class RoomList extends ControllerBase
             	
             	RoomDao dao = new RoomDao();
             	
-            	dao.dbBulkMaintenance(roomIds);
-            	
+            	try {
+            		DbBase.dbBeginTran();
+            	    dao.dbBulkMaintenance(roomIds);
+            	    DbBase.dbCommitTran();
+            	} catch (Exception e) {
+            	  DbBase.dbRollbackTran();
+            	  throw new AtareSysException("一括更新に失敗しました。");
+                }
             	searchList();
             	forward("RoomList.jsp");
             }
