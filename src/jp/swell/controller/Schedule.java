@@ -160,11 +160,7 @@ public class Schedule extends ControllerBase {
   private HashMap<String, String> inputCheck() {
     WebBean bean = getWebBean();
     HashMap<String, String> errors = bean.getItemErrors();
-    if (bean.value("list_search").length() > 0) {
-      if (100 < bean.value("list_search").length()) {
-        errors.put("list_search", "氏名の入力内容が長すぎます。");
-      }
-    }
+    CommonDoActionProcess.checkMaxLength(errors, "list_search", bean.value("list_search"), 100, "氏名");
     return errors;
   }
 

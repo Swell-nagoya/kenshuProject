@@ -4,6 +4,7 @@
 <%@ page import="jp.patasys.common.http.WebUtil"%>
 <%@ page import="jp.patasys.common.http.HtmlParts"%>
 <%@ page import="jp.swell.constant.UserInfoState"%>
+<%@ page import="jp.swell.constant.RoomState"%>
 <%@ page import="java.util.ArrayList"%>
 <jsp:useBean id="webBean" class="jp.patasys.common.http.WebBean" scope="request" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -232,6 +233,62 @@ jQuery(function($)
     document.getElementById('request_cmd').value=request_cmd;
     document.getElementById('main_form').submit();
   }
+  function go_reserve_confirm(room_id)
+  {
+    document.getElementById('main_form').action = 'ReserveList.do';
+    document.getElementById('form_name').value = 'ReserveList';
+    document.getElementById('action_cmd').value = 'search';
+    document.getElementById('room_id').value = room_id;
+    document.getElementById('main_form').submit();
+  }
+  function go_reserve_new(room_id)
+  {
+    document.getElementById('main_form').action = 'UserYoyakuDetail.do';
+    document.getElementById('form_name').value = 'UserYoyakuDetail';
+    document.getElementById('action_cmd').value = 'reserveFromRoom';
+    document.getElementById('room_id').value = room_id;
+    document.getElementById('main_form').submit();
+  }
+  function toggleRoomCheckAll(source)
+  {
+    var checks = document.getElementsByName('select_room_id');
+    for (var i = 0; i < checks.length; i++)
+    {
+      checks[i].checked = source.checked;
+    }
+  }
+  function syncSelectedRoomIds()
+  {
+    var hidden = document.getElementById('select_room_ids');
+    var checks = document.getElementsByName('select_room_id');
+    var ids = [];
+    for (var i = 0; i < checks.length; i++)
+    {
+      if (checks[i].checked)
+      {
+        ids.push(checks[i].value);
+      }
+    }
+    hidden.value = ids.join(',');
+  }
+  function go_bulk_maintenance()
+  {
+    syncSelectedRoomIds();
+    if (document.getElementById('select_room_ids').value === '')
+    {
+      alert('対象の部屋を選択してください。');
+      return;
+    }
+    var statusSelect = document.getElementById('bulk_status_value');
+    var statusLabel = statusSelect.options[statusSelect.selectedIndex].text;
+    if (!confirm('選択した部屋を「' + statusLabel + '」に一括変更します。よろしいですか？'))
+    {
+      return;
+    }
+    document.getElementById('main_form').action = 'RoomList.do';
+    document.getElementById('action_cmd').value = 'bulk_maintenance';
+    document.getElementById('main_form').submit();
+  }
 </script>
 </head>
 <body>
@@ -258,6 +315,7 @@ jQuery(function($)
       <input type="hidden" name="sort_order" id="sort_order" value="<%=webBean.txt("sort_order")%>"/>
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>"/>
       <input type="hidden" name="room_id" id="room_id" value="<%=webBean.txt("room_id")%>"/>
+      <input type="hidden" name="select_room_ids" id="select_room_ids" value=""/>
       <div class="left">
         <div class="messages">
           <%=webBean.dispMessages()%>
@@ -300,25 +358,44 @@ jQuery(function($)
         </div>
         <table class="list_table">
           <tr class="list_title">
-            <td class="list_label" style="width: 70%"><a href="javaScript:go_sort_request('full_name')">部屋名</a></td>
+            <td class="list_label" style="width: 5%"><input type="checkbox" id="select_room_id_all" onclick="toggleRoomCheckAll(this);" /></td>
+            <td class="list_label" style="width: 45%"><a href="javaScript:go_sort_request('full_name')">部屋名</a></td>
+            <td class="list_label" style="width: 20%">ステータス</td>
             <td class="list_label" style="width: 30%"></td>
           </tr>
           <%
+          RoomState roomState = new RoomState();
           for(Object item : webBean.arrayList("list"))
           {
               RoomDao dao = (RoomDao)item;
           %>
           <tr class="list_tr">
+            <td class="list_check">
+              <input type="checkbox" name="select_room_id" value="<%=WebUtil.txtEscape(dao.getRoomId())%>" />
+            </td>
             <td class="list_text">
               <%=WebUtil.htmlEscape(dao.getRoomName())%>
+            </td>
+            <td class="list_text">
+              <%=WebUtil.htmlEscape(roomState.getStateName(dao.getStatus()))%>
             </td>
             <td class="list_btn">
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
               <input type="button" value="削除" onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
+              <input type="button" value="予約確認" onclick="go_reserve_confirm('<%=WebUtil.txtEscape(dao.getRoomId())%>');" />
+              <input type="button" value="予約登録" onclick="go_reserve_new('<%=WebUtil.txtEscape(dao.getRoomId())%>');" />
             </td>
           </tr>
           <%}%>
         </table>
+        <div class="pagenation">
+          <select name="bulk_status_value" id="bulk_status_value">
+            <option value="1">利用可</option>
+            <option value="2">使用中</option>
+            <option value="3">メンテナンス中</option>
+          </select>
+          <input type="button" value="選択した部屋のステータスを一括変更する" onclick="go_bulk_maintenance();" />
+        </div>
         <%}%>
       </div>
     </form>

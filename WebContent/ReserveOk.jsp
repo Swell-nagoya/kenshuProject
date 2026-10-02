@@ -96,11 +96,11 @@ td {
             <table>
                 <tr>
                     <th>予約者</th>
-                    <td><%= reserveDao.getUserName() %> 様</td>
+                    <td><%= webBean.txt("user_name") %> 様</td>
                 </tr>
                 <tr>
                     <th>会議室</th>
-                    <td><%= reserveDao.getRoomName() %></td>
+                    <td><%= webBean.txt("room_name") %></td>
                 </tr>
                 <tr>
                     <th>日付</th>

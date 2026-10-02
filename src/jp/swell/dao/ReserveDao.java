@@ -563,7 +563,7 @@ public class ReserveDao implements Serializable {
         if (0 == rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setReserveDaoForJoin(map, this);
+        setReserveDao(map, this);
         return true;
     }
 
@@ -944,7 +944,7 @@ public class ReserveDao implements Serializable {
             map = rs.get(i);
             {
                 ReserveDao dao = new ReserveDao();
-                dao.setReserveDaoForJoin(map, dao);
+                dao.setReserveDao(map, dao);
 
                 array.add(dao);
             }
@@ -977,6 +977,10 @@ public class ReserveDao implements Serializable {
 
         if (getRoomName() != null && !getRoomName().isEmpty()) {
             where.append(" AND room.room_name LIKE ").append(DbS.chara("%" + getRoomName() + "%"));
+        }
+
+        if (getRoomId() != null && !getRoomId().isEmpty()) {
+            where.append(" AND reserve.room_id = ").append(DbS.chara(getRoomId()));
         }
 
         if (getCheckinTime() != null && !getCheckinTime().isEmpty()) {

@@ -761,6 +761,85 @@ public class UserInfoDao implements Serializable {
     }
 
     /**
+     * searchMemail 検索メールアドレス
+     */
+    private String searchMemail = "";
+    
+    /**
+     * 検索メールアドレスを取得する
+     */
+    public String getSearchMemail() {
+    	return searchMemail;
+    }
+    
+    /**
+     * 検索メールアドレスをセットする
+     * @param searchMemail 検索メールアドレス
+     */
+    public void setSearchMemail(String searchMemail) {
+    	this.searchMemail = searchMemail;
+    }
+    
+    /**
+     * 検索区分
+     */
+    private String searchAdmin = "";
+    
+    /**
+     * 検索区分を取得する
+     */
+    public String getSearchAdmin() {
+    	return searchAdmin;
+    }
+    
+    /**
+     * 検索区分をセットする
+     * @param searchAdmin 検索区分
+     */
+    public void setSearchAdmin(String searchAdmin) {
+    	this.searchAdmin = searchAdmin;
+    }
+    
+    /**
+     * 検索ステータス
+     */
+    private String searchStatus = "";
+    
+    /**
+     * 検索ステータスを取得する
+     */
+    public String getSearchStatus() {
+    	return searchStatus;
+    }
+    
+    /**
+     * 検索ステータスを取得する
+     */
+    public void setSearchStatus(String searchStatus) {
+    	this.searchStatus = searchStatus;
+    }
+
+    /**
+     * 検索条件(氏名・メールアドレス・区分・ステータス)の結合方法。"and"または"or"。
+     */
+    private String searchMode = "and";
+
+    /**
+     * 検索条件の結合方法を取得する
+     */
+    public String getSearchMode() {
+    	return searchMode;
+    }
+
+    /**
+     * 検索条件の結合方法をセットする
+     * @param searchMode 検索条件の結合方法("and"または"or")
+     */
+    public void setSearchMode(String searchMode) {
+    	this.searchMode = searchMode;
+    }
+
+    /**
      *  データアクセス権限のあるユーザリストを取得する。.
      */
     public ArrayList<String> getAuthorityUserList() {
@@ -818,6 +897,9 @@ public class UserInfoDao implements Serializable {
         fieldsArray.put("maiden_name_kana", "user_info.maiden_name_kana");
         fieldsArray.put("insert_user_id", "user_info.insert_user_id");
         fieldsArray.put("admin", "user_info.admin");
+        fieldsArray.put("memail", "user_info.memail");
+        fieldsArray.put("full_name", "user_info.last_name,user_info.first_name");
+        fieldsArray.put("full_name_kana", "user_info.last_name_kana,user_info.first_name_kana");
     }
 
     /**
@@ -851,7 +933,7 @@ public class UserInfoDao implements Serializable {
         if (0 == rs.size())
             return false;
         HashMap<String, String> map = rs.get(0);
-        setUserInfoDaoForJoin(map, this);
+        setUserInfoDao(map, this);
         return true;
     }
 
@@ -905,6 +987,8 @@ public class UserInfoDao implements Serializable {
         dao.setMiddleNameKana(DbI.chara(map.get("middle_name_kana")));
         dao.setFirstNameKana(DbI.chara(map.get("first_name_kana")));
         dao.setMaidenNameKana(DbI.chara(map.get("maiden_name_kana")));
+        dao.setInsertUserId(map.get("insert_user_id"));
+        dao.setMemail(DbI.chara(map.get("memail")));
         dao.setAdmin(DbI.chara(map.get("admin")));
         dao.setLeaveDate(DbI.chara(map.get("leave_date")));
     }
@@ -1053,6 +1137,24 @@ public class UserInfoDao implements Serializable {
     }
 
     /**
+     * user_info ユーザ情報テーブルの区分(admin)のみを更新する(一括編集用)
+     *
+     * @param pUserInfoId ユーザ情報ID
+     * @param admin 区分("1":管理者, "0":一般)
+     * @return true:成功 false:失敗
+     * @throws AtareSysException エラー
+     */
+    public boolean dbUpdateAdmin(String userInfoId, String admin) throws AtareSysException {
+        String sql = "update user_info set "
+                + " admin = " + DbS.chara(admin)
+                + " where user_info_id = " + DbS.chara(userInfoId);
+        int ret = DbBase.dbExec(sql);
+        if (ret != 1)
+            throw new AtareSysException("dbUpdateAdmin number or record exception.");
+        return true;
+    }
+
+    /**
      * メールアドレスの重複確認を行うメソッド(新規登録時)
      * @param email 確認するメールアドレス
      * @return メールアドレスが重複していれば true、そうでなければ false
@@ -1190,6 +1292,7 @@ public class UserInfoDao implements Serializable {
         String sql = "select count(*) as count"
                 + " from user_info "
                 + myclass.dbWhere();
+        System.out.println(sql);
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
         if (0 == rs.size())
             return array;
@@ -1237,7 +1340,7 @@ public class UserInfoDao implements Serializable {
         for (int i = 0; i < cnt; i++) {
             map = rs.get(i);
             UserInfoDao dao = new UserInfoDao();
-            dao.setUserInfoDaoForJoin(map, dao);
+            dao.setUserInfoDao(map, dao);
             array.add(dao);
         }
         return array;
@@ -1252,10 +1355,12 @@ public class UserInfoDao implements Serializable {
     String dbWhere() throws AtareSysException {
         StringBuffer where = new StringBuffer(1024);
 
+        /*
         // 本日の日付を取得
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date today = new Date();
         String todayStr = dateFormat.format(today);
+		*/
 
         if (getUserInfoId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
@@ -1314,14 +1419,6 @@ public class UserInfoDao implements Serializable {
                             + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')"
                             + ") LIKE " + DbS.chara("%" + getSearchFullNameKana() + "%"));
         }
-        if (getSearchName().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
-            where.append("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
-                    + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, ''), " +
-                    "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
-                    + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')" + ") LIKE "
-                    + DbS.chara("%" + getSearchName() + "%"));
-        }
         if (userIds != null && userIds.length > 0) {
             where.append(where.length() > 0 ? " AND " : "");
             where.append("user_info.user_info_id IN (");
@@ -1335,9 +1432,48 @@ public class UserInfoDao implements Serializable {
             }
             where.append(")");
         }
-        where.append(where.length() > 0 ? " AND " : "");
-        where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
 
+        // 氏名・メールアドレス・区分・ステータスは、検索モード(and/or)に応じて結合する
+        ArrayList<String> groupConditions = new ArrayList<String>();
+        
+        if (getSearchName().length() > 0) {
+            groupConditions.add("CONCAT(" + "IFNULL(user_info.last_name, ''), " + "IFNULL(user_info.first_name, ''), "
+                    + "IFNULL(user_info.middle_name, ''), " + "IFNULL(user_info.maiden_name, ''), " +
+                    "IFNULL(user_info.last_name_kana, ''), " + "IFNULL(user_info.middle_name_kana, ''), "
+                    + "IFNULL(user_info.first_name_kana, ''), " + "IFNULL(user_info.maiden_name_kana, '')" + ") LIKE "
+                    + DbS.chara("%" + getSearchName() + "%"));
+        }
+        if(getSearchMemail().length() > 0) {
+        	groupConditions.add("user_info.memail LIKE " + DbS.chara("%" + getSearchMemail() + "%"));
+        }
+        if(getSearchAdmin().length() > 0) {
+        	String adminInfo1 = "1";
+        	String adminInfo2 = "admin";
+        	if("general".equals(getSearchAdmin())) {
+        		adminInfo1 = "0";
+        		adminInfo2 = "general";
+        	}
+
+        	groupConditions.add("(user_info.admin LIKE " + DbS.chara("%" + adminInfo1 + "%") + "OR "
+        			+ "user_info.admin LIKE " + DbS.chara("%" + adminInfo2 + "%") + ")");
+        }
+        if(getSearchStatus().length() > 0) {
+        	groupConditions.add("user_info.state_flg LIKE " + DbS.chara("%" + getSearchStatus() + "%"));
+        }
+        if (!groupConditions.isEmpty()) {
+            String joiner = "or".equalsIgnoreCase(getSearchMode()) ? " OR " : " AND ";
+            StringBuffer group = new StringBuffer();
+            for (int i = 0; i < groupConditions.size(); i++) {
+                group.append(i > 0 ? joiner : "");
+                group.append(groupConditions.get(i));
+            }
+            where.append(where.length() > 0 ? " AND " : "");
+            where.append("(").append(group).append(")");
+        }
+        /*where.append(where.length() > 0 ? " AND " : "");
+        // where.append("(state_flg != '9' OR (state_flg = '9' AND leave_date >= '" + todayStr + "'))");
+        where.append("(state_flg != '9')");
+        */
         if (where.length() > 0) {
             return "where " + where.toString();
         }
@@ -1388,10 +1524,20 @@ public class UserInfoDao implements Serializable {
                 + " ( user_info_id  = " + DbS.chara(pAccount)
                 + " or memail = " + DbS.chara(pAccount) + " ) ";
         List<HashMap<String, String>> rs = DbBase.dbSelect(sql);
-        if (1 != rs.size())
+        //アカウントがOKの場合、rz.size()は1が帰ってくる
+        if (1 != rs.size()) {
             return false;
+        }
         HashMap<String, String> map = rs.get(0);
         setUserInfoDao(map, this);
+        
+        setAdmin(DbI.chara(map.get("admin")));
+        setLeaveDate(DbI.chara(map.get("leave_date")));
+        /* if(("0".equals(getAdmin()) || "general".equals(getAdmin())) && null != getLeaveDate()) {
+        	System.out.println("一般退職社員です。");
+        	return false;
+        }*/
+        
         String password = Digest.hex(Digest.SHA512, pPassword);
         if (!password.equals(DbI.chara(map.get("password")))) {
             return false;

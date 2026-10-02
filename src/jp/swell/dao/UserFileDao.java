@@ -178,7 +178,8 @@ public class UserFileDao implements Serializable {
     public boolean dbUserFileInsert(String puserInfoId, String pfileId) throws AtareSysException
     {
         String userFileId = UUID.randomUUID().toString().substring(0, 13);
-        String sql="insert into user_files ("
+        String sql=
+        "insert into user_files ("
         + " user_files_id"
         + ",user_info_id"
         + ",file_id"

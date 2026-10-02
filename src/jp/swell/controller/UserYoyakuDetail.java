@@ -80,6 +80,13 @@ public class UserYoyakuDetail extends ControllerBase {
         searchList();
       }
 
+      // 部屋一覧から特定の部屋を選択した状態で新規予約画面を開く
+      else if ("reserveFromRoom".equals(bean.value("action_cmd"))) {
+        searchList();
+        forward("UserMenuReserve.jsp");
+        return; // メソッドを終了
+      }
+
       // 部屋の情報を新規登録する条件を追加
       else if ("insertRoom".equals(bean.value("form_name"))) {
         insertRoomInfo();
@@ -121,6 +128,7 @@ public class UserYoyakuDetail extends ControllerBase {
         forward("ResDelComp.jsp");
         return; // メソッドを終了
       }
+      //サブメニュー
       else if ("sub".equals(bean.value("action_cmd")))
       {
         searchList();
@@ -221,7 +229,7 @@ public class UserYoyakuDetail extends ControllerBase {
 
     DaoPageInfo daoPageInfo = new DaoPageInfo();
     if (!Validate.isInteger(bean.value("lineCount"))) {
-      bean.setValue("lineCount", "20");
+      bean.setValue("lineCount", "100");
     }
     daoPageInfo.setLineCount(Integer.parseInt(bean.value("lineCount")));
     SystemUserInfoValue.setUserInfoValue(getLoginUserId(), "UserMenuHome", "lineCount", bean.value("lineCount"));
@@ -256,20 +264,8 @@ public class UserYoyakuDetail extends ControllerBase {
   {
       WebBean bean = getWebBean();
       HashMap<String, String> errors = bean.getItemErrors();
-      if (bean.value("list_search_full_name").length() > 0)
-      {
-          if (100 < bean.value("list_search_full_name").length())
-          {
-              errors.put("list_search_full_name", "氏名の入力内容が長すぎます。");
-          }
-      }
-      if (bean.value("list_search_full_name_kana").length() > 0)
-      {
-          if (100 < bean.value("list_search_full_name_kana").length())
-          {
-              errors.put("list_search_full_name_kana", "氏名よみの入力内容が長すぎます。");
-          }
-      }
+      CommonDoActionProcess.checkMaxLength(errors, "list_search_full_name", bean.value("list_search_full_name"), 100, "氏名");
+      CommonDoActionProcess.checkMaxLength(errors, "list_search_full_name_kana", bean.value("list_search_full_name_kana"), 100, "氏名よみ");
       return errors;
   }
 
@@ -376,12 +372,14 @@ public class UserYoyakuDetail extends ControllerBase {
     reserveDao.setUserNames(userNames);
     userInfoDao.dbSelect(userInfoIds[0].trim());
     reserveDao.setUserName(userInfoDao.getLastName() + " " + userInfoDao.getMiddleName() + " " + userInfoDao.getFirstName());
+    bean.setValue("user_name", reserveDao.getUserName());
     reserveDao.setAdmin(userInfoDao.getAdmin());
     userInfoDao.dbSelect(bean.value("update_user_id"));
     reserveDao.setUpdateUserName(userInfoDao.getLastName() + " " + userInfoDao.getMiddleName() + " " + userInfoDao.getFirstName());
     RoomDao roomDao = new RoomDao();
     roomDao.dbSelect(bean.value("room_id"));
     reserveDao.setRoomName(roomDao.getRoomName());
+    bean.setValue("room_name", reserveDao.getRoomName());
 
     bean.setValue("input_info", Sup.serialize(reserveDao));
     return reserveDao;
@@ -443,7 +441,10 @@ public class UserYoyakuDetail extends ControllerBase {
     ReserveFileDao reserveFileDao = new ReserveFileDao();
     
     String fileId = UUID.randomUUID().toString().substring(0, 13);
-    String filePath = "C:/git/training/kenshuProject/WebContent/upload";
+    /*
+     * String filePath = "C:/git/training/kenshuProject/WebContent/upload"; 保存先フォルダのパス設定
+     */
+    String filePath =  "C:/Git/kenshuProject/WebContent/upload"; //このパソコンの保存先
     String userInfoId = bean.value("user_info_id");
     String reserveFileId = GetNumber.getNumberChar("reserveFile"); // reserveFileの作成
     
@@ -452,7 +453,7 @@ public class UserYoyakuDetail extends ControllerBase {
     byte[] fileData = (byte[]) bean.object("file");
     String mimeType = getMimeTypeFromBytes(fileData);
     String fileExtension = getExtensionFromMimeType(mimeType);
-    String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + fileExtension;
+    String systemFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
     // 完全なファイルパスの生成
     String fullPath = filePath + "/" + systemFileName + fileExtension;
     if (!fileUtil.outputFile(fullPath, fileData)) {

@@ -44,7 +44,7 @@ public class RoomDetail extends ControllerBase
     @Override
     public void doInit()
     {
-        setLoginNeeds(false); // この処理にはログインが必要かどうか
+        setLoginNeeds(true); // この処理にはログインが必要かどうか
         setHttpNeeds(false); // この処理はhttpでなければならないか
         setHttpsNeeds(false); // この処理はhttps でなければならないか。公開時にはtrueにする
         setUsecache(false); // この処理はクライアントのキャッシュを認めるか
@@ -68,10 +68,13 @@ public class RoomDetail extends ControllerBase
           String beforeName = bean.value("before_name");
           RoomDao dao = setWeb2Dao2InputInfo();
           bean.setValue("request_name", "修正する");
+
+          /*
           if (beforeName == null || beforeName.trim().isEmpty()) {
               beforeName = roomName;
               bean.setValue("before_name", beforeName);
           }
+          */
           bean.setValue("before_name", beforeName);
           bean.setValue("room_name", roomName);
           if ("RoomDetail".equals(formName))
@@ -122,7 +125,7 @@ public class RoomDetail extends ControllerBase
                           forward("RoomDetail.jsp");
                       }
                   } 
-                  else if ("deletef".equals(requestCmd)) 
+                  else if ("deletef".equals(requestCmd))
                   {
                       if (!dao.dbSelect(mainKey))
                       {
@@ -197,6 +200,7 @@ public class RoomDetail extends ControllerBase
         else
         {
             bean.setError("入力内容に誤りがあります");
+            bean.setValue("request_name", "登録する");
             forward("RoomDetail.jsp");
         }
     }
@@ -253,6 +257,7 @@ public class RoomDetail extends ControllerBase
                 forward("RoomDetail.jsp");
             }
     }
+
     /**
      * データベースの内容を表示エリアに編集する。.
      *
@@ -274,6 +279,7 @@ public class RoomDetail extends ControllerBase
         bean.setValue("insert_user_id", dao.getInsertUserId());
         bean.setValue("update_date", dao.getUpdateDate());
         bean.setValue("update_user_id", dao.getUpdateUserId());
+        bean.setValue("status", dao.getStatus());
 
         bean.setValue("select_info", Sup.serialize(dao)); // 編集前に読み込んだデータを格納しておく
         bean.setValue("input_info", Sup.serialize(dao));
@@ -291,13 +297,26 @@ public class RoomDetail extends ControllerBase
         WebBean bean = getWebBean();
         HashMap<String, String> errors = bean.getItemErrors();
         String roomName = bean.value("room_name").trim();
-        String beforeName = bean.value("before_name").trim(); // ← hidden から来る
+        String requestCmd = bean.value("request_cmd");
+        String mainKey = bean.value("main_key");
 
-        if (roomName.length() == 0) {
+        if (roomName.length() == 0)
+        {
             errors.put("room_name_empty", "部屋名を入力してください。");
         }
-        if (roomName.equalsIgnoreCase(beforeName)) {
-            errors.put("room_name_duplicate", "部屋名が以前と同じです。別の名前を入力してください。");
+        else if ("insEnter".equals(requestCmd))
+        {
+            if (pRoomDao.isRoomNameExists(roomName))
+            {
+                errors.put("room_name_duplicate", "この部屋名は既に登録されています。");
+            }
+        }
+        else if ("updateEnter".equals(requestCmd))
+        {
+            if (pRoomDao.isRoomNameExists(roomName, mainKey))
+            {
+                errors.put("room_name_duplicate", "この部屋名は既に登録されています。");
+            }
         }
 
         return errors.isEmpty();
@@ -315,6 +334,7 @@ public class RoomDetail extends ControllerBase
         WebBean bean = getWebBean();
         RoomDao dao = new RoomDao();
         dao.setRoomName(bean.value("room_name"));
+        dao.setStatus(bean.value("status").isEmpty() ? jp.swell.constant.RoomState.Available : bean.value("status"));
 
         bean.setValue("input_info", Sup.serialize(dao));
         return dao;
@@ -356,5 +376,6 @@ public class RoomDetail extends ControllerBase
         bean.setValue("insert_user_id", dao.getInsertUserId());
         bean.setValue("update_date", dao.getUpdateDate());
         bean.setValue("update_user_id", dao.getUpdateUserId());
+        bean.setValue("status", dao.getStatus());
     }
 }

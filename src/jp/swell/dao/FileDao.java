@@ -635,7 +635,9 @@ public class FileDao implements Serializable {
      * @return true:成功 false:失敗
      * @throws AtareSysException エラーs
      */
-    public boolean dbDelete(String pFileId) throws AtareSysException {
+    public String dbDelete(String pFileId) throws AtareSysException {
+
+    	deleteFilePath(pFileId);
         // user_filesテーブルから関連するレコードを削除
         String sqlDeleteUserFiles = "DELETE FROM user_files WHERE file_id = " + DbS.chara(pFileId);
         DbBase.dbExec(sqlDeleteUserFiles);
@@ -646,9 +648,21 @@ public class FileDao implements Serializable {
 
         if (retFiles != 1)
             throw new AtareSysException("dbDelete number or record exception");
-        return true;
+        return getFilePath();
     }
 
+    public boolean deleteFilePath(String pFileId) throws AtareSysException {
+    	FileDao dao = new FileDao();
+    	// 削除する前にファイルパスを取得しておく
+    	String sqlSelectFilePath = "SELECT files.file_path FROM files "
+    			 + " where file_id = " + DbS.chara(pFileId);
+        List<HashMap<String, String>> rs = DbBase.dbSelect(sqlSelectFilePath);
+        if (0 == rs.size())
+            return false;
+        HashMap<String, String> map = rs.get(0);
+        dao.setFilePath(DbI.chara(map.get("file_path")));
+        return true;
+    }
     /**
      * データベースからルーム名を取得するメソッド
      * @return UserMenuに返す
@@ -661,7 +675,7 @@ public class FileDao implements Serializable {
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
             // ルームDAOのインスタンスにデータを設定
-            dao.setUserInfoId(map.get("file_id"));
+            dao.setFileId(map.get("file_id"));
             dao.setUserInfoId(map.get("user_info_id"));
             dao.setFileName(map.get("file_name"));
             dao.setFilePath(map.get("file_path"));
@@ -681,9 +695,30 @@ public class FileDao implements Serializable {
             DaoPageInfo daoPageInfo) throws AtareSysException {
         ArrayList<FileDao> resultList = new ArrayList<>();
 
+        UserInfoDao userInfo = (UserInfoDao) new UserInfoDao();
         // WHERE句
         String where = myclass.dbWhere();
         String order = myclass.dbOrder(sortKey);
+        
+        // 全件数取得
+        String countSql = "SELECT COUNT(*) AS record_count "
+                + "FROM files "
+                + "JOIN user_info ON files.user_info_id = user_info.user_info_id "
+                + "JOIN user_info AS uploader ON files.upload_user_id = uploader.user_info_id "
+                + where;
+        List<HashMap<String, String>> countRs = DbBase.dbSelect(countSql);
+        if (countRs.size() > 0) {
+            int recordCount = Integer.parseInt(countRs.get(0).get("record_count"));
+            daoPageInfo.setRecordCount(recordCount);
+
+            int maxPageNo = Math.max(1,
+                    (int) Math.ceil((double) recordCount / daoPageInfo.getLineCount()));
+            daoPageInfo.setMaxPageNo(maxPageNo);
+
+            if (daoPageInfo.getPageNo() > maxPageNo) {
+                daoPageInfo.setPageNo(maxPageNo);
+            }
+        }
 
         int offset = (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         int limit = daoPageInfo.getLineCount();
@@ -713,9 +748,12 @@ public class FileDao implements Serializable {
 
         for (HashMap<String, String> map : rs) {
             FileDao dao = new FileDao();
-            dao.setFileDaoForJoin(map, dao);
-            dao.setFirstName(map.get("user_first_name"));
-            dao.setLastName(map.get("user_last_name"));
+            dao.setFileDao(map, dao);
+            dao.setFirstName(map.get("first_name")); //送信先ユーザー
+            dao.setLastName(map.get("last_name"));
+            userInfo.dbSelect(dao.getUploadUserId());
+            dao.setUploaderFirstName(userInfo.getFirstName()); //アップロードユーザー
+            dao.setUploaderLastName(userInfo.getLastName());
             resultList.add(dao);
         }
 
@@ -751,14 +789,24 @@ public class FileDao implements Serializable {
             where.append("files.file_id = " + DbS.chara(getFileId()));
         }
 
-        if (getUserInfoId().length() > 0) {
+        if (getUserInfoId().length() > 0 || getUploadUserId().length() > 0) {
             where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
-        }
+            where.append("(");
 
-        if (getUploadUserId().length() > 0) {
-            where.append(where.length() > 0 ? " AND " : "");
-            where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+            boolean hasCondition = false;
+
+            if (getUserInfoId().length() > 0) {
+                where.append("files.user_info_id = " + DbS.chara(getUserInfoId()));
+                hasCondition = true;
+            }
+            
+            if (getUploadUserId().length() > 0) {
+                if (hasCondition) {
+                    where.append(" OR ");
+                }
+                where.append("files.upload_user_id = " + DbS.chara(getUploadUserId()));
+            }
+            where.append(")");
         }
 
         if (getSearchFileName().length() > 0) {
@@ -791,6 +839,10 @@ public class FileDao implements Serializable {
         fieldsArray.put("system_file_name", "files.system_file_name");
         fieldsArray.put("upload_user_id", "files.upload_user_id");
         fieldsArray.put("expiration_date", "files.expiration_date");
+        fieldsArray.put("user_first_name", "user_info.first_name");
+        fieldsArray.put("user_last_name", "user_info.last_name");
+        fieldsArray.put("uploader_first_name", "uploader.first_name");
+        fieldsArray.put("uploader_last_name", "uploader.last_name");
     }
 
     /**

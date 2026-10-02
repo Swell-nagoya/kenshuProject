@@ -336,6 +336,10 @@ a:hover {
     document.getElementById('main_key').value = main_key;
     document.getElementById('main_form').submit();
   }
+  function go_clear_room_filter() {
+    document.getElementById('room_id').value = '';
+    go_submit('search');
+  }
   $(function() {
     $("#reservation_date_input").datepicker();
     $("#reservation_date_input").on("change", function() {
@@ -377,6 +381,16 @@ a:hover {
         <a href="javascript:void(0)" value="" onclick="go_menu('top')">予約一覧</a>
     </h1>
 </header>
+<%
+if (webBean.txt("filter_room_name").length() > 0) {
+%>
+<div class="left">
+  「<%=WebUtil.htmlEscape(webBean.txt("filter_room_name"))%>」の予約のみ表示中
+  <input type="button" value="絞り込み解除" onclick="go_clear_room_filter();" />
+</div>
+<%
+}
+%>
   <form id="main_form" method="post" action="">
     <div class="edit-reservation">
 
@@ -387,6 +401,7 @@ a:hover {
       <input type="hidden" name="sort_key" id="sort_key" value="" />
       <input type="hidden" name="sort_order" id="sort_order" value="<%=webBean.txt("sort_order")%>" />
       <input type="hidden" name="search_info" id="search_info" value="<%=webBean.txt("search_info")%>" />
+      <input type="hidden" name="room_id" id="room_id" value="<%=webBean.txt("room_id")%>" />
       <input type="hidden" name="reserveId" id="reserveId" value="<%=webBean.txt("reserve_id")%>" />
       <input type="hidden" name="user_info_id" id="user_info_id" value="">
       <input type="hidden" name="user_info_name" id="user_info_name" value="">
