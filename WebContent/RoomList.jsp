@@ -187,6 +187,24 @@ width: 100%;
 .bulk_button:hover {
   opacity: 0.85;
 }
+
+#reservation_dialog label {
+  display:inline-block;
+  width: 100px;
+  margin-right: 12px;
+  vertical-align: top;
+}
+
+#reservation_dialog textarea {
+  width: 250px;
+  min-height: 120px;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+#reservation_dialog input:not([type="hidden"]), #reservation_dialog textarea {
+  margin-bottom: 6px;
+}
 </style>
 <script type="text/javascript">
 <%--検索条件入力でenterキーが押された場合の処理--%>
@@ -264,6 +282,11 @@ jQuery(function($)
     document.getElementById('action_cmd').value=action_cmd;
     document.getElementById('request_cmd').value=request_cmd;
     document.getElementById('main_form').submit();
+  }
+  
+  function open_reservation(room_id){
+    document.getElementById('reservation_room_id').value = room_id;
+    document.getElementById('reservation_dialog').showModal();
   }
   
   function go_reserve(room_id)
@@ -409,7 +432,8 @@ jQuery(function($)
               %>
               </td>
             <td class="list_btn">
-            　　<input type="button" value="予約確認" onclick="go_reserve('<%=WebUtil.txtEscape(dao.getRoomId())%>')" />
+              <input type="button" value="予約する" onclick="open_reservation('<%=WebUtil.txtEscape(dao.getRoomId())%>')"/>
+              <input type="button" value="予約確認" onclick="go_reserve('<%=WebUtil.txtEscape(dao.getRoomId())%>')" />
               <input type="button" value="編集" onclick="go_detail_1('go_next','update','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
               <input type="button" value="削除" onclick="go_detail_2('go_next','deletef','<%=WebUtil.txtEscape(dao.getRoomId())%>','<%=WebUtil.txtEscape(dao.getRoomName())%>');" />
             </td>
@@ -422,6 +446,41 @@ jQuery(function($)
         </div>
        </div>
     </form>
-  </div>
+    
+    <dialog id="reservation_dialog">
+      <form id="reservation_form" method="post" action="UserYoyakuDetail.do">
+        <input type="hidden" name="form_name" value="UserYoyakuDetail">
+        <input type="hidden" name="action_cmd" value="reserve">
+        <input type="hidden" name="user_info_id" value="<%=webBean.txt("user_info_id") %>">
+        <input type="hidden" name="update_user_id" value="<%=webBean.txt("user_info_id")%>">
+        
+        <p>予約入力</p>
+        <p>予約者: <%=WebUtil.htmlEscape(webBean.txt("login_user_name")) %></p>
+        <input type="hidden" name="room_id" id="reservation_room_id">
+        <label for="reservation_date">予約日</label>
+        <input type="text" id="reservation_date" name="reservation_date" placeholder="例:2026年10月01日">
+        <br>
+        <label for="reservation_checkin_time">開始時間</label>
+        <input type="text" id="reservation_checkin_time" name="checkin_time" placeholder="例:0900">
+        <br>
+        <label for="reservation_checkout_time">終了時間</label>
+        <input type="text" id="reservation_checkout_time" name="checkout_time" placeholder="例:1000">
+        <br>
+        <label for="reservation_color">色</label>
+        <input type="color" id="reservation_color" name="rgb_color" value="#87ceeb">
+        <br>
+        <label for="reservation_text">内容</label>
+        <input type="text" id="reservation_text" name="input_text">
+        <br>
+        <label for="reservation_remark">備考</label>
+        <textarea  id="reservation_remark" name="input_remark" rows="4"></textarea>
+        <br>
+        <br>
+        <button type="submit">予約登録</button>
+        <button type = "button" onclick="document.getElementById('reservation_dialog').close()">閉じる
+        </button>
+      </form>
+    </dialog>  
+    </div>
 </body>
 </html>

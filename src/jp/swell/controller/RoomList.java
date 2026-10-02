@@ -28,6 +28,7 @@ import jp.patasys.common.util.Sup;
 import jp.patasys.common.util.Validate;
 import jp.swell.common.ControllerBase;
 import jp.swell.dao.RoomDao;
+import jp.swell.dao.UserInfoDao;
 
 /**
  * ：user_info ユーザ情報テーブルデータをLIST表示するためのコントローラクラス
@@ -225,7 +226,13 @@ public class RoomList extends ControllerBase
         String search_info = Sup.serialize(bean);
         bean.setValue("search_info", search_info);
         bean.setValue("list", listData);
-    }
+        bean.setValue("user_info_id", getLoginUserId());   
+        
+        UserInfoDao loginUser = new UserInfoDao();
+        loginUser.dbSelect(getLoginUserId());
+        
+        bean.setValue("login_user_name", loginUser.getLastName() + loginUser.getFirstName());
+        }
 
     /**
      * ソート順番を求める
