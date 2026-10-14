@@ -109,9 +109,9 @@ public class UserFileDao implements Serializable {
     public boolean dbSelect(String pUserFilesId) throws AtareSysException
     {
         String sql =  "select "
-                + " user_files.user_files_id as user_files___user_files_id"
-                + ",user_files.user_info_id as user_files___user_info_id"
-                + ",user_files.file_id as user_files___file_id"
+                + " user_files.user_files_id"
+                + ",user_files.user_info_id"
+                + ",user_files.file_id"
         + " from user_reserve ";
         sql += ""
         + " where user_files_id = " + DbS.chara(pUserFilesId);
@@ -131,9 +131,9 @@ public class UserFileDao implements Serializable {
     public boolean dbSelect(String pUserFilesId,String pas) throws AtareSysException
     {
         String sql =  "select "
-                + " user_files.user_files_id as user_files___user_files_id"
-                + ",user_files.user_info_id as user_files___user_info_id"
-                + ",user_files.file_id as user_files___file_id"
+                + " user_files.user_files_id"
+                + ",user_files.user_info_id"
+                + ",user_files.file_id"
         + " from user_files ";
         sql += ""
         + " where user_files_id = " + DbS.chara(pUserFilesId)
@@ -165,9 +165,9 @@ public class UserFileDao implements Serializable {
      * @param dao UserReserveDaoこのテーブルのインスタンス
      */
     public void setUserFileDaoForJoin(HashMap<String, String> map, UserFileDao dao) throws AtareSysException {
-      dao.setUserFilesId(DbI.chara(map.get("user_files___user_files_id")));
-      dao.setUserInfoId(DbI.chara(map.get("user_files___user_info_id")));
-      dao.setFileId(DbI.chara(map.get("user_files___reserve_id")));
+      dao.setUserFilesId(DbI.chara(map.get("user_files_id")));
+      dao.setUserInfoId(DbI.chara(map.get("user_info_id")));
+      dao.setFileId(DbI.chara(map.get("reserve_id")));
     }
     /**
      * user_files ユーザーファイルテーブルにデータを挿入する
@@ -308,9 +308,9 @@ public class UserFileDao implements Serializable {
         if(daoPageInfo.getPageNo() > daoPageInfo.getMaxPageNo()) daoPageInfo.setPageNo(daoPageInfo.getMaxPageNo());
         int start  =   (daoPageInfo.getPageNo() - 1) * daoPageInfo.getLineCount();
         sql =  "select "
-            + " user_files.user_files_id as user_files___user_files_id"
-            + ",user_files.user_info_id as user_files___user_info_id"
-            + ",user_files.file_id as user_files___file_id"
+            + " user_files.user_files_id"
+            + ",user_files.user_info_id"
+            + ",user_files.file_id"
             + " from user_files "
             + " left join user_info on user_files.user_info_id = user_info.user_info_id "
             + " left join files on user_files.file_id = files.file_id ";

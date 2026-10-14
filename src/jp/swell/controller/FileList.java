@@ -16,9 +16,12 @@
 package jp.swell.controller;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import jp.patasys.common.AtareSysException;
 import jp.patasys.common.db.DaoPageInfo;
@@ -150,7 +153,8 @@ public class FileList extends ControllerBase {
             bean.setValue("errors", errors);
             return;
         }
-
+        
+        
         LinkedHashMap<String, String> sortKey = sortKey();
         DaoPageInfo daoPageInfo = new DaoPageInfo();
         if (!Validate.isInteger(bean.value("lineCount"))) {
@@ -162,12 +166,19 @@ public class FileList extends ControllerBase {
         } else {
             daoPageInfo.setPageNo(Integer.parseInt(bean.value("pageNo")));
         }
-
+        
         // 自分がアップロードしたファイル（送信）
         FileDao sentDao = new FileDao();
         sentDao.setUploadUserId(userLoginInfo.getUserInfoId());
+        
+        //sentDao.setUserInfoId(userLoginInfo.getUserInfoId());
+        
         sentDao.setSearchFileName(bean.value("list_search_file_name"));
+        
+        //List<FileDao> sentFiles = FileDao.sentdbSelectList(sentDao, sortKey, daoPageInfo);
+        
         List<FileDao> sentFiles = FileDao.dbSelectList(sentDao, sortKey, daoPageInfo);
+        
         for (FileDao file : sentFiles) {
             file.setFileType("sent");
         }
@@ -175,18 +186,77 @@ public class FileList extends ControllerBase {
         // 自分宛てのファイル（受信）
         FileDao receivedDao = new FileDao();
         receivedDao.setUserInfoId(userLoginInfo.getUserInfoId());
+        
+        //receivedDao.setUploadUserId(userLoginInfo.getUserInfoId());
+        
         receivedDao.setSearchFileName(bean.value("list_search_file_name"));
+        
+        //List<FileDao> receivedFiles = FileDao.receiveddbSelectList(receivedDao, sortKey, daoPageInfo);
+        
         List<FileDao> receivedFiles = FileDao.dbSelectList(receivedDao, sortKey, daoPageInfo);
+        
         for (FileDao file : receivedFiles) {
             file.setFileType("received");
         }
 
         // マージしてセット
-        ArrayList<FileDao> fileList = new ArrayList<>();
-        fileList.addAll(receivedFiles);
-        fileList.addAll(sentFiles);
+        Set<FileDao> set = new TreeSet<>(Comparator.comparing(FileDao::getUploadDate).thenComparing(FileDao::getFileId).reversed());
+        set.addAll(receivedFiles);
+        set.addAll(sentFiles);
+        
+        ArrayList<FileDao> fileList = new ArrayList<>(set);
+        
+        int pageNo = daoPageInfo.getPageNo();
+        int lineCount = daoPageInfo.getLineCount();
+        
+        int fromIndex = (pageNo -1) * lineCount;
+        
+        int toIndex = Math.min(fromIndex + lineCount,fileList.size());
+        
+        List<FileDao> pagelist;
+        
+        if (fromIndex < fileList.size()) {
+        	pagelist = new ArrayList<>(fileList.subList(fromIndex, toIndex));
+        	
+        } else {
+        	pagelist = new ArrayList<>();
+		}
+        
+        //fileList.addAll(receivedFiles);
+        //fileList.addAll(sentFiles);
+        
+        /*
+        for (int i = 0; i < sentFiles.size(); i++) {
+        	FileDao sent = sentFiles.get(i);
+        	FileDao received = receivedFiles.get(i);
+        	
+        	FileDao result = sentFiles.get(i);
+        	
+        	result.setFileId(sent.getFileId());
+        	
+        	if (sent.getUploadUserName() !=null) {
+        		result.setUploaderFirstName(sent.getUploaderFirstName());
+        		result.setUploaderLastName(sent.getUploaderLastName());
+        		//result.setFileType(received.getFileType());
+        	}
+        	
+        	if (received.getSendUserName() !=null) {
+        		result.setFirstName(received.getFirstName());
+        		result.setLastName(received.getLastName());
+        		//result.setFileType(received.getFileType());
+        	}
+        	
+        	if (result.getUserInfoId().equals(userLoginInfo.getUserInfoId())) {
+        		result.setFileType(received.getFileType());
+        	}
+        	
+        	fileList.add(result);
+        }
+        */
+        
+        System.out.println(fileList);
 
-        bean.setValue("list", fileList);
+        bean.setValue("list", pagelist);
         bean.setValue("lineCount", daoPageInfo.getLineCount());
         bean.setValue("pageNo", daoPageInfo.getPageNo());
         // 受信件数だけでは recordCount が正確に反映されない可能性があるため、明示的に再セット
